@@ -1,6 +1,7 @@
 import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
 import Player from "../models/Player";
+import { teamConfig } from "../config/teamConfig";
 
 export async function scrapeTeamPlayers() {
   const browser = await puppeteer.launch({
@@ -19,7 +20,7 @@ export async function scrapeTeamPlayers() {
     height: 1080
   });
 
-  await page.goto("https://www.zerozero.pt/equipa/adecas/18231", {
+  await page.goto(teamConfig.players_url, {
     waitUntil: "networkidle2",
     timeout: 30000
   });

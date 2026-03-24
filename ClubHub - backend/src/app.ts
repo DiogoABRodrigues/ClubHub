@@ -10,7 +10,6 @@ import express from "express";
 //import roleRoutes from "./routes/roleRoutes";
 //import teamRoutes from "./routes/teamRoutes";
 //import { errorHandler, notFoundHandler } from "./middlewares/errorHandler";
-import { scrapeTeamPlayers } from "./scrapers/teamScraper.js";
 
 const app = express();
 

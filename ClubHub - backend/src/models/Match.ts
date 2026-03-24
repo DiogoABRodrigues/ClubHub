@@ -1,36 +1,98 @@
-import { DataTypes, Model } from "sequelize";
-import { sequelize } from "../config/database";
-import Team from "./Team";
-import Competition from "./Competition";
+// models/Match.ts
+import { DataTypes, Model } from 'sequelize';
+import { sequelize } from '../config/database';
+import Competition from './Competition';
 
 class Match extends Model {
-  declare id: number;
-  declare date: Date;
-  declare homeTeamId: number;
-  declare awayTeamId: number;
-  declare competitionId: number;
-  declare homeScore?: number;
-  declare awayScore?: number;
-  declare status: "scheduled" | "live" | "finished";
+  public id!: number;
+  public teamName!: string;
+  public date!: Date;
+  public time!: string;
+  public homeOrAway!: 'C' | 'F';
+  public opponent!: string;
+  public result!: string | null;
+  public competitionId!: number | null; 
+  public round!: string;
+  public outcome!: 'V' | 'E' | 'D' | null;
+  public status!: 'scheduled' | 'live' | 'played';
+  
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 }
 
-Match.init(
-  {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    date: { type: DataTypes.DATE, allowNull: false },
-    homeTeamId: { type: DataTypes.INTEGER, allowNull: false, references: { model: Team, key: "id" } },
-    awayTeamId: { type: DataTypes.INTEGER, allowNull: false, references: { model: Team, key: "id" } },
-    competitionId: { type: DataTypes.INTEGER, allowNull: false, references: { model: Competition, key: "id" } },
-    homeScore: { type: DataTypes.INTEGER },
-    awayScore: { type: DataTypes.INTEGER },
-    status: { type: DataTypes.ENUM("scheduled", "live", "finished"), allowNull: false, defaultValue: "scheduled" },
+Match.init({
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
   },
-  { sequelize, modelName: "Match", tableName: "matches", timestamps: true }
-);
+  teamName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true
+    }
+  },
+  date: {
+    type: DataTypes.DATEONLY,
+    allowNull: false
+  },
+  time: {
+    type: DataTypes.STRING(5),
+    allowNull: true
+  },
+  homeOrAway: {
+    type: DataTypes.ENUM('C', 'F'),
+    allowNull: false
+  },
+  opponent: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  result: {
+    type: DataTypes.STRING(10),
+    allowNull: true
+  },
+  competitionId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'competitions',
+      key: 'id'
+    }
+  },
+  round: {
+    type: DataTypes.STRING(10),
+    allowNull: true
+  },
+  outcome: {
+    type: DataTypes.ENUM('V', 'E', 'D'),
+    allowNull: true
+  },
+  status: {
+    type: DataTypes.ENUM('scheduled', 'live', 'played'),
+    allowNull: false,
+    defaultValue: 'scheduled'
+  }
+}, {
+  sequelize,
+  modelName: 'Match',
+  tableName: 'matches',
+  indexes: [
+    {
+      unique: true,
+      fields: ['teamName', 'opponent', 'homeOrAway', 'competitionId']
+    },
+    {
+      fields: ['competitionId']
+    },
+    {
+      fields: ['status']
+    }
+  ]
+});
 
-// Relações
-Match.belongsTo(Team, { as: "homeTeam", foreignKey: "homeTeamId" });
-Match.belongsTo(Team, { as: "awayTeam", foreignKey: "awayTeamId" });
-Match.belongsTo(Competition, { foreignKey: "competitionId" });
+// Associação
+Match.belongsTo(Competition, { foreignKey: 'competitionId', as: 'competitionDetails' });
 
 export default Match;
