@@ -5,5 +5,6 @@ export const teamConfig = {
   updateSchedule: "0 2 * * 0",
   teams1: "https://www.zerozero.pt/competicao/af-viana-do-castelo-1-divisao",
   teams2: "https://www.zerozero.pt/competicao/af-viana-do-castelo-2-divisao",
+  standings_url: "https://www.zerozero.pt/competicao/af-viana-do-castelo-2-divisao",
   nr_teams: 16,
 };
