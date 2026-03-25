@@ -101,7 +101,6 @@ Standing.init(
   }
 );
 
-// 🔹 Associação opcional para Sequelize
 Standing.belongsTo(Season, { foreignKey: "seasonId", as: "season" });
 Standing.belongsTo(Competition, { foreignKey: "competitionId", as: "competition" });
 
