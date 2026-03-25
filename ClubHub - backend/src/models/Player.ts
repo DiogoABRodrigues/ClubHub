@@ -1,24 +1,34 @@
+// models/Player.ts
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
-import Team from "./Team";
 
 class Player extends Model {
+  declare id: number;
+  declare externalId: number;
   declare name: string;
-  declare position: string;
-  declare number: number;
-  declare age: number;
-  declare photoUrl: string;
+  declare photoUrl: string | null;
+  
+  // Estatísticas da temporada
+  declare gamesPlayed: number;
+  declare goals: number;
+  declare minutesPlayed: number;
+  declare seasonId: number | null;
+  declare teamId: number | null;
 }
 
 Player.init(
   {
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    externalId: { type: DataTypes.INTEGER, allowNull: false, unique: true },
     name: { type: DataTypes.STRING, allowNull: false },
-    position: { type: DataTypes.STRING, allowNull: true },
-    number: { type: DataTypes.INTEGER, allowNull: true },
-    age: { type: DataTypes.INTEGER, allowNull: true },
     photoUrl: { type: DataTypes.STRING, allowNull: true },
   },
-  { sequelize, modelName: "Player", tableName: "players", timestamps: true }
+  { 
+    sequelize, 
+    modelName: "Player", 
+    tableName: "players", 
+    timestamps: true 
+  }
 );
 
 export default Player;

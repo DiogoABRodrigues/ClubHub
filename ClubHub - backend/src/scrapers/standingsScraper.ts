@@ -3,6 +3,7 @@ import * as cheerio from "cheerio";
 import { teamConfig } from "../config/teamConfig";
 import Team from "../models/Team";
 import Standing from "../models/Standing";
+import Season from "../models/Season";
 
 export interface StandingRow {
   position: number;
@@ -17,6 +18,17 @@ export interface StandingRow {
   goalsAgainst: number;
   goalDifference: number;
 }
+
+// Obter ou criar Season
+async function getOrCreateSeason(seasonName: string) {
+  let season = await Season.findOne({ where: { year: seasonName } });
+  if (!season) {
+    console.log(`   🆕 Nova season: ${seasonName}`);
+    season = await Season.create({ year: seasonName });
+  }
+  return season;
+}
+
 
 export async function scrapeStandings(): Promise<StandingRow[]> {
   const browser = await puppeteer.launch({
@@ -229,6 +241,12 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
       console.log("⚠️ Nenhum dado foi extraído. Verifique o arquivo debug-page.html");
     }
 
+    const seasonYear = teamConfig.currentSeason;
+    const season = await getOrCreateSeason(seasonYear);
+
+    if (standings.length > 0) {
+      await saveStandings(standings, 1, season.id);
+    }
     return standings;
 
   } catch (error) {
@@ -250,7 +268,8 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
 
 export async function saveStandings(
   standings: StandingRow[],
-  competitionId: number
+  competitionId: number,
+  seasonId: number // 🔹 novo parâmetro
 ) {
   const data = [];
 
@@ -269,6 +288,7 @@ export async function saveStandings(
     data.push({
       teamName: team.name,
       competitionId,
+      seasonId, // 🔹 associar season
       position: row.position,
       points: row.points,
       played: row.matchesPlayed,
@@ -281,12 +301,15 @@ export async function saveStandings(
     });
   }
 
-  // limpa antes (opcional mas recomendado)
+  // Limpa antes (opcional mas recomendado)
   await Standing.destroy({
-    where: { competitionId },
+    where: {
+      competitionId,
+      seasonId, // 🔹 garantir que só apaga desta época
+    },
   });
 
   await Standing.bulkCreate(data);
 
-  console.log("✅ Standings guardadas (bulk)");
+  console.log(`✅ Standings guardadas para a competição ${competitionId} e season ${seasonId}`);
 }

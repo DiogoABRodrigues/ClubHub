@@ -1,6 +1,6 @@
 import { sequelize } from "../config/database";
 import Player from "../models/Player";
-import { scrapeTeamPlayers } from "../scrapers/teamScraper.js";
+import { scrapeTeamPlayers } from "../scrapers/playersScraper.js";
 
 export async function updatePlayersAtomic() {
   console.log("🕒 Iniciando atualização de jogadores...");

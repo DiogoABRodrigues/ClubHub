@@ -1,38 +1,13 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../config/database";
-import Team from "./Team";
+import Season from "./Season"; // importa o modelo Season
+import Competition from "./Competition";
 
-interface StandingAttributes {
-  id: number;
-  teamName: string;
-  competitionId: number;
-
-  position: number;
-  points: number;
-  played: number;
-  wins: number;
-  draws: number;
-  losses: number;
-
-  goalsFor: number;
-  goalsAgainst: number;
-  goalDiff: number;
-
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-// campos opcionais na criação
-interface StandingCreationAttributes
-  extends Optional<StandingAttributes, "id"> {}
-
-class Standing
-  extends Model<StandingAttributes, StandingCreationAttributes>
-  implements StandingAttributes
-{
+class Standing extends Model {
   public id!: number;
   public teamName!: string;
   public competitionId!: number;
+  public seasonId!: number;
 
   public position!: number;
   public points!: number;
@@ -65,6 +40,12 @@ Standing.init(
     competitionId: {
       type: DataTypes.INTEGER,
       allowNull: true,
+    },
+
+    seasonId: { 
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: Season, key: "id" }, // foreign key para seasons
     },
 
     position: {
@@ -115,9 +96,13 @@ Standing.init(
   {
     sequelize,
     modelName: "Standing",
-    tableName: "Standings",
+    tableName: "standings",
     timestamps: true,
   }
 );
+
+// 🔹 Associação opcional para Sequelize
+Standing.belongsTo(Season, { foreignKey: "seasonId", as: "season" });
+Standing.belongsTo(Competition, { foreignKey: "competitionId", as: "competition" });
 
 export default Standing;

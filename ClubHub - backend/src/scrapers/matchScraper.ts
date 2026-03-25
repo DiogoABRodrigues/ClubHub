@@ -1,9 +1,9 @@
 // src/scrapers/matchScraper.ts
 import puppeteer from "puppeteer";
-import * as cheerio from "cheerio";
 import { teamConfig } from "../config/teamConfig";
 import Match from "../models/Match";
 import Competition from "../models/Competition";
+import Season from "../models/Season";
 
 export interface ScrapedMatch {
   date: string;
@@ -12,99 +12,86 @@ export interface ScrapedMatch {
   opponent: string;
   result: string | null;
   competition: string;
+  seasonId: number;
   round: string;
   outcome: 'V' | 'E' | 'D' | null;
 }
 
 // Função auxiliar para extrair nome e época da competição
 function parseCompetition(competitionStr: string): { name: string; season: string } {
-  // Formato esperado: "AF Viana do Castelo 2ª Divisão 25/26" ou "AF Viana do Castelo Taça 25/26"
   const match = competitionStr.match(/(.+?)\s+(\d{2}\/\d{2})$/);
-  
   if (match) {
-    return {
-      name: match[1].trim(),
-      season: match[2]
-    };
+    return { name: match[1].trim(), season: match[2] };
   }
-  
-  // Fallback: tentar extrair de forma mais genérica
   const seasonMatch = competitionStr.match(/(\d{2}\/\d{2})$/);
   if (seasonMatch) {
-    return {
-      name: competitionStr.replace(seasonMatch[0], "").trim(),
-      season: seasonMatch[1]
-    };
+    return { name: competitionStr.replace(seasonMatch[0], "").trim(), season: seasonMatch[1] };
   }
-  
-  // Último recurso
-  return {
-    name: competitionStr,
-    season: "2025/26" // época padrão
-  };
+  return { name: competitionStr, season: "2025/26" }; // fallback
 }
 
-// Função para obter ou criar competição
-async function getOrCreateCompetition(competitionStr: string): Promise<Competition> {
-  const { name, season } = parseCompetition(competitionStr);
-  
-  // Verificar se já existe
-  let competition = await Competition.findOne({
-    where: { name, season }
-  });
-  
-  // Se não existir, criar
+// Obter ou criar Season
+async function getOrCreateSeason(seasonName: string) {
+  let season = await Season.findOne({ where: { year: seasonName } });
+  if (!season) {
+    console.log(`   🆕 Nova season: ${seasonName}`);
+    season = await Season.create({ year: seasonName });
+  }
+  return season;
+}
+
+// Obter ou criar Competition com Season
+async function getOrCreateCompetition(competitionStr: string) {
+  const { name, season: seasonName } = parseCompetition(competitionStr);
+
+  const season = await getOrCreateSeason(seasonName);
+
+  let competition = await Competition.findOne({ where: { name, seasonId: season.id } });
   if (!competition) {
-    console.log(`   🆕 Nova competição: ${name} (${season})`);
+    console.log(`   🆕 Nova competição: ${name} (${seasonName})`);
     competition = await Competition.create({
       name,
-      season
+      seasonId: season.id
     });
-  } else {
-    console.log(`   ✅ Competição existente: ${name} (${season})`);
   }
-  
   return competition;
 }
 
+// Guardar/atualizar jogos
 export async function saveMatches(teamName: string, scrapedMatches: ScrapedMatch[]) {
   for (const match of scrapedMatches) {
-    // Obter ou criar competição
     let competitionId: number | null = null;
+    let seasonId: number | null = null;
+
     if (match.competition) {
       const competition = await getOrCreateCompetition(match.competition);
       competitionId = competition.id;
+      seasonId = competition.seasonId;
     }
- 
-    // Criar ou atualizar a match
+
     await Match.upsert({
       teamName,
-      date: match.date,           // atualiza a data se mudou
-      time: match.time,       // atualiza a hora se mudou 
+      date: match.date,
+      time: match.time,
       homeOrAway: match.homeOrAway,
       opponent: match.opponent,
-      result: match.result,       // atualiza o resultado se mudou
-      competitionId,             // id da competição
+      result: match.result,
+      competitionId,
+      seasonId,
       round: match.round,
-      outcome: match.outcome, 
-      status: match.result ? 'played' : 'scheduled' // status baseado na presença de resultado
+      outcome: match.outcome,
+      status: match.result ? 'played' : 'scheduled'
     });
-
+  }
   console.log(`✅ ${scrapedMatches.length} jogos guardados/atualizados para a equipa ${teamName}`);
 }
-}
 
-export async function scrapeTeamMatches() {
-  const browser = await puppeteer.launch({
-    headless: false,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"]
-  });
-
+// Scraper principal
+export async function scrapeTeamMatches(): Promise<ScrapedMatch[]> {
+  const browser = await puppeteer.launch({ headless: false, args: ["--no-sandbox", "--disable-setuid-sandbox"] });
   const page = await browser.newPage();
   await page.setViewport({ width: 1920, height: 1080 });
-  await page.setUserAgent(
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
-  );
+  await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36");
 
   console.log(`🌐 A aceder a: ${teamConfig.matches_url}`);
   await page.goto(teamConfig.matches_url, { waitUntil: "networkidle2", timeout: 30000 });
@@ -113,117 +100,58 @@ export async function scrapeTeamMatches() {
   try {
     await page.waitForSelector("button", { timeout: 5000 });
     await page.evaluate(() => {
-      const buttons = Array.from(document.querySelectorAll("button"));
-      const acceptBtn = buttons.find(btn =>
-        btn.textContent?.includes("Aceitar") || btn.textContent?.includes("Aceitar todos")
-      );
+      const btns = Array.from(document.querySelectorAll("button"));
+      const acceptBtn = btns.find(b => b.textContent?.includes("Aceitar") || b.textContent?.includes("Aceitar todos"));
       if (acceptBtn) (acceptBtn as HTMLElement).click();
     });
   } catch {}
 
-  // Aguardar pela tabela de jogos
   await page.waitForSelector("#team_games table", { timeout: 10000 });
   await new Promise(r => setTimeout(r, 2000));
 
-  const html = await page.content();
-  await browser.close();
+  const scrapedMatches: ScrapedMatch[] = await page.evaluate(() => {
+    const rows = Array.from(document.querySelectorAll("tr.parent"));
+    return rows.map(row => {
+      const cells = row.querySelectorAll("td");
+      if (cells.length < 9) return null;
 
-  const $ = cheerio.load(html);
-  const matches: ScrapedMatch[] = [];
+      let outcome: 'V' | 'E' | 'D' | null = null;
+      const formEl = cells[0].querySelector(".form .sign");
+      if (formEl?.classList.contains("win")) outcome = 'V';
+      else if (formEl?.classList.contains("draw")) outcome = 'E';
+      else if (formEl?.classList.contains("lost")) outcome = 'D';
 
-  // Procurar todas as linhas de jogos (tr com class="parent")
-  $("tr.parent").each((_, row) => {
-    const cells = $(row).find("td");
-    
-    if (cells.length < 9) return;
-    
-    // 1. Outcome (V/E/D)
-    let outcome: 'V' | 'E' | 'D' | null = null;
-    const formCell = $(cells[0]).find(".form .sign");
-    if (formCell.length) {
-      const formClass = formCell.attr("class") || "";
-      if (formClass.includes("win")) outcome = 'V';
-      else if (formClass.includes("draw")) outcome = 'E';
-      else if (formClass.includes("lost")) outcome = 'D';
-    }
-    
-    // 2. Data
-    const date = $(cells[1]).text().trim();
-    
-    // 3. Hora
-    const time = $(cells[2]).text().trim();
-    
-    // 4. Local
-    let homeOrAway: 'C' | 'F' = 'C';
-    const locationText = $(cells[3]).text().trim();
-    if (locationText === "(F)") homeOrAway = 'F';
-    else if (locationText === "(C)") homeOrAway = 'C';
-    
-    // 5. Adversário
-    let opponent = "";
-    const opponentLink = $(cells[5]).find("a");
-    if (opponentLink.length) {
-      opponent = opponentLink.text().trim();
-    } else {
-      opponent = $(cells[5]).text().trim();
-    }
-    opponent = opponent.replace(/\s+B$/, "").trim();
-    
-    // 6. Resultado
-    let result: string | null = null;
-    const resultText = $(cells[6]).text().trim();
-    if (resultText && resultText !== "-" && resultText !== "") {
-      result = resultText;
-    }
-    
-    // 7. Competição
-    let competition = "";
-    const compLink = $(cells[7]).find("a");
-    if (compLink.length) {
-      competition = compLink.text().trim();
-    } else {
-      competition = $(cells[7]).text().trim();
-    }
-    
-    // 8. Jornada
-    let round = $(cells[8]).text().trim();
-    if (!round) {
-      const roundMatch = competition.match(/(J\d+|1\/\d+|Taça)/i);
-      if (roundMatch) round = roundMatch[1];
-    }
-    
-    // Validar dados
-    if (!date || !opponent) return;
-    if (!date.match(/^\d{4}-\d{2}-\d{2}$/)) return;
-    
-    matches.push({
-      date,
-      time,
-      homeOrAway,
-      opponent,
-      result,
-      competition,
-      round,
-      outcome
-    });
+      const date = cells[1].textContent?.trim() || "";
+      const time = cells[2].textContent?.trim() || "";
+      let homeOrAway: 'C' | 'F' = cells[3].textContent?.trim() === "(F)" ? 'F' : 'C';
+
+      let opponent = cells[5].querySelector("a")?.textContent?.trim() || cells[5].textContent?.trim() || "";
+      opponent = opponent.replace(/\s+B$/, "").trim();
+
+      let result = cells[6].textContent?.trim() || null;
+      if (result === "-" || result === "") result = null;
+
+      let competition = cells[7].querySelector("a")?.textContent?.trim() || cells[7].textContent?.trim() || "";
+
+      let round = cells[8].textContent?.trim() || "";
+      if (!round) {
+        const roundMatch = competition.match(/(J\d+|1\/\d+|Taça)/i);
+        if (roundMatch) round = roundMatch[1];
+      }
+
+      if (!date || !opponent) return null;
+      return { date, time, homeOrAway, opponent, result, competition, round, outcome } as ScrapedMatch;
+    }).filter(Boolean) as ScrapedMatch[];
   });
 
-  // Remover duplicados
-  const uniqueMatches = matches.filter((match, index, self) => 
-    index === self.findIndex(m => m.date === match.date && m.opponent === match.opponent)
-  );
-  
-  // Ordenar por data
-  uniqueMatches.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  await browser.close();
 
-  console.log(`\n📊 Resumo da extração:`);
-  console.log(`✅ Total de jogos encontrados: ${uniqueMatches.length}`);
-  
-  if (uniqueMatches.length > 0) {
-    const uniqueComps = new Set(uniqueMatches.map(m => m.competition));
-    console.log(`🏆 Competições detectadas: ${Array.from(uniqueComps).join(", ")}`);
+  console.log(`\n📊 Total de jogos encontrados: ${scrapedMatches.length}`);
+  const uniqueComps = Array.from(new Set(scrapedMatches.map(m => m.competition)));
+  console.log(`🏆 Competições detectadas: ${uniqueComps.join(", ")}`);
+
+  if (scrapedMatches.length > 0) {
+    await saveMatches(teamConfig.name, scrapedMatches);
   }
-
-  return uniqueMatches;
+  return scrapedMatches;
 }
-

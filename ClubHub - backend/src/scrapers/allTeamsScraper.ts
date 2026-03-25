@@ -56,7 +56,6 @@ export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
       
       // Método principal: linhas da tabela
       $("table tbody tr, table tr").each((_, row) => {
-        if (compTeams.length >= 16) return; // Limite de 16 por competição
 
         const cells = $(row).find("td");
         if (cells.length < 3) return;

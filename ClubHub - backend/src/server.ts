@@ -1,10 +1,11 @@
 import app from "./app";
 import { sequelize } from "./config/database";
-import { scrapeTeamPlayers, savePlayers } from "./scrapers/teamScraper";
-import { scrapeTeamMatches, saveMatches } from "./scrapers/matchScraper";
+import { scrapeTeamPlayers } from "./scrapers/playersScraper";
+import { scrapeTeamMatches } from "./scrapers/matchScraper";
 import { teamConfig } from "./config/teamConfig";
 import { scrapeAllTeams, saveAllTeams } from "./scrapers/allTeamsScraper";
 import { scrapeStandings, saveStandings } from "./scrapers/standingsScraper";
+import { scrapeTeamStats } from "./scrapers/statsScraper";
 
 const PORT = 3000;
 
@@ -20,15 +21,10 @@ async function startServer() {
     });
 
 try {
-  const standings = await scrapeStandings();
-//
-
-  if(standings.length === 0) {
-    console.log("Nenhum standing encontrado. Verifique o scraper.");
-  } else {
-    await saveStandings(standings, 1);
-  }
-  console.log(standings);
+  //await scrapeTeamPlayers();
+  //await scrapeTeamMatches();
+  //await scrapeStandings();
+  await scrapeTeamStats();
 //
 
 } catch (error) {

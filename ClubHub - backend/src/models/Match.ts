@@ -12,6 +12,7 @@ class Match extends Model {
   public opponent!: string;
   public result!: string | null;
   public competitionId!: number | null; 
+  public seasonId!: number | null;
   public round!: string;
   public outcome!: 'V' | 'E' | 'D' | null;
   public status!: 'scheduled' | 'live' | 'played';
@@ -58,6 +59,14 @@ Match.init({
     allowNull: true,
     references: {
       model: 'competitions',
+      key: 'id'
+    }
+  },
+  seasonId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'seasons',
       key: 'id'
     }
   },
