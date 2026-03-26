@@ -5,9 +5,13 @@ import { styles } from './Home.styles';
 import { mockMatches, mockNews } from '../../data/mockData';
 import { MatchCard } from '../../components/MatchCard';
 
-// ICONS (vamos substituir lucide-react)
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../theme/colors';
+
+import { useMatches } from '../../contexts/MatchesContext';
+import { useTeams } from '../../contexts/TeamsContext';
+import { teamConfig } from '../../config/teamConfig';
+import { Image } from 'react-native';
 
 export const Home = ({ navigation }: any) => {
   // lógica
@@ -17,6 +21,37 @@ export const Home = ({ navigation }: any) => {
 
   const recentNews = mockNews.slice(0, 3);
 
+  const { matches, loading } = useMatches();
+  const { teams } = useTeams();
+
+  // próximo jogo (primeiro upcoming)
+  const nextMatch = matches
+    .filter((m) => m.status === 'upcoming')
+    .toReversed()[0];
+
+  // último jogo (mais recente finished)
+  const recentMatch = matches
+    .filter((m) => m.status === 'finished')[0];
+
+  const getTeamLogo = (teamName: string) => {
+    const normalized = teamName.trim().toLowerCase();
+
+    const team = teams.find(
+      t => t.name.trim().toLowerCase() === normalized
+    );
+
+    return team?.logoUrl;
+  };
+
+  const getHomeTeam = (match: any) =>
+    match.homeOrAway === 'C' ? match.teamName : match.opponent;
+
+  const getAwayTeam = (match: any) =>
+    match.homeOrAway === 'F' ? match.teamName : match.opponent;
+
+  const appTeam = teamConfig.name.trim().toLowerCase();
+  const appTeamLogo = getTeamLogo(teamConfig.name.trim().toLowerCase());
+  
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -24,12 +59,15 @@ export const Home = ({ navigation }: any) => {
         {/* HEADER */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>FC Titans</Text>
-            <Text style={styles.subtitle}>Official Fan Hub</Text>
+            <Text style={styles.title}>{appTeam.toUpperCase()}</Text>
           </View>
 
           <View style={styles.logoCircle}>
-            <Text style={styles.logoEmoji}>🏆</Text>
+            {appTeamLogo ? (
+              <Image source={{ uri: appTeamLogo }} style={styles.logoCircle} />
+            ) : (
+              <Text>🏆</Text>
+            )}
           </View>
         </View>
 
@@ -39,24 +77,53 @@ export const Home = ({ navigation }: any) => {
             <View style={styles.sectionTitleRow}>
               <Ionicons name="trophy-outline" size={20} color={COLORS.secondary} />
               <Text style={styles.sectionTitle}>
-                {featuredMatch.status === 'live' ? 'Live Now' : 'Next Match'}
+                {featuredMatch.status === 'live' ? 'A Decorrer' : 'Próximo Jogo'}
               </Text>
             </View>
 
-            <MatchCard match={featuredMatch} onPress={() => navigation.navigate('MatchDetail', { id: featuredMatch.id })} />
+            <MatchCard
+                match={recentMatch}
+                homeLogo={getTeamLogo(getHomeTeam(recentMatch)) || ''}
+                awayLogo={getTeamLogo(getAwayTeam(recentMatch)) || ''}
+                onPress={() => navigation.navigate('MatchDetail', { id: recentMatch.id })}
+              />
           </View>
         )}
 
-        {/* RECENT MATCHES */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Recent Matches</Text>
+        {/* Next Match */}
+        {nextMatch && (
+          <View style={styles.section}>
+            <View style={styles.sectionTitleRow}>
+              <Ionicons name="calendar-outline" size={20} color={COLORS.secondary} />
+              <Text style={styles.sectionTitle}>Próximo Jogo</Text>
+            </View>
 
-          {mockMatches
-            .filter((m) => m.status === 'finished')
-            .slice(0, 2)
-            .map((match) => (
-              <MatchCard key={match.id} match={match} onPress={() => navigation.navigate('MatchDetail', { id: match.id })} />
-            ))}
+            <MatchCard
+              match={nextMatch}
+              homeLogo={getTeamLogo(getHomeTeam(nextMatch)) || ''}
+              awayLogo={getTeamLogo(getAwayTeam(nextMatch)) || ''}
+              onPress={() => navigation.navigate('MatchDetail', { id: nextMatch.id })}
+            />
+          </View>
+        )}
+
+        {/* RECENT MATCHE */}
+        <View style={styles.section}>
+          {recentMatch && (
+            <View style={styles.section}>
+              <View style={styles.sectionTitleRow}>
+                <Ionicons name="time-outline" size={20} color={COLORS.secondary} />
+                <Text style={styles.sectionTitle}>Último Jogo</Text>
+              </View>
+
+              <MatchCard
+                match={recentMatch}
+                homeLogo={getTeamLogo(getHomeTeam(recentMatch)) || ''}
+                awayLogo={getTeamLogo(getAwayTeam(recentMatch)) || ''}
+                onPress={() => navigation.navigate('MatchDetail', { id: recentMatch.id })}
+              />
+            </View>
+          )}
         </View>
 
         {/* NEWS */}
