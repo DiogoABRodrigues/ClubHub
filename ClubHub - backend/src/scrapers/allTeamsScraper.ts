@@ -55,7 +55,7 @@ export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
       const compTeams: ScrapedTeam[] = [];
       
       // Método principal: linhas da tabela
-      $("table tbody tr, table tr").each((_, row) => {
+      $("#DataTables_Table_0 tbody tr").each((_, row) => {
 
         const cells = $(row).find("td");
         if (cells.length < 3) return;
@@ -110,6 +110,10 @@ export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
   );
 
   console.log(`\n📊 Total de equipas únicas: ${uniqueTeams.length}`);
+
+  if (uniqueTeams.length > 0 ){
+    saveAllTeams(uniqueTeams);
+  }
 
   return uniqueTeams;
 }
