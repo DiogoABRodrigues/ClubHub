@@ -1,4 +1,3 @@
-// Mock data for the football club app
 
 export type MatchStatus = 'upcoming' | 'live' | 'finished';
 export type TeamCategory = 'Senior' | 'U19' | 'U17' | 'U15';
@@ -47,15 +46,7 @@ export interface Match {
   status: MatchStatus;
   venue: string;
   homeLineup?: Player[];
-  awayLineup?: Player[];
   events?: MatchEvent[];
-  stats?: {
-    possession: { home: number; away: number };
-    shots: { home: number; away: number };
-    shotsOnTarget: { home: number; away: number };
-    corners: { home: number; away: number };
-    fouls: { home: number; away: number };
-  };
 }
 
 export interface StandingsTeam {
@@ -383,20 +374,11 @@ export const mockMatches: Match[] = [
     status: 'live',
     venue: 'Titans Stadium',
     homeLineup: squadPlayers.Senior,
-    awayLineup: squadPlayers.Senior,
     events: [
       { id: 'e1', type: 'goal', minute: 12, player: 'Fernando Pereira', team: 'home', description: 'Assist by Carlos Rodrigues' },
-      { id: 'e2', type: 'yellow_card', minute: 23, player: 'Diego Lopez', team: 'away' },
       { id: 'e3', type: 'goal', minute: 34, player: 'Sergio Moreno', team: 'away', description: 'Penalty' },
       { id: 'e4', type: 'goal', minute: 67, player: 'Daniel Sousa', team: 'home', description: 'Assist by André Oliveira' },
     ],
-    stats: {
-      possession: { home: 58, away: 42 },
-      shots: { home: 14, away: 8 },
-      shotsOnTarget: { home: 6, away: 4 },
-      corners: { home: 7, away: 3 },
-      fouls: { home: 9, away: 12 },
-    },
   },
   {
     id: '2',

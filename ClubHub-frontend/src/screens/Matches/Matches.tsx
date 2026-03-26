@@ -1,24 +1,41 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './Matches.styles';
-import { mockMatches, TeamCategory } from '../../data/mockData';
 import { MatchCard } from '../../components/MatchCard';
 import { COLORS } from '../../theme/colors';
+import { useMatches } from '../../contexts/MatchesContext';
+import { useTeams } from '../../contexts/TeamsContext';
 
 export const Matches = ({ navigation }: any) => {
-  const [selectedCategory, setSelectedCategory] = useState<TeamCategory | 'All'>('All');
+  const { matches, loading } = useMatches();
+  const { teams, loading: teamsLoading } = useTeams();
 
-  const categories: Array<TeamCategory | 'All'> = ['All', 'Senior', 'U19', 'U17', 'U15'];
+  const liveMatches = matches.filter((m) => m.status === 'live');
+  const upcomingMatches = matches.filter((m) => m.status === 'upcoming').toReversed();
+  const finishedMatches = matches.filter((m) => m.status === 'finished');
 
-  const filteredMatches =
-    selectedCategory === 'All'
-      ? mockMatches
-      : mockMatches.filter((m) => m.category === selectedCategory);
+  const [showAllUpcoming, setShowAllUpcoming] = useState(false);
+  const [showAllFinished, setShowAllFinished] = useState(false);
 
-  const liveMatches = filteredMatches.filter((m) => m.status === 'live');
-  const upcomingMatches = filteredMatches.filter((m) => m.status === 'upcoming');
-  const finishedMatches = filteredMatches.filter((m) => m.status === 'finished');
+  const limitMatches = (list: any[], showAll: boolean) =>
+    showAll ? list : list.slice(0, 3);
+
+  const getTeamLogo = (teamName: string) => {
+    const normalized = teamName.trim().toLowerCase();
+
+    const team = teams.find(
+      t => t.name.trim().toLowerCase() === normalized
+    );
+
+    return team?.logoUrl;
+  };
+
+  const getHomeTeam = (match: any) =>
+    match.homeOrAway === 'C' ? match.teamName : match.opponent;
+
+  const getAwayTeam = (match: any) =>
+    match.homeOrAway === 'F' ? match.teamName : match.opponent;
 
   return (
     <View style={styles.container}>
@@ -28,77 +45,87 @@ export const Matches = ({ navigation }: any) => {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color={COLORS.textSecondary} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Matches & Results</Text>
+          <Text style={styles.headerTitle}>Jogos e Resultados</Text>
         </View>
-
-        {/* CATEGORY FILTER */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoryContainer}
-          contentContainerStyle={{ gap: 8 }}
-        >
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category}
-              onPress={() => setSelectedCategory(category)}
-              style={[
-                styles.categoryButton,
-                selectedCategory === category && styles.categoryButtonActive,
-              ]}
-            >
-              <Text
-                style={[
-                  styles.categoryText,
-                  selectedCategory === category && styles.categoryTextActive,
-                ]}
-              >
-                {category}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
-        {/* LIVE MATCHES */}
-        {liveMatches.length > 0 && (
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: COLORS.destructive }]}>Live Now</Text>
-            {liveMatches.map((match) => (
-              <MatchCard key={match.id} match={match} />
-            ))}
-          </View>
-        )}
+        {loading ? (
+          <Text style={{ textAlign: 'center', marginTop: 50 }}>Loading matches...</Text>
+        ) : (
+          <>
+            {/* LIVE MATCHES */}
+            {liveMatches.length > 0 && (
+              <View style={styles.section}>
+                <Text style={[styles.sectionTitle, { color: COLORS.destructive }]}>Live Now</Text>
+                {liveMatches.map((match) => (
+                  <MatchCard key={match.id} match={match} homeLogo={getTeamLogo(getHomeTeam(match)) || ''} awayLogo={getTeamLogo(getAwayTeam(match)) || ''} onPress={() => navigation.navigate('MatchDetail', { id: match.id }) }/>
+                ))}
+              </View>
+            )}
 
-        {/* UPCOMING MATCHES */}
-        {upcomingMatches.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Upcoming</Text>
-            {upcomingMatches.map((match) => (
-              <MatchCard key={match.id} match={match} />
-            ))}
-          </View>
-        )}
+            {/* UPCOMING MATCHES */}
+            {upcomingMatches.length > 0 && (
+              <View style={styles.section}>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionTitle}>Próximos jogos</Text>
 
-        {/* FINISHED MATCHES */}
-        {finishedMatches.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Recent Results</Text>
-            {finishedMatches.map((match) => (
-              <MatchCard key={match.id} match={match} />
-            ))}
-          </View>
-        )}
+                  {upcomingMatches.length > 3 && (
+                    <TouchableOpacity onPress={() => setShowAllUpcoming(!showAllUpcoming)}>
+                      <Text style={styles.showMoreInline}>
+                        {showAllUpcoming ? 'Ver menos' : 'Ver todos'}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+                {limitMatches(upcomingMatches, showAllUpcoming).map((match) => (
+                  <MatchCard
+                    key={match.id}
+                    match={match}
+                    homeLogo={getTeamLogo(getHomeTeam(match)) || ''}
+                    awayLogo={getTeamLogo(getAwayTeam(match)) || ''}
+                    onPress={() => navigation.navigate('MatchDetail', { id: match.id })}
+                  />
+                ))}
+              </View>
+            )}
 
-        {/* NO MATCHES */}
-        {filteredMatches.length === 0 && (
-          <View style={styles.noMatches}>
-            <View style={styles.logoCircle}>
-              <Text style={styles.logoEmoji}>⚽</Text>
-            </View>
-            <Text style={styles.noMatchesText}>No matches found for this category</Text>
-          </View>
+            {/* FINISHED MATCHES */}
+            {finishedMatches.length > 0 && (
+              <View style={styles.section}>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionTitle}>Últimos Resultados</Text>
+
+                  {finishedMatches.length > 3 && (
+                    <TouchableOpacity onPress={() => setShowAllFinished(!showAllFinished)}>
+                      <Text style={styles.showMoreInline}>
+                        {showAllFinished ? 'Ver menos' : 'Ver todos'}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+                {limitMatches(finishedMatches, showAllFinished).map((match) => (
+                  <MatchCard
+                    key={match.id}
+                    match={match}
+                    homeLogo={getTeamLogo(getHomeTeam(match)) || ''}
+                    awayLogo={getTeamLogo(getAwayTeam(match)) || ''}
+                    onPress={() => navigation.navigate('MatchDetail', { id: match.id })}
+                  />
+                ))}
+              </View>
+            )}
+
+            {/* NO MATCHES */}
+            {matches.length === 0 && (
+              <View style={styles.noMatches}>
+                <View style={styles.logoCircle}>
+                  <Text style={styles.logoEmoji}>⚽</Text>
+                </View>
+                <Text style={styles.noMatchesText}>Não foram encontrados jogos para estes filtros</Text>
+              </View>
+            )}
+          </>
         )}
       </ScrollView>
     </View>

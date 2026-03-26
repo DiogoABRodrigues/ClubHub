@@ -1,5 +1,5 @@
 export const COLORS = {
-  primary: "#0B1E3F",     // azul principal (tipo futebol)
+  primary: "#dbb229",     // azul principal (tipo futebol)
   secondary: "#1E90FF",   // azul claro
   background: "#FFFFFF",
   surface: "#F5F5F5",

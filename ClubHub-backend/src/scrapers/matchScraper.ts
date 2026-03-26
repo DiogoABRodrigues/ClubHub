@@ -80,7 +80,7 @@ export async function saveMatches(teamName: string, scrapedMatches: ScrapedMatch
       seasonId,
       round: match.round,
       outcome: match.outcome,
-      status: match.result ? 'played' : 'scheduled'
+      status: match.result ? 'finished' : 'upcoming'
     });
   }
   console.log(`✅ ${scrapedMatches.length} jogos guardados/atualizados para a equipa ${teamName}`);

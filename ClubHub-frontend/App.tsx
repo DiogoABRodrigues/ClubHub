@@ -1,7 +1,22 @@
-import React from 'react';
-import 'react-native-gesture-handler';
+// App.tsx
+import React, { useState } from 'react';
+import { SplashScreen } from './src/screens/Splash/SplashScreen';
 import { AppNavigator } from './src/navigation/AppNavigator';
+import { MatchesProvider } from './src/contexts/MatchesContext';
+import { TeamsProvider } from './src/contexts/TeamsContext';
 
 export default function App() {
-  return <AppNavigator />;
+  const [splashDone, setSplashDone] = useState(false);
+
+  return (
+    <MatchesProvider>
+      <TeamsProvider>
+        {!splashDone ? (
+          <SplashScreen onFinish={() => setSplashDone(true)} />
+        ) : (
+          <AppNavigator />
+        )}
+      </TeamsProvider>
+    </MatchesProvider>
+  );
 }

@@ -2,14 +2,12 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { Home } from '../screens/Home/Home';
-import { Matches } from '../screens/Matches/Matches';
+import { HomeStack } from './HomeStack';
 import { Standings } from '../screens/Standings/Standings';
-import { News } from '../screens/News/News';
 import { NotificationSettings } from '../screens/NotificationSettings/NotificationSettings';
-
-// Screens temporários (vamos criar depois)
-import { View, Text } from 'react-native';
+import { SquadScreen } from '../screens/Squad/Squad';
+import { MatchesStack } from './MatchesStack';
+import { NewsStack } from './NewsStack';
 
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../theme/colors';
@@ -47,6 +45,9 @@ export const AppNavigator = () => {
               case 'Notícias':
                 iconName = 'newspaper-outline';
                 break;
+              case 'Plantel':
+                iconName = 'people-outline';
+                break;
               case 'Definições':
                 iconName = 'settings-outline';
                 break;
@@ -56,10 +57,11 @@ export const AppNavigator = () => {
           },
         })}
       >
-        <Tab.Screen name="Início" component={Home} />
-        <Tab.Screen name="Jogos" component={Matches} />
+        <Tab.Screen name="Início" component={HomeStack} />
+        <Tab.Screen name="Jogos" component={MatchesStack} />
         <Tab.Screen name="Classificação" component={Standings} />
-        <Tab.Screen name="Notícias" component={News} />
+        <Tab.Screen name="Notícias" component={NewsStack} />
+        <Tab.Screen name="Plantel" component={SquadScreen} />
         <Tab.Screen name="Definições" component={NotificationSettings} />
       </Tab.Navigator>
     </NavigationContainer>

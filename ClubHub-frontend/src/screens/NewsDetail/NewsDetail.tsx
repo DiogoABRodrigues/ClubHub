@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NewsCard } from '../../components/NewsCard';
-import { BottomNav } from '../../components/BottomNav';
 import { styles } from './NewsDetail.styles';
 import { mockNews } from '../../data/mockData';
 import { COLORS, SPACING } from '../../theme/colors';

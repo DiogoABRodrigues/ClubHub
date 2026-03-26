@@ -67,8 +67,6 @@ export const styles = StyleSheet.create({
   teamLogo: {
     width: 32,
     height: 32,
-    borderRadius: 16,
-    backgroundColor: '#E3F2FD',
     justifyContent: 'center',
     alignItems: 'center',
   },

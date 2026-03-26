@@ -15,7 +15,9 @@ class Match extends Model {
   public seasonId!: number | null;
   public round!: string;
   public outcome!: 'V' | 'E' | 'D' | null;
-  public status!: 'scheduled' | 'live' | 'played';
+  public status!: 'upcoming' | 'live' | 'finished';
+  public events?: any[];
+  public location?: string;
   
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -79,9 +81,17 @@ Match.init({
     allowNull: true
   },
   status: {
-    type: DataTypes.ENUM('scheduled', 'live', 'played'),
+    type: DataTypes.ENUM('upcoming', 'live', 'finished'),
     allowNull: false,
-    defaultValue: 'scheduled'
+    defaultValue: 'upcoming'
+  },
+  events: {
+    type: DataTypes.JSON,
+    allowNull: true
+  },
+  location : {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 }, {
   sequelize,

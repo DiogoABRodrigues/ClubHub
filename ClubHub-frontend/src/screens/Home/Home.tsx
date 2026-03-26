@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { styles } from './Home.styles';
 
 import { mockMatches, mockNews } from '../../data/mockData';
@@ -9,7 +9,7 @@ import { MatchCard } from '../../components/MatchCard';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../theme/colors';
 
-export const Home = () => {
+export const Home = ({ navigation }: any) => {
   // lógica
   const featuredMatch =
     mockMatches.find((m) => m.status === 'live') ||
@@ -43,7 +43,7 @@ export const Home = () => {
               </Text>
             </View>
 
-            <MatchCard match={featuredMatch} />
+            <MatchCard match={featuredMatch} onPress={() => navigation.navigate('MatchDetail', { id: featuredMatch.id })} />
           </View>
         )}
 
@@ -55,7 +55,7 @@ export const Home = () => {
             .filter((m) => m.status === 'finished')
             .slice(0, 2)
             .map((match) => (
-              <MatchCard key={match.id} match={match} />
+              <MatchCard key={match.id} match={match} onPress={() => navigation.navigate('MatchDetail', { id: match.id })} />
             ))}
         </View>
 
@@ -64,7 +64,12 @@ export const Home = () => {
           <Text style={styles.sectionTitle}>Latest News</Text>
 
           {recentNews.map((news) => (
-            <View key={news.id} style={styles.newsCard}>
+            <TouchableOpacity
+              key={news.id}
+              style={styles.newsCard}
+              onPress={() => navigation.navigate('NewsDetail', { id: news.id })}
+              activeOpacity={0.7} // controla a intensidade da animação
+            >
               <View style={styles.newsImage}>
                 <Text style={styles.newsEmoji}>⚽</Text>
               </View>
@@ -73,7 +78,7 @@ export const Home = () => {
                 <Text style={styles.newsTitle}>{news.title}</Text>
                 <Text style={styles.newsExcerpt}>{news.excerpt}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>

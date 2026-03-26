@@ -61,7 +61,7 @@ export const News = ({ navigation }: any) => {
         {filteredNews.length > 0 ? (
           <View style={styles.newsList}>
             {filteredNews.map((news) => (
-              <NewsCard key={news.id} news={news} />
+              <NewsCard key={news.id} news={news} onPress={() => navigation.navigate('NewsDetail', { id: news.id })} />
             ))}
           </View>
         ) : (

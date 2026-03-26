@@ -96,4 +96,24 @@ export const styles = StyleSheet.create({
     fontSize: FONT_SIZE.sm,
     textAlign: 'center',
   },
+
+  showMore: {
+    textAlign: 'center',
+    marginTop: 10,
+    color: COLORS.textPrimary,
+    fontWeight: '600',
+  },
+
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.sm,
+  },
+
+  showMoreInline: {
+    color: COLORS.textPrimary,
+    fontWeight: '600',
+    fontSize: FONT_SIZE.sm,
+  },
 });

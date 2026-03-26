@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import teamRoutes from "./routes/team.routes";
 import playerRoutes from "./routes/player.routes";
 import competitionRoutes from "./routes/competition.routes";
@@ -9,9 +10,14 @@ import statsRoutes from "./routes/stats.routes";
 import standingRoutes from "./routes/standing.routes";
 import squadRoutes from "./routes/squad.routes";
 
-import { errorHandler, notFoundHandler } from "./middlewares/errorHandler";
-
 const app = express();
+
+// 🔹 Configuração CORS
+app.use(cors({
+  origin: "*", // qualquer
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true // se precisares de cookies/autenticação
+}));
 
 app.use(express.json());
 
@@ -28,9 +34,5 @@ app.use("/api/seasons", seasonRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/standings", standingRoutes);
 app.use("/api/squads", squadRoutes);
-
-
-app.use(notFoundHandler);
-app.use(errorHandler);
 
 export default app;

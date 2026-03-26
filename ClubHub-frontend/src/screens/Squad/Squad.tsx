@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { squadPlayers, TeamCategory, SquadPlayer } from '../../data/mockData';
-import { Users, BarChart3, ArrowLeft } from 'lucide-react-native'; // usar versão RN
+import { Users, BarChart3, ArrowLeft } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { styles } from './Squad.styles';
 
@@ -61,7 +61,7 @@ export function SquadScreen() {
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -117,7 +117,7 @@ export function SquadScreen() {
           contentContainerStyle={styles.squadList}
         />
       ) : (
-        <View style={styles.statsTable}>
+        <ScrollView style={styles.statsTable}>
           {/* Header */}
           <View style={styles.statsHeader}>
             <Text style={[styles.statsText, styles.statsHeaderText, { flex: 2 }]}>Player</Text>
@@ -128,9 +128,8 @@ export function SquadScreen() {
           {statsSortedPlayers.map((player) => (
             <View key={player.id}>{renderStatsItem({ item: player })}</View>
           ))}
-        </View>
+        </ScrollView>
       )}
-    </ScrollView>
+    </View>
   );
 }
-

@@ -3,20 +3,23 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { styles } from './styles/MatchCard.styles';
 import { COLORS } from '../theme/colors';
 
-import { Match } from '../data/mockData';
+import { Match } from '../models/Match';
 import { LiveBadge } from './LiveBadge';
 
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'react-native';
 
 interface MatchCardProps {
   match: Match;
-  onPress?: () => void; // navigation depois
+  homeLogo: string;
+  awayLogo: string;
+  onPress?: () => void;
 }
 
-export const MatchCard = ({ match, onPress }: MatchCardProps) => {
+export const MatchCard = ({ match, homeLogo, awayLogo, onPress }: MatchCardProps) => {
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString('pt-PT', {
       month: 'short',
       day: 'numeric',
     });
@@ -37,11 +40,11 @@ export const MatchCard = ({ match, onPress }: MatchCardProps) => {
         {match.status === 'live' && <LiveBadge />}
 
         {match.status === 'upcoming' && (
-          <Text style={styles.upcoming}>Upcoming</Text>
+          <Text style={styles.upcoming}>Agendado</Text>
         )}
 
         {match.status === 'finished' && (
-          <Text style={styles.finished}>FT</Text>
+          <Text style={styles.finished}>Terminado</Text>
         )}
       </View>
 
@@ -51,9 +54,13 @@ export const MatchCard = ({ match, onPress }: MatchCardProps) => {
         <View style={styles.teamRow}>
           <View style={styles.teamInfo}>
             <View style={styles.teamLogo}>
-              <Text>🏆</Text>
+              {homeLogo ? (
+                <Image source={{ uri: homeLogo }} style={{ width: 24, height: 24 }} />
+              ) : (
+                <Text>🏆</Text>
+              )}
             </View>
-            <Text style={styles.teamName}>{match.homeTeam}</Text>
+            <Text style={styles.teamName}>{match.homeOrAway === 'C' ? match.teamName : match.opponent}</Text>
           </View>
 
           <Text
@@ -62,17 +69,21 @@ export const MatchCard = ({ match, onPress }: MatchCardProps) => {
               match.status === 'live' && { color: COLORS.secondary },
             ]}
           >
-            {match.homeScore ?? '-'}
+            {match.result?.split('-')[0] ?? '-'}
           </Text>
         </View>
 
         {/* AWAY */}
         <View style={styles.teamRow}>
           <View style={styles.teamInfo}>
-            <View style={styles.teamLogoAlt}>
-              <Text>⚽</Text>
+            <View style={styles.teamLogo}>
+              {awayLogo ? (
+                <Image source={{ uri: awayLogo }} style={{ width: 24, height: 24 }} />
+              ) : (
+                <Text>🏆</Text>
+              )}
             </View>
-            <Text style={styles.teamName}>{match.awayTeam}</Text>
+            <Text style={styles.teamName}>{match.homeOrAway === 'F' ? match.teamName : match.opponent}</Text>
           </View>
 
           <Text
@@ -81,7 +92,7 @@ export const MatchCard = ({ match, onPress }: MatchCardProps) => {
               match.status === 'live' && { color: COLORS.secondary },
             ]}
           >
-            {match.awayScore ?? '-'}
+            {match.result?.split('-')[1] ?? '-'}
           </Text>
         </View>
       </View>
@@ -89,9 +100,7 @@ export const MatchCard = ({ match, onPress }: MatchCardProps) => {
       {/* FOOTER */}
       <View style={styles.footer}>
         <Ionicons name="location-outline" size={14} color={COLORS.textSecondary} />
-        <Text style={styles.venue}>{match.venue}</Text>
-
-        <Text style={styles.category}>{match.category}</Text>
+        <Text style={styles.venue}>{match.location}</Text>
       </View>
     </TouchableOpacity>
   );

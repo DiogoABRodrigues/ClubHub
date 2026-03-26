@@ -25,7 +25,7 @@ try {
   //await scrapeTeamMatches();
   //await scrapeStandings();
   //await scrapeTeamStats();
-  await scrapeAllTeams();
+  //await scrapeAllTeams();
 //
 
 } catch (error) {
