@@ -7,16 +7,15 @@ export async function updatePlayersAtomic() {
 
   const players = await scrapeTeamPlayers();
 
-  if(players.length === 0) {
+  if (players.length === 0) {
     console.log("Nenhum jogador encontrado. Verifique o scraper.");
     return;
-  }
-  else {
-  await sequelize.transaction(async (t) => {
-    await Player.destroy({ where: {}, transaction: t });
+  } else {
+    await sequelize.transaction(async (t) => {
+      await Player.destroy({ where: {}, transaction: t });
 
-    await Player.bulkCreate(players, { transaction: t });
-  });
-}
+      await Player.bulkCreate(players, { transaction: t });
+    });
+  }
   console.log("✅ Jogadores atualizados de forma atômica!");
 }

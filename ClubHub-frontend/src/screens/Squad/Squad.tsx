@@ -1,36 +1,41 @@
-import React, { useCallback, useMemo } from 'react';
-import { View, Text, ScrollView, Image, StyleSheet } from 'react-native';
-import { usePlayers } from '../../contexts/PlayersContext';
-import { PlayerWithStats } from '../../models/Player';
-import { styles as globalStyles } from './Squad.styles';
+import React, { useCallback, useMemo } from "react";
+import { View, Text, ScrollView, Image, StyleSheet } from "react-native";
+import { usePlayers } from "../../contexts/PlayersContext";
+import { PlayerWithStats } from "../../models/Player";
+import { styles as globalStyles } from "./Squad.styles";
 
 export function SquadScreen() {
   const { players } = usePlayers();
 
-  const positionOrder = useMemo(() => ({
-    'Guarda Redes': 1,
-    'Defesa': 2,
-    'Médio': 3,
-    'Avançado': 4,
-    'Treinador': 5,
-    'Outros Técnicos': 6,
-  }), []);
+  const positionOrder = useMemo(
+    () => ({
+      "Guarda Redes": 1,
+      Defesa: 2,
+      Médio: 3,
+      Avançado: 4,
+      Treinador: 5,
+      "Outros Técnicos": 6,
+    }),
+    [],
+  );
 
   const mapToMainPosition = useCallback((position: string) => {
-    const pos = position?.toLowerCase() || '';
-    if (pos === 'guarda redes') return 'Guarda Redes';
-    if (['rb','cb','lb','defesa'].includes(pos)) return 'Defesa';
-    if (['cm','cam','médio'].includes(pos)) return 'Médio';
-    if (['rw','lw','st','avançado'].includes(pos)) return 'Avançado';
-    if (pos === 'treinador') return 'Treinador';
-    if (pos === 'outros técnicos') return 'Outros Técnicos';
-    return 'Médio';
+    const pos = position?.toLowerCase() || "";
+    if (pos === "guarda redes") return "Guarda Redes";
+    if (["rb", "cb", "lb", "defesa"].includes(pos)) return "Defesa";
+    if (["cm", "cam", "médio"].includes(pos)) return "Médio";
+    if (["rw", "lw", "st", "avançado"].includes(pos)) return "Avançado";
+    if (pos === "treinador") return "Treinador";
+    if (pos === "outros técnicos") return "Outros Técnicos";
+    return "Médio";
   }, []);
 
   const sortedPlayers = useMemo(() => {
     return [...players].sort((a, b) => {
-      const posA = positionOrder[mapToMainPosition(a.stats?.position || '')] || 99;
-      const posB = positionOrder[mapToMainPosition(b.stats?.position || '')] || 99;
+      const posA =
+        positionOrder[mapToMainPosition(a.stats?.position || "")] || 99;
+      const posB =
+        positionOrder[mapToMainPosition(b.stats?.position || "")] || 99;
       if (posA !== posB) return posA - posB;
       return (a.stats.number || 0) - (b.stats.number || 0);
     });
@@ -42,15 +47,17 @@ export function SquadScreen() {
     let currentGroup: PlayerWithStats[] = [];
 
     for (const player of sortedPlayers) {
-      const pos = mapToMainPosition(player.stats?.position || '');
+      const pos = mapToMainPosition(player.stats?.position || "");
       if (pos !== currentPos) {
-        if (currentGroup.length) groups.push({ position: currentPos!, players: currentGroup });
+        if (currentGroup.length)
+          groups.push({ position: currentPos!, players: currentGroup });
         currentPos = pos;
         currentGroup = [];
       }
       currentGroup.push(player);
     }
-    if (currentGroup.length) groups.push({ position: currentPos!, players: currentGroup });
+    if (currentGroup.length)
+      groups.push({ position: currentPos!, players: currentGroup });
 
     return groups;
   }, [sortedPlayers]);
@@ -59,28 +66,43 @@ export function SquadScreen() {
 
   return (
     <ScrollView contentContainerStyle={globalStyles.squadList}>
-      {groupedByPosition.map(group => (
+      {groupedByPosition.map((group) => (
         <View key={group.position} style={{ marginBottom: 16 }}>
           <View style={globalStyles.positionHeader}>
-            <Text style={globalStyles.positionHeaderText}>{group.position}</Text>
+            <Text style={globalStyles.positionHeaderText}>
+              {group.position}
+            </Text>
           </View>
 
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-            {group.players.map(player => (
-              <View key={player.id} style={{ width: '48%', marginVertical: 4 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+            }}
+          >
+            {group.players.map((player) => (
+              <View key={player.id} style={{ width: "48%", marginVertical: 4 }}>
                 <View style={globalStyles.card}>
                   <View style={globalStyles.playerPhotoWrapper}>
                     <Image
-                      source={player.photoUrl ? { uri: player.photoUrl } : defaultPlayerImage}
+                      source={
+                        player.photoUrl
+                          ? { uri: player.photoUrl }
+                          : defaultPlayerImage
+                      }
                       style={globalStyles.statsPhoto}
                       resizeMode="contain"
                     />
                   </View>
-                  <Text style={globalStyles.playerName} numberOfLines={1} ellipsizeMode="tail">
+                  <Text
+                    style={globalStyles.playerName}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
                     {player.name}
                   </Text>
                   <View style={globalStyles.playerInfoRow}>
-                    <Text style={globalStyles.position}>{player.stats.position}</Text>
                     {player.age && <Text>{player.age} anos</Text>}
                   </View>
                 </View>

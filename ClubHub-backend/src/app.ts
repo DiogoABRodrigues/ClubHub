@@ -15,11 +15,13 @@ import path from "path";
 const app = express();
 
 // 🔹 Configuração CORS
-app.use(cors({
-  origin: "*", // qualquer
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true // se precisares de cookies/autenticação
-}));
+app.use(
+  cors({
+    origin: "*", // qualquer
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true, // se precisares de cookies/autenticação
+  }),
+);
 
 app.use(express.json());
 

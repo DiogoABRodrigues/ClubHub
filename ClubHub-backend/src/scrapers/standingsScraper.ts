@@ -29,7 +29,6 @@ async function getOrCreateSeason(seasonName: string) {
   return season;
 }
 
-
 export async function scrapeStandings(): Promise<StandingRow[]> {
   const browser = await puppeteer.launch({
     headless: true, // Mude para false para debug se necessário
@@ -37,13 +36,13 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
   });
 
   const page = await browser.newPage();
-  
+
   // Configurar timeout maior
   page.setDefaultTimeout(60000);
-  
+
   // Adicionar user agent realista
   await page.setUserAgent(
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
   );
 
   console.log(`🌐 Acessando: ${teamConfig.standings_url}`);
@@ -60,11 +59,11 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
       const cookieButton = await page.evaluate(() => {
         const buttons = Array.from(document.querySelectorAll("button"));
         const acceptBtn = buttons.find(
-          btn => 
-            btn.textContent?.includes("Aceitar") || 
+          (btn) =>
+            btn.textContent?.includes("Aceitar") ||
             btn.textContent?.includes("Aceitar todos") ||
             btn.textContent?.includes("Accept") ||
-            btn.textContent?.includes("Allow")
+            btn.textContent?.includes("Allow"),
         );
         if (acceptBtn) {
           (acceptBtn as HTMLElement).click();
@@ -85,19 +84,20 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
       console.log("✅ Tabela encontrada");
     } catch (error) {
       console.log("❌ Tabela não encontrada. Tentando alternativas...");
-      
+
       // Salvar HTML para debug
       const html = await page.content();
-      const fs = require('fs');
-      fs.writeFileSync('debug-page.html', html);
+      const fs = require("fs");
+      fs.writeFileSync("debug-page.html", html);
       console.log("📁 HTML salvo em debug-page.html para análise");
-      
+
       throw new Error("Tabela não encontrada na página");
     }
 
-
     // Verificar se há iframes ou elementos dinâmicos
-    const hasIframes = await page.evaluate(() => document.querySelectorAll("iframe").length);
+    const hasIframes = await page.evaluate(
+      () => document.querySelectorAll("iframe").length,
+    );
     if (hasIframes > 0) {
       console.log(`⚠️ Encontrados ${hasIframes} iframes na página`);
     }
@@ -109,16 +109,16 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
 
     // Tentar diferentes seletores para encontrar a tabela
     let tableRows: any[] = [];
-    
+
     // Tentativa 1: Tabela com ID específico
     tableRows = $("table#DataTables_Table_0 tbody tr").toArray();
-    
+
     // Tentativa 2: Qualquer tabela com classificação
     if (tableRows.length === 0) {
       console.log("Tentando seletor alternativo: table tbody tr");
       tableRows = $("table tbody tr").toArray();
     }
-    
+
     // Tentativa 3: Qualquer linha de tabela
     if (tableRows.length === 0) {
       console.log("Tentando seletor alternativo: table tr");
@@ -127,11 +127,11 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
 
     if (tableRows.length === 0) {
       console.log("⚠️ Nenhuma linha de tabela encontrada");
-      
+
       // Listar todas as tabelas para debug
       const tableCount = $("table").length;
       console.log(`📊 Número de tabelas encontradas: ${tableCount}`);
-      
+
       if (tableCount > 0) {
         $("table").each((i, table) => {
           console.log(`Tabela ${i + 1}: ${$(table).find("tr").length} linhas`);
@@ -145,7 +145,7 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
     for (const row of tableRows) {
       const $row = $(row);
       const cells = $row.find("td");
-      
+
       if (cells.length < 10) {
         console.log(`Linha ignorada: apenas ${cells.length} colunas`);
         continue;
@@ -153,11 +153,11 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
 
       // Tentar identificar qual coluna contém o nome da equipe
       let teamNameCellIndex = 1; // Assumindo que a posição é coluna 0
-      
+
       // Verificar se a primeira coluna é a posição
       const firstCellText = $(cells[0]).text().trim();
       const position = parseInt(firstCellText);
-      
+
       if (isNaN(position)) {
         // Se a primeira coluna não é número, talvez a estrutura seja diferente
         continue;
@@ -167,7 +167,7 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
       let teamLink = null;
       let teamName = "";
       let teamUrl = undefined;
-      
+
       // Procurar em todas as colunas por um link que parece nome de equipe
       for (let i = 0; i < cells.length; i++) {
         const link = $(cells[i]).find("a");
@@ -181,7 +181,7 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
           }
         }
       }
-      
+
       // Se não encontrou link, pegar texto da coluna do meio
       if (!teamName && cells.length > 2) {
         teamName = $(cells[2]).text().trim();
@@ -204,18 +204,56 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
 
       // Extrair estatísticas baseado na estrutura real
       // Ajuste os índices conforme necessário
-      const points = parseInt($(cells[teamNameCellIndex + 1]).text().trim()) || 0;
-      const matchesPlayed = parseInt($(cells[teamNameCellIndex + 2]).text().trim()) || 0;
-      const wins = parseInt($(cells[teamNameCellIndex + 3]).text().trim()) || 0;
-      const draws = parseInt($(cells[teamNameCellIndex + 4]).text().trim()) || 0;
-      const losses = parseInt($(cells[teamNameCellIndex + 5]).text().trim()) || 0;
-      const goalsFor = parseInt($(cells[teamNameCellIndex + 6]).text().trim()) || 0;
-      const goalsAgainst = parseInt($(cells[teamNameCellIndex + 7]).text().trim()) || 0;
-      
+      const points =
+        parseInt(
+          $(cells[teamNameCellIndex + 1])
+            .text()
+            .trim(),
+        ) || 0;
+      const matchesPlayed =
+        parseInt(
+          $(cells[teamNameCellIndex + 2])
+            .text()
+            .trim(),
+        ) || 0;
+      const wins =
+        parseInt(
+          $(cells[teamNameCellIndex + 3])
+            .text()
+            .trim(),
+        ) || 0;
+      const draws =
+        parseInt(
+          $(cells[teamNameCellIndex + 4])
+            .text()
+            .trim(),
+        ) || 0;
+      const losses =
+        parseInt(
+          $(cells[teamNameCellIndex + 5])
+            .text()
+            .trim(),
+        ) || 0;
+      const goalsFor =
+        parseInt(
+          $(cells[teamNameCellIndex + 6])
+            .text()
+            .trim(),
+        ) || 0;
+      const goalsAgainst =
+        parseInt(
+          $(cells[teamNameCellIndex + 7])
+            .text()
+            .trim(),
+        ) || 0;
+
       let goalDifference = 0;
       if (cells.length > teamNameCellIndex + 8) {
-        const gdText = $(cells[teamNameCellIndex + 8]).text().trim();
-        goalDifference = parseInt(gdText.replace(/[^0-9-]/g, "")) || (goalsFor - goalsAgainst);
+        const gdText = $(cells[teamNameCellIndex + 8])
+          .text()
+          .trim();
+        goalDifference =
+          parseInt(gdText.replace(/[^0-9-]/g, "")) || goalsFor - goalsAgainst;
       } else {
         goalDifference = goalsFor - goalsAgainst;
       }
@@ -238,7 +276,9 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
     console.log(`✅ ${standings.length} equipas extraídas`);
 
     if (standings.length === 0) {
-      console.log("⚠️ Nenhum dado foi extraído. Verifique o arquivo debug-page.html");
+      console.log(
+        "⚠️ Nenhum dado foi extraído. Verifique o arquivo debug-page.html",
+      );
     }
 
     const seasonYear = teamConfig.currentSeason;
@@ -248,10 +288,9 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
       await saveStandings(standings, 1, season.id);
     }
     return standings;
-
   } catch (error) {
     console.error("❌ Erro durante o scraping:", error);
-    
+
     // Salvar screenshot para debug
     try {
       await page.screenshot({ path: "error-screenshot.png" });
@@ -259,7 +298,7 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
     } catch (screenshotError) {
       console.log("Não foi possível salvar screenshot");
     }
-    
+
     throw error;
   } finally {
     await browser.close();
@@ -269,7 +308,7 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
 export async function saveStandings(
   standings: StandingRow[],
   competitionId: number,
-  seasonId: number // 🔹 novo parâmetro
+  seasonId: number, // 🔹 novo parâmetro
 ) {
   const data = [];
 
@@ -311,5 +350,7 @@ export async function saveStandings(
 
   await Standing.bulkCreate(data);
 
-  console.log(`✅ Standings guardadas para a competição ${competitionId} e season ${seasonId}`);
+  console.log(
+    `✅ Standings guardadas para a competição ${competitionId} e season ${seasonId}`,
+  );
 }

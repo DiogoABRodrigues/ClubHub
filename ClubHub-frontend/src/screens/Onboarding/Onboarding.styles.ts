@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../../theme/colors';
+import { StyleSheet } from "react-native";
+import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
   container: {
@@ -9,8 +9,8 @@ export const styles = StyleSheet.create({
   },
 
   progressContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginBottom: SPACING.lg,
     gap: SPACING.sm,
   },
@@ -22,7 +22,7 @@ export const styles = StyleSheet.create({
   },
 
   stepContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: SPACING.lg,
   },
 
@@ -30,9 +30,9 @@ export const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: COLORS.primary + '20',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: COLORS.primary + "20",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: SPACING.md,
   },
   logoEmoji: {
@@ -41,56 +41,56 @@ export const styles = StyleSheet.create({
 
   title: {
     fontSize: FONT_SIZE.xl,
-    fontWeight: '700',
-    textAlign: 'center',
+    fontWeight: "700",
+    textAlign: "center",
     marginBottom: SPACING.sm,
   },
   subtitle: {
     fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: SPACING.lg,
   },
 
   section: {
-    width: '100%',
+    width: "100%",
     marginBottom: SPACING.lg,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: SPACING.sm,
     gap: 6,
   },
   sectionTitle: {
     fontSize: FONT_SIZE.md,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 
   teamGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
   teamCard: {
-    width: '48%',
+    width: "48%",
     padding: SPACING.md,
     borderWidth: 2,
     borderRadius: RADIUS.lg,
     marginBottom: SPACING.sm,
   },
   teamCardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   teamEmoji: {
     fontSize: 24,
   },
   teamName: {
     fontSize: FONT_SIZE.sm,
-    fontWeight: '500',
+    fontWeight: "500",
     marginBottom: 2,
   },
   teamLevel: {
@@ -99,11 +99,11 @@ export const styles = StyleSheet.create({
   },
 
   button: {
-    width: '100%',
+    width: "100%",
     backgroundColor: COLORS.primary,
     paddingVertical: SPACING.md,
     borderRadius: RADIUS.xl,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: SPACING.sm,
   },
   buttonDisabled: {
@@ -111,23 +111,23 @@ export const styles = StyleSheet.create({
   },
   buttonText: {
     color: COLORS.background,
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: FONT_SIZE.md,
   },
 
   backButton: {
-    width: '100%',
+    width: "100%",
     paddingVertical: SPACING.sm,
-    alignItems: 'center',
+    alignItems: "center",
   },
   backButtonText: {
     color: COLORS.textSecondary,
   },
 
   notificationCard: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: SPACING.md,
     borderWidth: 1,
     borderColor: COLORS.muted,
@@ -136,7 +136,7 @@ export const styles = StyleSheet.create({
   },
   notificationTitle: {
     fontSize: FONT_SIZE.sm,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   notificationSubtitle: {
     fontSize: FONT_SIZE.xs,

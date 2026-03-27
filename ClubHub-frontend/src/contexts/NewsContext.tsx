@@ -1,7 +1,7 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { News } from '../models/News';
-import { NewsService } from '../services/NewsService';
-import { Platform } from 'react-native';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { News } from "../models/News";
+import { NewsService } from "../services/NewsService";
+import { Platform } from "react-native";
 
 interface NewsContextType {
   news: News[];
@@ -19,7 +19,9 @@ const formatNewsImage = (image?: string) => {
   if (!image) return undefined;
 
   const baseUrl =
-    Platform.OS === 'android' ? 'http://192.168.1.105:3000/uploads' : 'http://192.168.1.105:3000/uploads';
+    Platform.OS === "android"
+      ? "http://192.168.1.105:3000/uploads"
+      : "http://192.168.1.105:3000/uploads";
 
   return `${baseUrl}/${image}`;
 };
@@ -41,7 +43,7 @@ export const NewsProvider = ({ children }: any) => {
 
       setNews(formattedNews);
     } catch (err) {
-      console.error('Erro a buscar news:', err);
+      console.error("Erro a buscar news:", err);
     } finally {
       setLoading(false);
     }

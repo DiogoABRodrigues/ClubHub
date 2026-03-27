@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { COLORS, SPACING, FONT_SIZE, RADIUS } from '../../theme/colors'; // ou ajusta para o teu constants
+import { StyleSheet } from "react-native";
+import { COLORS, SPACING, FONT_SIZE, RADIUS } from "../../theme/colors"; // ou ajusta para o teu constants
 
 export const styles = StyleSheet.create({
   container: {
@@ -23,20 +23,20 @@ export const styles = StyleSheet.create({
     borderBottomRightRadius: RADIUS.xl,
   },
   backButton: {
-    position: 'absolute',
+    position: "absolute",
     left: SPACING.md,
     top: SPACING.lg,
     padding: 8,
   },
   title: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: FONT_SIZE.lg,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: SPACING.md,
   },
   statusContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginBottom: SPACING.md,
     gap: SPACING.sm,
   },
@@ -57,9 +57,9 @@ export const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   scoreCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     backgroundColor: COLORS.surface,
     padding: SPACING.md,
     borderRadius: RADIUS.xl,
@@ -67,15 +67,15 @@ export const styles = StyleSheet.create({
   },
   teamContainer: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   teamCircle: {
     width: 64,
     height: 64,
     borderRadius: 32,
     backgroundColor: COLORS.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: SPACING.sm,
   },
   teamEmoji: {
@@ -83,16 +83,16 @@ export const styles = StyleSheet.create({
   },
   teamName: {
     fontSize: FONT_SIZE.sm,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   scoreContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginHorizontal: SPACING.md,
   },
   scoreText: {
     fontSize: 40,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.textPrimary,
   },
   colon: {
@@ -101,12 +101,12 @@ export const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   matchInfo: {
-    justifyContent: 'space-around',
+    justifyContent: "space-around",
     marginTop: SPACING.md,
   },
   infoItem: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
+    flexDirection: "row",
+    alignItems: "baseline",
     gap: 4,
   },
   infoText: {
@@ -120,8 +120,8 @@ export const styles = StyleSheet.create({
     marginHorizontal: SPACING.md,
   },
   tabsList: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     marginBottom: SPACING.md,
   },
   tabTrigger: {
@@ -134,7 +134,7 @@ export const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: FONT_SIZE.md,
-    fontWeight: '500',
+    fontWeight: "500",
     color: COLORS.textSecondary,
   },
   tabContent: {
@@ -143,7 +143,7 @@ export const styles = StyleSheet.create({
 
   // Timeline Events
   eventCard: {
-    flexDirection: 'row',
+    flexDirection: "row",
     backgroundColor: COLORS.surface,
     padding: SPACING.md,
     borderRadius: RADIUS.lg,
@@ -154,31 +154,31 @@ export const styles = StyleSheet.create({
     height: 48,
     borderRadius: 24,
     backgroundColor: COLORS.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: SPACING.sm,
   },
   eventMinuteText: {
     fontSize: FONT_SIZE.sm,
     color: COLORS.primary,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   eventInfo: {
     flex: 1,
   },
   eventTypeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
     marginBottom: 2,
   },
   eventTypeText: {
     fontSize: FONT_SIZE.sm,
-    textTransform: 'capitalize',
+    textTransform: "capitalize",
   },
   eventPlayer: {
     fontSize: FONT_SIZE.sm,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   eventDescription: {
     fontSize: FONT_SIZE.xs,
@@ -193,8 +193,8 @@ export const styles = StyleSheet.create({
 
   // Empty State
   emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 48,
   },
 
@@ -206,40 +206,40 @@ export const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   statsValue: {
     fontSize: FONT_SIZE.sm,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   statsLabel: {
     fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
   },
   possessionBar: {
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 8,
     borderRadius: 4,
-    overflow: 'hidden',
+    overflow: "hidden",
     backgroundColor: COLORS.surfaceLight,
     marginTop: 4,
     marginBottom: SPACING.sm,
   },
   possessionHome: {
     backgroundColor: COLORS.primary,
-    height: '100%',
+    height: "100%",
   },
   possessionAway: {
     backgroundColor: COLORS.textSecondary,
-    height: '100%',
+    height: "100%",
   },
 
   teamLogo: {
     width: 50,
     height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

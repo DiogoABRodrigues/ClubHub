@@ -1,7 +1,7 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { PlayerWithStats, Player } from '../models/Player';
-import { PlayerService } from '../services/PlayerService';
-import { useStats } from './StatsContext';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { PlayerWithStats, Player } from "../models/Player";
+import { PlayerService } from "../services/PlayerService";
+import { useStats } from "./StatsContext";
 
 interface PlayersContextType {
   players: PlayerWithStats[];
@@ -15,7 +15,11 @@ const PlayersContext = createContext<PlayersContextType>({
   refreshPlayers: async () => {},
 });
 
-export const PlayersProvider = ({ children }: { children: React.ReactNode }) => {
+export const PlayersProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [players, setPlayers] = useState<PlayerWithStats[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,23 +32,25 @@ export const PlayersProvider = ({ children }: { children: React.ReactNode }) => 
 
       const emptyStats = {
         playerExternalId: -1,
-        position: 'N/A',
+        position: "N/A",
         number: 0,
         age: 0,
         gamesPlayed: 0,
         goals: 0,
         minutesPlayed: 0,
-        seasonId: -1
-      }
+        seasonId: -1,
+      };
       // Combinar cada jogador com o seu stats (se houver)
       const playersWithStats: PlayerWithStats[] = allPlayers.map((player) => {
-        const playerStats = stats.find(s => s.playerExternalId === player.externalId) || emptyStats;
+        const playerStats =
+          stats.find((s) => s.playerExternalId === player.externalId) ||
+          emptyStats;
         return { ...player, stats: playerStats };
       });
 
       setPlayers(playersWithStats);
     } catch (err) {
-      console.error('Erro a buscar players:', err);
+      console.error("Erro a buscar players:", err);
     } finally {
       setLoading(false);
     }
@@ -55,7 +61,9 @@ export const PlayersProvider = ({ children }: { children: React.ReactNode }) => 
   }, [stats]); // refetch quando os stats mudarem
 
   return (
-    <PlayersContext.Provider value={{ players, loading, refreshPlayers: fetchPlayers }}>
+    <PlayersContext.Provider
+      value={{ players, loading, refreshPlayers: fetchPlayers }}
+    >
       {children}
     </PlayersContext.Provider>
   );

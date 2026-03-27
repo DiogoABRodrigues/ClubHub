@@ -12,7 +12,7 @@ export default class SquadService {
 
   async getByCurrentSeasonId() {
     const season = await new SeasonService().getCurrentSeason();
-        if (!season) return [];
+    if (!season) return [];
     return Squad.findAll({ where: { seasonId: season.dataValues.id } });
   }
 }

@@ -18,7 +18,7 @@ Team.init(
     modelName: "Team",
     tableName: "teams",
     timestamps: true,
-  }
+  },
 );
 
 export default Team;

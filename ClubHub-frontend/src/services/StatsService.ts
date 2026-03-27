@@ -1,10 +1,10 @@
 // services/StatsService.ts
-import { api } from './api';
-import { Stats } from '../models/Stats';
+import { api } from "./api";
+import { Stats } from "../models/Stats";
 
 export const StatsService = {
   getAll: async (): Promise<Stats[]> => {
-    const { data } = await api.get('/stats');
+    const { data } = await api.get("/stats");
     return data;
   },
   getBySeasonId: async (seasonId: number): Promise<Stats[]> => {
@@ -12,7 +12,7 @@ export const StatsService = {
     return data;
   },
   getByCurrentSeasonId: async (): Promise<Stats[]> => {
-    const { data } = await api.get('/stats/current');
+    const { data } = await api.get("/stats/current");
     return data;
   },
 };

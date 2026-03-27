@@ -1,10 +1,10 @@
-import { StyleSheet } from 'react-native';
-import { COLORS } from '../../theme/colors';
+import { StyleSheet } from "react-native";
+import { COLORS } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     borderTopWidth: 1,
     borderColor: COLORS.border,
     backgroundColor: COLORS.background,
@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
   },
 
   item: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 4,
   },
 

@@ -10,10 +10,7 @@ export interface ScrapedTeam {
 }
 
 // URLs das competições
-const competitions = [
-  { url: teamConfig.teams1 },
-  { url: teamConfig.teams2 },
-];
+const competitions = [{ url: teamConfig.teams1 }, { url: teamConfig.teams2 }];
 
 export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
   const browser = await puppeteer.launch({
@@ -24,7 +21,7 @@ export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
   const page = await browser.newPage();
   await page.setViewport({ width: 1920, height: 1080 });
   await page.setUserAgent(
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
   );
 
   const allTeams: ScrapedTeam[] = [];
@@ -38,25 +35,28 @@ export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
         await page.waitForSelector("button", { timeout: 5000 });
         await page.evaluate(() => {
           const buttons = Array.from(document.querySelectorAll("button"));
-          const acceptBtn = buttons.find(btn =>
-            btn.textContent?.includes("Aceitar") || btn.textContent?.includes("Aceitar todos")
+          const acceptBtn = buttons.find(
+            (btn) =>
+              btn.textContent?.includes("Aceitar") ||
+              btn.textContent?.includes("Aceitar todos"),
           );
           if (acceptBtn) (acceptBtn as HTMLElement).click();
         });
       } catch {}
 
       // Aguardar pela tabela de classificação
-      await page.waitForSelector("table tbody tr, table tr", { timeout: 10000 });
-      await new Promise(r => setTimeout(r, 2000));
+      await page.waitForSelector("table tbody tr, table tr", {
+        timeout: 10000,
+      });
+      await new Promise((r) => setTimeout(r, 2000));
 
       const html = await page.content();
       const $ = cheerio.load(html);
 
       const compTeams: ScrapedTeam[] = [];
-      
+
       // Método principal: linhas da tabela
       $("#DataTables_Table_0 tbody tr").each((_, row) => {
-
         const cells = $(row).find("td");
         if (cells.length < 3) return;
 
@@ -85,7 +85,7 @@ export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
         }
 
         if (teamName && teamName.length > 2) {
-          if (!compTeams.some(t => t.name === teamName)) {
+          if (!compTeams.some((t) => t.name === teamName)) {
             compTeams.push({
               name: teamName,
               logoUrl: logoUrl || undefined,
@@ -105,13 +105,14 @@ export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
   await browser.close();
 
   // Remover duplicados globais por nome
-  const uniqueTeams = allTeams.filter((team, index, self) =>
-    index === self.findIndex(t => t.name === team.name)
+  const uniqueTeams = allTeams.filter(
+    (team, index, self) =>
+      index === self.findIndex((t) => t.name === team.name),
   );
 
   console.log(`\n📊 Total de equipas únicas: ${uniqueTeams.length}`);
 
-  if (uniqueTeams.length > 0 ){
+  if (uniqueTeams.length > 0) {
     saveAllTeams(uniqueTeams);
   }
 

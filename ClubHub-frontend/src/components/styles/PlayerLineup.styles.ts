@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { COLORS, FONT_SIZE, RADIUS, SPACING } from '../../theme/colors';
+import { StyleSheet } from "react-native";
+import { COLORS, FONT_SIZE, RADIUS, SPACING } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
   container: {
@@ -10,18 +10,18 @@ export const styles = StyleSheet.create({
   },
   teamName: {
     fontSize: FONT_SIZE.lg,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: SPACING.md,
   },
   positionGroup: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: SPACING.sm,
     marginBottom: SPACING.sm,
   },
   playerCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
@@ -33,8 +33,8 @@ export const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: SPACING.sm,
   },
   playerInfo: {
@@ -42,7 +42,7 @@ export const styles = StyleSheet.create({
   },
   playerName: {
     fontSize: FONT_SIZE.sm,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   playerPosition: {
     fontSize: FONT_SIZE.xs,

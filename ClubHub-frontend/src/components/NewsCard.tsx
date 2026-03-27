@@ -1,10 +1,10 @@
-import React, { useMemo, useCallback } from 'react';
-import { View, Text, Image, Pressable } from 'react-native';
-import { styles } from './styles/NewsCard.styles';
-import { COLORS } from '../theme/colors';
-import { Ionicons } from '@expo/vector-icons';
-import { News } from '../models/News';
-import { formatDatePT } from '../utils/dateUtils';
+import React, { useMemo, useCallback } from "react";
+import { View, Text, Image, Pressable } from "react-native";
+import { styles } from "./styles/NewsCard.styles";
+import { COLORS } from "../theme/colors";
+import { Ionicons } from "@expo/vector-icons";
+import { News } from "../models/News";
+import { formatDatePT } from "../utils/dateUtils";
 
 interface Props {
   news: News;
@@ -12,16 +12,24 @@ interface Props {
 }
 
 export const NewsCard = React.memo(({ news, onPress }: Props) => {
-
-  const formattedDate = useMemo(() => formatDatePT(news.createdAt), [news.createdAt]);
+  const formattedDate = useMemo(
+    () => formatDatePT(news.createdAt),
+    [news.createdAt],
+  );
 
   const categoryStyle = useMemo(() => {
     switch (news.category) {
-      case 'Team':
-        return { backgroundColor: COLORS.primary + '20', color: COLORS.primary };
-      case 'Transfers':
-        return { backgroundColor: COLORS.secondary + '20', color: COLORS.secondary };
-      case 'Events':
+      case "Team":
+        return {
+          backgroundColor: COLORS.primary + "20",
+          color: COLORS.primary,
+        };
+      case "Transfers":
+        return {
+          backgroundColor: COLORS.secondary + "20",
+          color: COLORS.secondary,
+        };
+      case "Events":
         return { backgroundColor: COLORS.surface, color: COLORS.textPrimary };
       default:
         return { backgroundColor: COLORS.surface, color: COLORS.textSecondary };
@@ -34,7 +42,6 @@ export const NewsCard = React.memo(({ news, onPress }: Props) => {
 
   return (
     <Pressable style={styles.card} onPress={handlePress}>
-      
       {/* IMAGE */}
       {news.image ? (
         <Image
@@ -51,14 +58,7 @@ export const NewsCard = React.memo(({ news, onPress }: Props) => {
       {/* CONTENT */}
       <View style={styles.content}>
         <View style={styles.topRow}>
-          <View style={[styles.categoryBadge, { backgroundColor: categoryStyle.backgroundColor }]}>
-            <Text style={[styles.categoryText, { color: categoryStyle.color }]}>
-              {news.category}
-            </Text>
-          </View>
-
           <View style={styles.dateRow}>
-            <Ionicons name="calendar-outline" size={12} color={COLORS.textSecondary} />
             <Text style={styles.dateText}>{formattedDate}</Text>
           </View>
         </View>

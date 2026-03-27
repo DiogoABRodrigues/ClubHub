@@ -1,17 +1,17 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import { HomeStack } from './HomeStack';
-import { Standings } from '../screens/Standings/Standings';
-import { NotificationSettings } from '../screens/NotificationSettings/NotificationSettings';
-import { SquadScreen } from '../screens/Squad/Squad';
-import { MatchesStack } from './MatchesStack';
-import { NewsStack } from './NewsStack';
-import { SeasonScreen } from '../screens/Season/SeasonScreen';
+import { HomeStack } from "./HomeStack";
+import { Standings } from "../screens/Standings/Standings";
+import { NotificationSettings } from "../screens/NotificationSettings/NotificationSettings";
+import { SquadScreen } from "../screens/Squad/Squad";
+import { MatchesStack } from "./MatchesStack";
+import { NewsStack } from "./NewsStack";
+import { SeasonScreen } from "../screens/Season/SeasonScreen";
 
-import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../theme/colors';
+import { Ionicons } from "@expo/vector-icons";
+import { COLORS } from "../theme/colors";
 
 const Tab = createBottomTabNavigator();
 
@@ -34,26 +34,26 @@ export const AppNavigator = () => {
             let iconName: any;
 
             switch (route.name) {
-              case 'Início':
-                iconName = 'home-outline';
+              case "Início":
+                iconName = "home-outline";
                 break;
-              case 'Jogos':
-                iconName = 'trophy-outline';
+              case "Jogos":
+                iconName = "trophy-outline";
                 break;
-              case 'Classificação':
-                iconName = 'stats-chart-outline';
+              case "Classificação":
+                iconName = "stats-chart-outline";
                 break;
-              case 'Notícias':
-                iconName = 'newspaper-outline';
+              case "Notícias":
+                iconName = "newspaper-outline";
                 break;
-              case 'Plantel':
-                iconName = 'people-outline';
+              case "Plantel":
+                iconName = "people-outline";
                 break;
-              case 'Definições':
-                iconName = 'settings-outline';
+              case "Definições":
+                iconName = "settings-outline";
                 break;
-              case 'Época':
-                iconName = 'calendar-outline';
+              case "Época":
+                iconName = "calendar-outline";
                 break;
             }
 
@@ -66,7 +66,6 @@ export const AppNavigator = () => {
         <Tab.Screen name="Época" component={SeasonScreen} />
         <Tab.Screen name="Notícias" component={NewsStack} />
         <Tab.Screen name="Definições" component={NotificationSettings} />
-
       </Tab.Navigator>
     </NavigationContainer>
   );

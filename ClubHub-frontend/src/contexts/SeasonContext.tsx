@@ -1,6 +1,6 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { Season } from '../models/Season';
-import { SeasonService } from '../services/SeasonService';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { Season } from "../models/Season";
+import { SeasonService } from "../services/SeasonService";
 
 interface SeasonsContextType {
   seasons: Season[];
@@ -24,7 +24,7 @@ export const SeasonsProvider = ({ children }: any) => {
       const dbSeasons = await SeasonService.getAll();
       setSeasons(dbSeasons);
     } catch (err) {
-      console.error('Erro a buscar seasons:', err);
+      console.error("Erro a buscar seasons:", err);
     } finally {
       setLoading(false);
     }
@@ -35,7 +35,9 @@ export const SeasonsProvider = ({ children }: any) => {
   }, []);
 
   return (
-    <SeasonsContext.Provider value={{ seasons, loading, refreshSeasons: fetchSeasons }}>
+    <SeasonsContext.Provider
+      value={{ seasons, loading, refreshSeasons: fetchSeasons }}
+    >
       {children}
     </SeasonsContext.Provider>
   );

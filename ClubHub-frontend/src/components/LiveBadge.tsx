@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated } from 'react-native';
-import { styles } from './styles/LiveBadge.styles';
+import React, { useEffect, useRef } from "react";
+import { View, Text, Animated } from "react-native";
+import { styles } from "./styles/LiveBadge.styles";
 
 export const LiveBadge = () => {
   const opacity = useRef(new Animated.Value(1)).current;
@@ -20,7 +20,7 @@ export const LiveBadge = () => {
           duration: 750,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
 
     animation.start();

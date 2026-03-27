@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { COLORS, FONT_SIZE, RADIUS, SPACING } from '../../theme/colors';
+import { StyleSheet } from "react-native";
+import { COLORS, FONT_SIZE, RADIUS, SPACING } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
   container: {
@@ -12,15 +12,15 @@ export const styles = StyleSheet.create({
   },
 
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 24,
   },
 
   title: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS.textPrimary,
   },
 
@@ -33,8 +33,8 @@ export const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   logoEmoji: {
@@ -46,20 +46,20 @@ export const styles = StyleSheet.create({
   },
 
   sectionTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     marginBottom: 8,
   },
 
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.textPrimary,
   },
 
   newsCard: {
-    flexDirection: 'row',
+    flexDirection: "row",
     backgroundColor: COLORS.surface,
     padding: 12,
     borderRadius: 12,
@@ -71,8 +71,8 @@ export const styles = StyleSheet.create({
     height: 64,
     borderRadius: 10,
     backgroundColor: COLORS.border,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 10,
   },
 
@@ -87,7 +87,7 @@ export const styles = StyleSheet.create({
   newsTitle: {
     color: COLORS.textPrimary,
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     marginBottom: 4,
   },
 
@@ -99,9 +99,9 @@ export const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: RADIUS.md,
-    backgroundColor: COLORS.primary + '10',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: COLORS.primary + "10",
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: SPACING.sm,
   },
   relatedDate: { fontSize: FONT_SIZE.xs, color: COLORS.textSecondary },

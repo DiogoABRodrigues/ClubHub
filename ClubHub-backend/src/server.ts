@@ -12,7 +12,7 @@ const PORT = 3000;
 async function startServer() {
   try {
     await sequelize.authenticate();
-    await sequelize.sync( { alter: true } );
+    await sequelize.sync({ alter: true });
 
     console.log("DB ligada");
 
@@ -20,20 +20,17 @@ async function startServer() {
       console.log(`Servidor a correr em http://localhost:${PORT}`);
     });
 
-try {
-  //await scrapeTeamPlayers();
-  //await scrapeTeamMatches();
-  //await scrapeStandings();
-  //await scrapeTeamStats();
-  //await scrapeAllTeams();
-  //await scrapeTeamMatches();
-//
-
-} catch (error) {
-  console.error(error);
-}
-
-
+    try {
+      //await scrapeTeamPlayers();
+      //await scrapeTeamMatches();
+      //await scrapeStandings();
+      //await scrapeTeamStats();
+      //await scrapeAllTeams();
+      //await scrapeTeamMatches();
+      //
+    } catch (error) {
+      console.error(error);
+    }
   } catch (error) {
     console.error("Erro ao iniciar o backend:", error);
     process.exit(1);

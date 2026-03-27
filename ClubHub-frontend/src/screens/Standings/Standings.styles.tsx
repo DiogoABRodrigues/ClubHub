@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../../theme/colors';
+import { StyleSheet } from "react-native";
+import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
   container: {
@@ -18,21 +18,21 @@ export const styles = StyleSheet.create({
   },
 
   headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: SPACING.sm,
     marginBottom: SPACING.sm,
   },
 
   headerTitle: {
     fontSize: FONT_SIZE.lg,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.textPrimary,
   },
 
   // Category pills
   categoryContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: SPACING.xs,
   },
 
@@ -49,7 +49,7 @@ export const styles = StyleSheet.create({
 
   categoryText: {
     color: COLORS.textSecondary,
-    fontWeight: '500',
+    fontWeight: "500",
     fontSize: FONT_SIZE.sm,
   },
 
@@ -68,15 +68,15 @@ export const styles = StyleSheet.create({
   },
 
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: SPACING.sm,
   },
 
   sectionTitle: {
     fontSize: FONT_SIZE.md,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.textPrimary,
   },
 
@@ -85,12 +85,12 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: RADIUS.lg,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: SPACING.sm * 2,
   },
 
   tableHeader: {
-    flexDirection: 'row',
+    flexDirection: "row",
     backgroundColor: COLORS.surface,
     paddingHorizontal: SPACING.sm,
     paddingVertical: SPACING.xs,
@@ -99,14 +99,14 @@ export const styles = StyleSheet.create({
   tableCell: {
     fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 
   col1: { flex: 1 },
   col5: { flex: 5 },
   col2: { flex: 2 },
-  centerText: { textAlign: 'center' },
-  rightText: { textAlign: 'right' },
+  centerText: { textAlign: "center" },
+  rightText: { textAlign: "right" },
 
   // Stats
   statsText: {
@@ -126,7 +126,7 @@ export const styles = StyleSheet.create({
 
   legendTitle: {
     fontSize: FONT_SIZE.sm,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
@@ -136,8 +136,8 @@ export const styles = StyleSheet.create({
   },
 
   legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: SPACING.xs,
   },
 
@@ -154,8 +154,8 @@ export const styles = StyleSheet.create({
 
   // Empty state — igual ao Matches
   noMatches: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: SPACING.lg,
   },
 
@@ -164,8 +164,8 @@ export const styles = StyleSheet.create({
     height: 64,
     borderRadius: 32,
     backgroundColor: COLORS.muted,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: SPACING.sm,
   },
 
@@ -176,6 +176,6 @@ export const styles = StyleSheet.create({
   noMatchesText: {
     color: COLORS.textSecondary,
     fontSize: FONT_SIZE.sm,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,35 +6,50 @@ import {
   ScrollView,
   Pressable,
   FlatList,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { ArrowLeft, Plus, Edit, Trash2, Search } from 'lucide-react-native';
-import { mockMatches, TeamCategory } from '../../../data/mockData';
-import { MatchCard } from '../../../components/MatchCard';
-import { styles } from './AdminMatches.styles';
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { ArrowLeft, Plus, Edit, Trash2, Search } from "lucide-react-native";
+import { mockMatches, TeamCategory } from "../../../data/mockData";
+import { MatchCard } from "../../../components/MatchCard";
+import { styles } from "./AdminMatches.styles";
 
 export const AdminMatches: React.FC = () => {
   const navigation = useNavigation();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<TeamCategory | 'All'>('All');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<
+    TeamCategory | "All"
+  >("All");
 
-  const categories: Array<TeamCategory | 'All'> = ['All', 'Senior', 'U19', 'U17', 'U15'];
+  const categories: Array<TeamCategory | "All"> = [
+    "All",
+    "Senior",
+    "U19",
+    "U17",
+    "U15",
+  ];
 
   const filteredMatches = mockMatches.filter((match) => {
-    const matchesCategory = selectedCategory === 'All' || match.category === selectedCategory;
+    const matchesCategory =
+      selectedCategory === "All" || match.category === selectedCategory;
     const matchesSearch =
-      searchQuery === '' ||
+      searchQuery === "" ||
       match.homeTeam.toLowerCase().includes(searchQuery.toLowerCase()) ||
       match.awayTeam.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 24 }}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: 24 }}
+    >
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
-          <Pressable onPress={() => navigation.navigate('AdminDashboard' as never)} style={styles.backButton}>
+          <Pressable
+            onPress={() => navigation.navigate("AdminDashboard" as never)}
+            style={styles.backButton}
+          >
             <ArrowLeft width={20} height={20} color="#999" />
           </Pressable>
           <Text style={styles.headerTitle}>Manage Matches</Text>
@@ -46,7 +61,12 @@ export const AdminMatches: React.FC = () => {
 
         {/* Search */}
         <View style={styles.searchContainer}>
-          <Search width={20} height={20} color="#999" style={styles.searchIcon} />
+          <Search
+            width={20}
+            height={20}
+            color="#999"
+            style={styles.searchIcon}
+          />
           <TextInput
             placeholder="Search matches..."
             placeholderTextColor="#999"
@@ -57,7 +77,11 @@ export const AdminMatches: React.FC = () => {
         </View>
 
         {/* Category Filter */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.categoryScroll}
+        >
           {categories.map((category) => (
             <Pressable
               key={category}

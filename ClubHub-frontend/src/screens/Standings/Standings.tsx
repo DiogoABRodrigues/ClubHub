@@ -1,24 +1,29 @@
-import React, { useMemo } from 'react';
-import { ScrollView, View, Text, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
-import { LeagueTableRow } from '../../components/LeagueTableRow';
-import { styles } from './Standings.styles';
-import { useStandings } from '../../contexts/StandingsContext';
+import React, { useMemo } from "react";
+import { ScrollView, View, Text, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
+import { LeagueTableRow } from "../../components/LeagueTableRow";
+import { styles } from "./Standings.styles";
+import { useStandings } from "../../contexts/StandingsContext";
 
 export const Standings: React.FC = () => {
   const navigation = useNavigation();
   const { standings, loading } = useStandings();
 
   // garante ordenação por posição
-  const sorted = useMemo(() => [...standings].sort((a, b) => a.position - b.position), [standings]);
+  const sorted = useMemo(
+    () => [...standings].sort((a, b) => a.position - b.position),
+    [standings],
+  );
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <ScrollView contentContainerStyle={styles.content}>
         {loading ? (
-          <Text style={{ textAlign: 'center', marginTop: 50 }}>A carregar classificação...</Text>
+          <Text style={{ textAlign: "center", marginTop: 50 }}>
+            A carregar classificação...
+          </Text>
         ) : sorted.length > 0 ? (
           <View style={styles.section}>
             {/* Table */}
@@ -26,9 +31,19 @@ export const Standings: React.FC = () => {
               <View style={styles.tableHeader}>
                 <Text style={[styles.tableCell, styles.col1]}>#</Text>
                 <Text style={[styles.tableCell, styles.col5]}>Equipa</Text>
-                <Text style={[styles.tableCell, styles.col2, styles.centerText]}>J</Text>
-                <Text style={[styles.tableCell, styles.col2, styles.centerText]}>DG</Text>
-                <Text style={[styles.tableCell, styles.col2, styles.rightText]}>PTS</Text>
+                <Text
+                  style={[styles.tableCell, styles.col2, styles.centerText]}
+                >
+                  J
+                </Text>
+                <Text
+                  style={[styles.tableCell, styles.col2, styles.centerText]}
+                >
+                  DG
+                </Text>
+                <Text style={[styles.tableCell, styles.col2, styles.rightText]}>
+                  PTS
+                </Text>
               </View>
 
               {sorted.map((standing) => (
@@ -41,18 +56,25 @@ export const Standings: React.FC = () => {
               ))}
             </View>
 
-
             {/* Legend */}
             <View style={styles.legend}>
               <Text style={styles.legendTitle}>Legenda</Text>
               <View style={styles.legendItems}>
                 <View style={styles.legendItem}>
-                  <View style={[styles.legendColor, { backgroundColor: '#47d406' }]} />
-                  <Text style={styles.legendText}>Campeão - Promoção à 1ª Divisão Sabseg</Text>
+                  <View
+                    style={[styles.legendColor, { backgroundColor: "#47d406" }]}
+                  />
+                  <Text style={styles.legendText}>
+                    Campeão - Promoção à 1ª Divisão Sabseg
+                  </Text>
                 </View>
                 <View style={styles.legendItem}>
-                  <View style={[styles.legendColor, { backgroundColor: '#0ee950' }]} />
-                  <Text style={styles.legendText}>Promoção à 1ª Divisão Sabseg</Text>
+                  <View
+                    style={[styles.legendColor, { backgroundColor: "#0ee950" }]}
+                  />
+                  <Text style={styles.legendText}>
+                    Promoção à 1ª Divisão Sabseg
+                  </Text>
                 </View>
                 {/*
                 <View style={styles.legendItem}>
@@ -67,7 +89,9 @@ export const Standings: React.FC = () => {
             <View style={styles.logoCircle}>
               <Text style={styles.logoEmoji}>🏆</Text>
             </View>
-            <Text style={styles.noMatchesText}>Não há classificação disponível</Text>
+            <Text style={styles.noMatchesText}>
+              Não há classificação disponível
+            </Text>
           </View>
         )}
       </ScrollView>

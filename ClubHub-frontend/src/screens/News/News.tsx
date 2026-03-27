@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { styles } from './News.styles';
-import { NewsCard } from '../../components/NewsCard';
-import { COLORS } from '../../theme/colors';
-import { useNews } from '../../contexts/NewsContext';
+import React, { useMemo } from "react";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { styles } from "./News.styles";
+import { NewsCard } from "../../components/NewsCard";
+import { COLORS } from "../../theme/colors";
+import { useNews } from "../../contexts/NewsContext";
 
 export const News = ({ navigation }: any) => {
   const { news, loading } = useNews();
@@ -18,7 +18,11 @@ export const News = ({ navigation }: any) => {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color={COLORS.textSecondary} />
+            <Ionicons
+              name="arrow-back"
+              size={24}
+              color={COLORS.textSecondary}
+            />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Notícias</Text>
         </View>
@@ -27,14 +31,18 @@ export const News = ({ navigation }: any) => {
       {/* CONTENT */}
       <ScrollView contentContainerStyle={styles.content}>
         {loading ? (
-          <Text style={{ textAlign: 'center', marginTop: 50 }}>A carregar notícias...</Text>
+          <Text style={{ textAlign: "center", marginTop: 50 }}>
+            A carregar notícias...
+          </Text>
         ) : newsList.length > 0 ? (
           <View style={styles.newsList}>
             {newsList.map((item) => (
               <NewsCard
                 key={item.id}
                 news={item}
-                onPress={() => navigation.navigate('NewsDetail', { id: item.id })}
+                onPress={() =>
+                  navigation.navigate("NewsDetail", { id: item.id })
+                }
               />
             ))}
           </View>
@@ -43,7 +51,9 @@ export const News = ({ navigation }: any) => {
             <View style={styles.logoCircle}>
               <Text style={styles.logoEmoji}>📰</Text>
             </View>
-            <Text style={styles.noNewsText}>Não foram encontradas notícias</Text>
+            <Text style={styles.noNewsText}>
+              Não foram encontradas notícias
+            </Text>
           </View>
         )}
       </ScrollView>

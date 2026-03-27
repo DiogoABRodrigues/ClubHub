@@ -1,6 +1,6 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { Standing } from '../models/Standing';
-import { StandingService } from '../services/StandingService';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { Standing } from "../models/Standing";
+import { StandingService } from "../services/StandingService";
 
 interface StandingsContextType {
   standings: Standing[];
@@ -14,7 +14,11 @@ const StandingsContext = createContext<StandingsContextType>({
   refreshStandings: async () => {},
 });
 
-export const StandingsProvider = ({ children }: { children: React.ReactNode }) => {
+export const StandingsProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [standings, setStandings] = useState<Standing[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +28,7 @@ export const StandingsProvider = ({ children }: { children: React.ReactNode }) =
       const allStandings = await StandingService.getByCurrentSeasonId();
       setStandings(allStandings);
     } catch (err) {
-      console.error('Erro a buscar classificações:', err);
+      console.error("Erro a buscar classificações:", err);
     } finally {
       setLoading(false);
     }
@@ -35,7 +39,9 @@ export const StandingsProvider = ({ children }: { children: React.ReactNode }) =
   }, []);
 
   return (
-    <StandingsContext.Provider value={{ standings, loading, refreshStandings: fetchStandings }}>
+    <StandingsContext.Provider
+      value={{ standings, loading, refreshStandings: fetchStandings }}
+    >
       {children}
     </StandingsContext.Provider>
   );

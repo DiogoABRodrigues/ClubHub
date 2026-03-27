@@ -1,6 +1,6 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { Match } from '../models/Match';
-import { MatchService } from '../services/MatchService';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { Match } from "../models/Match";
+import { MatchService } from "../services/MatchService";
 
 interface MatchesContextType {
   matches: Match[];
@@ -24,7 +24,7 @@ export const MatchesProvider = ({ children }: any) => {
       const dbMatches = await MatchService.getByCurrentSeasonId();
       setMatches(dbMatches);
     } catch (err) {
-      console.error('Erro a buscar matches:', err);
+      console.error("Erro a buscar matches:", err);
     } finally {
       setLoading(false);
     }
@@ -35,7 +35,9 @@ export const MatchesProvider = ({ children }: any) => {
   }, []);
 
   return (
-    <MatchesContext.Provider value={{ matches, loading, refreshMatches: fetchMatches }}>
+    <MatchesContext.Provider
+      value={{ matches, loading, refreshMatches: fetchMatches }}
+    >
       {children}
     </MatchesContext.Provider>
   );

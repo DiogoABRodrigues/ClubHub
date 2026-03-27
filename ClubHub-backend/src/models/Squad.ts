@@ -14,20 +14,20 @@ Squad.init(
   {
     playerExternalId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     seasonId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     number: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
     },
     position: {
       type: DataTypes.STRING,
-      allowNull: true
-    }
+      allowNull: true,
+    },
   },
   {
     sequelize,
@@ -37,10 +37,10 @@ Squad.init(
     indexes: [
       {
         unique: true,
-        fields: ["playerExternalId", "seasonId"]
-      }
-    ]
-  }
+        fields: ["playerExternalId", "seasonId"],
+      },
+    ],
+  },
 );
 
 Squad.belongsTo(Season, { foreignKey: "seasonId" });

@@ -1,7 +1,7 @@
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { News } from '../screens/News/News';
-import { NewsDetail } from '../screens/NewsDetail/NewsDetail';
+import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { News } from "../screens/News/News";
+import { NewsDetail } from "../screens/NewsDetail/NewsDetail";
 
 export type NewsStackParamList = {
   News: undefined;
@@ -14,7 +14,7 @@ export const NewsStack = () => (
   <Stack.Navigator
     screenOptions={{
       headerShown: false,
-      animation: 'none',
+      animation: "none",
     }}
   >
     <Stack.Screen name="News" component={News} />

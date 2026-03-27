@@ -8,5 +8,4 @@ export default class TeamService {
   async getByName(name: string) {
     return Team.findAll({ where: { name } });
   }
-
 }

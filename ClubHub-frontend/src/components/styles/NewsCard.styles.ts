@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { COLORS } from '../../theme/colors';
+import { StyleSheet } from "react-native";
+import { COLORS } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
   card: {
@@ -7,21 +7,21 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 12,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: 12,
   },
 
   image: {
-    width: '100%',
+    width: "100%",
     height: 180,
   },
 
   placeholder: {
-    width: '100%',
+    width: "100%",
     height: 180,
-    backgroundColor: COLORS.primary + '20',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: COLORS.primary + "20",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   placeholderEmoji: {
@@ -33,10 +33,10 @@ export const styles = StyleSheet.create({
   },
 
   topRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 6,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
 
   categoryBadge: {
@@ -47,24 +47,24 @@ export const styles = StyleSheet.create({
 
   categoryText: {
     fontSize: 10,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   },
 
   dateRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
 
   dateText: {
-    fontSize: 10,
+    fontSize: 12,
     color: COLORS.textSecondary,
     marginLeft: 2,
   },
 
   title: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 4,
     color: COLORS.textPrimary,
   },
@@ -76,8 +76,8 @@ export const styles = StyleSheet.create({
   },
 
   authorRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
 

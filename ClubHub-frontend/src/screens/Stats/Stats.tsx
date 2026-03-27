@@ -1,26 +1,41 @@
-import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { ArrowUp, ArrowDown } from 'lucide-react-native';
-import { usePlayers } from '../../contexts/PlayersContext';
-import { PlayerWithStats } from '../../models/Player';
-import { styles as globalStyles } from './Stats.styles';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  useEffect,
+} from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+} from "react-native";
+import { ArrowUp, ArrowDown } from "lucide-react-native";
+import { usePlayers } from "../../contexts/PlayersContext";
+import { PlayerWithStats } from "../../models/Player";
+import { styles as globalStyles } from "./Stats.styles";
 
-type SortField = 'games' | 'minutes' | 'goals';
-type SortOrder = 'asc' | 'desc';
+type SortField = "games" | "minutes" | "goals";
+type SortOrder = "asc" | "desc";
 
-const SortIcon = React.memo(({ active, order }: { active: boolean; order: SortOrder }) => {
-  if (!active) return null;
-  return order === 'desc' ? (
-    <ArrowUp width={14} height={14} color="#666" />
-  ) : (
-    <ArrowDown width={14} height={14} color="#666" />
-  );
-});
+const SortIcon = React.memo(
+  ({ active, order }: { active: boolean; order: SortOrder }) => {
+    if (!active) return null;
+    return order === "desc" ? (
+      <ArrowUp width={14} height={14} color="#666" />
+    ) : (
+      <ArrowDown width={14} height={14} color="#666" />
+    );
+  },
+);
 
 export function SquadStats() {
   const { players } = usePlayers();
-  const [sortField, setSortField] = useState<SortField>('goals');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const [sortField, setSortField] = useState<SortField>("goals");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
   // Ref do FlatList
   const flatListRef = useRef<FlatList>(null);
@@ -33,69 +48,97 @@ export function SquadStats() {
   // Filtra apenas jogadores, ignora staff
   const statsPlayersOnly = useMemo(() => {
     return players.filter(
-      p =>
-        p.stats.position.toLowerCase() !== 'treinador' &&
-        p.stats.position.toLowerCase() !== 'outros técnicos'
+      (p) =>
+        p.stats.position.toLowerCase() !== "treinador" &&
+        p.stats.position.toLowerCase() !== "outros técnicos",
     );
   }, [players]);
 
   const compareFn = useCallback(
     (a: PlayerWithStats, b: PlayerWithStats) => {
-      let valA = 0, valB = 0;
+      let valA = 0,
+        valB = 0;
       switch (sortField) {
-        case 'games': valA = a.stats.gamesPlayed; valB = b.stats.gamesPlayed; break;
-        case 'minutes': valA = a.stats.minutesPlayed; valB = b.stats.minutesPlayed; break;
-        case 'goals': valA = a.stats.goals; valB = b.stats.goals; break;
+        case "games":
+          valA = a.stats.gamesPlayed;
+          valB = b.stats.gamesPlayed;
+          break;
+        case "minutes":
+          valA = a.stats.minutesPlayed;
+          valB = b.stats.minutesPlayed;
+          break;
+        case "goals":
+          valA = a.stats.goals;
+          valB = b.stats.goals;
+          break;
       }
-      return sortOrder === 'desc' ? valB - valA : valA - valB;
+      return sortOrder === "desc" ? valB - valA : valA - valB;
     },
-    [sortField, sortOrder]
+    [sortField, sortOrder],
   );
 
-  const statsSortedPlayers = useMemo(() => [...statsPlayersOnly].sort(compareFn), [
-    statsPlayersOnly,
-    compareFn,
-  ]);
+  const statsSortedPlayers = useMemo(
+    () => [...statsPlayersOnly].sort(compareFn),
+    [statsPlayersOnly, compareFn],
+  );
 
   const handleSort = useCallback(
     (field: SortField) => {
       if (sortField === field) {
-        setSortOrder(prev => (prev === 'desc' ? 'asc' : 'desc'));
+        setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
       } else {
         setSortField(field);
-        setSortOrder('desc');
+        setSortOrder("desc");
       }
       // Opcional: scroll para o topo sempre que muda a ordenação
       flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
     },
-    [sortField]
+    [sortField],
   );
 
-  const renderHeader = useMemo(() => (
-    <View style={globalStyles.statsHeader}>
-      <Text style={[globalStyles.statsText, globalStyles.statsHeaderText, localStyles.flex2]}>
-        Jogador
-      </Text>
+  const renderHeader = useMemo(
+    () => (
+      <View style={globalStyles.statsHeader}>
+        <Text
+          style={[
+            globalStyles.statsText,
+            globalStyles.statsHeaderText,
+            localStyles.flex2,
+          ]}
+        >
+          Jogador
+        </Text>
 
-      <TouchableOpacity style={globalStyles.statsHeaderButton} onPress={() => handleSort('games')}>
-        <Text style={globalStyles.statsHeaderText}>Jogos</Text>
-        <SortIcon active={sortField === 'games'} order={sortOrder} />
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={globalStyles.statsHeaderButton}
+          onPress={() => handleSort("games")}
+        >
+          <Text style={globalStyles.statsHeaderText}>Jogos</Text>
+          <SortIcon active={sortField === "games"} order={sortOrder} />
+        </TouchableOpacity>
 
-      <TouchableOpacity style={globalStyles.statsHeaderButton} onPress={() => handleSort('minutes')}>
-        <Text style={globalStyles.statsHeaderText}>Mins</Text>
-        <SortIcon active={sortField === 'minutes'} order={sortOrder} />
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={globalStyles.statsHeaderButton}
+          onPress={() => handleSort("minutes")}
+        >
+          <Text style={globalStyles.statsHeaderText}>Mins</Text>
+          <SortIcon active={sortField === "minutes"} order={sortOrder} />
+        </TouchableOpacity>
 
-      <TouchableOpacity style={globalStyles.statsHeaderButton} onPress={() => handleSort('goals')}>
-        <Text style={globalStyles.statsHeaderText}>Golos</Text>
-        <SortIcon active={sortField === 'goals'} order={sortOrder} />
-      </TouchableOpacity>
-    </View>
-  ), [handleSort, sortField, sortOrder]);
+        <TouchableOpacity
+          style={globalStyles.statsHeaderButton}
+          onPress={() => handleSort("goals")}
+        >
+          <Text style={globalStyles.statsHeaderText}>Golos</Text>
+          <SortIcon active={sortField === "goals"} order={sortOrder} />
+        </TouchableOpacity>
+      </View>
+    ),
+    [handleSort, sortField, sortOrder],
+  );
 
   const renderItem = useCallback(({ item }: { item: PlayerWithStats }) => {
-    const defaultPlayerImage = require('../../../assets/player.jpg');
+    const defaultPlayerImage = require("../../../assets/player.jpg");
 
     return (
       <View style={globalStyles.statsRow}>

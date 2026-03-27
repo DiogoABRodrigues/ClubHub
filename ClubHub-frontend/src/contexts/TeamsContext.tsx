@@ -1,6 +1,6 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { Team } from '../models/Team';
-import { TeamService } from '../services/TeamService';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { Team } from "../models/Team";
+import { TeamService } from "../services/TeamService";
 
 interface TeamsContextType {
   teams: Team[];
@@ -24,7 +24,7 @@ export const TeamsProvider = ({ children }: { children: React.ReactNode }) => {
       const allTeams = await TeamService.getAll();
       setTeams(allTeams);
     } catch (err) {
-      console.error('Erro a buscar teams:', err);
+      console.error("Erro a buscar teams:", err);
     } finally {
       setLoading(false);
     }

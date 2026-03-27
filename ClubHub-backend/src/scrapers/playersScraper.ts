@@ -8,7 +8,7 @@ import Stats from "../models/Stats";
 
 async function getOrCreateSeason() {
   const [season] = await Season.findOrCreate({
-    where: { year: teamConfig.currentSeason }
+    where: { year: teamConfig.currentSeason },
   });
 
   return season;
@@ -17,27 +17,28 @@ async function getOrCreateSeason() {
 export async function scrapeTeamPlayers() {
   const browser = await puppeteer.launch({
     headless: false,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"]
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
   const page = await browser.newPage();
 
   await page.setUserAgent(
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
   );
 
   await page.setViewport({ width: 1920, height: 1080 });
 
   await page.goto(teamConfig.players_url, {
     waitUntil: "networkidle2",
-    timeout: 30000
+    timeout: 30000,
   });
 
   // Aceitar cookies (se existir)
   try {
     await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll("button"))
-        .find(b => b.textContent?.includes("Aceitar"));
+      const btn = Array.from(document.querySelectorAll("button")).find((b) =>
+        b.textContent?.includes("Aceitar"),
+      );
       if (btn) btn.click();
     });
   } catch (err) {}
@@ -51,38 +52,40 @@ export async function scrapeTeamPlayers() {
   $("#team_squad .innerbox").each((_, box) => {
     const position = $(box).find(".section").text().trim() || "Unknown";
 
-    $(box).find(".staff").each((_, el) => {
-      const numberText = $(el).find(".number").text().trim();
-      const number = numberText !== "-" ? parseInt(numberText) : null;
+    $(box)
+      .find(".staff")
+      .each((_, el) => {
+        const numberText = $(el).find(".number").text().trim();
+        const number = numberText !== "-" ? parseInt(numberText) : null;
 
-      const nameLink = $(el).find(".name a[href*='/jogador/']");
-      const name = nameLink.text().trim();
+        const nameLink = $(el).find(".name a[href*='/jogador/']");
+        const name = nameLink.text().trim();
 
-      let externalId = null;
-      const href = nameLink.attr("href");
-      if (href) {
-        const match = href.match(/\/jogador\/[^/]+\/(\d+)\?epoca_id=\d+/);
-        if (match) externalId = parseInt(match[1]);
-      }
+        let externalId = null;
+        const href = nameLink.attr("href");
+        if (href) {
+          const match = href.match(/\/jogador\/[^/]+\/(\d+)\?epoca_id=\d+/);
+          if (match) externalId = parseInt(match[1]);
+        }
 
-      let age: number | null = null;
-      const ageText = $(el).find(".name span").text().trim();
-      if (ageText) {
-        const m = ageText.match(/\d+/);
-        if (m) age = parseInt(m[0]);
-      }
+        let age: number | null = null;
+        const ageText = $(el).find(".name span").text().trim();
+        if (ageText) {
+          const m = ageText.match(/\d+/);
+          if (m) age = parseInt(m[0]);
+        }
 
-      let photoUrl: string | null = null;
-      const style = $(el).find(".photo").attr("style");
-      if (style) {
-        const m = style.match(/url\(['"]?(.*?)['"]?\)/);
-        if (m) photoUrl = m[1];
-      }
+        let photoUrl: string | null = null;
+        const style = $(el).find(".photo").attr("style");
+        if (style) {
+          const m = style.match(/url\(['"]?(.*?)['"]?\)/);
+          if (m) photoUrl = m[1];
+        }
 
-      if (name && externalId) {
-        players.push({ externalId, name, number, position, age, photoUrl });
-      }
-    });
+        if (name && externalId) {
+          players.push({ externalId, name, number, position, age, photoUrl });
+        }
+      });
   });
 
   // 🟢 Scrape equipe técnica
@@ -90,43 +93,45 @@ export async function scrapeTeamPlayers() {
   staffSection.each((_, box) => {
     const sectionRole = $(box).find(".section").text().trim() || "Staff";
 
-    $(box).find(".staff").each((_, el) => {
-      const nameLink = $(el).find(".text a[href*='/treinador/']");
-      const name = nameLink.text().trim();
-      
-      let externalId: number | null = null;
-      const href = nameLink.attr("href");
-      if (href) {
-        const match = href.match(/\/treinador\/[^/]+\/(\d+)/);
-        if (match) externalId = parseInt(match[1]);
-      }
+    $(box)
+      .find(".staff")
+      .each((_, el) => {
+        const nameLink = $(el).find(".text a[href*='/treinador/']");
+        const name = nameLink.text().trim();
 
-      let age: number | null = null;
-      const ageText = $(el).find("span").text().trim();
-      if (ageText) {
-        const m = ageText.match(/\d+/);
-        if (m) age = parseInt(m[0]);
-      }
+        let externalId: number | null = null;
+        const href = nameLink.attr("href");
+        if (href) {
+          const match = href.match(/\/treinador\/[^/]+\/(\d+)/);
+          if (match) externalId = parseInt(match[1]);
+        }
 
-      let photoUrl: string | null = null;
-      const style = $(el).find(".photo").attr("style");
-      if (style) {
-        const m = style.match(/url\(['"]?(.*?)['"]?\)/);
-        if (m) photoUrl = m[1];
-      }
+        let age: number | null = null;
+        const ageText = $(el).find("span").text().trim();
+        if (ageText) {
+          const m = ageText.match(/\d+/);
+          if (m) age = parseInt(m[0]);
+        }
 
-      if (name && externalId) {
-        // Guardar no array de players
-        players.push({
-          externalId,
-          name,
-          number: null, // técnicos não têm número
-          position: sectionRole, // aqui usamos o section como "role"
-          age,
-          photoUrl
-        });
-      }
-    });
+        let photoUrl: string | null = null;
+        const style = $(el).find(".photo").attr("style");
+        if (style) {
+          const m = style.match(/url\(['"]?(.*?)['"]?\)/);
+          if (m) photoUrl = m[1];
+        }
+
+        if (name && externalId) {
+          // Guardar no array de players
+          players.push({
+            externalId,
+            name,
+            number: null, // técnicos não têm número
+            position: sectionRole, // aqui usamos o section como "role"
+            age,
+            photoUrl,
+          });
+        }
+      });
   });
 
   console.log(`✅ Jogadores encontrados: ${players.length}`);
@@ -145,7 +150,7 @@ export async function scrapeTeamPlayers() {
       playerExternalId: p.externalId,
       seasonId: season.id,
       number: p.number,
-      position: p.position
+      position: p.position,
     });
   }
 
@@ -164,7 +169,7 @@ export async function savePlayersAndSquad(players: any[]) {
       externalId: p.externalId,
       name: p.name,
       photoUrl: p.photoUrl,
-      age: p.age
+      age: p.age,
     });
 
     // 👥 SQUAD
@@ -172,7 +177,7 @@ export async function savePlayersAndSquad(players: any[]) {
       playerExternalId: p.externalId,
       seasonId: season.id,
       number: p.number,
-      position: p.position
+      position: p.position,
     });
 
     await Stats.upsert({

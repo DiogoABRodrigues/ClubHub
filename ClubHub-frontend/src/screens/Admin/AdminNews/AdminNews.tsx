@@ -1,39 +1,47 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  ScrollView,
-  Pressable,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { ArrowLeft, Plus, Edit, Trash2, Search } from 'lucide-react-native';
-import { mockNews, NewsCategory } from '../../../data/mockData';
-import { NewsCard } from '../../../components/NewsCard';
-import { styles } from './AdminNews.styles';
+import React, { useState } from "react";
+import { View, Text, TextInput, ScrollView, Pressable } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { ArrowLeft, Plus, Edit, Trash2, Search } from "lucide-react-native";
+import { mockNews, NewsCategory } from "../../../data/mockData";
+import { NewsCard } from "../../../components/NewsCard";
+import { styles } from "./AdminNews.styles";
 
 export const AdminNews: React.FC = () => {
   const navigation = useNavigation();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<NewsCategory | 'All'>('All');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<
+    NewsCategory | "All"
+  >("All");
 
-  const categories: Array<NewsCategory | 'All'> = ['All', 'Team', 'Transfers', 'Events'];
+  const categories: Array<NewsCategory | "All"> = [
+    "All",
+    "Team",
+    "Transfers",
+    "Events",
+  ];
 
   const filteredNews = mockNews.filter((news) => {
-    const matchesCategory = selectedCategory === 'All' || news.category === selectedCategory;
+    const matchesCategory =
+      selectedCategory === "All" || news.category === selectedCategory;
     const matchesSearch =
-      searchQuery === '' ||
+      searchQuery === "" ||
       news.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       news.content.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 24 }}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: 24 }}
+    >
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
-          <Pressable onPress={() => navigation.navigate('AdminDashboard' as never)} style={styles.backButton}>
+          <Pressable
+            onPress={() => navigation.navigate("AdminDashboard" as never)}
+            style={styles.backButton}
+          >
             <ArrowLeft width={20} height={20} color="#999" />
           </Pressable>
           <Text style={styles.headerTitle}>Manage News</Text>
@@ -45,7 +53,12 @@ export const AdminNews: React.FC = () => {
 
         {/* Search */}
         <View style={styles.searchContainer}>
-          <Search width={20} height={20} color="#999" style={styles.searchIcon} />
+          <Search
+            width={20}
+            height={20}
+            color="#999"
+            style={styles.searchIcon}
+          />
           <TextInput
             placeholder="Search articles..."
             placeholderTextColor="#999"
@@ -56,7 +69,11 @@ export const AdminNews: React.FC = () => {
         </View>
 
         {/* Category Filter */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.categoryScroll}
+        >
           {categories.map((category) => (
             <Pressable
               key={category}

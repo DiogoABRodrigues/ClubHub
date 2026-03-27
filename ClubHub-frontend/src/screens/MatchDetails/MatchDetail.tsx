@@ -1,15 +1,19 @@
-import React, { useMemo, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import { PlayerLineup } from '../../components/PlayerLineup';
-import { LiveBadge } from '../../components/LiveBadge';
-import { COLORS } from '../../theme/colors';
-import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
-import { styles } from './MatchDetail.styles';
-import { useMatches } from '../../contexts/MatchesContext';
-import { useTeams } from '../../contexts/TeamsContext';
-import { formatDateWithWeekdayPT } from '../../utils/dateUtils';  
-import { teamConfig } from '../../config/teamConfig';
+import React, { useMemo, useState } from "react";
+import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import { PlayerLineup } from "../../components/PlayerLineup";
+import { LiveBadge } from "../../components/LiveBadge";
+import { COLORS } from "../../theme/colors";
+import {
+  Ionicons,
+  MaterialCommunityIcons,
+  FontAwesome5,
+} from "@expo/vector-icons";
+import { styles } from "./MatchDetail.styles";
+import { useMatches } from "../../contexts/MatchesContext";
+import { useTeams } from "../../contexts/TeamsContext";
+import { formatDateWithWeekdayPT } from "../../utils/dateUtils";
+import { teamConfig } from "../../config/teamConfig";
 
 export const MatchDetail = () => {
   const route = useRoute();
@@ -21,55 +25,71 @@ export const MatchDetail = () => {
 
   const match = matches.find((m) => m.id === id);
 
-  const [activeTab, setActiveTab] = useState<'timeline' | 'lineup' >('timeline');
+  const [activeTab, setActiveTab] = useState<"timeline" | "lineup">("timeline");
 
-  const tabs = useMemo(() => [
-    { key: 'timeline', label: 'Sumário' },
-    { key: 'lineup', label: 'Formação' }
-  ], []);
-  
+  const tabs = useMemo(
+    () => [
+      { key: "timeline", label: "Sumário" },
+      { key: "lineup", label: "Formação" },
+    ],
+    [],
+  );
 
   if (!match) {
     return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
         <Text style={styles.mutedText}>Match not found</Text>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={[styles.primaryText, { marginTop: 8 }]}>Back to Matches</Text>
+          <Text style={[styles.primaryText, { marginTop: 8 }]}>
+            Back to Matches
+          </Text>
         </TouchableOpacity>
       </View>
     );
   }
 
-  const homeTeamName = match.homeOrAway === 'C' ? match.teamName : match.opponent;
-  const awayTeamName = match.homeOrAway === 'F' ? match.teamName : match.opponent;
+  const homeTeamName =
+    match.homeOrAway === "C" ? match.teamName : match.opponent;
+  const awayTeamName =
+    match.homeOrAway === "F" ? match.teamName : match.opponent;
 
   const getTeamLogo = (teamName: string) => {
-  const normalized = teamName.trim().toLowerCase();
-    return teams.find(t => t.name.trim().toLowerCase() === normalized)?.logoUrl;
+    const normalized = teamName.trim().toLowerCase();
+    return teams.find((t) => t.name.trim().toLowerCase() === normalized)
+      ?.logoUrl;
   };
 
   const homeLogo = getTeamLogo(homeTeamName);
   const awayLogo = getTeamLogo(awayTeamName);
 
-  const location = homeTeamName === teamConfig.name ? teamConfig.team_stadium : match.location;
+  const location =
+    homeTeamName === teamConfig.name ? teamConfig.team_stadium : match.location;
 
   return (
-    <ScrollView style={styles.container} >
+    <ScrollView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <Ionicons name="arrow-back" size={24} color={COLORS.textSecondary} />
         </TouchableOpacity>
         <Text style={styles.title}>Detalhes do jogo</Text>
 
         <View style={styles.statusContainer}>
-          {match.status === 'live' && <LiveBadge />}
-          {match.status === 'upcoming' && (
+          {match.status === "live" && <LiveBadge />}
+          {match.status === "upcoming" && (
             <View style={styles.upcomingBadge}>
               <Text style={styles.badgeText}>Agendado</Text>
             </View>
           )}
-          {match.status === 'finished' && (
+          {match.status === "finished" && (
             <View style={styles.fulltimeBadge}>
               <Text style={styles.badgeText}>Terminado</Text>
             </View>
@@ -82,7 +102,10 @@ export const MatchDetail = () => {
           <View style={styles.teamContainer}>
             <View style={styles.teamLogo}>
               {homeLogo ? (
-                <Image source={{ uri: homeLogo }} style={{ width: 50, height: 50 }} />
+                <Image
+                  source={{ uri: homeLogo }}
+                  style={{ width: 50, height: 50 }}
+                />
               ) : (
                 <Text>🏆</Text>
               )}
@@ -92,12 +115,26 @@ export const MatchDetail = () => {
 
           {/* Score */}
           <View style={styles.scoreContainer}>
-            <Text style={[styles.scoreText, match.status === 'live' && { color: COLORS.textPrimary }]}>
-              {match.result?.split('-')[0] ?? match.status === 'live' ? '0' : '-'}
+            <Text
+              style={[
+                styles.scoreText,
+                match.status === "live" && { color: COLORS.textPrimary },
+              ]}
+            >
+              {(match.result?.split("-")[0] ?? match.status === "live")
+                ? "0"
+                : "-"}
             </Text>
             <Text style={styles.colon}>:</Text>
-            <Text style={[styles.scoreText, match.status === 'live' && { color: COLORS.textPrimary }]}>
-              {match.result?.split('-')[1] ?? match.status === 'live' ? '0' : '-'}
+            <Text
+              style={[
+                styles.scoreText,
+                match.status === "live" && { color: COLORS.textPrimary },
+              ]}
+            >
+              {(match.result?.split("-")[1] ?? match.status === "live")
+                ? "0"
+                : "-"}
             </Text>
           </View>
 
@@ -105,7 +142,10 @@ export const MatchDetail = () => {
           <View style={styles.teamContainer}>
             <View style={styles.teamLogo}>
               {awayLogo ? (
-                <Image source={{ uri: awayLogo }} style={{ width: 50, height: 50 }} />
+                <Image
+                  source={{ uri: awayLogo }}
+                  style={{ width: 50, height: 50 }}
+                />
               ) : (
                 <Text>🏆</Text>
               )}
@@ -117,11 +157,16 @@ export const MatchDetail = () => {
         {/* Match Info */}
         <View style={styles.matchInfo}>
           <View style={styles.infoItem}>
-            <Ionicons name="calendar-outline" size={16} color={COLORS.textSecondary} />
-            <Text style={styles.infoText}>{formatDateWithWeekdayPT(match.date)} • {match.time}</Text>
+            <Text style={styles.infoText}>
+              {formatDateWithWeekdayPT(match.date)} • {match.time}
+            </Text>
           </View>
           <View style={styles.infoItem}>
-            <Ionicons name="location-outline" size={16} color={COLORS.textSecondary} />
+            <Ionicons
+              name="location-outline"
+              size={16}
+              color={COLORS.textSecondary}
+            />
             <Text style={styles.infoText}>{location}</Text>
           </View>
         </View>
@@ -131,8 +176,20 @@ export const MatchDetail = () => {
       <View style={styles.tabsContainer}>
         <View style={styles.tabsList}>
           {tabs.map((tab) => (
-            <TouchableOpacity key={tab.key} onPress={() => setActiveTab(tab.key as any)} style={[styles.tabTrigger, activeTab === tab.key && styles.activeTab]}>
-              <Text style={[styles.tabText, activeTab === tab.key && { color: COLORS.primary }]}>
+            <TouchableOpacity
+              key={tab.key}
+              onPress={() => setActiveTab(tab.key as any)}
+              style={[
+                styles.tabTrigger,
+                activeTab === tab.key && styles.activeTab,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.tabText,
+                  activeTab === tab.key && { color: COLORS.primary },
+                ]}
+              >
                 {tab.label}
               </Text>
             </TouchableOpacity>
@@ -141,40 +198,88 @@ export const MatchDetail = () => {
 
         {/* Content */}
         <View style={styles.tabContent}>
-          {activeTab === 'timeline' && (
-            match.events && match.events.length > 0 ? (
-              match.events.slice().reverse().map((event) => (
-                <View key={event.id} style={styles.eventCard}>
-                  <View style={styles.eventMinute}>
-                    <Text style={styles.eventMinuteText}>{event.minute}'</Text>
-                  </View>
-                  <View style={styles.eventInfo}>
-                    <View style={styles.eventTypeRow}>
-                      {event.type === 'goal' && <MaterialCommunityIcons name="target" size={16} color={COLORS.success} />}
-                      {event.type === 'yellow_card' && <View style={[styles.cardIcon, { backgroundColor: '#FFD700' }]} />}
-                      {event.type === 'red_card' && <View style={[styles.cardIcon, { backgroundColor: COLORS.error }]} />}
-                      <Text style={styles.eventTypeText}>{event.type.replace('_', ' ')}</Text>
+          {activeTab === "timeline" &&
+            (match.events && match.events.length > 0 ? (
+              match.events
+                .slice()
+                .reverse()
+                .map((event) => (
+                  <View key={event.id} style={styles.eventCard}>
+                    <View style={styles.eventMinute}>
+                      <Text style={styles.eventMinuteText}>
+                        {event.minute}'
+                      </Text>
                     </View>
-                    <Text style={styles.eventPlayer}>{event.player}</Text>
-                    {event.description && <Text style={styles.eventDescription}>{event.description}</Text>}
+                    <View style={styles.eventInfo}>
+                      <View style={styles.eventTypeRow}>
+                        {event.type === "goal" && (
+                          <MaterialCommunityIcons
+                            name="target"
+                            size={16}
+                            color={COLORS.success}
+                          />
+                        )}
+                        {event.type === "yellow_card" && (
+                          <View
+                            style={[
+                              styles.cardIcon,
+                              { backgroundColor: "#FFD700" },
+                            ]}
+                          />
+                        )}
+                        {event.type === "red_card" && (
+                          <View
+                            style={[
+                              styles.cardIcon,
+                              { backgroundColor: COLORS.error },
+                            ]}
+                          />
+                        )}
+                        <Text style={styles.eventTypeText}>
+                          {event.type.replace("_", " ")}
+                        </Text>
+                      </View>
+                      <Text style={styles.eventPlayer}>{event.player}</Text>
+                      {event.description && (
+                        <Text style={styles.eventDescription}>
+                          {event.description}
+                        </Text>
+                      )}
+                    </View>
                   </View>
-                </View>
-              ))
+                ))
             ) : (
               <View style={styles.emptyState}>
-                <FontAwesome5 name="hourglass-half" size={36} color={COLORS.textSecondary} />
+                <FontAwesome5
+                  name="hourglass-half"
+                  size={36}
+                  color={COLORS.textSecondary}
+                />
                 <Text style={styles.mutedText}>Sem informação</Text>
               </View>
-            )
-          )}
+            ))}
 
-          {activeTab === 'lineup' && (
+          {activeTab === "lineup" && (
             <>
-              {match.homeLineup && <PlayerLineup players={match.homeLineup} teamName={match.homeTeam} />}
-              {match.awayLineup && <PlayerLineup players={match.awayLineup} teamName={match.awayTeam} />}
+              {match.homeLineup && (
+                <PlayerLineup
+                  players={match.homeLineup}
+                  teamName={match.homeTeam}
+                />
+              )}
+              {match.awayLineup && (
+                <PlayerLineup
+                  players={match.awayLineup}
+                  teamName={match.awayTeam}
+                />
+              )}
               {!match.homeLineup && !match.awayLineup && (
                 <View style={styles.emptyState}>
-                  <FontAwesome5 name="hourglass-half" size={36} color={COLORS.textSecondary} />
+                  <FontAwesome5
+                    name="hourglass-half"
+                    size={36}
+                    color={COLORS.textSecondary}
+                  />
                   <Text style={styles.mutedText}>Formação não disponível</Text>
                 </View>
               )}

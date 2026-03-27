@@ -8,12 +8,11 @@ export async function updateMatchesAtomic() {
 
   const matches = await scrapeTeamMatches();
 
-  if(matches.length === 0) {
+  if (matches.length === 0) {
     console.log("Nenhum jogo encontrado. Verifique o scraper.");
     return;
+  } else {
+    await saveMatches(teamConfig.name, matches);
   }
-  else {
-  await saveMatches(teamConfig.name, matches);
-}
   console.log("✅ Jogos atualizados de forma atômica!");
 }

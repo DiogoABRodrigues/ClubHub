@@ -16,11 +16,23 @@ Notification.init(
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     title: { type: DataTypes.STRING, allowNull: false },
     message: { type: DataTypes.TEXT, allowNull: false },
-    recipientRoleId: { type: DataTypes.INTEGER, references: { model: "roles", key: "id" } },
-    authorId: { type: DataTypes.INTEGER, allowNull: false, references: { model: Admin, key: "id" } },
+    recipientRoleId: {
+      type: DataTypes.INTEGER,
+      references: { model: "roles", key: "id" },
+    },
+    authorId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: Admin, key: "id" },
+    },
     read: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
   },
-  { sequelize, modelName: "Notification", tableName: "notifications", timestamps: true }
+  {
+    sequelize,
+    modelName: "Notification",
+    tableName: "notifications",
+    timestamps: true,
+  },
 );
 
 Notification.belongsTo(Admin, { foreignKey: "authorId" });

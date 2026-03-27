@@ -12,20 +12,20 @@ Season.init(
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
     },
     year: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true
-    }
+      unique: true,
+    },
   },
   {
     sequelize,
     modelName: "Season",
     tableName: "seasons",
-    timestamps: true
-  }
+    timestamps: true,
+  },
 );
 
 export default Season;

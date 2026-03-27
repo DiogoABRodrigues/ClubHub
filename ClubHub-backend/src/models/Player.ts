@@ -24,12 +24,12 @@ Player.init(
     photoUrl: { type: DataTypes.STRING, allowNull: true },
     age: { type: DataTypes.INTEGER, allowNull: true },
   },
-  { 
-    sequelize, 
-    modelName: "Player", 
-    tableName: "players", 
-    timestamps: true 
-  }
+  {
+    sequelize,
+    modelName: "Player",
+    tableName: "players",
+    timestamps: true,
+  },
 );
 
 export default Player;

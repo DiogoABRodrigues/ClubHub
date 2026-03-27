@@ -1,15 +1,29 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, Pressable, Switch } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { ArrowLeft, Send, Bell, Target, Trophy, Newspaper } from 'lucide-react-native';
-import { styles } from './AdminNotifications.styles';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  ScrollView,
+  Pressable,
+  Switch,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import {
+  ArrowLeft,
+  Send,
+  Bell,
+  Target,
+  Trophy,
+  Newspaper,
+} from "lucide-react-native";
+import { styles } from "./AdminNotifications.styles";
 
 export const AdminNotifications: React.FC = () => {
   const navigation = useNavigation();
-  const [manualTitle, setManualTitle] = useState('');
-  const [manualMessage, setManualMessage] = useState('');
-  const [selectedType, setSelectedType] = useState('all');
-  const [activeTab, setActiveTab] = useState<'manual' | 'automatic'>('manual');
+  const [manualTitle, setManualTitle] = useState("");
+  const [manualMessage, setManualMessage] = useState("");
+  const [selectedType, setSelectedType] = useState("all");
+  const [activeTab, setActiveTab] = useState<"manual" | "automatic">("manual");
   const [autoSettings, setAutoSettings] = useState({
     matchStart: true,
     goalScored: true,
@@ -18,22 +32,52 @@ export const AdminNotifications: React.FC = () => {
   });
 
   const notificationHistory = [
-    { id: '1', type: 'goal', title: 'GOAL! FC Titans', message: 'Fernando Pereira scores! FC Titans 2-1 United Sports', timestamp: '2 hours ago', recipients: 1234 },
-    { id: '2', type: 'match_start', title: 'Match Starting Soon', message: 'FC Titans vs United Sports kicks off in 15 minutes', timestamp: '3 hours ago', recipients: 2100 },
-    { id: '3', type: 'news', title: 'New Article Published', message: 'Young Talent João Silva Signs New Contract', timestamp: '1 day ago', recipients: 1890 },
+    {
+      id: "1",
+      type: "goal",
+      title: "GOAL! FC Titans",
+      message: "Fernando Pereira scores! FC Titans 2-1 United Sports",
+      timestamp: "2 hours ago",
+      recipients: 1234,
+    },
+    {
+      id: "2",
+      type: "match_start",
+      title: "Match Starting Soon",
+      message: "FC Titans vs United Sports kicks off in 15 minutes",
+      timestamp: "3 hours ago",
+      recipients: 2100,
+    },
+    {
+      id: "3",
+      type: "news",
+      title: "New Article Published",
+      message: "Young Talent João Silva Signs New Contract",
+      timestamp: "1 day ago",
+      recipients: 1890,
+    },
   ];
 
   const handleSendManual = () => {
-    console.log('Sending manual notification:', { title: manualTitle, message: manualMessage, type: selectedType });
-    setManualTitle('');
-    setManualMessage('');
+    console.log("Sending manual notification:", {
+      title: manualTitle,
+      message: manualMessage,
+      type: selectedType,
+    });
+    setManualTitle("");
+    setManualMessage("");
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 24 }}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: 24 }}
+    >
       {/* Header */}
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.navigate('AdminDashboard' as never)}>
+        <Pressable
+          onPress={() => navigation.navigate("AdminDashboard" as never)}
+        >
           <ArrowLeft width={20} height={20} color="#999" />
         </Pressable>
         <Text style={styles.headerTitle}>Send Notifications</Text>
@@ -42,21 +86,41 @@ export const AdminNotifications: React.FC = () => {
       {/* Tabs */}
       <View style={styles.tabList}>
         <Pressable
-          onPress={() => setActiveTab('manual')}
-          style={[styles.tabButton, activeTab === 'manual' && styles.tabButtonActive]}
+          onPress={() => setActiveTab("manual")}
+          style={[
+            styles.tabButton,
+            activeTab === "manual" && styles.tabButtonActive,
+          ]}
         >
-          <Text style={[styles.tabText, activeTab === 'manual' && styles.tabTextActive]}>Manual Notification</Text>
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "manual" && styles.tabTextActive,
+            ]}
+          >
+            Manual Notification
+          </Text>
         </Pressable>
         <Pressable
-          onPress={() => setActiveTab('automatic')}
-          style={[styles.tabButton, activeTab === 'automatic' && styles.tabButtonActive]}
+          onPress={() => setActiveTab("automatic")}
+          style={[
+            styles.tabButton,
+            activeTab === "automatic" && styles.tabButtonActive,
+          ]}
         >
-          <Text style={[styles.tabText, activeTab === 'automatic' && styles.tabTextActive]}>Automatic Events</Text>
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "automatic" && styles.tabTextActive,
+            ]}
+          >
+            Automatic Events
+          </Text>
         </Pressable>
       </View>
 
       {/* Manual Notification */}
-      {activeTab === 'manual' && (
+      {activeTab === "manual" && (
         <View style={styles.tabContent}>
           <Text style={styles.sectionTitle}>Create Custom Notification</Text>
 
@@ -99,8 +163,12 @@ export const AdminNotifications: React.FC = () => {
                 <Bell width={16} height={16} color="#0ea5e9" />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.previewTitle}>{manualTitle || 'Notification Title'}</Text>
-                <Text style={styles.previewMessage}>{manualMessage || 'Your message will appear here...'}</Text>
+                <Text style={styles.previewTitle}>
+                  {manualTitle || "Notification Title"}
+                </Text>
+                <Text style={styles.previewMessage}>
+                  {manualMessage || "Your message will appear here..."}
+                </Text>
               </View>
             </View>
           </View>
@@ -121,18 +189,43 @@ export const AdminNotifications: React.FC = () => {
       )}
 
       {/* Automatic Events */}
-      {activeTab === 'automatic' && (
+      {activeTab === "automatic" && (
         <View style={styles.tabContent}>
-          <Text style={styles.sectionTitle}>Automated Notification Settings</Text>
+          <Text style={styles.sectionTitle}>
+            Automated Notification Settings
+          </Text>
 
           {[
-            { key: 'matchStart', title: 'Match Start', description: 'Automatically notify users 15 minutes before kickoff', icon: Trophy },
-            { key: 'goalScored', title: 'Goal Scored', description: 'Instant notifications when a goal is scored', icon: Target },
-            { key: 'matchFinished', title: 'Match Finished', description: 'Notify users when a match ends with final score', icon: Trophy },
-            { key: 'newsPublished', title: 'News Published', description: 'Alert users when new articles are published', icon: Newspaper },
+            {
+              key: "matchStart",
+              title: "Match Start",
+              description:
+                "Automatically notify users 15 minutes before kickoff",
+              icon: Trophy,
+            },
+            {
+              key: "goalScored",
+              title: "Goal Scored",
+              description: "Instant notifications when a goal is scored",
+              icon: Target,
+            },
+            {
+              key: "matchFinished",
+              title: "Match Finished",
+              description: "Notify users when a match ends with final score",
+              icon: Trophy,
+            },
+            {
+              key: "newsPublished",
+              title: "News Published",
+              description: "Alert users when new articles are published",
+              icon: Newspaper,
+            },
           ].map((item) => (
             <View key={item.key} style={styles.autoItem}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", flex: 1 }}
+              >
                 <View style={styles.autoIcon}>
                   <item.icon width={16} height={16} color="#0ea5e9" />
                 </View>
@@ -157,14 +250,26 @@ export const AdminNotifications: React.FC = () => {
         <Text style={styles.sectionTitle}>Recent Notifications</Text>
         {notificationHistory.map((notification) => (
           <View key={notification.id} style={styles.historyItem}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 4,
+              }}
+            >
               <Text style={styles.historyTitle}>{notification.title}</Text>
-              <Text style={styles.historyTimestamp}>{notification.timestamp}</Text>
+              <Text style={styles.historyTimestamp}>
+                {notification.timestamp}
+              </Text>
             </View>
             <Text style={styles.historyMessage}>{notification.message}</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+            >
               <Bell width={12} height={12} color="#999" />
-              <Text style={styles.historyRecipients}>{notification.recipients} recipients</Text>
+              <Text style={styles.historyRecipients}>
+                {notification.recipients} recipients
+              </Text>
             </View>
           </View>
         ))}

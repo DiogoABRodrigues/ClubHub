@@ -8,7 +8,7 @@ export default class PlayerService {
 
   async getBySeasonId(seasonId: number) {
     const squad = await Squad.findAll({ where: { seasonId } });
-    const externalIds = squad.map(s => s.playerExternalId);
+    const externalIds = squad.map((s) => s.playerExternalId);
     return Player.findAll({ where: { externalId: externalIds } });
   }
 
@@ -16,9 +16,11 @@ export default class PlayerService {
     const squad = await Squad.findAll({ order: [["seasonId", "DESC"]] });
     if (!squad.length) return [];
 
-    const externalIds = squad.map(s => s.playerExternalId);
+    const externalIds = squad.map((s) => s.playerExternalId);
 
-    const players = await Player.findAll({ where: { externalId: externalIds } });
+    const players = await Player.findAll({
+      where: { externalId: externalIds },
+    });
     return players;
   }
 }

@@ -6,7 +6,7 @@ class NewsController {
     try {
       const news = await newsService.create({
         ...req.body,
-        image: req.file?.filename, 
+        image: req.file?.filename,
       });
 
       return res.status(201).json(news);

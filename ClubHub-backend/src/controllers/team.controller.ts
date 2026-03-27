@@ -14,5 +14,4 @@ export default class TeamController {
     const data = await service.getByName(String(name));
     res.json(data);
   }
-
 }

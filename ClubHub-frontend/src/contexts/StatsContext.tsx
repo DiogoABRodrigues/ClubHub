@@ -1,6 +1,6 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { Stats } from '../models/Stats';
-import { StatsService } from '../services/StatsService';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { Stats } from "../models/Stats";
+import { StatsService } from "../services/StatsService";
 
 interface StatsContextType {
   stats: Stats[];
@@ -24,7 +24,7 @@ export const StatsProvider = ({ children }: { children: React.ReactNode }) => {
       const allStats = await StatsService.getAll();
       setStats(allStats);
     } catch (err) {
-      console.error('Erro a buscar stats:', err);
+      console.error("Erro a buscar stats:", err);
     } finally {
       setLoading(false);
     }

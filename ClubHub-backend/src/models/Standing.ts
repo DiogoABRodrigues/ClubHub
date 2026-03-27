@@ -42,7 +42,7 @@ Standing.init(
       allowNull: true,
     },
 
-    seasonId: { 
+    seasonId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: { model: Season, key: "id" }, // foreign key para seasons
@@ -98,10 +98,13 @@ Standing.init(
     modelName: "Standing",
     tableName: "standings",
     timestamps: true,
-  }
+  },
 );
 
 Standing.belongsTo(Season, { foreignKey: "seasonId", as: "season" });
-Standing.belongsTo(Competition, { foreignKey: "competitionId", as: "competition" });
+Standing.belongsTo(Competition, {
+  foreignKey: "competitionId",
+  as: "competition",
+});
 
 export default Standing;

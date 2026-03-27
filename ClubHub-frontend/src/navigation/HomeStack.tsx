@@ -1,8 +1,8 @@
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Home } from '../screens/Home/Home';
-import { MatchDetail } from '../screens/MatchDetails/MatchDetail';
-import { NewsDetail } from '../screens/NewsDetail/NewsDetail';
+import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Home } from "../screens/Home/Home";
+import { MatchDetail } from "../screens/MatchDetails/MatchDetail";
+import { NewsDetail } from "../screens/NewsDetail/NewsDetail";
 
 export type HomeStackParamList = {
   Home: undefined;
@@ -16,7 +16,7 @@ export const HomeStack = () => (
   <Stack.Navigator
     screenOptions={{
       headerShown: false,
-      animation: 'none',
+      animation: "none",
     }}
   >
     <Stack.Screen name="Home" component={Home} />

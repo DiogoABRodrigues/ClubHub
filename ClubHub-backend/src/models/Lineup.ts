@@ -13,11 +13,23 @@ class Lineup extends Model {
 Lineup.init(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    matchId: { type: DataTypes.INTEGER, allowNull: false, references: { model: Match, key: "id" } },
-    playerId: { type: DataTypes.INTEGER, allowNull: false, references: { model: Player, key: "id" } },
-    isStarting: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+    matchId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: Match, key: "id" },
+    },
+    playerId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: Player, key: "id" },
+    },
+    isStarting: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
   },
-  { sequelize, modelName: "Lineup", tableName: "lineups", timestamps: true }
+  { sequelize, modelName: "Lineup", tableName: "lineups", timestamps: true },
 );
 
 Lineup.belongsTo(Match, { foreignKey: "matchId" });

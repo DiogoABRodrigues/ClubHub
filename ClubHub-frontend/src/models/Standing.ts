@@ -1,5 +1,3 @@
-
-
 export type Standing = {
   id: number;
   teamName: string;

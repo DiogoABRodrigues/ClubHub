@@ -7,4 +7,4 @@ export type Stats = {
   number: number;
   age: number;
   position: string;
-}
+};

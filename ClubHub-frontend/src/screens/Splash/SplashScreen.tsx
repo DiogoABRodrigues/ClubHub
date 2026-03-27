@@ -17,7 +17,8 @@ export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
   const { loading: standingsLoading } = useStandings();
   const { loading: newsLoading } = useNews();
 
-  const allDataLoaded = !matchesLoading && !teamsLoading && !standingsLoading && !newsLoading;
+  const allDataLoaded =
+    !matchesLoading && !teamsLoading && !standingsLoading && !newsLoading;
   // Animação
   const opacity = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(0.8)).current;

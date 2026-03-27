@@ -6,7 +6,7 @@ import { teamConfig } from "../config/teamConfig";
 
 async function getOrCreateSeason() {
   const [season] = await Season.findOrCreate({
-    where: { year: teamConfig.currentSeason }
+    where: { year: teamConfig.currentSeason },
   });
 
   return season;
@@ -15,27 +15,28 @@ async function getOrCreateSeason() {
 export async function scrapeTeamStats() {
   const browser = await puppeteer.launch({
     headless: false,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"]
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
   const page = await browser.newPage();
 
   await page.setUserAgent(
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
   );
 
   await page.setViewport({ width: 1920, height: 1080 });
 
   await page.goto(teamConfig.stats, {
     waitUntil: "networkidle2",
-    timeout: 30000
+    timeout: 30000,
   });
 
   // Aceitar cookies (se existir)
   try {
     await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll("button"))
-        .find(b => b.textContent?.includes("Aceitar"));
+      const btn = Array.from(document.querySelectorAll("button")).find((b) =>
+        b.textContent?.includes("Aceitar"),
+      );
       if (btn) btn.click();
     });
   } catch (err) {}
@@ -74,7 +75,7 @@ export async function scrapeTeamStats() {
         age,
         gamesPlayed,
         goals,
-        minutesPlayed
+        minutesPlayed,
       });
     }
   });
@@ -92,7 +93,7 @@ export async function scrapeTeamStats() {
       gamesPlayed: s.gamesPlayed,
       goals: s.goals,
       minutesPlayed: s.minutesPlayed,
-      position: s.position
+      position: s.position,
     });
   }
 

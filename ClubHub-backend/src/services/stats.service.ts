@@ -10,10 +10,9 @@ export default class StatsService {
     return Stats.findAll({ where: { seasonId: seasonId } });
   }
 
-  
   async getByCurrentSeasonId() {
-  const season = await new SeasonService().getCurrentSeason();
+    const season = await new SeasonService().getCurrentSeason();
     if (!season) return [];
-  return Stats.findAll({ where: { seasonId: season.id } });
+    return Stats.findAll({ where: { seasonId: season.id } });
   }
 }

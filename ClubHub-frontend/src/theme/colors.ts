@@ -1,14 +1,14 @@
 export const COLORS = {
-  primary: "#dbb229",     // azul principal (tipo futebol)
-  secondary: "#1E90FF",   // azul claro
+  primary: "#dbb229", // azul principal (tipo futebol)
+  secondary: "#1E90FF", // azul claro
   background: "#FFFFFF",
   surface: "#F5F5F5",
 
   textPrimary: "#111111",
   textSecondary: "#666666",
 
-  successLight: '#dff5e18e', // fundo das equipas em promoção
-  errorLight: '#f8d7dab4', // fundo das equipas em descida
+  successLight: "#dff5e18e", // fundo das equipas em promoção
+  errorLight: "#f8d7dab4", // fundo das equipas em descida
 
   border: "#E0E0E0",
   success: "#4CAF50",

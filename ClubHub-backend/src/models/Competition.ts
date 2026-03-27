@@ -13,7 +13,12 @@ Competition.init(
     name: { type: DataTypes.STRING, allowNull: false },
     seasonId: { type: DataTypes.INTEGER, allowNull: false },
   },
-  { sequelize, modelName: "Competition", tableName: "competitions", timestamps: true }
+  {
+    sequelize,
+    modelName: "Competition",
+    tableName: "competitions",
+    timestamps: true,
+  },
 );
 
 export default Competition;

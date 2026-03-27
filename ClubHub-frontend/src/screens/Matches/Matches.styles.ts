@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../../theme/colors';
+import { StyleSheet } from "react-native";
+import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
   container: {
@@ -17,20 +17,20 @@ export const styles = StyleSheet.create({
   },
 
   headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: SPACING.sm,
     marginBottom: SPACING.sm,
   },
 
   headerTitle: {
     fontSize: FONT_SIZE.lg,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.textPrimary,
   },
 
   categoryContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
 
   categoryButton: {
@@ -46,7 +46,7 @@ export const styles = StyleSheet.create({
 
   categoryText: {
     color: COLORS.textSecondary,
-    fontWeight: '500',
+    fontWeight: "500",
     fontSize: FONT_SIZE.sm,
   },
 
@@ -65,14 +65,14 @@ export const styles = StyleSheet.create({
 
   sectionTitle: {
     fontSize: FONT_SIZE.md,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: SPACING.sm,
     color: COLORS.textPrimary,
   },
 
   noMatches: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: SPACING.lg,
   },
 
@@ -81,8 +81,8 @@ export const styles = StyleSheet.create({
     height: 64,
     borderRadius: 32,
     backgroundColor: COLORS.muted,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: SPACING.sm,
   },
 
@@ -93,26 +93,26 @@ export const styles = StyleSheet.create({
   noMatchesText: {
     color: COLORS.textSecondary,
     fontSize: FONT_SIZE.sm,
-    textAlign: 'center',
+    textAlign: "center",
   },
 
   showMore: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 10,
     color: COLORS.textPrimary,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: SPACING.sm,
   },
 
   showMoreInline: {
     color: COLORS.textPrimary,
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: FONT_SIZE.sm,
   },
 });

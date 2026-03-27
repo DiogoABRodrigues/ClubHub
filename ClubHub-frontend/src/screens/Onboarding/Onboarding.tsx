@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { Trophy, Bell, CheckCircle2 } from 'lucide-react-native'; // versão RN
-import { Switch } from '../../components/Switch';
-import { styles } from './Onboarding.styles';
-import { COLORS } from '../../theme/colors';
+import React, { useState } from "react";
+import { View, Text, ScrollView, Pressable } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Trophy, Bell, CheckCircle2 } from "lucide-react-native"; // versão RN
+import { Switch } from "../../components/Switch";
+import { styles } from "./Onboarding.styles";
+import { COLORS } from "../../theme/colors";
 
 export const Onboarding: React.FC = () => {
   const navigation = useNavigation();
   const [step, setStep] = useState(1);
-  const [selectedTeams, setSelectedTeams] = useState<string[]>(['Senior']);
+  const [selectedTeams, setSelectedTeams] = useState<string[]>(["Senior"]);
   const [notifications, setNotifications] = useState({
     matchStart: true,
     goals: true,
@@ -17,18 +17,18 @@ export const Onboarding: React.FC = () => {
     newsAlerts: false,
   });
 
-  const teams = ['Senior', 'U19', 'U17', 'U15'];
+  const teams = ["Senior", "U19", "U17", "U15"];
 
   const toggleTeam = (team: string) => {
     setSelectedTeams((prev) =>
-      prev.includes(team) ? prev.filter((t) => t !== team) : [...prev, team]
+      prev.includes(team) ? prev.filter((t) => t !== team) : [...prev, team],
     );
   };
 
   const handleComplete = () => {
     // Save preferences
     // Pode substituir por AsyncStorage em RN
-    navigation.navigate('Home' as never);
+    navigation.navigate("Home" as never);
   };
 
   return (
@@ -71,14 +71,24 @@ export const Onboarding: React.FC = () => {
                   style={[
                     styles.teamCard,
                     selectedTeams.includes(team)
-                      ? { borderColor: COLORS.primary, backgroundColor: COLORS.primary + '33' }
-                      : { borderColor: COLORS.muted, backgroundColor: COLORS.surface },
+                      ? {
+                          borderColor: COLORS.primary,
+                          backgroundColor: COLORS.primary + "33",
+                        }
+                      : {
+                          borderColor: COLORS.muted,
+                          backgroundColor: COLORS.surface,
+                        },
                   ]}
                 >
                   <View style={styles.teamCardHeader}>
                     <Text style={styles.teamEmoji}>⚽</Text>
                     {selectedTeams.includes(team) && (
-                      <CheckCircle2 width={20} height={20} color={COLORS.primary} />
+                      <CheckCircle2
+                        width={20}
+                        height={20}
+                        color={COLORS.primary}
+                      />
                     )}
                   </View>
                   <View>
@@ -119,22 +129,22 @@ export const Onboarding: React.FC = () => {
               <View key={key} style={styles.notificationCard}>
                 <View>
                   <Text style={styles.notificationTitle}>
-                    {key === 'matchStart'
-                      ? 'Match Start'
-                      : key === 'goals'
-                      ? 'Goals'
-                      : key === 'finalResult'
-                      ? 'Final Result'
-                      : 'News Alerts'}
+                    {key === "matchStart"
+                      ? "Match Start"
+                      : key === "goals"
+                        ? "Goals"
+                        : key === "finalResult"
+                          ? "Final Result"
+                          : "News Alerts"}
                   </Text>
                   <Text style={styles.notificationSubtitle}>
-                    {key === 'matchStart'
-                      ? 'When a match is about to begin'
-                      : key === 'goals'
-                      ? 'Instant alerts for every goal'
-                      : key === 'finalResult'
-                      ? 'When a match finishes'
-                      : 'Latest club news and updates'}
+                    {key === "matchStart"
+                      ? "When a match is about to begin"
+                      : key === "goals"
+                        ? "Instant alerts for every goal"
+                        : key === "finalResult"
+                          ? "When a match finishes"
+                          : "Latest club news and updates"}
                   </Text>
                 </View>
                 <Switch

@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { COLORS } from '../../theme/colors';
+import { StyleSheet } from "react-native";
+import { COLORS } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
   card: {
@@ -12,15 +12,15 @@ export const styles = StyleSheet.create({
   },
 
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
 
   headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
   },
 
@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
   upcoming: {
     fontSize: 12,
     color: COLORS.secondary,
-    backgroundColor: '#E3F2FD',
+    backgroundColor: "#E3F2FD",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
@@ -41,7 +41,7 @@ export const styles = StyleSheet.create({
   finished: {
     fontSize: 12,
     color: COLORS.textSecondary,
-    backgroundColor: '#EEE',
+    backgroundColor: "#EEE",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
@@ -52,14 +52,14 @@ export const styles = StyleSheet.create({
   },
 
   teamRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 
   teamInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     flex: 1,
   },
@@ -67,17 +67,17 @@ export const styles = StyleSheet.create({
   teamLogo: {
     width: 32,
     height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   teamLogoAlt: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#EEE',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#EEE",
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   teamName: {
@@ -87,13 +87,13 @@ export const styles = StyleSheet.create({
 
   score: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS.textPrimary,
   },
 
   footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 12,
     borderTopWidth: 1,
     borderColor: COLORS.border,
@@ -107,9 +107,9 @@ export const styles = StyleSheet.create({
   },
 
   category: {
-    marginLeft: 'auto',
+    marginLeft: "auto",
     fontSize: 11,
-    backgroundColor: '#EEE',
+    backgroundColor: "#EEE",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,

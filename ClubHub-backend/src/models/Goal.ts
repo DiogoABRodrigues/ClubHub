@@ -13,11 +13,19 @@ class Goal extends Model {
 Goal.init(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    matchId: { type: DataTypes.INTEGER, allowNull: false, references: { model: Match, key: "id" } },
-    playerId: { type: DataTypes.INTEGER, allowNull: false, references: { model: Player, key: "id" } },
+    matchId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: Match, key: "id" },
+    },
+    playerId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: Player, key: "id" },
+    },
     minute: { type: DataTypes.INTEGER, allowNull: false },
   },
-  { sequelize, modelName: "Goal", tableName: "goals", timestamps: true }
+  { sequelize, modelName: "Goal", tableName: "goals", timestamps: true },
 );
 
 Goal.belongsTo(Match, { foreignKey: "matchId" });

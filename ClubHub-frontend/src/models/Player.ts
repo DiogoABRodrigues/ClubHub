@@ -6,7 +6,7 @@ export type Player = {
   name: string;
   photoUrl?: string | null;
   age: number | null;
-}
+};
 
 export interface PlayerWithStats extends Player {
   stats: Stats;
