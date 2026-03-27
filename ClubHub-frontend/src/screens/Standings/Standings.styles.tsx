@@ -1,45 +1,181 @@
 import { StyleSheet } from 'react-native';
+import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../../theme/colors';
 
 export const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212' },
-  header: { borderBottomWidth: 1, borderBottomColor: '#333' },
-  headerContent: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 8 },
-  headerTitle: { fontSize: 20, fontWeight: '700', color: '#fff' },
-
-  categoryScroll: { paddingHorizontal: 16, paddingBottom: 8 },
-  categoryButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    marginRight: 8,
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
   },
-  categorySelected: { backgroundColor: '#0ea5e9' },
-  categoryUnselected: { backgroundColor: '#333' },
-  categoryTextSelected: { color: '#fff' },
-  categoryTextUnselected: { color: '#999' },
 
-  content: { padding: 16 },
-  leagueHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
-  leagueTitle: { fontSize: 18, fontWeight: '600', color: '#fff' },
+  // Header — igual ao Matches
+  header: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.xl + 16,
+    paddingBottom: SPACING.sm,
+    backgroundColor: COLORS.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
 
-  table: { borderWidth: 1, borderColor: '#333', borderRadius: 12, overflow: 'hidden' },
-  tableHeader: { flexDirection: 'row', backgroundColor: '#1f1f1f', padding: 8 },
-  tableCell: { fontSize: 12, color: '#999' },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    marginBottom: SPACING.sm,
+  },
+
+  headerTitle: {
+    fontSize: FONT_SIZE.lg,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+  },
+
+  // Category pills
+  categoryContainer: {
+    flexDirection: 'row',
+    gap: SPACING.xs,
+  },
+
+  categoryButton: {
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+    borderRadius: RADIUS.lg,
+    backgroundColor: COLORS.secondary,
+  },
+
+  categoryButtonActive: {
+    backgroundColor: COLORS.primary,
+  },
+
+  categoryText: {
+    color: COLORS.textSecondary,
+    fontWeight: '500',
+    fontSize: FONT_SIZE.sm,
+  },
+
+  categoryTextActive: {
+    color: COLORS.background,
+  },
+
+  // Content
+  content: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.sm,
+  },
+
+  section: {
+    marginBottom: SPACING.lg,
+  },
+
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.sm,
+  },
+
+  sectionTitle: {
+    fontSize: FONT_SIZE.md,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+  },
+
+  // Table
+  table: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: RADIUS.lg,
+    overflow: 'hidden',
+    marginBottom: SPACING.sm * 2,
+  },
+
+  tableHeader: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.surface,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
+  },
+
+  tableCell: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textSecondary,
+    fontWeight: '500',
+  },
+
   col1: { flex: 1 },
   col5: { flex: 5 },
   col2: { flex: 2 },
   centerText: { textAlign: 'center' },
   rightText: { textAlign: 'right' },
 
-  legend: { marginTop: 16, borderWidth: 1, borderColor: '#333', borderRadius: 12, padding: 12 },
-  legendTitle: { fontSize: 14, fontWeight: '600', color: '#fff', marginBottom: 8 },
-  legendItems: { gap: 6 },
-  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  legendColor: { width: 12, height: 12, borderRadius: 3 },
-  legendText: { fontSize: 12, color: '#999' },
+  // Stats
+  statsText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textSecondary,
+    marginTop: SPACING.sm,
+    marginBottom: SPACING.sm,
+  },
 
-  statsText: { fontSize: 12, color: '#999', marginTop: 8 },
+  // Legend
+  legend: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
+  },
 
-  noData: { padding: 24, alignItems: 'center' },
-  noDataText: { fontSize: 14, color: '#999' },
+  legendTitle: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.xs,
+  },
+
+  legendItems: {
+    gap: SPACING.xs,
+  },
+
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+  },
+
+  legendColor: {
+    width: 12,
+    height: 12,
+    borderRadius: 3,
+  },
+
+  legendText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textSecondary,
+  },
+
+  // Empty state — igual ao Matches
+  noMatches: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.lg,
+  },
+
+  logoCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: COLORS.muted,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SPACING.sm,
+  },
+
+  logoEmoji: {
+    fontSize: FONT_SIZE.xl,
+  },
+
+  noMatchesText: {
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZE.sm,
+    textAlign: 'center',
+  },
 });

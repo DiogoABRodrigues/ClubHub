@@ -11,6 +11,12 @@ export const styles = StyleSheet.create({
     borderBottomColor: COLORS.border,
   },
 
+  centerColumn: {
+    flex: 2,                 
+    justifyContent: 'center',
+    alignItems: 'center',    
+  },
+
   userRow: {
     backgroundColor: COLORS.primary + '10', // leve highlight
   },
@@ -54,4 +60,35 @@ export const styles = StyleSheet.create({
   bold: {
     fontWeight: '600',
   },
+
+expandedStats: {
+  paddingHorizontal: 16,
+  paddingVertical: 8,
+  backgroundColor: '#f2f2f2',
+},
+statRow: {
+  flexDirection: 'row',
+  justifyContent: 'flex-start',
+  marginBottom: 4,
+},
+statLabel: {
+  marginRight: 7,
+  color: COLORS.textSecondary,
+},
+statValue: {
+  marginRight: 12,
+  color: COLORS.textPrimary,
+},
+
+teamRow: {
+  flex: 5,
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: 8,
+},
+teamLogo: {
+  width: 24,
+  height: 24,
+  borderRadius: 12,
+},
 });
