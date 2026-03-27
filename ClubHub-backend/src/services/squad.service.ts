@@ -13,6 +13,6 @@ export default class SquadService {
   async getByCurrentSeasonId() {
     const season = await new SeasonService().getCurrentSeason();
         if (!season) return [];
-    return Squad.findAll({ where: { seasonId: season.id } });
+    return Squad.findAll({ where: { seasonId: season.dataValues.id } });
   }
 }

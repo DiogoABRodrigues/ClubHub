@@ -13,9 +13,12 @@ export default class PlayerService {
   }
 
   async getByCurrentSeasonId() {
-    const squad = await Squad.findAll({ order: [["seasonId", "DESC"]], limit: 1 });
+    const squad = await Squad.findAll({ order: [["seasonId", "DESC"]] });
     if (!squad.length) return [];
-    const seasonId = squad[0].seasonId;
-    return this.getBySeasonId(seasonId);
+
+    const externalIds = squad.map(s => s.playerExternalId);
+
+    const players = await Player.findAll({ where: { externalId: externalIds } });
+    return players;
   }
 }

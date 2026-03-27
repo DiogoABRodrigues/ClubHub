@@ -4,6 +4,7 @@ import Player from "../models/Player";
 import Squad from "../models/Squad";
 import Season from "../models/Season"; // vamos criar este modelo
 import { teamConfig } from "../config/teamConfig";
+import Stats from "../models/Stats";
 
 async function getOrCreateSeason() {
   const [season] = await Season.findOrCreate({
@@ -84,6 +85,50 @@ export async function scrapeTeamPlayers() {
     });
   });
 
+  // 🟢 Scrape equipe técnica
+  const staffSection = $("#team_staff .innerbox");
+  staffSection.each((_, box) => {
+    const sectionRole = $(box).find(".section").text().trim() || "Staff";
+
+    $(box).find(".staff").each((_, el) => {
+      const nameLink = $(el).find(".text a[href*='/treinador/']");
+      const name = nameLink.text().trim();
+      
+      let externalId: number | null = null;
+      const href = nameLink.attr("href");
+      if (href) {
+        const match = href.match(/\/treinador\/[^/]+\/(\d+)/);
+        if (match) externalId = parseInt(match[1]);
+      }
+
+      let age: number | null = null;
+      const ageText = $(el).find("span").text().trim();
+      if (ageText) {
+        const m = ageText.match(/\d+/);
+        if (m) age = parseInt(m[0]);
+      }
+
+      let photoUrl: string | null = null;
+      const style = $(el).find(".photo").attr("style");
+      if (style) {
+        const m = style.match(/url\(['"]?(.*?)['"]?\)/);
+        if (m) photoUrl = m[1];
+      }
+
+      if (name && externalId) {
+        // Guardar no array de players
+        players.push({
+          externalId,
+          name,
+          number: null, // técnicos não têm número
+          position: sectionRole, // aqui usamos o section como "role"
+          age,
+          photoUrl
+        });
+      }
+    });
+  });
+
   console.log(`✅ Jogadores encontrados: ${players.length}`);
   if (players.length === 0) console.log("⚠️ Nenhum jogador encontrado");
 
@@ -118,7 +163,8 @@ export async function savePlayersAndSquad(players: any[]) {
     await Player.upsert({
       externalId: p.externalId,
       name: p.name,
-      photoUrl: p.photoUrl
+      photoUrl: p.photoUrl,
+      age: p.age
     });
 
     // 👥 SQUAD
@@ -127,6 +173,15 @@ export async function savePlayersAndSquad(players: any[]) {
       seasonId: season.id,
       number: p.number,
       position: p.position
+    });
+
+    await Stats.upsert({
+      playerExternalId: p.externalId,
+      seasonId: season.id,
+      gamesPlayed: 0,
+      goals: 0,
+      minutesPlayed: 0,
+      position: p.position,
     });
   }
 }

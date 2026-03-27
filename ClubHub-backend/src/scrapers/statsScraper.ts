@@ -91,7 +91,8 @@ export async function scrapeTeamStats() {
       seasonId: season.id,
       gamesPlayed: s.gamesPlayed,
       goals: s.goals,
-      minutesPlayed: s.minutesPlayed
+      minutesPlayed: s.minutesPlayed,
+      position: s.position
     });
   }
 
