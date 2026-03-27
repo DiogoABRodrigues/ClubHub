@@ -21,9 +21,7 @@ export const TeamsProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchTeams = async () => {
     setLoading(true);
     try {
-      console.log('Fetching teams...');
       const allTeams = await TeamService.getAll();
-      console.log('Teams fetched:', allTeams);
       setTeams(allTeams);
     } catch (err) {
       console.error('Erro a buscar teams:', err);

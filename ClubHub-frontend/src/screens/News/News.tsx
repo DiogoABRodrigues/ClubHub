@@ -9,13 +9,6 @@ import { COLORS, SPACING } from '../../theme/colors';
 export const News = ({ navigation }: any) => {
   const [selectedCategory, setSelectedCategory] = useState<NewsCategory | 'All'>('All');
 
-  const categories: Array<NewsCategory | 'All'> = ['All', 'Team', 'Transfers', 'Events'];
-
-  const filteredNews =
-    selectedCategory === 'All'
-      ? mockNews
-      : mockNews.filter((n) => n.category === selectedCategory);
-
   return (
     <View style={styles.container}>
       {/* HEADER */}
@@ -26,41 +19,13 @@ export const News = ({ navigation }: any) => {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Club News</Text>
         </View>
-
-        {/* CATEGORY FILTER */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoryContainer}
-          contentContainerStyle={{ gap: SPACING.sm }}
-        >
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category}
-              onPress={() => setSelectedCategory(category)}
-              style={[
-                styles.categoryButton,
-                selectedCategory === category && styles.categoryButtonActive,
-              ]}
-            >
-              <Text
-                style={[
-                  styles.categoryText,
-                  selectedCategory === category && styles.categoryTextActive,
-                ]}
-              >
-                {category}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
       </View>
 
       {/* CONTENT */}
       <ScrollView contentContainerStyle={styles.content}>
-        {filteredNews.length > 0 ? (
+        {mockNews.length > 0 ? (
           <View style={styles.newsList}>
-            {filteredNews.map((news) => (
+            {mockNews.map((news) => (
               <NewsCard key={news.id} news={news} onPress={() => navigation.navigate('NewsDetail', { id: news.id })} />
             ))}
           </View>
