@@ -19,15 +19,21 @@ export interface ScrapedMatch {
 
 // Função auxiliar para extrair nome e época da competição
 function parseCompetition(competitionStr: string): { name: string; season: string } {
-  const match = competitionStr.match(/(.+?)\s+(\d{2}\/\d{2})$/);
+  const match = competitionStr.match(/(.+?)\s+(\d{4}\/\d{4}|\d{2}\/\d{2})$/);
   if (match) {
-    return { name: match[1].trim(), season: match[2] };
+    let season = match[2];
+    // Se for YY/YY, converte para YYYY/YYYY
+    if (/^\d{2}\/\d{2}$/.test(season)) {
+      const [start, end] = season.split("/").map(Number);
+      const startYear = start + 2000;
+      const endYear = end + 2000;
+      season = `${startYear}/${endYear}`;
+    }
+    return { name: match[1].trim(), season };
   }
-  const seasonMatch = competitionStr.match(/(\d{2}\/\d{2})$/);
-  if (seasonMatch) {
-    return { name: competitionStr.replace(seasonMatch[0], "").trim(), season: seasonMatch[1] };
-  }
-  return { name: competitionStr, season: "2025/26" }; // fallback
+
+  // fallback
+  return { name: competitionStr, season: "2025/2026" };
 }
 
 // Obter ou criar Season
