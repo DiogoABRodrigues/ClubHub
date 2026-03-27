@@ -50,7 +50,7 @@ export const Home = ({ navigation }: any) => {
     match.homeOrAway === 'F' ? match.teamName : match.opponent;
 
   const appTeam = teamConfig.name.trim().toLowerCase();
-  const appTeamLogo = getTeamLogo(teamConfig.name.trim().toLowerCase());
+  const appTeamLogo = require("../../../assets/icon.png");
   
   return (
     <View style={styles.container}>
@@ -59,17 +59,17 @@ export const Home = ({ navigation }: any) => {
         {/* HEADER */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>{appTeam.toUpperCase()}</Text>
+            <Text style={styles.title}>{"Início"}</Text>
           </View>
 
           <View style={styles.logoCircle}>
-            {appTeamLogo ? (
-              <Image source={{ uri: appTeamLogo }} style={styles.logoCircle} />
-            ) : (
-              <Text>🏆</Text>
-            )}
-          </View>
+          {appTeamLogo ? (
+            <Image source={appTeamLogo} style={styles.logoCircle} />
+          ) : (
+            <Text>🏆</Text>
+          )}
         </View>
+      </View>
 
         {/* FEATURED MATCH */}
         {featuredMatch && (
