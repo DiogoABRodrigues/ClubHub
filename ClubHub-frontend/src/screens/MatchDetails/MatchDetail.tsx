@@ -1,20 +1,27 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { mockMatches } from '../../data/mockData';
 import { PlayerLineup } from '../../components/PlayerLineup';
 import { LiveBadge } from '../../components/LiveBadge';
 import { COLORS } from '../../theme/colors';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
 import { styles } from './MatchDetail.styles';
+import { useMatches } from '../../contexts/MatchesContext';
+import { useTeams } from '../../contexts/TeamsContext';
+import { formatDateWithWeekdayPT } from '../../utils/dateUtils';  
+import { teamConfig } from '../../config/teamConfig';
 
 export const MatchDetail = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const { id } = route.params as { id: string };
-  const match = mockMatches.find((m) => m.id === id);
+  const { id } = route.params as { id: number };
 
-  const [activeTab, setActiveTab] = useState<'timeline' | 'lineup' | 'stats'>('timeline');
+  const { matches, loading } = useMatches();
+  const { teams, loading: teamsLoading } = useTeams();
+
+  const match = matches.find((m) => m.id === id);
+
+  const [activeTab, setActiveTab] = useState<'timeline' | 'lineup' >('timeline');
 
   if (!match) {
     return (
@@ -27,11 +34,21 @@ export const MatchDetail = () => {
     );
   }
 
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toDateString();
-  };
+  const homeTeamName = match.homeOrAway === 'C' ? match.teamName : match.opponent;
+  const awayTeamName = match.homeOrAway === 'F' ? match.teamName : match.opponent;
 
+  const homeLogo = teams.find(t => t.name.trim().toLowerCase() === homeTeamName.trim().toLowerCase())?.logoUrl;
+  const awayLogo = teams.find(t => t.name.trim().toLowerCase() === awayTeamName.trim().toLowerCase())?.logoUrl;
+
+  let location;
+
+  if( homeTeamName == teamConfig.name) {
+    location = teamConfig.team_stadium;
+  }
+  else {
+    location = match.location;
+  }
+  
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 24 }}>
       {/* Header */}
@@ -59,29 +76,37 @@ export const MatchDetail = () => {
         <View style={styles.scoreCard}>
           {/* Home */}
           <View style={styles.teamContainer}>
-            <View style={styles.teamCircle}>
-              <Text style={styles.teamEmoji}>🏆</Text>
+            <View style={styles.teamLogo}>
+              {homeLogo ? (
+                <Image source={{ uri: homeLogo }} style={{ width: 50, height: 50 }} />
+              ) : (
+                <Text>🏆</Text>
+              )}
             </View>
-            <Text style={styles.teamName}>{match.homeTeam}</Text>
+            <Text style={styles.teamName}>{homeTeamName}</Text>
           </View>
 
           {/* Score */}
           <View style={styles.scoreContainer}>
             <Text style={[styles.scoreText, match.status === 'live' && { color: COLORS.primary }]}>
-              {match.homeScore ?? '-'}
+              {match.result?.split('-')[0] ?? '-'}
             </Text>
             <Text style={styles.colon}>:</Text>
             <Text style={[styles.scoreText, match.status === 'live' && { color: COLORS.primary }]}>
-              {match.awayScore ?? '-'}
+              {match.result?.split('-')[1] ?? '-'}
             </Text>
           </View>
 
           {/* Away */}
           <View style={styles.teamContainer}>
-            <View style={[styles.teamCircle, { backgroundColor: COLORS.surface }]}>
-              <Text style={styles.teamEmoji}>⚽</Text>
+            <View style={styles.teamLogo}>
+              {awayLogo ? (
+                <Image source={{ uri: awayLogo }} style={{ width: 50, height: 50 }} />
+              ) : (
+                <Text>🏆</Text>
+              )}
             </View>
-            <Text style={styles.teamName}>{match.awayTeam}</Text>
+            <Text style={styles.teamName}>{awayTeamName}</Text>
           </View>
         </View>
 
@@ -89,11 +114,11 @@ export const MatchDetail = () => {
         <View style={styles.matchInfo}>
           <View style={styles.infoItem}>
             <Ionicons name="calendar-outline" size={16} color={COLORS.textSecondary} />
-            <Text style={styles.infoText}>{formatDate(match.date)} • {match.time}</Text>
+            <Text style={styles.infoText}>{formatDateWithWeekdayPT(match.date)} • {match.time}</Text>
           </View>
           <View style={styles.infoItem}>
             <Ionicons name="location-outline" size={16} color={COLORS.textSecondary} />
-            <Text style={styles.infoText}>{match.venue}</Text>
+            <Text style={styles.infoText}>{match.location}</Text>
           </View>
         </View>
       </View>
@@ -101,7 +126,7 @@ export const MatchDetail = () => {
       {/* Tabs */}
       <View style={styles.tabsContainer}>
         <View style={styles.tabsList}>
-          {['timeline', 'lineup', 'stats'].map((tab) => (
+          {['timeline', 'lineup'].map((tab) => (
             <TouchableOpacity key={tab} onPress={() => setActiveTab(tab as any)} style={[styles.tabTrigger, activeTab === tab && styles.activeTab]}>
               <Text style={[styles.tabText, activeTab === tab && { color: COLORS.primary }]}>
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -145,43 +170,10 @@ export const MatchDetail = () => {
               {match.awayLineup && <PlayerLineup players={match.awayLineup} teamName={match.awayTeam} />}
               {!match.homeLineup && !match.awayLineup && (
                 <View style={styles.emptyState}>
-                  <Text style={styles.mutedText}>Lineups not available yet</Text>
+                  <Text style={styles.mutedText}>Lineup not available yet</Text>
                 </View>
               )}
             </>
-          )}
-
-          {activeTab === 'stats' && (
-            match.stats ? (
-              <View style={styles.statsCard}>
-                {/* Possession */}
-                <View>
-                  <View style={styles.statsRow}>
-                    <Text style={styles.statsValue}>{match.stats.possession.home}%</Text>
-                    <Text style={styles.statsLabel}>Possession</Text>
-                    <Text style={styles.statsValue}>{match.stats.possession.away}%</Text>
-                  </View>
-                  <View style={styles.possessionBar}>
-                    <View style={[styles.possessionHome, { width: `${match.stats.possession.home}%` }]} />
-                    <View style={[styles.possessionAway, { width: `${match.stats.possession.away}%` }]} />
-                  </View>
-                </View>
-
-                {/* Shots, Shots on Target, Corners, Fouls}
-                {['shots', 'shotsOnTarget', 'corners', 'fouls'].map((stat) => (
-                  <View key={stat} style={styles.statsRow}>
-                    <Text style={styles.statsValue}>{match.stats && match.stats[stat as keyof typeof match.stats] ? match.stats[stat as keyof typeof match.stats].home : 0}</Text>
-                    <Text style={styles.statsLabel}>{stat}</Text>
-                    <Text style={styles.statsValue}>{match.stats && match.stats[stat as keyof typeof match.stats] ? match.stats[stat as keyof typeof match.stats].away : 0}</Text>
-                  </View>
-                ))}{*/}
-              </View>
-            ) : (
-              <View style={styles.emptyState}>
-                <FontAwesome5 name="hourglass-half" size={36} color={COLORS.textSecondary} />
-                <Text style={styles.mutedText}>Stats not available yet</Text>
-              </View>
-            )
           )}
         </View>
       </View>

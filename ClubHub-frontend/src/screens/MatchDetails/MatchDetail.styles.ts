@@ -235,4 +235,11 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.textSecondary,
     height: '100%',
   },
+
+  teamLogo: {
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

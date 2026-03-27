@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { styles } from './Home.styles';
 
-import { mockMatches } from '../../data/mockData';
 import { MatchCard } from '../../components/MatchCard';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -18,13 +17,12 @@ import { formatDatePT } from '../../utils/dateUtils';
 export const Home = ({ navigation }: any) => {
   const { news } = useNews();
 
-  const featuredMatch =
-    mockMatches.find((m) => m.status === 'live') ||
-    mockMatches.find((m) => m.status === 'upcoming');
-
   const recentNews = news.slice(0, 3);
 
   const { matches, loading } = useMatches();
+
+  const liveMatches = matches.filter((m) => m.status === 'live');
+
   const { teams } = useTeams();
 
   // próximo jogo (primeiro upcoming)
@@ -73,24 +71,17 @@ export const Home = ({ navigation }: any) => {
         </View>
       </View>
 
-        {/* FEATURED MATCH */}
-        {featuredMatch && (
-          <View style={styles.section}>
-            <View style={styles.sectionTitleRow}>
-              <Ionicons name="trophy-outline" size={20} color={COLORS.secondary} />
-              <Text style={styles.sectionTitle}>
-                {featuredMatch.status === 'live' ? 'A Decorrer' : 'Próximo Jogo'}
-              </Text>
-            </View>
-
-            <MatchCard
-                match={recentMatch}
-                homeLogo={getTeamLogo(getHomeTeam(recentMatch)) || ''}
-                awayLogo={getTeamLogo(getAwayTeam(recentMatch)) || ''}
-                onPress={() => navigation.navigate('MatchDetail', { id: recentMatch.id })}
-              />
-          </View>
-        )}
+            {/* LIVE MATCHES */}
+            {liveMatches.length > 0 && (
+              <View style={styles.section}>
+                <View style={styles.sectionTitleRow}>
+                  <Text style={[styles.sectionTitle, { color: COLORS.destructive }]}>A Decorrer</Text>
+                </View>
+                {liveMatches.map((match) => (
+                  <MatchCard key={match.id} match={match} homeLogo={getTeamLogo(getHomeTeam(match)) || ''} awayLogo={getTeamLogo(getAwayTeam(match)) || ''} onPress={() => navigation.navigate('MatchDetail', { id: match.id }) }/>
+                ))}
+              </View>
+            )}
 
         {/* Next Match */}
         {nextMatch && (

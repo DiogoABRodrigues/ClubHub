@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './Matches.styles';
@@ -57,7 +57,7 @@ export const Matches = ({ navigation }: any) => {
             {/* LIVE MATCHES */}
             {liveMatches.length > 0 && (
               <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: COLORS.destructive }]}>Live Now</Text>
+                <Text style={[styles.sectionTitle, { color: COLORS.destructive }]}>A Decorrer</Text>
                 {liveMatches.map((match) => (
                   <MatchCard key={match.id} match={match} homeLogo={getTeamLogo(getHomeTeam(match)) || ''} awayLogo={getTeamLogo(getAwayTeam(match)) || ''} onPress={() => navigation.navigate('MatchDetail', { id: match.id }) }/>
                 ))}

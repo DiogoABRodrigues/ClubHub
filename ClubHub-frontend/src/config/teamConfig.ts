@@ -9,6 +9,7 @@ export const teamConfig = {
   nr_teams: 16,
   stats: "https://www.zerozero.pt/equipa/adecas/18231/jogadores?epoca_stats_id=155&o=j",
   currentSeason: getCurrentSeason(),
+  team_stadium: "Campo Costa do Monte, Arcos de Valdevez",
 };
 
 function getCurrentSeason() {

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated } from 'react-native';
 import { styles } from './styles/LiveBadge.styles';
-import { COLORS } from '../theme/colors';
 
 export const LiveBadge = () => {
   const opacity = useRef(new Animated.Value(1)).current;
@@ -26,7 +25,7 @@ export const LiveBadge = () => {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.dot, { opacity }]} />
-      <Text style={styles.text}>LIVE</Text>
+      <Text style={styles.text}>Em direto</Text>
     </View>
   );
 };
