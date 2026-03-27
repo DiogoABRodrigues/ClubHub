@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, Image, Pressable, Platform } from 'react-native';
+import React, { useMemo, useCallback } from 'react';
+import { View, Text, Image, Pressable } from 'react-native';
 import { styles } from './styles/NewsCard.styles';
 import { COLORS } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,17 +8,15 @@ import { formatDatePT } from '../utils/dateUtils';
 
 interface Props {
   news: News;
-  onPress?: () => void; // função de navegação
+  onPress?: () => void;
 }
 
-export const NewsCard = ({ news, onPress }: Props) => {
+export const NewsCard = React.memo(({ news, onPress }: Props) => {
 
-  const formatDate = (dateStr: string) => {
-    return formatDatePT(dateStr);
-  };
+  const formattedDate = useMemo(() => formatDatePT(news.createdAt), [news.createdAt]);
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
+  const categoryStyle = useMemo(() => {
+    switch (news.category) {
       case 'Team':
         return { backgroundColor: COLORS.primary + '20', color: COLORS.primary };
       case 'Transfers':
@@ -28,12 +26,14 @@ export const NewsCard = ({ news, onPress }: Props) => {
       default:
         return { backgroundColor: COLORS.surface, color: COLORS.textSecondary };
     }
-  };
+  }, [news.category]);
 
-  const categoryStyle = getCategoryColor(news.category);
-  
+  const handlePress = useCallback(() => {
+    onPress?.();
+  }, [onPress]);
+
   return (
-    <Pressable style={styles.card} onPress={onPress}>
+    <Pressable style={styles.card} onPress={handlePress}>
       
       {/* IMAGE */}
       {news.image ? (
@@ -59,14 +59,17 @@ export const NewsCard = ({ news, onPress }: Props) => {
 
           <View style={styles.dateRow}>
             <Ionicons name="calendar-outline" size={12} color={COLORS.textSecondary} />
-            <Text style={styles.dateText}>{formatDate(news.createdAt)}</Text>
+            <Text style={styles.dateText}>{formattedDate}</Text>
           </View>
         </View>
 
-        <Text style={styles.title} numberOfLines={2}>{news.title}</Text>
-        <Text style={styles.excerpt} numberOfLines={2}>{news.excerpt}</Text>
+        <Text style={styles.title} numberOfLines={2}>
+          {news.title}
+        </Text>
+        <Text style={styles.excerpt} numberOfLines={2}>
+          {news.excerpt}
+        </Text>
       </View>
-
     </Pressable>
   );
-};
+});

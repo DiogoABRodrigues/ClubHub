@@ -1,23 +1,24 @@
-import React from 'react';
-import { View, Animated, Pressable, StyleSheet } from 'react-native';
+import React, { useRef, useEffect, useCallback, useMemo } from 'react';
+import { Animated, Pressable, StyleSheet } from 'react-native';
 import { COLORS } from '../theme/colors';
 
 interface SwitchProps {
   value: boolean;
   onValueChange?: (val: boolean) => void;
   disabled?: boolean;
-  size?: number; // tamanho do switch
+  size?: number;
 }
 
-export const Switch: React.FC<SwitchProps> = ({
+export const Switch: React.FC<SwitchProps> = React.memo(({
   value,
   onValueChange,
   disabled = false,
   size = 32,
 }) => {
-  const translateX = React.useRef(new Animated.Value(value ? 1 : 0)).current;
 
-  React.useEffect(() => {
+  const translateX = useRef(new Animated.Value(value ? 1 : 0)).current;
+
+  useEffect(() => {
     Animated.timing(translateX, {
       toValue: value ? 1 : 0,
       duration: 200,
@@ -25,19 +26,27 @@ export const Switch: React.FC<SwitchProps> = ({
     }).start();
   }, [value]);
 
-  const toggle = () => {
+  const toggle = useCallback(() => {
     if (disabled) return;
-    onValueChange && onValueChange(!value);
-  };
+    onValueChange?.(!value);
+  }, [value, disabled, onValueChange]);
 
-  const thumbSize = size * 0.6;
-  const trackHeight = size * 0.6;
-  const trackWidth = size;
+  // 🔥 evitar recalcular dimensões
+  const { thumbSize, trackHeight, trackWidth } = useMemo(() => {
+    const thumb = size * 0.6;
+    return {
+      thumbSize: thumb,
+      trackHeight: thumb,
+      trackWidth: size,
+    };
+  }, [size]);
 
-  const translate = translateX.interpolate({
-    inputRange: [0, 1],
-    outputRange: [2, trackWidth - thumbSize - 2],
-  });
+  const translate = useMemo(() => {
+    return translateX.interpolate({
+      inputRange: [0, 1],
+      outputRange: [2, trackWidth - thumbSize - 2],
+    });
+  }, [translateX, trackWidth, thumbSize]);
 
   return (
     <Pressable
@@ -68,7 +77,7 @@ export const Switch: React.FC<SwitchProps> = ({
       />
     </Pressable>
   );
-};
+});
 
 const styles = StyleSheet.create({
   track: {

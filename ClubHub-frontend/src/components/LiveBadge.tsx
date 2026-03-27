@@ -6,7 +6,9 @@ export const LiveBadge = () => {
   const opacity = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    Animated.loop(
+    opacity.setValue(1);
+
+    const animation = Animated.loop(
       Animated.sequence([
         Animated.timing(opacity, {
           toValue: 0.3,
@@ -19,7 +21,13 @@ export const LiveBadge = () => {
           useNativeDriver: true,
         }),
       ])
-    ).start();
+    );
+
+    animation.start();
+
+    return () => {
+      animation.stop();
+    };
   }, []);
 
   return (

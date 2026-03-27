@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, LayoutAnimation, Platform, UIManager, Image } from 'react-native';
 import { styles } from './styles/LeagueTableRow.styles';
 import { COLORS } from '../theme/colors';
 import { Standing } from '../models/Standing';
 import { useTeams } from '../contexts/TeamsContext';
 import { teamConfig } from '../config/teamConfig';
+import { useEffect } from 'react';
 
 interface Props {
   standing: Standing;
@@ -13,49 +14,49 @@ interface Props {
   red: number;   // número de posições vermelhas (descida)
 }
 
-export const LeagueTableRow = ({ standing, isUserTeam = false, green, red}: Props) => {
+export const LeagueTableRow = React.memo(({ standing, isUserTeam = false, green, red }: Props) => {
   const { teams } = useTeams();
   const [expanded, setExpanded] = useState(false);
 
-  // Enable LayoutAnimation on Android
-  if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-  }
+    useEffect(() => {
+      if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+      }
+    }, []);
 
-  const toggleExpand = () => {
+  const toggleExpand = useCallback(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setExpanded(!expanded);
-  };
+    setExpanded(prev => !prev);
+  }, []);
 
-  // Buscar logo da equipa pelo nome
-  const teamLogo = teams.find(
-    (team) => team.name.trim().toLowerCase() === standing.teamName.trim().toLowerCase()
-  )?.logoUrl;
+    const teamMap = useMemo(() => {
+      const map: Record<string, any> = {};
+      teams.forEach(t => {
+        map[t.name.trim().toLowerCase()] = t;
+      });
+      return map;
+    }, [teams]);
 
-  const AppTeam = teams.find(t => t.name.trim().toLowerCase() === teamConfig.name.trim().toLowerCase());
+    const normalizedName = standing.teamName.trim().toLowerCase();
 
-  const getRowBackgroundColor = (standingPosition: number, teamName: string) => {
-    // Linha da equipa da app
-    if (teamName.trim().toLowerCase() === AppTeam?.name.trim().toLowerCase()) {
-      return COLORS.primaryLight; // cor especial da equipa
-    }
+    const teamLogo = teamMap[normalizedName]?.logoUrl;
 
-    // Subida / promoção
-    if (standingPosition <= green) return COLORS.successLight;
+    const appTeamName = teamConfig.name.trim().toLowerCase();
+    const isAppTeam = normalizedName === appTeamName;
 
-    // Descida / relegação
-    if (standingPosition >= red) return COLORS.errorLight;
-
-    // Normal
-    return COLORS.background; // ou transparente
-  };
+    const rowBackgroundColor = useMemo(() => {
+      if (isAppTeam) return COLORS.primaryLight;
+      if (standing.position <= green) return COLORS.successLight;
+      if (standing.position >= red) return COLORS.errorLight;
+      return COLORS.background;
+    }, [standing.position, isAppTeam, green, red]);
 
   return (
     <TouchableOpacity activeOpacity={0.8} onPress={toggleExpand}>
       <View
   style={[
     styles.row,
-    { backgroundColor: getRowBackgroundColor(standing.position, standing.teamName) },
+    { backgroundColor: rowBackgroundColor },
     isUserTeam && styles.userRow
   ]}
 >
@@ -115,4 +116,4 @@ export const LeagueTableRow = ({ standing, isUserTeam = false, green, red}: Prop
       )}
     </TouchableOpacity>
   );
-};
+} );
