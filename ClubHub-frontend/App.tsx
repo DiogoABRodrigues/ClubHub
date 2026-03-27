@@ -6,6 +6,8 @@ import { MatchesProvider } from './src/contexts/MatchesContext';
 import { TeamsProvider } from './src/contexts/TeamsContext';
 import { NewsProvider } from './src/contexts/NewsContext';
 import { StandingsProvider } from './src/contexts/StandingsContext';
+import { PlayersProvider } from './src/contexts/PlayersContext';
+import { StatsProvider } from './src/contexts/StatsContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 
@@ -18,11 +20,15 @@ export default function App() {
         <TeamsProvider>
           <NewsProvider>
             <StandingsProvider>
-              {!splashDone ? (
-                <SplashScreen onFinish={() => setSplashDone(true)} />
-              ) : (
-                <AppNavigator />
-              )}
+              <StatsProvider>
+                <PlayersProvider>
+                  {!splashDone ? (
+                    <SplashScreen onFinish={() => setSplashDone(true)} />
+                  ) : (
+                    <AppNavigator />
+                  )}
+                </PlayersProvider>
+              </StatsProvider>
             </StandingsProvider>
           </NewsProvider>
         </TeamsProvider>
