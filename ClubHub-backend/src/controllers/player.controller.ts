@@ -9,7 +9,7 @@ export default class PlayerController {
     res.json(data);
   }
 
-  static async getBySeasonId(req: Request, res: Response) {
+  static async getById(req: Request, res: Response) {
     const seasonId = parseInt(String(req.params.seasonId));
     const data = await service.getBySeasonId(seasonId);
 

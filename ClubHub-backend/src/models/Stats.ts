@@ -9,6 +9,9 @@ declare seasonId: number;
 declare gamesPlayed: number;
 declare goals: number;
 declare minutesPlayed: number;
+
+declare age: number;
+declare position: string
 }
 
 Stats.init(
@@ -18,6 +21,9 @@ seasonId: { type: DataTypes.INTEGER, allowNull: false },
 gamesPlayed: { type: DataTypes.INTEGER, defaultValue: 0 },
 goals: { type: DataTypes.INTEGER, defaultValue: 0 },
 minutesPlayed: { type: DataTypes.INTEGER, defaultValue: 0 },
+age: { type: DataTypes.INTEGER, defaultValue: 0 },
+position: { type: DataTypes.STRING, defaultValue: "Unknown" }
+
 },
 { 
 sequelize, 
