@@ -1,17 +1,34 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { ArrowUp, ArrowDown } from 'lucide-react-native';
-import { styles } from './Stats.styles';
 import { usePlayers } from '../../contexts/PlayersContext';
 import { PlayerWithStats } from '../../models/Player';
+import { styles as globalStyles } from './Stats.styles';
 
 type SortField = 'games' | 'minutes' | 'goals';
 type SortOrder = 'asc' | 'desc';
+
+const SortIcon = React.memo(({ active, order }: { active: boolean; order: SortOrder }) => {
+  if (!active) return null;
+  return order === 'desc' ? (
+    <ArrowUp width={14} height={14} color="#666" />
+  ) : (
+    <ArrowDown width={14} height={14} color="#666" />
+  );
+});
 
 export function SquadStats() {
   const { players } = usePlayers();
   const [sortField, setSortField] = useState<SortField>('goals');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+
+  // Ref do FlatList
+  const flatListRef = useRef<FlatList>(null);
+
+  // Scroll para o topo sempre que a screen abre
+  useEffect(() => {
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
+  }, []); // apenas na montagem
 
   // Filtra apenas jogadores, ignora staff
   const statsPlayersOnly = useMemo(() => {
@@ -22,107 +39,101 @@ export function SquadStats() {
     );
   }, [players]);
 
-  // Ordena pela coluna selecionada
-  const statsSortedPlayers = useMemo(() => {
-    return [...statsPlayersOnly].sort((a, b) => {
-      let comp = 0;
+  const compareFn = useCallback(
+    (a: PlayerWithStats, b: PlayerWithStats) => {
+      let valA = 0, valB = 0;
       switch (sortField) {
-        case 'games':
-          comp = a.stats.gamesPlayed - b.stats.gamesPlayed;
-          break;
-        case 'minutes':
-          comp = a.stats.minutesPlayed - b.stats.minutesPlayed;
-          break;
-        case 'goals':
-          comp = a.stats.goals - b.stats.goals;
-          break;
+        case 'games': valA = a.stats.gamesPlayed; valB = b.stats.gamesPlayed; break;
+        case 'minutes': valA = a.stats.minutesPlayed; valB = b.stats.minutesPlayed; break;
+        case 'goals': valA = a.stats.goals; valB = b.stats.goals; break;
       }
-      return sortOrder === 'desc' ? -comp : comp;
-    });
-  }, [statsPlayersOnly, sortField, sortOrder]);
+      return sortOrder === 'desc' ? valB - valA : valA - valB;
+    },
+    [sortField, sortOrder]
+  );
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
-    } else {
-      setSortField(field);
-      setSortOrder('desc');
-    }
-  };
+  const statsSortedPlayers = useMemo(() => [...statsPlayersOnly].sort(compareFn), [
+    statsPlayersOnly,
+    compareFn,
+  ]);
 
-  const renderHeader = () => (
-    <View style={styles.statsHeader}>
-      <Text style={[styles.statsText, styles.statsHeaderText, { flex: 2 }]}>
+  const handleSort = useCallback(
+    (field: SortField) => {
+      if (sortField === field) {
+        setSortOrder(prev => (prev === 'desc' ? 'asc' : 'desc'));
+      } else {
+        setSortField(field);
+        setSortOrder('desc');
+      }
+      // Opcional: scroll para o topo sempre que muda a ordenação
+      flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    },
+    [sortField]
+  );
+
+  const renderHeader = useMemo(() => (
+    <View style={globalStyles.statsHeader}>
+      <Text style={[globalStyles.statsText, globalStyles.statsHeaderText, localStyles.flex2]}>
         Jogador
       </Text>
 
-      <TouchableOpacity
-        style={styles.statsHeaderButton}
-        onPress={() => handleSort('games')}
-      >
-        <Text style={styles.statsHeaderText}>Jogos</Text>
-        {sortField === 'games' &&
-          (sortOrder === 'desc' ? (
-            <ArrowUp width={14} height={14} color="#666" />
-          ) : (
-            <ArrowDown width={14} height={14} color="#666" />
-          ))}
+      <TouchableOpacity style={globalStyles.statsHeaderButton} onPress={() => handleSort('games')}>
+        <Text style={globalStyles.statsHeaderText}>Jogos</Text>
+        <SortIcon active={sortField === 'games'} order={sortOrder} />
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.statsHeaderButton}
-        onPress={() => handleSort('minutes')}
-      >
-        <Text style={styles.statsHeaderText}>Mins</Text>
-        {sortField === 'minutes' &&
-          (sortOrder === 'desc' ? (
-            <ArrowDown width={14} height={14} color="#666" />
-          ) : (
-            <ArrowDown width={14} height={14} color="#666" />
-          ))}
+      <TouchableOpacity style={globalStyles.statsHeaderButton} onPress={() => handleSort('minutes')}>
+        <Text style={globalStyles.statsHeaderText}>Mins</Text>
+        <SortIcon active={sortField === 'minutes'} order={sortOrder} />
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.statsHeaderButton}
-        onPress={() => handleSort('goals')}
-      >
-        <Text style={styles.statsHeaderText}>Golos</Text>
-        {sortField === 'goals' &&
-          (sortOrder === 'desc' ? (
-            <ArrowUp width={14} height={14} color="#666" />
-          ) : (
-            <ArrowDown width={14} height={14} color="#666" />
-          ))}
+      <TouchableOpacity style={globalStyles.statsHeaderButton} onPress={() => handleSort('goals')}>
+        <Text style={globalStyles.statsHeaderText}>Golos</Text>
+        <SortIcon active={sortField === 'goals'} order={sortOrder} />
       </TouchableOpacity>
     </View>
-  );
+  ), [handleSort, sortField, sortOrder]);
 
-  const renderItem = ({ item }: { item: PlayerWithStats }) => (
-    <View style={styles.statsRow}>
-      <View style={styles.playerInfo}>
-        <Image
-          source={
-            item.photoUrl
-              ? { uri: item.photoUrl }
-              : require('../../../assets/player.jpg')
-          }
-          style={styles.statsPhoto}
-          resizeMode="contain"
-        />
-        <Text style={styles.playerName}>{item.name}</Text>
+  const renderItem = useCallback(({ item }: { item: PlayerWithStats }) => {
+    const defaultPlayerImage = require('../../../assets/player.jpg');
+
+    return (
+      <View style={globalStyles.statsRow}>
+        <View style={globalStyles.playerInfo}>
+          <Image
+            source={item.photoUrl ? { uri: item.photoUrl } : defaultPlayerImage}
+            style={globalStyles.statsPhoto}
+            resizeMode="contain"
+          />
+          <Text style={globalStyles.playerName}>{item.name}</Text>
+        </View>
+        <Text style={globalStyles.statsText}>{item.stats.gamesPlayed}</Text>
+        <Text style={globalStyles.statsText}>{item.stats.minutesPlayed}</Text>
+        <Text style={globalStyles.statsText}>{item.stats.goals}</Text>
       </View>
-      <Text style={styles.statsText}>{item.stats.gamesPlayed}</Text>
-      <Text style={styles.statsText}>{item.stats.minutesPlayed}</Text>
-      <Text style={styles.statsText}>{item.stats.goals}</Text>
-    </View>
-  );
+    );
+  }, []);
 
   return (
     <FlatList
+      ref={flatListRef}
       data={statsSortedPlayers}
       renderItem={renderItem}
       ListHeaderComponent={renderHeader}
-      contentContainerStyle={styles.statsTable}
+      contentContainerStyle={globalStyles.statsTable}
+      initialNumToRender={10}
+      maxToRenderPerBatch={10}
+      windowSize={5}
+      removeClippedSubviews
+      getItemLayout={(data, index) => ({
+        length: 60,
+        offset: 60 * index,
+        index,
+      })}
     />
   );
 }
+
+const localStyles = StyleSheet.create({
+  flex2: { flex: 2 },
+});

@@ -1,19 +1,44 @@
-// SeasonScreen.tsx
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { Trophy, Users, BarChart3 } from 'lucide-react-native';
+import { Trophy, Users, BarChart3, ArrowLeft } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { styles } from './Season.styles';
 import { SquadScreen } from '../Squad/Squad';
 import { Standings } from '../Standings/Standings';
-import { ArrowLeft } from 'lucide-react-native';
 import { SquadStats } from '../Stats/Stats';
 
 type SeasonTab = 'standings' | 'squad' | 'stats';
 
+interface Tab {
+  key: SeasonTab;
+  label: string;
+  icon: any;
+}
+
 export function SeasonScreen() {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState<SeasonTab>('standings');
+
+  // Tabs configuráveis em array
+  const tabs: Tab[] = useMemo(() => [
+    { key: 'standings', label: 'Classificação', icon: Trophy },
+    { key: 'squad', label: 'Plantel', icon: Users },
+    { key: 'stats', label: 'Estatísticas', icon: BarChart3 },
+  ], []);
+
+  // Handler memoizado
+  const handleTabPress = useCallback((tab: SeasonTab) => {
+    setActiveTab(tab);
+  }, []);
+
+  // Render do conteúdo da tab
+  const renderContent = useMemo(() => {
+    switch (activeTab) {
+      case 'standings': return <Standings />;
+      case 'squad': return <SquadScreen />;
+      case 'stats': return <SquadStats />;
+    }
+  }, [activeTab]);
 
   return (
     <View style={styles.container}>
@@ -28,38 +53,34 @@ export function SeasonScreen() {
 
       {/* Tabs */}
       <View style={styles.tabsContainer}>
-        <TabButton
-          icon={Trophy}
-          label="Classificação"
-          active={activeTab === 'standings'}
-          onPress={() => setActiveTab('standings')}
-        />
-        <TabButton
-          icon={Users}
-          label="Plantel"
-          active={activeTab === 'squad'}
-          onPress={() => setActiveTab('squad')}
-        />
-        <TabButton
-          icon={BarChart3}
-          label="Estatísticas"
-          active={activeTab === 'stats'}
-          onPress={() => setActiveTab('stats')}
-        />
+        {tabs.map(tab => (
+          <TabButton
+            key={tab.key}
+            Icon={tab.icon}
+            label={tab.label}
+            active={activeTab === tab.key}
+            onPress={() => handleTabPress(tab.key)}
+          />
+        ))}
       </View>
 
       {/* Content */}
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {activeTab === 'standings' && <Standings />}
-        {activeTab === 'squad' && <SquadScreen />}
-        {activeTab === 'stats' && <SquadStats />}
+        {renderContent}
       </ScrollView>
     </View>
   );
 }
 
-// Componente de botão de tab
-const TabButton = ({ icon: Icon, label, active, onPress }: any) => (
+// Componente memoizado de botão de tab
+interface TabButtonProps {
+  Icon: any;
+  label: string;
+  active: boolean;
+  onPress: () => void;
+}
+
+const TabButton = React.memo(({ Icon, label, active, onPress }: TabButtonProps) => (
   <TouchableOpacity
     style={[styles.tab, active && styles.tabActive]}
     onPress={onPress}
@@ -67,4 +88,4 @@ const TabButton = ({ icon: Icon, label, active, onPress }: any) => (
     <Icon width={20} height={20} color={active ? '#3b82f6' : '#666'} />
     <Text style={[styles.tabText, active && styles.tabTextActive]}>{label}</Text>
   </TouchableOpacity>
-);
+));

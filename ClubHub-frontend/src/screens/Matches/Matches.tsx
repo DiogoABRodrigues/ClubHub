@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './Matches.styles';
@@ -7,35 +7,74 @@ import { COLORS } from '../../theme/colors';
 import { useMatches } from '../../contexts/MatchesContext';
 import { useTeams } from '../../contexts/TeamsContext';
 
+interface MatchesSectionProps {
+  title: string;
+  matches: any[];
+  showAll: boolean;
+  toggleShowAll: () => void;
+  getTeamLogo: (teamName: string) => string | undefined;
+  navigation: any;
+  getHomeTeam: (match: any) => string;
+  getAwayTeam: (match: any) => string;
+}
+
+const MatchesSection: React.FC<MatchesSectionProps> = ({
+  title,
+  matches,
+  showAll,
+  toggleShowAll,
+  getTeamLogo,
+  navigation,
+  getHomeTeam,
+  getAwayTeam,
+}) => {
+  const limitedMatches = useMemo(() => (showAll ? matches : matches.slice(0, 3)), [matches, showAll]);
+
+  return (
+    <View style={styles.section}>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>{title}</Text>
+        {matches.length > 3 && (
+          <TouchableOpacity onPress={toggleShowAll}>
+            <Text style={styles.showMoreInline}>{showAll ? 'Ver menos' : 'Ver todos'}</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+      {limitedMatches.map(match => (
+        <MatchCard
+          key={match.id}
+          match={match}
+          homeLogo={getTeamLogo(getHomeTeam(match)) || ''}
+          awayLogo={getTeamLogo(getAwayTeam(match)) || ''}
+          onPress={() => navigation.navigate('MatchDetail', { id: match.id })}
+        />
+      ))}
+    </View>
+  );
+};
+
 export const Matches = ({ navigation }: any) => {
   const { matches, loading } = useMatches();
-  const { teams, loading: teamsLoading } = useTeams();
-
-  const liveMatches = matches.filter((m) => m.status === 'live');
-  const upcomingMatches = matches.filter((m) => m.status === 'upcoming').toReversed();
-  const finishedMatches = matches.filter((m) => m.status === 'finished');
+  const { teams } = useTeams();
 
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [showAllFinished, setShowAllFinished] = useState(false);
 
-  const limitMatches = (list: any[], showAll: boolean) =>
-    showAll ? list : list.slice(0, 3);
+  const liveMatches = useMemo(() => matches.filter(m => m.status === 'live'), [matches]);
+  const upcomingMatches = useMemo(() => matches.filter(m => m.status === 'upcoming').toReversed(), [matches]);
+  const finishedMatches = useMemo(() => matches.filter(m => m.status === 'finished'), [matches]);
 
-  const getTeamLogo = (teamName: string) => {
-    const normalized = teamName.trim().toLowerCase();
+  const getTeamLogo = useCallback(
+    (teamName: string) => {
+      const normalized = teamName.trim().toLowerCase();
+      const team = teams.find(t => t.name.trim().toLowerCase() === normalized);
+      return team?.logoUrl;
+    },
+    [teams]
+  );
 
-    const team = teams.find(
-      t => t.name.trim().toLowerCase() === normalized
-    );
-
-    return team?.logoUrl;
-  };
-
-  const getHomeTeam = (match: any) =>
-    match.homeOrAway === 'C' ? match.teamName : match.opponent;
-
-  const getAwayTeam = (match: any) =>
-    match.homeOrAway === 'F' ? match.teamName : match.opponent;
+  const getHomeTeam = useCallback((match: any) => (match.homeOrAway === 'C' ? match.teamName : match.opponent), []);
+  const getAwayTeam = useCallback((match: any) => (match.homeOrAway === 'F' ? match.teamName : match.opponent), []);
 
   return (
     <View style={styles.container}>
@@ -51,78 +90,51 @@ export const Matches = ({ navigation }: any) => {
 
       <ScrollView contentContainerStyle={styles.content}>
         {loading ? (
-          <Text style={{ textAlign: 'center', marginTop: 50 }}>Loading matches...</Text>
+          <Text style={{ textAlign: 'center', marginTop: 50 }}>A carregar jogos...</Text>
         ) : (
           <>
-            {/* LIVE MATCHES */}
             {liveMatches.length > 0 && (
-              <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: COLORS.destructive }]}>A Decorrer</Text>
-                {liveMatches.map((match) => (
-                  <MatchCard key={match.id} match={match} homeLogo={getTeamLogo(getHomeTeam(match)) || ''} awayLogo={getTeamLogo(getAwayTeam(match)) || ''} onPress={() => navigation.navigate('MatchDetail', { id: match.id }) }/>
-                ))}
-              </View>
+              <MatchesSection
+                title="A Decorrer"
+                matches={liveMatches}
+                showAll={true}
+                toggleShowAll={() => {}}
+                getTeamLogo={getTeamLogo}
+                navigation={navigation}
+                getHomeTeam={getHomeTeam}
+                getAwayTeam={getAwayTeam}
+              />
             )}
 
-            {/* UPCOMING MATCHES */}
             {upcomingMatches.length > 0 && (
-              <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                  <Text style={styles.sectionTitle}>Próximos jogos</Text>
-
-                  {upcomingMatches.length > 3 && (
-                    <TouchableOpacity onPress={() => setShowAllUpcoming(!showAllUpcoming)}>
-                      <Text style={styles.showMoreInline}>
-                        {showAllUpcoming ? 'Ver menos' : 'Ver todos'}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-                {limitMatches(upcomingMatches, showAllUpcoming).map((match) => (
-                  <MatchCard
-                    key={match.id}
-                    match={match}
-                    homeLogo={getTeamLogo(getHomeTeam(match)) || ''}
-                    awayLogo={getTeamLogo(getAwayTeam(match)) || ''}
-                    onPress={() => navigation.navigate('MatchDetail', { id: match.id })}
-                  />
-                ))}
-              </View>
+              <MatchesSection
+                title="Próximos jogos"
+                matches={upcomingMatches}
+                showAll={showAllUpcoming}
+                toggleShowAll={() => setShowAllUpcoming(!showAllUpcoming)}
+                getTeamLogo={getTeamLogo}
+                navigation={navigation}
+                getHomeTeam={getHomeTeam}
+                getAwayTeam={getAwayTeam}
+              />
             )}
 
-            {/* FINISHED MATCHES */}
             {finishedMatches.length > 0 && (
-              <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                  <Text style={styles.sectionTitle}>Últimos Resultados</Text>
-
-                  {finishedMatches.length > 3 && (
-                    <TouchableOpacity onPress={() => setShowAllFinished(!showAllFinished)}>
-                      <Text style={styles.showMoreInline}>
-                        {showAllFinished ? 'Ver menos' : 'Ver todos'}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-                {limitMatches(finishedMatches, showAllFinished).map((match) => (
-                  <MatchCard
-                    key={match.id}
-                    match={match}
-                    homeLogo={getTeamLogo(getHomeTeam(match)) || ''}
-                    awayLogo={getTeamLogo(getAwayTeam(match)) || ''}
-                    onPress={() => navigation.navigate('MatchDetail', { id: match.id })}
-                  />
-                ))}
-              </View>
+              <MatchesSection
+                title="Últimos Resultados"
+                matches={finishedMatches}
+                showAll={showAllFinished}
+                toggleShowAll={() => setShowAllFinished(!showAllFinished)}
+                getTeamLogo={getTeamLogo}
+                navigation={navigation}
+                getHomeTeam={getHomeTeam}
+                getAwayTeam={getAwayTeam}
+              />
             )}
 
-            {/* NO MATCHES */}
             {matches.length === 0 && (
               <View style={styles.noMatches}>
-                <View style={styles.logoCircle}>
-                  <Text style={styles.logoEmoji}>⚽</Text>
-                </View>
-                <Text style={styles.noMatchesText}>Não foram encontrados jogos para estes filtros</Text>
+                <Text style={styles.noMatchesText}>Não foram encontrados jogos</Text>
               </View>
             )}
           </>

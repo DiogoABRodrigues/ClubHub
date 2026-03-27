@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { styles } from './Home.styles';
 
@@ -21,34 +21,27 @@ export const Home = ({ navigation }: any) => {
 
   const { matches, loading } = useMatches();
 
-  const liveMatches = matches.filter((m) => m.status === 'live');
+  const liveMatches = useMemo(() => matches.filter(m => m.status === 'live'), [matches]);
 
   const { teams } = useTeams();
 
   // próximo jogo (primeiro upcoming)
-  const nextMatch = matches
-    .filter((m) => m.status === 'upcoming')
-    .toReversed()[0];
+  const nextMatch = useMemo(() => 
+    matches.filter(m => m.status === 'upcoming').toReversed()[0]
+  , [matches]);
 
   // último jogo (mais recente finished)
-  const recentMatch = matches
-    .filter((m) => m.status === 'finished')[0];
+  const recentMatch = useMemo(() => 
+  matches.filter(m => m.status === 'finished')[0], [matches]);
 
-  const getTeamLogo = (teamName: string) => {
+  const getTeamLogo = useCallback((teamName: string) => {
     const normalized = teamName.trim().toLowerCase();
-
-    const team = teams.find(
-      t => t.name.trim().toLowerCase() === normalized
-    );
-
+    const team = teams.find(t => t.name.trim().toLowerCase() === normalized);
     return team?.logoUrl;
-  };
+  }, [teams]);
 
-  const getHomeTeam = (match: any) =>
-    match.homeOrAway === 'C' ? match.teamName : match.opponent;
-
-  const getAwayTeam = (match: any) =>
-    match.homeOrAway === 'F' ? match.teamName : match.opponent;
+  const getHomeTeam = useCallback((match: any) => match.homeOrAway === 'C' ? match.teamName : match.opponent, []);
+  const getAwayTeam = useCallback((match: any) => match.homeOrAway === 'F' ? match.teamName : match.opponent, []);
 
   const appTeamLogo = require("../../../assets/icon.png");
   
@@ -101,7 +94,6 @@ export const Home = ({ navigation }: any) => {
         )}
 
         {/* RECENT MATCHE */}
-        <View style={styles.section}>
           {recentMatch && (
             <View style={styles.section}>
               <View style={styles.sectionTitleRow}>
@@ -117,7 +109,6 @@ export const Home = ({ navigation }: any) => {
               />
             </View>
           )}
-        </View>
 
         {/* NEWS */}
         <View style={styles.section}>

@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './News.styles';
 import { NewsCard } from '../../components/NewsCard';
-import { COLORS, SPACING } from '../../theme/colors';
+import { COLORS } from '../../theme/colors';
 import { useNews } from '../../contexts/NewsContext';
 
 export const News = ({ navigation }: any) => {
-
   const { news, loading } = useNews();
-  
+
+  // Memoiza a lista de notícias
+  const newsList = useMemo(() => news, [news]);
+
   return (
     <View style={styles.container}>
       {/* HEADER */}
@@ -24,10 +26,16 @@ export const News = ({ navigation }: any) => {
 
       {/* CONTENT */}
       <ScrollView contentContainerStyle={styles.content}>
-        {news.length > 0 ? (
+        {loading ? (
+          <Text style={{ textAlign: 'center', marginTop: 50 }}>A carregar notícias...</Text>
+        ) : newsList.length > 0 ? (
           <View style={styles.newsList}>
-            {news.map((news) => (
-              <NewsCard key={news.id} news={news} onPress={() => navigation.navigate('NewsDetail', { id: news.id })} />
+            {newsList.map((item) => (
+              <NewsCard
+                key={item.id}
+                news={item}
+                onPress={() => navigation.navigate('NewsDetail', { id: item.id })}
+              />
             ))}
           </View>
         ) : (

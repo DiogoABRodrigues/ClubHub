@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ScrollView, View, Text, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,7 +12,7 @@ export const Standings: React.FC = () => {
   const { standings, loading } = useStandings();
 
   // garante ordenação por posição
-  const sorted = [...standings].sort((a, b) => a.position - b.position);
+  const sorted = useMemo(() => [...standings].sort((a, b) => a.position - b.position), [standings]);
 
   return (
     <View style={styles.container}>

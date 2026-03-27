@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { PlayerLineup } from '../../components/PlayerLineup';
@@ -23,6 +23,12 @@ export const MatchDetail = () => {
 
   const [activeTab, setActiveTab] = useState<'timeline' | 'lineup' >('timeline');
 
+  const tabs = useMemo(() => [
+    { key: 'timeline', label: 'Sumário' },
+    { key: 'lineup', label: 'Formação' }
+  ], []);
+  
+
   if (!match) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -37,17 +43,15 @@ export const MatchDetail = () => {
   const homeTeamName = match.homeOrAway === 'C' ? match.teamName : match.opponent;
   const awayTeamName = match.homeOrAway === 'F' ? match.teamName : match.opponent;
 
-  const homeLogo = teams.find(t => t.name.trim().toLowerCase() === homeTeamName.trim().toLowerCase())?.logoUrl;
-  const awayLogo = teams.find(t => t.name.trim().toLowerCase() === awayTeamName.trim().toLowerCase())?.logoUrl;
+  const getTeamLogo = (teamName: string) => {
+  const normalized = teamName.trim().toLowerCase();
+    return teams.find(t => t.name.trim().toLowerCase() === normalized)?.logoUrl;
+  };
 
-  let location;
+  const homeLogo = getTeamLogo(homeTeamName);
+  const awayLogo = getTeamLogo(awayTeamName);
 
-  if( homeTeamName == teamConfig.name) {
-    location = teamConfig.team_stadium;
-  }
-  else {
-    location = match.location;
-  }
+  const location = homeTeamName === teamConfig.name ? teamConfig.team_stadium : match.location;
 
   return (
     <ScrollView style={styles.container} >
@@ -118,7 +122,7 @@ export const MatchDetail = () => {
           </View>
           <View style={styles.infoItem}>
             <Ionicons name="location-outline" size={16} color={COLORS.textSecondary} />
-            <Text style={styles.infoText}>{match.location}</Text>
+            <Text style={styles.infoText}>{location}</Text>
           </View>
         </View>
       </View>
@@ -126,10 +130,10 @@ export const MatchDetail = () => {
       {/* Tabs */}
       <View style={styles.tabsContainer}>
         <View style={styles.tabsList}>
-          {['timeline', 'lineup'].map((tab) => (
-            <TouchableOpacity key={tab} onPress={() => setActiveTab(tab as any)} style={[styles.tabTrigger, activeTab === tab && styles.activeTab]}>
-              <Text style={[styles.tabText, activeTab === tab && { color: COLORS.primary }]}>
-                {tab === 'timeline' ? 'Sumário' : 'Formação'}
+          {tabs.map((tab) => (
+            <TouchableOpacity key={tab.key} onPress={() => setActiveTab(tab.key as any)} style={[styles.tabTrigger, activeTab === tab.key && styles.activeTab]}>
+              <Text style={[styles.tabText, activeTab === tab.key && { color: COLORS.primary }]}>
+                {tab.label}
               </Text>
             </TouchableOpacity>
           ))}
