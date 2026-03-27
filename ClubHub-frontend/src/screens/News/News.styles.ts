@@ -56,7 +56,6 @@ export const styles = StyleSheet.create({
 
   content: {
     paddingHorizontal: SPACING.md,
-    paddingBottom: SPACING.xl * 3, // espaço para BottomNav
     paddingTop: SPACING.sm,
   },
 

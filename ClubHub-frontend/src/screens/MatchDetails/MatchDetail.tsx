@@ -48,26 +48,26 @@ export const MatchDetail = () => {
   else {
     location = match.location;
   }
-  
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 24 }}>
+    <ScrollView style={styles.container} >
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color={COLORS.textSecondary} />
         </TouchableOpacity>
-        <Text style={styles.title}>Match Details</Text>
+        <Text style={styles.title}>Detalhes do jogo</Text>
 
         <View style={styles.statusContainer}>
           {match.status === 'live' && <LiveBadge />}
           {match.status === 'upcoming' && (
             <View style={styles.upcomingBadge}>
-              <Text style={styles.badgeText}>Upcoming</Text>
+              <Text style={styles.badgeText}>Agendado</Text>
             </View>
           )}
           {match.status === 'finished' && (
             <View style={styles.fulltimeBadge}>
-              <Text style={styles.badgeText}>Full Time</Text>
+              <Text style={styles.badgeText}>Terminado</Text>
             </View>
           )}
         </View>
@@ -88,12 +88,12 @@ export const MatchDetail = () => {
 
           {/* Score */}
           <View style={styles.scoreContainer}>
-            <Text style={[styles.scoreText, match.status === 'live' && { color: COLORS.primary }]}>
-              {match.result?.split('-')[0] ?? '-'}
+            <Text style={[styles.scoreText, match.status === 'live' && { color: COLORS.textPrimary }]}>
+              {match.result?.split('-')[0] ?? match.status === 'live' ? '0' : '-'}
             </Text>
             <Text style={styles.colon}>:</Text>
-            <Text style={[styles.scoreText, match.status === 'live' && { color: COLORS.primary }]}>
-              {match.result?.split('-')[1] ?? '-'}
+            <Text style={[styles.scoreText, match.status === 'live' && { color: COLORS.textPrimary }]}>
+              {match.result?.split('-')[1] ?? match.status === 'live' ? '0' : '-'}
             </Text>
           </View>
 
@@ -129,7 +129,7 @@ export const MatchDetail = () => {
           {['timeline', 'lineup'].map((tab) => (
             <TouchableOpacity key={tab} onPress={() => setActiveTab(tab as any)} style={[styles.tabTrigger, activeTab === tab && styles.activeTab]}>
               <Text style={[styles.tabText, activeTab === tab && { color: COLORS.primary }]}>
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {tab === 'timeline' ? 'Sumário' : 'Formação'}
               </Text>
             </TouchableOpacity>
           ))}
@@ -159,7 +159,7 @@ export const MatchDetail = () => {
             ) : (
               <View style={styles.emptyState}>
                 <FontAwesome5 name="hourglass-half" size={36} color={COLORS.textSecondary} />
-                <Text style={styles.mutedText}>No events yet</Text>
+                <Text style={styles.mutedText}>Sem informação</Text>
               </View>
             )
           )}
@@ -170,7 +170,8 @@ export const MatchDetail = () => {
               {match.awayLineup && <PlayerLineup players={match.awayLineup} teamName={match.awayTeam} />}
               {!match.homeLineup && !match.awayLineup && (
                 <View style={styles.emptyState}>
-                  <Text style={styles.mutedText}>Lineup not available yet</Text>
+                  <FontAwesome5 name="hourglass-half" size={36} color={COLORS.textSecondary} />
+                  <Text style={styles.mutedText}>Formação não disponível</Text>
                 </View>
               )}
             </>

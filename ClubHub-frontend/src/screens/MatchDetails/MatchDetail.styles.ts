@@ -101,18 +101,18 @@ export const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   matchInfo: {
-    flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: SPACING.md,
   },
   infoItem: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'baseline',
     gap: 4,
   },
   infoText: {
     fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
+    marginBottom: SPACING.sm,
   },
 
   // Tabs

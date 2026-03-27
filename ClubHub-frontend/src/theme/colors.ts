@@ -7,12 +7,15 @@ export const COLORS = {
   textPrimary: "#111111",
   textSecondary: "#666666",
 
+  successLight: '#dff5e18e', // fundo das equipas em promoção
+  errorLight: '#f8d7dab4', // fundo das equipas em descida
+
   border: "#E0E0E0",
   success: "#4CAF50",
   error: "#F44336",
 
   // Base
-  primaryLight: "#1E90FF33", // azul claro com transparência
+  primaryLight: "#1e8fff0e", // azul claro com transparência
   surfaceLight: "#F9F9F9",
   muted: "#E0E0E0",
 

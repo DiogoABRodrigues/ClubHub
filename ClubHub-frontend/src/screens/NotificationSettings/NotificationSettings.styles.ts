@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
   headerTitle: { fontSize: FONT_SIZE.lg, fontWeight: '600', color: COLORS.textPrimary },
 
-  content: { paddingHorizontal: SPACING.md, paddingBottom: SPACING.xl * 2 },
+  content: { paddingHorizontal: SPACING.md},
 
   infoBanner: {
     flexDirection: 'row',
