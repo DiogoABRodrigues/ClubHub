@@ -1,9 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Switch } from "../../components/Switch";
 import { styles } from "./NotificationSettings.styles";
 import { COLORS } from "../../theme/colors";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+import { v4 as uuidv4 } from 'uuid';
+
+// URL do teu backend
+const BACKEND_URL = 'https://teu-backend.com/api/device/preferences';
 
 export const NotificationSettings = ({ navigation }: any) => {
   const [preferences, setPreferences] = useState({
@@ -13,8 +20,75 @@ export const NotificationSettings = ({ navigation }: any) => {
     newsAlerts: false,
   });
 
+  const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [pushToken, setPushToken] = useState<string | null>(null);
+
+  // 1️⃣ Gerar deviceId único e registar push token
+  useEffect(() => {
+    const initDevice = async () => {
+      let id = await AsyncStorage.getItem('deviceId');
+      if (!id) {
+        id = uuidv4();
+        await AsyncStorage.setItem('deviceId', id);
+      }
+      setDeviceId(id);
+
+      if (!Constants.isDevice) {
+        console.log('É necessário um dispositivo físico para notificações');
+        return;
+      }
+
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        console.log('Permissão para notificações negada!');
+        return;
+      }
+
+      const token = (await Notifications.getExpoPushTokenAsync()).data;
+      setPushToken(token);
+    };
+    initDevice();
+  }, []);
+
+  // 2️⃣ Carregar preferências do AsyncStorage
+  useEffect(() => {
+    const loadPreferences = async () => {
+      try {
+        const stored = await AsyncStorage.getItem('notificationPrefs');
+        if (stored) setPreferences(JSON.parse(stored));
+      } catch (e) {
+        console.log('Erro a carregar preferências', e);
+      }
+    };
+    loadPreferences();
+  }, []);
+
+  // 3️⃣ Guardar preferências local + enviar para backend
+  const savePreferences = async (newPrefs: typeof preferences) => {
+    setPreferences(newPrefs);
+    await AsyncStorage.setItem('notificationPrefs', JSON.stringify(newPrefs));
+
+    if (deviceId && pushToken) {
+      try {
+        await fetch(BACKEND_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ deviceId, pushToken, preferences: newPrefs }),
+        });
+      } catch (e) {
+        console.log('Erro a enviar preferências para o backend', e);
+      }
+    }
+  };
+
   const togglePreference = (key: keyof typeof preferences) => {
-    setPreferences((prev) => ({ ...prev, [key]: !prev[key] }));
+    const newPrefs = { ...preferences, [key]: !preferences[key] };
+    savePreferences(newPrefs);
   };
 
   const notificationTypes = [
