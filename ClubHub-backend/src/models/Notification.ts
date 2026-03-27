@@ -6,9 +6,9 @@ class Notification extends Model {
   declare id: number;
   declare title: string;
   declare message: string;
-  declare recipientRoleId?: number; // se quiser notificar apenas um escalão
-  declare authorId: number;
-  declare read: boolean;
+  declare automatic: boolean;
+  declare hourToSend: Date;
+  declare dayToSend: Date;
 }
 
 Notification.init(
@@ -16,6 +16,9 @@ Notification.init(
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     title: { type: DataTypes.STRING, allowNull: false },
     message: { type: DataTypes.TEXT, allowNull: false },
+    automatic: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    hourToSend: { type: DataTypes.DATE, allowNull: true },
+    dayToSend: { type: DataTypes.DATE, allowNull: true },
     recipientRoleId: {
       type: DataTypes.INTEGER,
       references: { model: "roles", key: "id" },
