@@ -24,6 +24,15 @@ class NewsController {
     }
   }
 
+  async getLast10(req: Request, res: Response) {
+    try {
+      const news = await newsService.getLast10();
+      return res.json(news);
+    } catch (error) {
+      return res.status(500).json({ message: "Erro ao buscar notícias" });
+    }
+  }
+
   async update(req: Request, res: Response) {
     try {
       const id = Number(req.params.id);

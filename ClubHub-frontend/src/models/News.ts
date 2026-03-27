@@ -5,5 +5,5 @@ export type News = {
   excerpt?: string;
   content: string;
   image?: string;
-  publishedAt: string;
+  createdAt: string;
 };

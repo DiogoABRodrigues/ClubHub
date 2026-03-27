@@ -1,32 +1,27 @@
 import React from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { NewsCard } from '../../components/NewsCard';
 import { styles } from './NewsDetail.styles';
-import { mockNews } from '../../data/mockData';
-import { COLORS, SPACING } from '../../theme/colors';
+import { COLORS } from '../../theme/colors';
+import { useNews } from '../../contexts/NewsContext';
+import { formatDatePT } from '../../utils/dateUtils';
 
 export const NewsDetail = ({ route, navigation }: any) => {
   const { id } = route.params;
-  const news = mockNews.find((n) => n.id === id);
+  const { news, loading } = useNews();
+  const newsFound = news.find((n) => n.id === id);
 
-  if (!news) {
+  if (!newsFound) {
     return (
       <View style={styles.noNewsContainer}>
-        <Text style={styles.noNewsText}>News article not found</Text>
+        <Text style={styles.noNewsText}>Ocorreu um erro ao carregar a notícia.</Text>
         <TouchableOpacity onPress={() => navigation.navigate('News')}>
-          <Text style={styles.backLink}>Back to News</Text>
+          <Text style={styles.backLink}>Voltar</Text>
         </TouchableOpacity>
       </View>
     );
   }
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    });
+  const formatDate = (dateStr: string) => formatDatePT(dateStr);
 
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -40,9 +35,7 @@ export const NewsDetail = ({ route, navigation }: any) => {
         return COLORS.muted;
     }
   };
-
-  const relatedNews = mockNews.filter((n) => n.id !== news.id).slice(0, 3);
-
+  const relatedNews = news.filter((n) => n.id !== newsFound.id).slice(0, 3);
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -53,66 +46,58 @@ export const NewsDetail = ({ route, navigation }: any) => {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>News</Text>
         </View>
-        <TouchableOpacity>
-          <Ionicons name="share-outline" size={24} color={COLORS.textSecondary} />
-        </TouchableOpacity>
       </View>
-
       <ScrollView contentContainerStyle={styles.content}>
         {/* Featured Image */}
-        {news.image ? (
-          <Image source={{ uri: news.image }} style={styles.featuredImage} />
+        {newsFound.image ? (
+          <Image source={{ uri: newsFound.image }} style={styles.featuredImage} />
         ) : (
           <View style={styles.placeholderImage}>
             <Text style={styles.logoEmoji}>⚽</Text>
           </View>
         )}
-
         {/* Category Badge */}
         <View style={styles.categoryBadgeContainer}>
-          <Text style={[styles.categoryBadge, { backgroundColor: getCategoryColor(news.category) }]}>
-            {news.category}
+          <Text style={[styles.categoryBadge, { backgroundColor: getCategoryColor(newsFound.category) }]}>
+            {newsFound.category}
           </Text>
         </View>
-
         {/* Title */}
-        <Text style={styles.newsTitle}>{news.title}</Text>
-
+        <Text style={styles.newsTitle}>{newsFound.title}</Text>
         {/* Meta */}
         <View style={styles.metaRow}>
           <View style={styles.metaItem}>
             <Ionicons name="calendar-outline" size={16} color={COLORS.textSecondary} />
-            <Text style={styles.metaText}>{formatDate(news.date)}</Text>
-          </View>
-          <View style={styles.metaItem}>
-            <Ionicons name="person-outline" size={16} color={COLORS.textSecondary} />
-            <Text style={styles.metaText}>{news.author}</Text>
+            <Text style={styles.metaText}>{formatDate(newsFound.createdAt)}</Text>
           </View>
         </View>
-
         {/* Excerpt */}
-        <Text style={styles.excerpt}>{news.excerpt}</Text>
-
+        <Text style={styles.excerpt}>{newsFound.excerpt}</Text>
         {/* Content */}
-        <Text style={styles.contentText}>{news.content}</Text>
-
+        <Text style={styles.contentText}>{newsFound.content}</Text>
         {/* Related News */}
         <View style={styles.relatedContainer}>
-          <Text style={styles.relatedTitle}>More News</Text>
+          <Text style={styles.relatedTitle}>Mais Notícias</Text>
           {relatedNews.map((n) => (
             <TouchableOpacity
               key={n.id}
               onPress={() => navigation.navigate('NewsDetail', { id: n.id })}
               style={styles.relatedCard}
             >
-              <View style={styles.relatedImage}>
-                <Text style={styles.logoEmoji}>⚽</Text>
-              </View>
+            <View style={styles.relatedImage}>
+              {n.image ? (
+                <Image source={{ uri: n.image }} style={styles.relatedImage} resizeMode="cover" />
+              ) : (
+                <View style={[styles.relatedImage, { justifyContent: 'center', alignItems: 'center' }]}>
+                  <Text style={styles.logoEmoji}>⚽</Text>
+                </View>
+              )}
+            </View>
               <View style={styles.relatedTextContainer}>
                 <Text style={styles.relatedNewsTitle} numberOfLines={2}>
                   {n.title}
                 </Text>
-                <Text style={styles.relatedDate}>{formatDate(n.date)}</Text>
+                <Text style={styles.relatedDate}>{formatDate(n.createdAt)}</Text>
               </View>
             </TouchableOpacity>
           ))}

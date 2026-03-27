@@ -8,6 +8,7 @@ import { LiveBadge } from './LiveBadge';
 
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'react-native';
+import { formatDateWithWeekdayPT } from '../utils/dateUtils';
 
 interface MatchCardProps {
   match: Match;
@@ -18,11 +19,7 @@ interface MatchCardProps {
 
 export const MatchCard = ({ match, homeLogo, awayLogo, onPress }: MatchCardProps) => {
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('pt-PT', {
-      month: 'short',
-      day: 'numeric',
-    });
+    return formatDateWithWeekdayPT(dateStr);
   };
 
   return (

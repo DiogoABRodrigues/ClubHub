@@ -1,5 +1,8 @@
 import { StyleSheet } from 'react-native';
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from '../../theme/colors';
+import { Dimensions } from 'react-native';
+
+const screenWidth = Dimensions.get('window').width;
 
 export const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
@@ -19,15 +22,22 @@ export const styles = StyleSheet.create({
 
   content: { paddingHorizontal: SPACING.md, paddingBottom: SPACING.xl * 3 },
 
-  featuredImage: { width: '100%', height: 200, borderRadius: RADIUS.lg, marginBottom: SPACING.md },
+  featuredImage: {
+    width: screenWidth, // ocupa toda a tela
+    height: 250,
+    borderRadius: 0,
+    marginBottom: SPACING.md,
+    marginHorizontal: -SPACING.md, // cancela o padding do ScrollView
+  },
   placeholderImage: {
-    width: '100%',
-    height: 200,
-    borderRadius: RADIUS.lg,
+    width: screenWidth,
+    height: 250,
+    borderRadius: 0,
     backgroundColor: COLORS.primary + '20',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: SPACING.md,
+    marginHorizontal: -SPACING.md,
   },
   logoEmoji: { fontSize: FONT_SIZE.xl },
 

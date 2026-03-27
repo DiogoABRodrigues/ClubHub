@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../theme/colors';
+import { COLORS, FONT_SIZE, RADIUS, SPACING } from '../../theme/colors';
 
 export const styles = StyleSheet.create({
   container: {
@@ -96,4 +96,14 @@ export const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     fontSize: 12,
   },
+  relatedImage: {
+    width: 48,
+    height: 48,
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.primary + '10',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: SPACING.sm,
+  },
+  relatedDate: { fontSize: FONT_SIZE.xs, color: COLORS.textSecondary },
 });

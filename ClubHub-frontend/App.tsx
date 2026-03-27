@@ -4,6 +4,7 @@ import { SplashScreen } from './src/screens/Splash/SplashScreen';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { MatchesProvider } from './src/contexts/MatchesContext';
 import { TeamsProvider } from './src/contexts/TeamsContext';
+import { NewsProvider } from './src/contexts/NewsContext';
 
 export default function App() {
   const [splashDone, setSplashDone] = useState(false);
@@ -11,11 +12,13 @@ export default function App() {
   return (
     <MatchesProvider>
       <TeamsProvider>
-        {!splashDone ? (
-          <SplashScreen onFinish={() => setSplashDone(true)} />
-        ) : (
-          <AppNavigator />
-        )}
+        <NewsProvider>
+          {!splashDone ? (
+            <SplashScreen onFinish={() => setSplashDone(true)} />
+          ) : (
+            <AppNavigator />
+          )}
+        </NewsProvider>
       </TeamsProvider>
     </MatchesProvider>
   );

@@ -1,6 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
-import Admin from "./Admin";
 
 class News extends Model {
   declare id: number;

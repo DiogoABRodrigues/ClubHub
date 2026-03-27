@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { styles } from './Home.styles';
 
-import { mockMatches, mockNews } from '../../data/mockData';
+import { mockMatches } from '../../data/mockData';
 import { MatchCard } from '../../components/MatchCard';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -10,16 +10,19 @@ import { COLORS } from '../../theme/colors';
 
 import { useMatches } from '../../contexts/MatchesContext';
 import { useTeams } from '../../contexts/TeamsContext';
-import { teamConfig } from '../../config/teamConfig';
 import { Image } from 'react-native';
 
+import { useNews } from '../../contexts/NewsContext';
+import { formatDatePT } from '../../utils/dateUtils';
+
 export const Home = ({ navigation }: any) => {
-  // lógica
+  const { news } = useNews();
+
   const featuredMatch =
     mockMatches.find((m) => m.status === 'live') ||
     mockMatches.find((m) => m.status === 'upcoming');
 
-  const recentNews = mockNews.slice(0, 3);
+  const recentNews = news.slice(0, 3);
 
   const { matches, loading } = useMatches();
   const { teams } = useTeams();
@@ -49,7 +52,6 @@ export const Home = ({ navigation }: any) => {
   const getAwayTeam = (match: any) =>
     match.homeOrAway === 'F' ? match.teamName : match.opponent;
 
-  const appTeam = teamConfig.name.trim().toLowerCase();
   const appTeamLogo = require("../../../assets/icon.png");
   
   return (
@@ -128,22 +130,29 @@ export const Home = ({ navigation }: any) => {
 
         {/* NEWS */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Latest News</Text>
+          <Text style={styles.sectionTitle}>Últimas Notícias</Text>
 
           {recentNews.map((news) => (
             <TouchableOpacity
               key={news.id}
               style={styles.newsCard}
               onPress={() => navigation.navigate('NewsDetail', { id: news.id })}
-              activeOpacity={0.7} // controla a intensidade da animação
+              activeOpacity={0.7}
             >
-              <View style={styles.newsImage}>
-                <Text style={styles.newsEmoji}>⚽</Text>
+              <View style={styles.relatedImage}>
+                {news.image ? (
+                  <Image source={{ uri: news.image }} style={styles.relatedImage} resizeMode="cover" />
+                ) : (
+                  <View style={[styles.relatedImage, { justifyContent: 'center', alignItems: 'center' }]}>
+                    <Text style={styles.logoEmoji}>⚽</Text>
+                  </View>
+                )}
               </View>
 
               <View style={styles.newsContent}>
                 <Text style={styles.newsTitle}>{news.title}</Text>
                 <Text style={styles.newsExcerpt}>{news.excerpt}</Text>
+                <Text style={styles.relatedDate}>{formatDatePT(news.createdAt)}</Text>
               </View>
             </TouchableOpacity>
           ))}

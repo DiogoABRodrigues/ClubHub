@@ -1,29 +1,20 @@
 import React from 'react';
-import { View, Text, Image, Pressable } from 'react-native';
+import { View, Text, Image, Pressable, Platform } from 'react-native';
 import { styles } from './styles/NewsCard.styles';
 import { COLORS } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
-
-interface NewsItem {
-  id: string;
-  title: string;
-  excerpt: string;
-  image?: string;
-  category: string;
-  date: string;
-  author: string;
-}
+import { News } from '../models/News';
+import { formatDatePT } from '../utils/dateUtils';
 
 interface Props {
-  news: NewsItem;
+  news: News;
   onPress?: () => void; // função de navegação
 }
 
 export const NewsCard = ({ news, onPress }: Props) => {
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return formatDatePT(dateStr);
   };
 
   const getCategoryColor = (category: string) => {
@@ -40,7 +31,7 @@ export const NewsCard = ({ news, onPress }: Props) => {
   };
 
   const categoryStyle = getCategoryColor(news.category);
-
+  
   return (
     <Pressable style={styles.card} onPress={onPress}>
       
@@ -68,17 +59,12 @@ export const NewsCard = ({ news, onPress }: Props) => {
 
           <View style={styles.dateRow}>
             <Ionicons name="calendar-outline" size={12} color={COLORS.textSecondary} />
-            <Text style={styles.dateText}>{formatDate(news.date)}</Text>
+            <Text style={styles.dateText}>{formatDate(news.createdAt)}</Text>
           </View>
         </View>
 
         <Text style={styles.title} numberOfLines={2}>{news.title}</Text>
         <Text style={styles.excerpt} numberOfLines={2}>{news.excerpt}</Text>
-
-        <View style={styles.authorRow}>
-          <Ionicons name="person-outline" size={12} color={COLORS.textSecondary} />
-          <Text style={styles.authorText}>{news.author}</Text>
-        </View>
       </View>
 
     </Pressable>

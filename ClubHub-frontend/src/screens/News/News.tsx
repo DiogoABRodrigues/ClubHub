@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './News.styles';
-import { mockNews, NewsCategory } from '../../data/mockData';
 import { NewsCard } from '../../components/NewsCard';
 import { COLORS, SPACING } from '../../theme/colors';
+import { useNews } from '../../contexts/NewsContext';
 
 export const News = ({ navigation }: any) => {
-  const [selectedCategory, setSelectedCategory] = useState<NewsCategory | 'All'>('All');
 
+  const { news, loading } = useNews();
+  
   return (
     <View style={styles.container}>
       {/* HEADER */}
@@ -17,15 +18,15 @@ export const News = ({ navigation }: any) => {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color={COLORS.textSecondary} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Club News</Text>
+          <Text style={styles.headerTitle}>Notícias</Text>
         </View>
       </View>
 
       {/* CONTENT */}
       <ScrollView contentContainerStyle={styles.content}>
-        {mockNews.length > 0 ? (
+        {news.length > 0 ? (
           <View style={styles.newsList}>
-            {mockNews.map((news) => (
+            {news.map((news) => (
               <NewsCard key={news.id} news={news} onPress={() => navigation.navigate('NewsDetail', { id: news.id })} />
             ))}
           </View>
@@ -34,7 +35,7 @@ export const News = ({ navigation }: any) => {
             <View style={styles.logoCircle}>
               <Text style={styles.logoEmoji}>📰</Text>
             </View>
-            <Text style={styles.noNewsText}>No news found for this category</Text>
+            <Text style={styles.noNewsText}>Não foram encontradas notícias</Text>
           </View>
         )}
       </ScrollView>
