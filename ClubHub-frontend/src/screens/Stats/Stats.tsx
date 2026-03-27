@@ -63,9 +63,9 @@ export function SquadStats() {
         <Text style={styles.statsHeaderText}>Jogos</Text>
         {sortField === 'games' &&
           (sortOrder === 'desc' ? (
-            <ArrowDown width={14} height={14} color="#666" />
-          ) : (
             <ArrowUp width={14} height={14} color="#666" />
+          ) : (
+            <ArrowDown width={14} height={14} color="#666" />
           ))}
       </TouchableOpacity>
 
@@ -78,7 +78,7 @@ export function SquadStats() {
           (sortOrder === 'desc' ? (
             <ArrowDown width={14} height={14} color="#666" />
           ) : (
-            <ArrowUp width={14} height={14} color="#666" />
+            <ArrowDown width={14} height={14} color="#666" />
           ))}
       </TouchableOpacity>
 
@@ -89,9 +89,9 @@ export function SquadStats() {
         <Text style={styles.statsHeaderText}>Golos</Text>
         {sortField === 'goals' &&
           (sortOrder === 'desc' ? (
-            <ArrowDown width={14} height={14} color="#666" />
-          ) : (
             <ArrowUp width={14} height={14} color="#666" />
+          ) : (
+            <ArrowDown width={14} height={14} color="#666" />
           ))}
       </TouchableOpacity>
     </View>

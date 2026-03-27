@@ -63,11 +63,9 @@ export const AppNavigator = () => {
       >
         <Tab.Screen name="Início" component={HomeStack} />
         <Tab.Screen name="Jogos" component={MatchesStack} />
-        <Tab.Screen name="Classificação" component={Standings} />
-        <Tab.Screen name="Notícias" component={NewsStack} />
-        <Tab.Screen name="Plantel" component={SquadScreen} />
-        <Tab.Screen name="Definições" component={NotificationSettings} />
         <Tab.Screen name="Época" component={SeasonScreen} />
+        <Tab.Screen name="Notícias" component={NewsStack} />
+        <Tab.Screen name="Definições" component={NotificationSettings} />
 
       </Tab.Navigator>
     </NavigationContainer>
