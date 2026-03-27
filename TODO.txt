@@ -1,4 +1,8 @@
 pegar nas estatisticas de cada jogador para depois meter numa tabela e dar para ordenar por golos, minutos, etc
 guardar jogos e tabelas de ultimas epocas
 
-guardar jogadores com ids dos urls, fazer o mesmo com as tabelas e estatisticas
+OPÇÃO DE COMUNICADO EM HOME
+
+botão de ver qualificação nos match detail
+
+juntar classificação e plante em season

@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
   toggleText: { color: '#666' },
   toggleTextActive: { color: '#fff', fontWeight: '600' },
   squadList: { paddingBottom: 20 },
-  card: { flex: 1, margin: 4, backgroundColor: '#f9f9f9', borderRadius: 12, padding: 8 },
+  card: { flex: 1, margin: 4, backgroundColor: '#f9f9f9', borderRadius: 12, padding: 12 },
   playerPhotoWrapper: { position: 'relative' },
   playerPhoto: { width: '100%', aspectRatio: 1, borderRadius: 12 },
   numberBadge: { position: 'absolute', top: 4, right: 4, backgroundColor: '#3b82f6', width: 28, height: 28, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
@@ -27,10 +27,45 @@ export const styles = StyleSheet.create({
   position: { backgroundColor: '#3b82f620', color: '#3b82f6', paddingHorizontal: 6, borderRadius: 6, fontSize: 12 },
   statsTable: { marginHorizontal: 16 },
   statsHeader: { flexDirection: 'row', paddingVertical: 8, borderBottomWidth: 1, borderColor: '#ccc' },
-  statsHeaderText: { fontWeight: '600', textAlign: 'center' },
   statsRow: { flexDirection: 'row', paddingVertical: 8, borderBottomWidth: 1, borderColor: '#eee', alignItems: 'center' },
   playerInfo: { flex: 2, flexDirection: 'row', alignItems: 'center', gap: 8 },
-  statsPhoto: { width: 40, height: 40, borderRadius: 20 },
+  statsPhoto: { width: 50, height: 50 },
   statsText: { flex: 1, textAlign: 'center' },
   goalsText: { color: '#3b82f6', fontWeight: '600' },
+  positionHeader: {
+    width: '100%',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    marginTop: 8,
+    borderRadius: 4,
+  },
+positionHeaderText: {
+  fontWeight: 'bold',
+  fontSize: 16,
+},
+
+statsHeaderButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+   statsHeaderText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#666',
+    textAlign: 'center',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  fullImage: {
+    width: '90%',
+    height: '70%',
+  },
 });

@@ -8,6 +8,7 @@ import { NotificationSettings } from '../screens/NotificationSettings/Notificati
 import { SquadScreen } from '../screens/Squad/Squad';
 import { MatchesStack } from './MatchesStack';
 import { NewsStack } from './NewsStack';
+import { SeasonScreen } from '../screens/Season/SeasonScreen';
 
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../theme/colors';
@@ -51,6 +52,9 @@ export const AppNavigator = () => {
               case 'Definições':
                 iconName = 'settings-outline';
                 break;
+              case 'Época':
+                iconName = 'calendar-outline';
+                break;
             }
 
             return <Ionicons name={iconName} size={size} color={color} />;
@@ -63,6 +67,8 @@ export const AppNavigator = () => {
         <Tab.Screen name="Notícias" component={NewsStack} />
         <Tab.Screen name="Plantel" component={SquadScreen} />
         <Tab.Screen name="Definições" component={NotificationSettings} />
+        <Tab.Screen name="Época" component={SeasonScreen} />
+
       </Tab.Navigator>
     </NavigationContainer>
   );

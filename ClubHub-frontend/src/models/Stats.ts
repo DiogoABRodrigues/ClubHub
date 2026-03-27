@@ -4,4 +4,7 @@ export type Stats = {
   gamesPlayed: number;
   goals: number;
   minutesPlayed: number;
-};
+  number: number;
+  age: number;
+  position: string;
+}
