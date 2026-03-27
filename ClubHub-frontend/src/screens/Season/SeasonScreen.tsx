@@ -6,6 +6,7 @@ import { styles } from './Season.styles';
 import { SquadScreen } from '../Squad/Squad';
 import { Standings } from '../Standings/Standings';
 import { SquadStats } from '../Stats/Stats';
+import { useSeasons } from '../../contexts/SeasonContext';
 
 type SeasonTab = 'standings' | 'squad' | 'stats';
 
@@ -18,6 +19,13 @@ interface Tab {
 export function SeasonScreen() {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState<SeasonTab>('standings');
+  const { seasons } = useSeasons();
+
+  //pegar na mais recente, id maior
+  const currentSeason = useMemo(() => {
+    if (seasons.length === 0) return null;
+    return seasons.reduce((latest, season) => season.id > latest.id ? season : latest, seasons[0]);
+  }, [seasons]);
 
   // Tabs configuráveis em array
   const tabs: Tab[] = useMemo(() => [
@@ -47,7 +55,7 @@ export function SeasonScreen() {
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <ArrowLeft width={24} height={24} color="#000" />
         </TouchableOpacity>
-        <Text style={styles.title}>Época 2024/25</Text>
+        <Text style={styles.title}>Época {currentSeason?.year}</Text>
         <View style={styles.placeholder} />
       </View>
 

@@ -4,7 +4,6 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { LeagueTableRow } from '../../components/LeagueTableRow';
 import { styles } from './Standings.styles';
-import { COLORS } from '../../theme/colors';
 import { useStandings } from '../../contexts/StandingsContext';
 
 export const Standings: React.FC = () => {
@@ -17,15 +16,6 @@ export const Standings: React.FC = () => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color={COLORS.textSecondary} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Classificação</Text>
-        </View>
-      </View>
-
       <ScrollView contentContainerStyle={styles.content}>
         {loading ? (
           <Text style={{ textAlign: 'center', marginTop: 50 }}>A carregar classificação...</Text>
