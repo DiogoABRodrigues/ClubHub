@@ -8,8 +8,8 @@ interface NewsContextType {
   loading: boolean;
   refreshNews: () => Promise<void>;
   deleteNews: (id: number) => Promise<void>;
-  createNews: (news: Partial<News>, file?: File) => Promise<void>;
-  updateNews: (id: number, news: Partial<News>, file?: File) => Promise<void>;
+  createNews: (news: Partial<News>, imageUri?: string) => Promise<void>;
+  updateNews: (id: number, news: Partial<News>, imageUri?: string) => Promise<void>;
 }
 
 const NewsContext = createContext<NewsContextType>({
@@ -36,7 +36,6 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ─── Fetch News ───────────────────────────────────────────────
   const fetchNews = async () => {
     setLoading(true);
     try {
@@ -53,7 +52,6 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // ─── Delete News ─────────────────────────────────────────────
   const deleteNews = async (id: number) => {
     try {
       await NewsService.delete(id);
@@ -64,10 +62,9 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // ─── Create News ─────────────────────────────────────────────
-  const createNews = async (newsData: Partial<News>, file?: File) => {
+  const createNews = async (newsData: Partial<News>, imageUri?: string) => {
     try {
-      const newNews = await NewsService.create(newsData as News, file);
+      const newNews = await NewsService.create(newsData as News, imageUri);
       setNews(prev => [
         { ...newNews, image: formatNewsImage(newNews.image) },
         ...prev,
@@ -78,10 +75,9 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // ─── Update News ─────────────────────────────────────────────
-  const updateNews = async (id: number, newsData: Partial<News>, file?: File) => {
+  const updateNews = async (id: number, newsData: Partial<News>, imageUri?: string) => {
     try {
-      const updatedNews = await NewsService.update(id, newsData as News, file);
+      const updatedNews = await NewsService.update(id, newsData as News, imageUri);
       setNews(prev =>
         prev.map(n => (n.id === id ? { ...updatedNews, image: formatNewsImage(updatedNews.image) } : n))
       );

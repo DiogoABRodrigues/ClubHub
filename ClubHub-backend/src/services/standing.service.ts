@@ -12,7 +12,6 @@ export default class StandingService {
 
   async getByCurrentSeasonId() {
     const season = await new SeasonService().getCurrentSeason();
-    console.log("Current season:", season);
     if (!season) return [];
     return this.getBySeasonId(season.id);
   }
