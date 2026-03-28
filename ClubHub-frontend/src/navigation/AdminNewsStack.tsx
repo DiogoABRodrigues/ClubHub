@@ -5,7 +5,7 @@ import { AdminNewsForm } from "../screens/Admin/AdminNews/AdminNewsForm";
 
 export type AdminNewsStackParamList = {
   AdminNews: undefined;
-  AdminNewsForm: { id: string };
+  AdminNewsForm: { id: number };
 };
 
 const Stack = createNativeStackNavigator<AdminNewsStackParamList>();

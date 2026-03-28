@@ -22,7 +22,7 @@ interface FormData {
   title: string;
   excerpt: string;
   content: string;
-  category: string;
+  category: "Team" | "Transfers" | "Events";
   image: string;
 }
 
@@ -35,8 +35,7 @@ const EMPTY_FORM: FormData = {
 };
 
 export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
-  // Se vier um id nos params → modo edição; caso contrário → modo criação
-  const editId: string | undefined = route?.params?.id;
+  const editId: number | undefined = route?.params?.id;
   const isEditing = Boolean(editId);
 
   const { news, createNews, updateNews } = useNews();
@@ -77,24 +76,29 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
   const validate = (): boolean => {
     const newErrors: Partial<FormData> = {};
     if (!form.title.trim()) newErrors.title = "O título é obrigatório";
-    if (!form.excerpt.trim()) newErrors.excerpt = "O resumo é obrigatório";
     if (!form.content.trim()) newErrors.content = "O conteúdo é obrigatório";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // No AdminNewsForm, ajuste a função handleSave
   const handleSave = async () => {
     if (!validate()) return;
 
     setSaving(true);
     try {
       if (isEditing && editId) {
-        await updateNews(editId, form);
+        // Para edição, verifica se a imagem foi alterada
+        const imageUri = form.image !== existingNews?.image ? form.image : undefined;
+        await updateNews(editId, form, imageUri);
       } else {
-        await createNews(form);
+        // Para criação
+        const imageUri = form.image || undefined;
+        await createNews(form, imageUri);
       }
       navigation.goBack();
     } catch (e) {
+      console.error('Erro ao salvar:', e);
       Alert.alert("Erro", "Não foi possível guardar a notícia. Tenta novamente.");
     } finally {
       setSaving(false);
@@ -135,10 +139,10 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
       Alert.alert("Permissão negada", "Precisas de permitir acesso às fotos.");
       return;
     }
-
+    
     // Abre a galeria para escolher imagem
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],  // ✅ usar string
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.7,
@@ -158,20 +162,6 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
       <View style={styles.header}>
         <TouchableOpacity onPress={handleCancel} style={styles.headerBtn}>
           <Ionicons name="arrow-back" size={24} color={COLORS.textSecondary} onPress={navigation.goBack} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>
-          {isEditing ? "Editar Notícia" : "Nova Notícia"}
-        </Text>
-        <TouchableOpacity
-          onPress={handleSave}
-          style={[styles.saveBtn, saving && styles.saveBtnDisabled]}
-          disabled={saving}
-        >
-          {saving ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text style={styles.saveBtnText}>Guardar</Text>
-          )}
         </TouchableOpacity>
       </View>
 
@@ -252,7 +242,6 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
           />
         </Field>
 
-        {/* BOTÃO GUARDAR (bottom) */}
         <TouchableOpacity
           style={[styles.bottomSaveBtn, saving && styles.saveBtnDisabled]}
           onPress={handleSave}

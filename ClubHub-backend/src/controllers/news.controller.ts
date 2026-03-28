@@ -2,16 +2,63 @@ import { Request, Response } from "express";
 import newsService from "../services/news.service";
 
 class NewsController {
-  async create(req: Request, res: Response) {
+    async create(req: Request, res: Response) {
     try {
+      console.log('File received:', req.file); // Debug
+      console.log('Body received:', req.body); // Debug
+
+      // Verifica se o arquivo foi recebido corretamente
+      let imageFilename = null;
+      if (req.file) {
+        imageFilename = req.file.filename;
+      } else if (req.body.image) {
+        // Se não veio como arquivo, mas veio como string no body
+        imageFilename = req.body.image;
+      }
+
       const news = await newsService.create({
         ...req.body,
-        image: req.file?.filename,
+        image: imageFilename,
       });
 
       return res.status(201).json(news);
     } catch (error) {
+      console.error('Erro ao criar notícia:', error);
       return res.status(500).json({ message: "Erro ao criar notícia", error });
+    }
+  }
+
+  async update(req: Request, res: Response) {
+    try {
+      const id = Number(req.params.id);
+      
+      let imageFilename = undefined;
+      if (req.file) {
+        imageFilename = req.file.filename;
+      } else if (req.body.image) {
+        imageFilename = req.body.image;
+      }
+
+      const updateData = {
+        ...req.body,
+        ...(imageFilename && { image: imageFilename }),
+      };
+
+      // Remove o campo image do body se ele existir como string
+      if (updateData.image === '[object Object]') {
+        delete updateData.image;
+      }
+
+      const updated = await newsService.update(id, updateData);
+
+      if (!updated) {
+        return res.status(404).json({ message: "Notícia não encontrada" });
+      }
+
+      return res.json(updated);
+    } catch (error) {
+      console.error('Erro ao atualizar notícia:', error);
+      return res.status(500).json({ message: "Erro ao atualizar notícia" });
     }
   }
 
@@ -30,25 +77,6 @@ class NewsController {
       return res.json(news);
     } catch (error) {
       return res.status(500).json({ message: "Erro ao buscar notícias" });
-    }
-  }
-
-  async update(req: Request, res: Response) {
-    try {
-      const id = Number(req.params.id);
-
-      const updated = await newsService.update(id, {
-        ...req.body,
-        ...(req.file && { image: req.file.filename }),
-      });
-
-      if (!updated) {
-        return res.status(404).json({ message: "Notícia não encontrada" });
-      }
-
-      return res.json(updated);
-    } catch (error) {
-      return res.status(500).json({ message: "Erro ao atualizar notícia" });
     }
   }
 
