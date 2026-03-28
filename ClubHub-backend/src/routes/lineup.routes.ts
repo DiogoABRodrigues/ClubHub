@@ -3,8 +3,8 @@ import LineupController from "../controllers/lineup.controller";
 
 const router = Router();
 
-router.get("/", LineupController.getAll);
-router.get("/season/:seasonId", LineupController.getBySeasonId);
-router.get("/current", LineupController.getByCurrentSeasonId);
+router.get("/", LineupController.getAll); 
+router.post("/", LineupController.create);
+router.patch("/:id", LineupController.update);
 
 export default router;

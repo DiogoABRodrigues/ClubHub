@@ -1,20 +1,23 @@
 import Lineup from "../models/Lineup";
-import MatchService from "./match.service";
 
 export default class LineupService {
-  async getAll() {
-    return Lineup.findAll();
+  async getAll(matchId?: number) {
+    const whereClause = matchId ? { matchId } : undefined;
+    return Lineup.findAll({ where: whereClause });
   }
 
-  async getBySeasonId(seasonId: number) {
-    const matches = await new MatchService().getBySeasonId(seasonId);
-    const matchIds = matches.map((m) => m.id);
-    return Lineup.findAll({ where: { matchId: matchIds } });
+  async create(data: {
+    matchId: number;
+    playerId: number;
+    isStarting?: boolean;
+  }) {
+    return Lineup.create(data);
   }
 
-  async getByCurrentSeasonId() {
-    const matches = await new MatchService().getByCurrentSeasonId();
-    const matchIds = matches.map((m) => m.id);
-    return Lineup.findAll({ where: { matchId: matchIds } });
+  async update(id: number, updates: Partial<{ isStarting: boolean }>) {
+    const lineup = await Lineup.findByPk(id);
+    if (!lineup) throw new Error("Lineup not found");
+    await lineup.update(updates);
+    return lineup;
   }
 }

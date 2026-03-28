@@ -5,18 +5,19 @@ const service = new LineupService();
 
 export default class LineupController {
   static async getAll(req: Request, res: Response) {
-    const data = await service.getAll();
+    const matchId = req.query.matchId ? Number(req.query.matchId) : undefined;
+    const data = await service.getAll(matchId);
     res.json(data);
   }
 
-  static async getBySeasonId(req: Request, res: Response) {
-    const seasonId = parseInt(String(req.params.seasonId));
-    const data = await service.getBySeasonId(seasonId);
-    res.json(data);
+  static async create(req: Request, res: Response) {
+    const data = await service.create(req.body);
+    res.status(201).json(data);
   }
 
-  static async getByCurrentSeasonId(req: Request, res: Response) {
-    const data = await service.getByCurrentSeasonId();
+  static async update(req: Request, res: Response) {
+    const id = Number(req.params.id);
+    const data = await service.update(id, req.body);
     res.json(data);
   }
 }
