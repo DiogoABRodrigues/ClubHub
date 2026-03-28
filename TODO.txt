@@ -1,8 +1,13 @@
-pegar nas estatisticas de cada jogador para depois meter numa tabela e dar para ordenar por golos, minutos, etc
-guardar jogos e tabelas de ultimas epocas
-
 OPÇÃO DE COMUNICADO EM HOME
 
 botão de ver qualificação nos match detail
 
-juntar classificação e plante em season
+botão de recarregar jogos, plantel, etc em admin
+
+historico de epocas 
+
+npx prettier --write .
+
+npx expo-doctor
+
+npx expo install --check

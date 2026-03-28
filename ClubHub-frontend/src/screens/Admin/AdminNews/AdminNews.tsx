@@ -1,129 +1,92 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, ScrollView, Pressable } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { ArrowLeft, Plus, Edit, Trash2, Search } from "lucide-react-native";
-import { mockNews, NewsCategory } from "../../../data/mockData";
-import { NewsCard } from "../../../components/NewsCard";
+import React, { useState, useMemo } from "react";
+import { View, Text, TextInput, ScrollView, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Plus, Edit, Trash2, Search } from "lucide-react-native";
 import { styles } from "./AdminNews.styles";
+import { NewsCard } from "../../../components/NewsCard";
+import { COLORS } from "../../../theme/colors";
+import { useNews } from "../../../contexts/NewsContext";
 
-export const AdminNews: React.FC = () => {
-  const navigation = useNavigation();
+export const AdminNews: React.FC = ({ navigation }: any) => {
+  const { news, loading } = useNews();
+
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<
-    NewsCategory | "All"
-  >("All");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  const categories: Array<NewsCategory | "All"> = [
-    "All",
-    "Team",
-    "Transfers",
-    "Events",
-  ];
+  // Deriva as categorias dinamicamente a partir dos dados reais
+  const categories = useMemo(() => {
+    const unique = Array.from(new Set(news.map((n) => n.category).filter(Boolean)));
+    return ["All", ...unique] as string[];
+  }, [news]);
 
-  const filteredNews = mockNews.filter((news) => {
-    const matchesCategory =
-      selectedCategory === "All" || news.category === selectedCategory;
-    const matchesSearch =
-      searchQuery === "" ||
-      news.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      news.content.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const filteredNews = useMemo(() => {
+    return news.filter((item) => {
+      const matchesCategory =
+        selectedCategory === "All" || item.category === selectedCategory;
+      const query = searchQuery.toLowerCase();
+      const matchesSearch =
+        searchQuery === "" ||
+        item.title?.toLowerCase().includes(query) ||
+        item.content?.toLowerCase().includes(query);
+      return matchesCategory && matchesSearch;
+    });
+  }, [news, selectedCategory, searchQuery]);
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingBottom: 24 }}
-    >
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <Pressable
-            onPress={() => navigation.navigate("AdminDashboard" as never)}
-            style={styles.backButton}
+    <View style={styles.container}>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => navigation.navigate("AdminAddNews")}
           >
-            <ArrowLeft width={20} height={20} color="#999" />
-          </Pressable>
-          <Text style={styles.headerTitle}>Manage News</Text>
-          <Pressable style={styles.addButton}>
             <Plus width={16} height={16} color="#fff" />
-            <Text style={styles.addButtonText}>New Article</Text>
-          </Pressable>
-        </View>
-
-        {/* Search */}
-        <View style={styles.searchContainer}>
-          <Search
-            width={20}
-            height={20}
-            color="#999"
-            style={styles.searchIcon}
-          />
-          <TextInput
-            placeholder="Search articles..."
-            placeholderTextColor="#999"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            style={styles.searchInput}
-          />
-        </View>
-
-        {/* Category Filter */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoryScroll}
-        >
-          {categories.map((category) => (
-            <Pressable
-              key={category}
-              onPress={() => setSelectedCategory(category)}
-              style={[
-                styles.categoryButton,
-                selectedCategory === category && styles.categoryButtonSelected,
-              ]}
-            >
-              <Text
-                style={[
-                  styles.categoryText,
-                  selectedCategory === category && styles.categoryTextSelected,
-                ]}
-              >
-                {category}
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </View>
+            <Text style={styles.addButtonText}>Adicionar</Text>
+          </TouchableOpacity>
 
       {/* News List */}
-      <View style={styles.newsContainer}>
-        {filteredNews.length > 0 ? (
-          filteredNews.map((news) => (
-            <View key={news.id} style={styles.newsWrapper}>
-              <NewsCard news={news} />
-              <View style={styles.newsActions}>
-                <Pressable style={styles.editButton}>
-                  <Edit width={16} height={16} color="#0ea5e9" />
-                </Pressable>
-                <Pressable style={styles.deleteButton}>
-                  <Trash2 width={16} height={16} color="#ef4444" />
-                </Pressable>
+      <ScrollView contentContainerStyle={styles.content}>
+        {loading ? (
+          <Text style={styles.loadingText}>A carregar notícias...</Text>
+        ) : filteredNews.length > 0 ? (
+          <View style={styles.newsList}>
+            {filteredNews.map((item) => (
+              <View key={item.id} style={styles.newsWrapper}>
+                <NewsCard
+                  news={item}
+                  onPress={() =>
+                    navigation.navigate("NewsDetail", { id: item.id })
+                  }
+                />
+                <View style={styles.newsActions}>
+                  <TouchableOpacity
+                    style={styles.editButton}
+                    onPress={() =>
+                      navigation.navigate("AdminEditNews", { id: item.id })
+                    }
+                  >
+                    <Edit width={16} height={16} color={COLORS.primary} />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.deleteButton}>
+                    <Trash2 width={16} height={16} color="#ef4444" />
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          ))
+            ))}
+          </View>
         ) : (
           <View style={styles.emptyState}>
             <View style={styles.emptyIcon}>
               <Text style={{ fontSize: 32 }}>📰</Text>
             </View>
-            <Text style={styles.emptyText}>No articles found</Text>
-            <Pressable style={styles.createButton}>
-              <Text style={styles.createButtonText}>Create First Article</Text>
-            </Pressable>
+            <Text style={styles.emptyText}>Nenhum artigo encontrado</Text>
+            <TouchableOpacity
+              style={styles.createButton}
+              onPress={() => navigation.navigate("AdminAddNews")}
+            >
+              <Text style={styles.createButtonText}>Criar primeiro artigo</Text>
+            </TouchableOpacity>
           </View>
         )}
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };

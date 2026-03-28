@@ -1,62 +1,112 @@
 import { StyleSheet } from "react-native";
+import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../../theme/colors";
 
 export const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#121212" },
-  header: { paddingHorizontal: 16, paddingTop: 16 },
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+
+  // ── Header ────────────────────────────────────────────────
+  header: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.xl + 16,
+    paddingBottom: SPACING.sm,
+    backgroundColor: COLORS.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
   headerTop: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 16,
+    marginBottom: SPACING.sm,
   },
-  backButton: { padding: 8 },
+  backButton: {
+    padding: 4,
+  },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#fff",
+    fontSize: FONT_SIZE.lg,
+    fontWeight: "600",
+    color: COLORS.textPrimary,
     flex: 1,
-    marginLeft: 8,
+    marginLeft: SPACING.sm,
   },
   addButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#0ea5e9",
-    paddingHorizontal: 12,
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: SPACING.sm,
     paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: RADIUS.md,
+    gap: 4,
   },
-  addButtonText: { color: "#fff", fontWeight: "600", marginLeft: 4 },
+  addButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: FONT_SIZE.sm,
+  },
 
-  searchContainer: { position: "relative", marginBottom: 12 },
+  // ── Search ────────────────────────────────────────────────
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.secondary,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACING.sm,
+    marginBottom: SPACING.sm,
+    height: 40,
+  },
   searchIcon: {
-    position: "absolute",
-    left: 8,
-    top: "50%",
-    transform: [{ translateY: -10 }],
+    marginRight: SPACING.xs,
   },
   searchInput: {
-    backgroundColor: "#1f1f1f",
-    borderRadius: 8,
-    paddingLeft: 36,
-    paddingRight: 12,
-    height: 40,
-    color: "#fff",
+    flex: 1,
+    color: COLORS.textPrimary,
+    fontSize: FONT_SIZE.sm,
   },
 
-  categoryScroll: { marginBottom: 12 },
+  // ── Category filter ───────────────────────────────────────
+  categoryScroll: {
+    marginBottom: SPACING.xs,
+  },
   categoryButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    backgroundColor: "#1f1f1f",
-    marginRight: 8,
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+    borderRadius: RADIUS.lg,
+    backgroundColor: COLORS.secondary,
+    marginRight: SPACING.xs,
   },
-  categoryButtonSelected: { backgroundColor: "#0ea5e9" },
-  categoryText: { color: "#999", fontSize: 12 },
-  categoryTextSelected: { color: "#fff", fontWeight: "600" },
+  categoryButtonActive: {
+    backgroundColor: COLORS.primary,
+  },
+  categoryText: {
+    color: COLORS.textSecondary,
+    fontWeight: "500",
+    fontSize: FONT_SIZE.sm,
+  },
+  categoryTextActive: {
+    color: COLORS.background,
+    fontWeight: "600",
+  },
 
-  matchesContainer: { paddingBottom: 24 },
-  matchWrapper: { marginBottom: 12, position: "relative" },
+  // ── Content ───────────────────────────────────────────────
+  content: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.sm,
+    paddingBottom: SPACING.lg,
+  },
+  loadingText: {
+    textAlign: "center",
+    marginTop: 50,
+    color: COLORS.textSecondary,
+  },
+
+  // ── Match row ─────────────────────────────────────────────
+  matchWrapper: {
+    marginBottom: SPACING.sm,
+    position: "relative",
+  },
   matchActions: {
     position: "absolute",
     top: 8,
@@ -66,31 +116,43 @@ export const styles = StyleSheet.create({
   },
   editButton: {
     padding: 6,
-    backgroundColor: "#1f1f1f",
-    borderRadius: 8,
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.sm,
   },
   deleteButton: {
     padding: 6,
-    backgroundColor: "#1f1f1f",
-    borderRadius: 8,
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.sm,
   },
 
-  emptyState: { alignItems: "center", paddingVertical: 40 },
+  // ── Empty state ───────────────────────────────────────────
+  emptyState: {
+    alignItems: "center",
+    paddingVertical: 40,
+  },
   emptyIcon: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: "rgba(255,255,255,0.1)",
+    backgroundColor: COLORS.secondary,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 16,
+    marginBottom: SPACING.md,
   },
-  emptyText: { color: "#999", marginBottom: 12 },
+  emptyText: {
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZE.sm,
+    marginBottom: SPACING.sm,
+  },
   createButton: {
-    backgroundColor: "#0ea5e9",
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 8,
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.xs,
+    borderRadius: RADIUS.md,
   },
-  createButtonText: { color: "#fff", fontWeight: "600" },
+  createButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: FONT_SIZE.sm,
+  },
 });

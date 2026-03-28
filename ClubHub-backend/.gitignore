@@ -8,6 +8,8 @@ build/
 # Environment variables
 .env
 
+firebase/
+
 uploads/
 
 # Logs

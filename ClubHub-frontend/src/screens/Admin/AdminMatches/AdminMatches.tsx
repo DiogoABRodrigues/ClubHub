@@ -1,137 +1,196 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   View,
   Text,
-  TextInput,
-  ScrollView,
-  Pressable,
+  TouchableOpacity,
   FlatList,
+  TextInput,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { ArrowLeft, Plus, Edit, Trash2, Search } from "lucide-react-native";
-import { mockMatches, TeamCategory } from "../../../data/mockData";
-import { MatchCard } from "../../../components/MatchCard";
+import { Plus, Edit, Trash2 } from "lucide-react-native";
 import { styles } from "./AdminMatches.styles";
+import { MatchCard } from "../../../components/MatchCard";
+import { COLORS } from "../../../theme/colors";
+import { useMatches } from "../../../contexts/MatchesContext";
+import { useTeams } from "../../../contexts/TeamsContext";
 
-export const AdminMatches: React.FC = () => {
-  const navigation = useNavigation();
+export const AdminMatches: React.FC = ({ navigation }: any) => {
+  const { matches, loading } = useMatches();
+  const { teams } = useTeams();
+
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<
-    TeamCategory | "All"
-  >("All");
+  const [showAllLive, setShowAllLive] = useState(false);
+  const [showAllUpcoming, setShowAllUpcoming] = useState(false);
+  const [showAllFinished, setShowAllFinished] = useState(false);
 
-  const categories: Array<TeamCategory | "All"> = [
-    "All",
-    "Senior",
-    "U19",
-    "U17",
-    "U15",
-  ];
+  const getTeamLogo = useCallback(
+    (teamName: string) => {
+      const normalized = teamName.trim().toLowerCase();
+      const team = teams.find(
+        (t) => t.name.trim().toLowerCase() === normalized
+      );
+      return team?.logoUrl;
+    },
+    [teams]
+  );
 
-  const filteredMatches = mockMatches.filter((match) => {
-    const matchesCategory =
-      selectedCategory === "All" || match.category === selectedCategory;
-    const matchesSearch =
-      searchQuery === "" ||
-      match.homeTeam.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      match.awayTeam.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const getHomeTeam = useCallback(
+    (match: any) => (match.homeOrAway === "C" ? match.teamName : match.opponent),
+    []
+  );
+
+  const getAwayTeam = useCallback(
+    (match: any) => (match.homeOrAway === "F" ? match.teamName : match.opponent),
+    []
+  );
+
+  // ── Filtragem eficiente ───────────────────────────────
+  const filteredMatches = useMemo(() => {
+    const query = searchQuery.toLowerCase();
+    return matches
+      .map((match) => ({
+        ...match,
+        homeTeamLower: getHomeTeam(match).toLowerCase(),
+        awayTeamLower: getAwayTeam(match).toLowerCase(),
+      }))
+      .filter(
+        (match) =>
+          query === "" ||
+          match.homeTeamLower.includes(query) ||
+          match.awayTeamLower.includes(query)
+      );
+  }, [matches, searchQuery, getHomeTeam, getAwayTeam]);
+
+  // ── Matches por status ───────────────────────────────
+  const liveMatches = useMemo(
+    () => filteredMatches.filter((m) => m.status === "live"),
+    [filteredMatches]
+  );
+  const upcomingMatches = useMemo(
+    () => filteredMatches.filter((m) => m.status === "upcoming").toReversed(),
+    [filteredMatches]
+  );
+  const finishedMatches = useMemo(
+    () => filteredMatches.filter((m) => m.status === "finished"),
+    [filteredMatches]
+  );
+
+  const renderItem = useCallback(
+    ({ item }: { item: any }) => (
+      <View style={styles.matchWrapper}>
+        <MatchCard
+          match={item}
+          homeLogo={getTeamLogo(getHomeTeam(item)) || ""}
+          awayLogo={getTeamLogo(getAwayTeam(item)) || ""}
+          onPress={() => navigation.navigate("MatchDetail", { id: item.id })}
+        />
+        <View style={styles.matchActions}>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => navigation.navigate("AdminEditMatch", { id: item.id })}
+          >
+            <Edit width={16} height={16} color={COLORS.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.deleteButton}>
+            <Trash2 width={16} height={16} color="#ef4444" />
+          </TouchableOpacity>
+        </View>
+      </View>
+    ),
+    [navigation, getTeamLogo, getHomeTeam, getAwayTeam]
+  );
+
+  // ── Função para renderizar cada secção ─────────────
+  const renderMatchesSection = (
+    title: string,
+    matchesArray: any[],
+    showAll: boolean,
+    toggleShowAll: () => void
+  ) => {
+    const displayMatches = showAll ? matchesArray : matchesArray.slice(0, 3);
+    return (
+      <View style={{ marginBottom: 20 }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 8 }}>
+          <Text style={{ fontWeight: "600", fontSize: 16 }}>{title}</Text>
+          {matchesArray.length > 3 && (
+            <TouchableOpacity onPress={toggleShowAll}>
+              <Text style={{ color: COLORS.primary }}>
+                {showAll ? "Ver menos" : "Ver todos"}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        <FlatList
+          data={displayMatches}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          scrollEnabled={false} // Para cada secção não ter scroll próprio
+        />
+      </View>
+    );
+  };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingBottom: 24 }}
-    >
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <Pressable
-            onPress={() => navigation.navigate("AdminDashboard" as never)}
-            style={styles.backButton}
-          >
-            <ArrowLeft width={20} height={20} color="#999" />
-          </Pressable>
-          <Text style={styles.headerTitle}>Manage Matches</Text>
-          <Pressable style={styles.addButton}>
-            <Plus width={16} height={16} color="#fff" />
-            <Text style={styles.addButtonText}>Add Match</Text>
-          </Pressable>
-        </View>
+    <View style={styles.container}>
+      {/* Add Button */}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => navigation.navigate("AdminAddMatch")}
+      >
+        <Plus width={16} height={16} color="#fff" />
+        <Text style={styles.addButtonText}>Adicionar</Text>
+      </TouchableOpacity>
 
-        {/* Search */}
-        <View style={styles.searchContainer}>
-          <Search
-            width={20}
-            height={20}
-            color="#999"
-            style={styles.searchIcon}
-          />
-          <TextInput
-            placeholder="Search matches..."
-            placeholderTextColor="#999"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            style={styles.searchInput}
-          />
-        </View>
-
-        {/* Category Filter */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoryScroll}
-        >
-          {categories.map((category) => (
-            <Pressable
-              key={category}
-              onPress={() => setSelectedCategory(category)}
-              style={[
-                styles.categoryButton,
-                selectedCategory === category && styles.categoryButtonSelected,
-              ]}
-            >
-              <Text
-                style={[
-                  styles.categoryText,
-                  selectedCategory === category && styles.categoryTextSelected,
-                ]}
-              >
-                {category}
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </View>
-
-      {/* Matches List */}
-      <View style={styles.matchesContainer}>
-        {filteredMatches.length > 0 ? (
-          filteredMatches.map((match) => (
-            <View key={match.id} style={styles.matchWrapper}>
-              <MatchCard match={match} />
-              <View style={styles.matchActions}>
-                <Pressable style={styles.editButton}>
-                  <Edit width={16} height={16} color="#0ea5e9" />
-                </Pressable>
-                <Pressable style={styles.deleteButton}>
-                  <Trash2 width={16} height={16} color="#ef4444" />
-                </Pressable>
-              </View>
-            </View>
-          ))
-        ) : (
-          <View style={styles.emptyState}>
-            <View style={styles.emptyIcon}>
-              <Text style={{ fontSize: 32 }}>⚽</Text>
-            </View>
-            <Text style={styles.emptyText}>No matches found</Text>
-            <Pressable style={styles.createButton}>
-              <Text style={styles.createButtonText}>Create First Match</Text>
-            </Pressable>
+      {/* Lista de secções */}
+      {loading ? (
+        <Text style={styles.loadingText}>A carregar jogos...</Text>
+      ) : filteredMatches.length === 0 ? (
+        <View style={styles.emptyState}>
+          <View style={styles.emptyIcon}>
+            <Text style={{ fontSize: 32 }}>⚽</Text>
           </View>
-        )}
-      </View>
-    </ScrollView>
+          <Text style={styles.emptyText}>Nenhum jogo encontrado</Text>
+          <TouchableOpacity
+            style={styles.createButton}
+            onPress={() => navigation.navigate("AdminAddMatch")}
+          >
+            <Text style={styles.createButtonText}>Criar primeiro jogo</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <FlatList
+          data={[{ key: "live" }, { key: "upcoming" }, { key: "finished" }]}
+          keyExtractor={(item) => item.key}
+          renderItem={({ item }) => {
+            if (item.key === "live" && liveMatches.length > 0) {
+              return renderMatchesSection(
+                "A Decorrer",
+                liveMatches,
+                showAllLive,
+                () => setShowAllLive(!showAllLive)
+              );
+            }
+            if (item.key === "upcoming" && upcomingMatches.length > 0) {
+              return renderMatchesSection(
+                "Próximos Jogos",
+                upcomingMatches,
+                showAllUpcoming,
+                () => setShowAllUpcoming(!showAllUpcoming)
+              );
+            }
+            if (item.key === "finished" && finishedMatches.length > 0) {
+              return renderMatchesSection(
+                "Últimos Resultados",
+                finishedMatches,
+                showAllFinished,
+                () => setShowAllFinished(!showAllFinished)
+              );
+            }
+            return null;
+          }}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
+    </View>
   );
 };
