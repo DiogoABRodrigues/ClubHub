@@ -32,22 +32,23 @@ export const styles = StyleSheet.create({
     flex: 1,
     marginLeft: SPACING.sm,
   },
-  addButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 6,
-    borderRadius: RADIUS.md,
-    gap: 4,
-    width: 100, 
-    height: 36,
-  },
-  addButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: FONT_SIZE.sm,
-  },
+addButton: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",   // centraliza ícone + texto
+  backgroundColor: COLORS.primary,
+  paddingHorizontal: SPACING.md,
+  paddingVertical: 6,          // altura mais compacta
+  borderRadius: RADIUS.md,
+  gap: 6,                      // espaço entre ícone e texto
+  alignSelf: "center",     // mantém na esquerda do container
+  marginBottom: SPACING.sm,
+},
+addButtonText: {
+  color: "#fff",
+  fontWeight: "600",
+  fontSize: FONT_SIZE.sm,
+},
 
   // ── Search ────────────────────────────────────────────────
   searchContainer: {
@@ -118,15 +119,16 @@ export const styles = StyleSheet.create({
     right: 8,
     flexDirection: "row",
     gap: 8,
+    backgroundColor: "rgba(255,255,255,0.85)", // leve fundo
+    padding: 4,
+    borderRadius: RADIUS.sm,
   },
   editButton: {
     padding: 6,
-    backgroundColor: COLORS.surface,
     borderRadius: RADIUS.sm,
   },
   deleteButton: {
     padding: 6,
-    backgroundColor: COLORS.surface,
     borderRadius: RADIUS.sm,
   },
 

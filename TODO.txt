@@ -6,6 +6,8 @@ botão de recarregar jogos, plantel, etc em admin
 
 historico de epocas 
 
+ao meter live meter result 0-0
+
 npx prettier --write .
 
 npx expo-doctor

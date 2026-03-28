@@ -1,10 +1,9 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Swords, Newspaper, Bell } from "lucide-react-native";
 import { styles } from "./AdminDashboard.styles";
-import { AdminMatches } from "../AdminMatches/AdminMatches";
-import { AdminNews } from "../AdminNews/AdminNews";
+import { AdminNewsStack } from "../../../navigation/AdminNewsStack";
+import { AdminMatchesStack } from "../../../navigation/AdminMatchsStack ";
 import { AdminNotifications } from "../AdminNotifications/AdminNotifications";
 import { useNavigation } from "@react-navigation/native";
 
@@ -50,9 +49,9 @@ export function AdminDashboard() {
   const renderContent = useMemo(() => {
     switch (activeTab) {
       case "matches":
-        return <AdminMatches/>;
+        return <AdminMatchesStack/>;
       case "news":
-        return <AdminNews/>;
+        return <AdminNewsStack/>;
       case "notifications":
         return <AdminNotifications/>;
     }
