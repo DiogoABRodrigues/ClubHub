@@ -18,7 +18,7 @@ class Match extends Model {
   public status!: "upcoming" | "live" | "finished";
   public events?: any[];
   public location?: string;
-
+  public statusTime!: "1st" | "interval" | "2nd" | "extra" | "penalties";
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -92,6 +92,10 @@ Match.init(
     },
     location: {
       type: DataTypes.STRING,
+      allowNull: true,
+    },
+    statusTime: {
+      type: DataTypes.ENUM("1st", "interval", "2nd", "extra", "penalties"),
       allowNull: true,
     },
   },

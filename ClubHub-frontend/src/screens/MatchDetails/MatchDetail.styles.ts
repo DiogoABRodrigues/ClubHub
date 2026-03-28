@@ -243,3 +243,116 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
+export const pickerStyles = {
+  progressRow: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    gap: 8,
+  },
+  step: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    backgroundColor: COLORS.surface,
+  },
+  stepActive: {
+    backgroundColor: COLORS.primary + "20",
+  },
+  stepText: {
+    fontSize: 13,
+    fontWeight: "600" as const,
+    color: COLORS.primary,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: COLORS.surface,
+  },
+};
+
+// ─── Estilos do picker de jogadores ──────────────────────────────────────────
+export const eventStyles = {
+  searchRow: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    backgroundColor: COLORS.surface,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    gap: 8,
+    marginBottom: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    color: COLORS.textPrimary,
+    padding: 0,
+  },
+  playerList: {
+    borderRadius: 10,
+    overflow: "hidden" as const,
+    backgroundColor: COLORS.surface,
+    maxHeight: 220,
+  },
+  playerItem: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    gap: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.background,
+  },
+  playerItemActive: {
+    backgroundColor: COLORS.primary + "12",
+  },
+  playerAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.primary + "22",
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+  },
+  playerAvatarText: {
+    fontSize: 11,
+    fontWeight: "700" as const,
+    color: COLORS.primary,
+  },
+  playerName: {
+    flex: 1,
+    fontSize: 14,
+    color: COLORS.textPrimary,
+    fontWeight: "500" as const,
+  },
+  playerNameActive: {
+    color: COLORS.primary,
+    fontWeight: "600" as const,
+  },
+  noResults: {
+    textAlign: "center" as const,
+    padding: 16,
+    color: COLORS.muted,
+    fontSize: 13,
+  },
+  selectedBadge: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    gap: 6,
+    marginTop: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: COLORS.primary + "12",
+    borderRadius: 8,
+    alignSelf: "flex-start" as const,
+  },
+  selectedBadgeText: {
+    fontSize: 13,
+    color: COLORS.primary,
+    fontWeight: "600" as const,
+  },
+};
+

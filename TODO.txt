@@ -1,4 +1,4 @@
-OPÇÃO DE COMUNICADO EM HOME
+OPÇÃO DE COMUNICADO EM HOME na parte das admin notifications
 
 botão de ver qualificação nos match detail
 
@@ -7,6 +7,12 @@ botão de recarregar jogos, plantel, etc em admin
 historico de epocas 
 
 ao meter live meter result 0-0
+
+resolver go back no admin
+
+sockets!!!
+
+PROTEGER ROTAS!!!
 
 npx prettier --write .
 

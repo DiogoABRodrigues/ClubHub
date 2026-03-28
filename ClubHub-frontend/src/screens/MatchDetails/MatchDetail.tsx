@@ -83,7 +83,7 @@ export const MatchDetail = () => {
         <Text style={styles.title}>Detalhes do jogo</Text>
 
         <View style={styles.statusContainer}>
-          {match.status === "live" && <LiveBadge />}
+          {match.status === "live" && <LiveBadge interval={match.statusTime === "interval"} />}
           {match.status === "upcoming" && (
             <View style={styles.upcomingBadge}>
               <Text style={styles.badgeText}>Agendado</Text>
@@ -118,23 +118,19 @@ export const MatchDetail = () => {
             <Text
               style={[
                 styles.scoreText,
-                match.status === "live" && { color: COLORS.textPrimary },
+                { color: COLORS.textPrimary },
               ]}
             >
-              {(match.result?.split("-")[0] ?? match.status === "live")
-                ? "0"
-                : "-"}
+               {(match.result?.split("-")[0])}
             </Text>
             <Text style={styles.colon}>:</Text>
             <Text
               style={[
                 styles.scoreText,
-                match.status === "live" && { color: COLORS.textPrimary },
+                { color: COLORS.textPrimary },
               ]}
             >
-              {(match.result?.split("-")[1] ?? match.status === "live")
-                ? "0"
-                : "-"}
+              {(match.result?.split("-")[1])}
             </Text>
           </View>
 

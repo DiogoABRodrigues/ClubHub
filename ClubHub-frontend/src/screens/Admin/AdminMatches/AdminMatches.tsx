@@ -81,19 +81,8 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
           match={item}
           homeLogo={getTeamLogo(getHomeTeam(item)) || ""}
           awayLogo={getTeamLogo(getAwayTeam(item)) || ""}
-          onPress={() => navigation.navigate("MatchDetail", { id: item.id })}
+          onPress={() => navigation.navigate("AdminMatchDetail", { id: item.id })}
         />
-        <View style={styles.matchActions}>
-          <TouchableOpacity
-            style={styles.editButton}
-            onPress={() => navigation.navigate("AdminEditMatch", { id: item.id })}
-          >
-            <Edit width={16} height={16} color={COLORS.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.deleteButton}>
-            <Trash2 width={16} height={16} color="#ef4444" />
-          </TouchableOpacity>
-        </View>
       </View>
     ),
     [navigation, getTeamLogo, getHomeTeam, getAwayTeam]
@@ -131,15 +120,6 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
-      {/* Add Button */}
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => navigation.navigate("AdminAddMatch")}
-      >
-        <Plus width={16} height={16} color="#fff" />
-        <Text style={styles.addButtonText}>Adicionar</Text>
-      </TouchableOpacity>
-
       {/* Lista de secções */}
       {loading ? (
         <Text style={styles.loadingText}>A carregar jogos...</Text>
@@ -158,38 +138,50 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
         </View>
       ) : (
         <FlatList
-          data={[{ key: "live" }, { key: "upcoming" }, { key: "finished" }]}
-          keyExtractor={(item) => item.key}
-          renderItem={({ item }) => {
-            if (item.key === "live" && liveMatches.length > 0) {
-              return renderMatchesSection(
-                "A Decorrer",
-                liveMatches,
-                showAllLive,
-                () => setShowAllLive(!showAllLive)
-              );
-            }
-            if (item.key === "upcoming" && upcomingMatches.length > 0) {
-              return renderMatchesSection(
-                "Próximos Jogos",
-                upcomingMatches,
-                showAllUpcoming,
-                () => setShowAllUpcoming(!showAllUpcoming)
-              );
-            }
-            if (item.key === "finished" && finishedMatches.length > 0) {
-              return renderMatchesSection(
-                "Últimos Resultados",
-                finishedMatches,
-                showAllFinished,
-                () => setShowAllFinished(!showAllFinished)
-              );
-            }
-            return null;
-          }}
-          contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}
-        />
+  data={[{ key: "live" }, { key: "upcoming" }, { key: "finished" }]}
+  keyExtractor={(item) => item.key}
+  ListHeaderComponent={
+    <>
+      {/* Botão Adicionar no topo do scroll */}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => navigation.navigate("AdminAddMatch")}
+      >
+        <Plus width={16} height={16} color="#fff" />
+        <Text style={styles.addButtonText}>Adicionar</Text>
+      </TouchableOpacity>
+    </>
+  }
+  renderItem={({ item }) => {
+    if (item.key === "live" && liveMatches.length > 0) {
+      return renderMatchesSection(
+        "A Decorrer",
+        liveMatches,
+        showAllLive,
+        () => setShowAllLive(!showAllLive)
+      );
+    }
+    if (item.key === "upcoming" && upcomingMatches.length > 0) {
+      return renderMatchesSection(
+        "Próximos Jogos",
+        upcomingMatches,
+        showAllUpcoming,
+        () => setShowAllUpcoming(!showAllUpcoming)
+      );
+    }
+    if (item.key === "finished" && finishedMatches.length > 0) {
+      return renderMatchesSection(
+        "Últimos Resultados",
+        finishedMatches,
+        showAllFinished,
+        () => setShowAllFinished(!showAllFinished)
+      );
+    }
+    return null;
+  }}
+  contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
+  showsVerticalScrollIndicator={false}
+/>
       )}
     </View>
   );

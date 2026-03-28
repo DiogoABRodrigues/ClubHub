@@ -13,6 +13,7 @@ export const COLORS = {
   border: "#E0E0E0",
   success: "#4CAF50",
   error: "#F44336",
+  warning: "#FFC107",
 
   // Base
   primaryLight: "#1e8fff0e", // azul claro com transparência

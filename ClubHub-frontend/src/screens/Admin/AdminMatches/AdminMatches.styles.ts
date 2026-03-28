@@ -32,20 +32,24 @@ export const styles = StyleSheet.create({
     flex: 1,
     marginLeft: SPACING.sm,
   },
-  addButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 6,
-    borderRadius: RADIUS.md,
-    gap: 4,
-  },
-  addButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: FONT_SIZE.sm,
-  },
+addButton: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",   // centraliza ícone + texto
+  backgroundColor: COLORS.primary,
+  paddingHorizontal: SPACING.md,
+  paddingVertical: 6,          // altura mais compacta
+  borderRadius: RADIUS.md,
+  gap: 6,                      // espaço entre ícone e texto
+  alignSelf: "center",     // mantém na esquerda do container
+  marginBottom: SPACING.sm,
+   marginTop: SPACING.sm,
+},
+addButtonText: {
+  color: "#fff",
+  fontWeight: "600",
+  fontSize: FONT_SIZE.sm,
+},
 
   // ── Search ────────────────────────────────────────────────
   searchContainer: {

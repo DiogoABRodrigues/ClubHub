@@ -2,7 +2,10 @@ import React, { useEffect, useRef } from "react";
 import { View, Text, Animated } from "react-native";
 import { styles } from "./styles/LiveBadge.styles";
 
-export const LiveBadge = () => {
+interface LiveBadgeProps {
+  interval: boolean;
+}
+export const LiveBadge = ({ interval }: LiveBadgeProps) => {
   const opacity = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -33,7 +36,7 @@ export const LiveBadge = () => {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.dot, { opacity }]} />
-      <Text style={styles.text}>Em direto</Text>
+      <Text style={styles.text}>{interval ? "Intervalo" : "Em direto"}</Text>
     </View>
   );
 };

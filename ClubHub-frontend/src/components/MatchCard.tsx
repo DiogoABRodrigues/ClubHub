@@ -50,7 +50,9 @@ export const MatchCard = React.memo(
             <Text style={styles.date}>{formattedDate}</Text>
           </View>
 
-          {match.status === "live" && <LiveBadge />}
+          {match.status === "live" && (
+            <LiveBadge interval={match.statusTime === "interval"} />
+          )}
           {match.status === "upcoming" && (
             <Text style={styles.upcoming}>Agendado</Text>
           )}
