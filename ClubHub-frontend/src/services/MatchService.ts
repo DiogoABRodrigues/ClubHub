@@ -1,4 +1,3 @@
-// services/MatchService.ts
 import { api } from "./api";
 import { Match } from "../models/Match";
 
@@ -13,6 +12,14 @@ export const MatchService = {
   },
   getByCurrentSeasonId: async (): Promise<Match[]> => {
     const { data } = await api.get("/matches/current");
+    return data;
+  },
+  create: async (match: Partial<Match>): Promise<Match> => {
+    const { data } = await api.post("/matches", match);
+    return data;
+  },
+  update: async (id: number, updates: Partial<Match>): Promise<Match> => {
+    const { data } = await api.patch(`/matches/${id}`, updates);
     return data;
   },
 };
