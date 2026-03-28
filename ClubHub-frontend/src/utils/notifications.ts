@@ -1,9 +1,9 @@
 // utils/notifications.ts
-import * as Notifications from 'expo-notifications';
+//import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 
-export const registerForPushNotificationsAsync = async (): Promise<string | null> => {
-  if (!Constants.isDevice) {
+ /*export const registerForPushNotificationsAsync = async (): Promise<string | null> => {
+  /*if (!Constants.isDevice) {
     alert('É necessário um dispositivo físico para receber notificações');
     return null;
   }
@@ -24,4 +24,4 @@ export const registerForPushNotificationsAsync = async (): Promise<string | null
   const token = (await Notifications.getExpoPushTokenAsync()).data;
   console.log('Push Token:', token);
   return token;
-};
+};*/

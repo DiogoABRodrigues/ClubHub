@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Switch,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { Send, Bell, Target, Trophy, Newspaper } from "lucide-react-native";
 import { styles } from "./AdminNotifications.styles";
 import { COLORS } from "../../../theme/colors";

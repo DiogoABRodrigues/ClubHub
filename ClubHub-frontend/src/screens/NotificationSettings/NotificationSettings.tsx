@@ -5,9 +5,7 @@ import { Switch } from "../../components/Switch";
 import { styles } from "./NotificationSettings.styles";
 import { COLORS } from "../../theme/colors";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
-import { v4 as uuidv4 } from 'uuid';
+//import * as Notifications from 'expo-notifications';
 
 // URL do teu backend
 const BACKEND_URL = 'https://teu-backend.com/api/device/preferences';
@@ -22,38 +20,6 @@ export const NotificationSettings = ({ navigation }: any) => {
 
   const [deviceId, setDeviceId] = useState<string | null>(null);
   const [pushToken, setPushToken] = useState<string | null>(null);
-
-  // 1️⃣ Gerar deviceId único e registar push token
-  useEffect(() => {
-    const initDevice = async () => {
-      let id = await AsyncStorage.getItem('deviceId');
-      if (!id) {
-        id = uuidv4();
-        await AsyncStorage.setItem('deviceId', id);
-      }
-      setDeviceId(id);
-
-      if (!Constants.isDevice) {
-        console.log('É necessário um dispositivo físico para notificações');
-        return;
-      }
-
-      const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-      if (finalStatus !== 'granted') {
-        console.log('Permissão para notificações negada!');
-        return;
-      }
-
-      const token = (await Notifications.getExpoPushTokenAsync()).data;
-      setPushToken(token);
-    };
-    initDevice();
-  }, []);
 
   // 2️⃣ Carregar preferências do AsyncStorage
   useEffect(() => {
