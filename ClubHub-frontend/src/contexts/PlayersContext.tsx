@@ -28,7 +28,7 @@ export const PlayersProvider = ({
   const fetchPlayers = async () => {
     setLoading(true);
     try {
-      const allPlayers: Player[] = await PlayerService.getAll();
+      const allPlayers: Player[] = await PlayerService.getByCurrentSeasonId();
 
       const emptyStats = {
         playerExternalId: -1,

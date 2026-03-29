@@ -3,6 +3,7 @@ import { Alert } from "react-native";
 import { Match } from "../models/Match";
 import { MatchService } from "../services/MatchService";
 import { LineupService } from "../services/LineupService";
+import { Lineup } from "../models/Lineup";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -11,27 +12,17 @@ interface MatchesContextType {
   loading: boolean;
   refreshMatches: () => Promise<void>;
 
-  updateMatch: (id: number | string, updates: Partial<Match>) => Promise<void>;
-  saveMatch: (id: number | string, updates: Partial<Match>) => Promise<void>;
+  updateMatch: (id: number, updates: Partial<Match>) => Promise<void>;
+  saveMatch: (id: number, updates: Partial<Match>) => Promise<void>;
 
-  startMatch: (id: number | string) => Promise<void>;
-  pauseMatch: (id: number | string) => Promise<void>;
-  finishMatch: (id: number | string) => Promise<void>;
+  startMatch: (id: number) => Promise<void>;
+  pauseMatch: (id: number) => Promise<void>;
+  finishMatch: (id: number) => Promise<void>;
 
-  getLiveMinute: (match: Match) => number;
+  addMatchEvent: (id: number, event: any) => Promise<void>;
 
-  addMatchEvent: (id: number | string, event: any) => Promise<void>;
-  updateMatchLineup: (id: number | string, side: "home" | "away", players: string[]) => Promise<void>;
-
-  saveLineup: (matchId: number | string, entries: { player: string; side: "home" | "away" }[]) => Promise<void>;
+  saveLineup: (matchId: number, entries: { playerId: number | string; isStarting: boolean }[]) => Promise<void>;
 }
-
-// ─── Helper: calcula minuto a partir do startedAt ─────────────────────────────
-
-export const computeLiveMinute = (match: Match): number => {
-  if (match.status !== "live" || !match.interval) return 0;
-  return Math.max(0, Math.floor((Date.now() - new Date(match.date).getTime()) / 60000));
-};
 
 // ─── Contexto ─────────────────────────────────────────────────────────────────
 
@@ -44,9 +35,7 @@ const MatchesContext = createContext<MatchesContextType>({
   startMatch: async () => {},
   pauseMatch: async () => {},
   finishMatch: async () => {},
-  getLiveMinute: () => 0,
   addMatchEvent: async () => {},
-  updateMatchLineup: async () => {},
   saveLineup: async () => {},
 });
 
@@ -66,6 +55,7 @@ export const MatchesProvider = ({ children }: any) => {
     setLoading(true);
     try {
       const dbMatches = await MatchService.getByCurrentSeasonId();
+      dbMatches.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       setMatches(dbMatches);
     } catch (err) {
       console.error("Erro a buscar matches:", err);
@@ -98,7 +88,7 @@ export const MatchesProvider = ({ children }: any) => {
     };
   }, [matches]);
 
-  const updateLocalMatch = useCallback((id: number | string, updatedMatch: Match) => {
+  const updateLocalMatch = useCallback((id: number, updatedMatch: Match) => {
     setMatches((prev) =>
       prev.map((m) => (String(m.id) === String(id) ? updatedMatch : m))
     );
@@ -118,7 +108,7 @@ export const MatchesProvider = ({ children }: any) => {
   );
 
   const saveMatch = useCallback(
-    async (id: number | string, updates: Partial<Match>) => {
+    async (id: number, updates: Partial<Match>) => {
       await updateMatch(id, updates);
     },
     [updateMatch]
@@ -127,7 +117,7 @@ export const MatchesProvider = ({ children }: any) => {
   // ─── Controlo de jogo ────────────────────────────────────────────────────────
 
   const startMatch = useCallback(
-    async (id: number | string) => {
+    async (id: number) => {
       const alreadyLive = matches.find((m) => m.status === "live");
       if (alreadyLive) {
         Alert.alert(
@@ -145,7 +135,7 @@ export const MatchesProvider = ({ children }: any) => {
   );
 
   const pauseMatch = useCallback(
-    async (id: number | string) => {
+    async (id: number) => {
       await updateMatch(id, { status: "halftime" });
     },
     [updateMatch]
@@ -159,14 +149,8 @@ export const MatchesProvider = ({ children }: any) => {
     [updateMatch]
   );
 
-  // ─── Minuto calculado ─────────────────────────────────────────────────────────
-
-  const getLiveMinute = useCallback((match: Match) => computeLiveMinute(match), []);
-
-  // ─── Eventos e formações ──────────────────────────────────────────────────────
-
   const addMatchEvent = useCallback(
-    async (id: number | string, event: any) => {
+    async (id: number, event: any) => {
       const match = matches.find((m) => String(m.id) === String(id));
       if (!match) return;
       const updatedEvents = [...(match.events ?? []), event];
@@ -175,20 +159,40 @@ export const MatchesProvider = ({ children }: any) => {
     [matches, updateMatch]
   );
 
-  const updateMatchLineup = useCallback(
-    async (id: number | string, side: "home" | "away", players: string[]) => {
-      await updateMatch(id, side === "home" ? { homeLineup: players } : { awayLineup: players });
-    },
-    [updateMatch]
-  );
+  const saveLineup = useCallback(
+  async (
+    matchId: number,
+    entries: { playerId: number | string; isStarting: boolean }[]
+  ) => {
+    try {
+      // 1. Apaga a formação existente
+      await LineupService.deleteByMatch(matchId);
 
-  const saveLineup = useCallback(async (matchId, entries) => {
-    await LineupService.replaceForMatch(matchId, entries);
-    // Depois faz refresh do match para buscar a lineup atualizada
-    await fetchMatches();
-  }, [fetchMatches]);
+      // 2. Cria a nova formação
+      const createdLineups: Lineup[] = await Promise.all(
+        entries.map((entry) =>
+          LineupService.create({
+            matchId,
+            playerId: Number(entry.playerId),
+            isStarting: entry.isStarting,
+          })
+        )
+      );
 
-  // ─── Render ───────────────────────────────────────────────────────────────────
+      // 3. Atualiza o state
+      setMatches((prev) =>
+        prev.map((match) => {
+          if (match.id !== matchId) return match;
+          return { ...match, Lineups: createdLineups };
+        })
+      );
+    } catch (err) {
+      console.error("Erro ao guardar lineup:", err);
+      throw err;
+    }
+  },
+  []
+);
 
   return (
     <MatchesContext.Provider
@@ -201,9 +205,7 @@ export const MatchesProvider = ({ children }: any) => {
         startMatch,
         pauseMatch,
         finishMatch,
-        getLiveMinute,
         addMatchEvent,
-        updateMatchLineup,
         saveLineup,
       }}
     >
