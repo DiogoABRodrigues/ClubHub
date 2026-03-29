@@ -1,4 +1,7 @@
+import Lineup from "../models/Lineup";
 import Match from "../models/Match";
+import Player from "../models/Player";
+import Stats from "../models/Stats";
 import SeasonService from "./season.service";
 
 export default class MatchService {
@@ -7,7 +10,20 @@ export default class MatchService {
   }
 
   async getBySeasonId(seasonId: number) {
-    return Match.findAll({ where: { seasonId } });
+    return Match.findAll({
+      where: { seasonId },
+      include: [
+        {
+          model: Lineup,
+          include: [
+            {
+              model: Player,
+              attributes: ["id", "name", "photoUrl"],
+            },
+          ],
+        },
+      ],
+    });
   }
 
   async getByCurrentSeasonId() {

@@ -6,6 +6,10 @@ import { teamConfig } from "./config/teamConfig";
 import { scrapeAllTeams, saveAllTeams } from "./scrapers/allTeamsScraper";
 import { scrapeStandings, saveStandings } from "./scrapers/standingsScraper";
 import { scrapeTeamStats } from "./scrapers/statsScraper";
+import { initAssociations } from "./models/associations";
+
+initAssociations();
+
 
 const PORT = 3000;
 

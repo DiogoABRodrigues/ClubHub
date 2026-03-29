@@ -32,7 +32,5 @@ Lineup.init(
   { sequelize, modelName: "Lineup", tableName: "lineups", timestamps: true },
 );
 
-Lineup.belongsTo(Match, { foreignKey: "matchId" });
-Lineup.belongsTo(Player, { foreignKey: "playerId" });
 
 export default Lineup;

@@ -20,4 +20,10 @@ export default class LineupController {
     const data = await service.update(id, req.body);
     res.json(data);
   }
+
+  static async deleteByMatch(req: Request, res: Response) {
+    const matchId = Number(req.query.matchId);
+    await service.deleteByMatch(matchId);
+    res.status(204).send();
+  }
 }

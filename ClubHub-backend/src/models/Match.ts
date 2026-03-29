@@ -2,6 +2,7 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
 import Competition from "./Competition";
+import Lineup from "./Lineup";
 
 class Match extends Model {
   public id!: number;
@@ -123,5 +124,8 @@ Match.belongsTo(Competition, {
   foreignKey: "competitionId",
   as: "competitionDetails",
 });
+
+Match.hasMany(Lineup, { foreignKey: "matchId", as: "lineups" });
+Lineup.belongsTo(Match, { foreignKey: "matchId" });
 
 export default Match;
