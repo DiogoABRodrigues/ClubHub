@@ -242,6 +242,52 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  lineupSectionTitle: {
+  fontSize: 13,
+  fontWeight: "600",
+  color: COLORS.textSecondary,
+  textTransform: "uppercase",
+  letterSpacing: 0.5,
+  marginTop: 16,
+  marginBottom: 8,
+  paddingHorizontal: 4,
+},
+lineupRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  paddingVertical: 8,
+  borderBottomWidth: 1,
+  borderBottomColor: COLORS.border,
+  gap: 10,
+},
+lineupPhoto: {
+  width: 36,
+  height: 36,
+  borderRadius: 18,
+},
+lineupAvatar: {
+  width: 36,
+  height: 36,
+  borderRadius: 18,
+  backgroundColor: COLORS.surface,
+  justifyContent: "center",
+  alignItems: "center",
+},
+lineupAvatarText: {
+  fontSize: 12,
+  fontWeight: "600",
+  color: COLORS.textSecondary,
+},
+lineupName: {
+  flex: 1,
+  fontSize: 14,
+  fontWeight: "500",
+  color: COLORS.textPrimary,
+},
+lineupPosition: {
+  fontSize: 12,
+  color: COLORS.textSecondary,
+},
 });
 
 export const pickerStyles = {

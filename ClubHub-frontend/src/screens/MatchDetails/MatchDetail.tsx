@@ -14,12 +14,15 @@ import { useMatches } from "../../contexts/MatchesContext";
 import { useTeams } from "../../contexts/TeamsContext";
 import { formatDateWithWeekdayPT } from "../../utils/dateUtils";
 import { teamConfig } from "../../config/teamConfig";
+import { usePlayers } from "../../contexts/PlayersContext";
+import { mapToMainPosition } from "../../utils/playerPositionUtils";
 
 export const MatchDetail = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { id } = route.params as { id: number };
 
+  const { players } = usePlayers();
   const { matches, loading } = useMatches();
   const { teams, loading: teamsLoading } = useTeams();
 
@@ -69,6 +72,19 @@ export const MatchDetail = () => {
 
   const location =
     homeTeamName === teamConfig.name ? teamConfig.team_stadium : match.location;
+
+  const existingLineup = match.Lineups;
+  
+  //ordernar por posição (Guarda-Redes, Defesas, Médios, Avançados)
+  const sortedLineup = existingLineup?.slice().sort((a, b) => {
+    const playerA = players.find((p) => String(p.id) === String(a.playerId));
+    const playerB = players.find((p) => String(p.id) === String(b.playerId));
+    const posA = playerA ? mapToMainPosition(playerA.stats?.position) : "N/A";
+    const posB = playerB ? mapToMainPosition(playerB.stats?.position) : "N/A";
+    const orderA = posA === "Guarda Redes" ? 1 : posA === "Defesa" ? 2 : posA === "Médio" ? 3 : posA === "Avançado" ? 4 : 5;
+    const orderB = posB === "Guarda Redes" ? 1 : posB === "Defesa" ? 2 : posB === "Médio" ? 3 : posB === "Avançado" ? 4 : 5;
+    return orderA - orderB;
+  });
 
   return (
     <ScrollView style={styles.container}>
@@ -193,95 +209,102 @@ export const MatchDetail = () => {
         </View>
 
         {/* Content */}
-        <View style={styles.tabContent}>
-          {activeTab === "timeline" &&
-            (match.events && match.events.length > 0 ? (
-              match.events
-                .slice()
-                .reverse()
-                .map((event) => (
+          <View style={styles.tabContent}>
+            {activeTab === "timeline" && (
+              match.events && match.events.length > 0 ? (
+                match.events.slice().reverse().map((event: any) => (
                   <View key={event.id} style={styles.eventCard}>
                     <View style={styles.eventMinute}>
-                      <Text style={styles.eventMinuteText}>
-                        {event.minute}'
-                      </Text>
+                      <Text style={styles.eventMinuteText}>{event.minute}'</Text>
                     </View>
                     <View style={styles.eventInfo}>
                       <View style={styles.eventTypeRow}>
                         {event.type === "goal" && (
-                          <MaterialCommunityIcons
-                            name="target"
-                            size={16}
-                            color={COLORS.success}
-                          />
+                          <MaterialCommunityIcons name="target" size={16} color={COLORS.success} />
                         )}
                         {event.type === "yellow_card" && (
-                          <View
-                            style={[
-                              styles.cardIcon,
-                              { backgroundColor: "#FFD700" },
-                            ]}
-                          />
+                          <View style={[styles.cardIcon, { backgroundColor: "#FFD700" }]} />
                         )}
                         {event.type === "red_card" && (
-                          <View
-                            style={[
-                              styles.cardIcon,
-                              { backgroundColor: COLORS.error },
-                            ]}
-                          />
+                          <View style={[styles.cardIcon, { backgroundColor: COLORS.error }]} />
                         )}
-                        <Text style={styles.eventTypeText}>
-                          {event.type.replace("_", " ")}
-                        </Text>
+                        <Text style={styles.eventTypeText}>{event.type.replace("_", " ")}</Text>
                       </View>
                       <Text style={styles.eventPlayer}>{event.player}</Text>
                       {event.description && (
-                        <Text style={styles.eventDescription}>
-                          {event.description}
-                        </Text>
+                        <Text style={styles.eventDescription}>{event.description}</Text>
                       )}
                     </View>
                   </View>
                 ))
-            ) : (
-              <View style={styles.emptyState}>
-                <FontAwesome5
-                  name="hourglass-half"
-                  size={36}
-                  color={COLORS.textSecondary}
-                />
-                <Text style={styles.mutedText}>Sem informação</Text>
-              </View>
-            ))}
-
-          {activeTab === "lineup" && (
-            <>
-              {match.homeLineup && (
-                <PlayerLineup
-                  players={match.homeLineup}
-                  teamName={match.homeTeam}
-                />
-              )}
-              {match.awayLineup && (
-                <PlayerLineup
-                  players={match.awayLineup}
-                  teamName={match.awayTeam}
-                />
-              )}
-              {!match.homeLineup && !match.awayLineup && (
+              ) : (
                 <View style={styles.emptyState}>
-                  <FontAwesome5
-                    name="hourglass-half"
-                    size={36}
-                    color={COLORS.textSecondary}
-                  />
+                  <FontAwesome5 name="hourglass-half" size={36} color={COLORS.textSecondary} />
+                  <Text style={styles.mutedText}>Sem eventos ainda</Text>
+                </View>
+              )
+            )}
+            {activeTab === "lineup" && (
+            <>
+              {sortedLineup && sortedLineup.length > 0 ? (
+                <>
+                  {/* Titulares */}
+                  <Text style={styles.lineupSectionTitle}>Titulares</Text>
+                  {sortedLineup
+                    .filter((e: any) => e.isStarting)
+                    .map((e: any) => {
+                      const player = players.find((p) => String(p.id) === String(e.playerId));
+                      if (!player) return null;
+                      return (
+                        <View key={String(e.playerId)} style={styles.lineupRow}>
+                          {player.photoUrl ? (
+                            <Image source={{ uri: player.photoUrl }} style={styles.lineupPhoto} resizeMode="contain" />
+                          ) : (
+                            <View style={styles.lineupAvatar}>
+                              <Text style={styles.lineupAvatarText}>
+                                {player.name.split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase()}
+                              </Text>
+                            </View>
+                          )}
+                          <Text style={styles.lineupName}>{player.name}</Text>
+                          <Text style={styles.lineupPosition}>{player.stats?.position}</Text>
+                        </View>
+                      );
+                    })}
+
+                  {/* Suplentes */}
+                  <Text style={styles.lineupSectionTitle}>Suplentes</Text>
+                  {sortedLineup
+                    .filter((e: any) => !e.isStarting)
+                    .map((e: any) => {
+                      const player = players.find((p) => String(p.id) === String(e.playerId));
+                      if (!player) return null;
+                      return (
+                        <View key={String(e.playerId)} style={styles.lineupRow}>
+                          {player.photoUrl ? (
+                            <Image source={{ uri: player.photoUrl }} style={styles.lineupPhoto} resizeMode="contain"/>
+                          ) : (
+                            <View style={styles.lineupAvatar}>
+                              <Text style={styles.lineupAvatarText}>
+                                {player.name.split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase()}
+                              </Text>
+                            </View>
+                          )}
+                          <Text style={styles.lineupName}>{player.name}</Text>
+                          <Text style={styles.lineupPosition}>{player.stats?.position}</Text>
+                        </View>
+                      );
+                    })}
+                </>
+              ) : (
+                <View style={styles.emptyState}>
+                  <FontAwesome5 name="hourglass-half" size={36} color={COLORS.textSecondary} />
                   <Text style={styles.mutedText}>Formação não disponível</Text>
                 </View>
               )}
             </>
           )}
-        </View>
+          </View>
       </View>
     </ScrollView>
   );

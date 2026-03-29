@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Image, StyleSheet } from "react-native";
 import { usePlayers } from "../../contexts/PlayersContext";
 import { PlayerWithStats } from "../../models/Player";
 import { styles as globalStyles } from "./Squad.styles";
+import { mapToMainPosition, POSITION_ORDER, getPositionOrder } from "../../utils/playerPositionUtils";
 
 export function SquadScreen() {
   const { players } = usePlayers();
@@ -32,15 +33,13 @@ export function SquadScreen() {
 
   const sortedPlayers = useMemo(() => {
     return [...players].sort((a, b) => {
-      const posA =
-        positionOrder[mapToMainPosition(a.stats?.position || "")] || 99;
-      const posB =
-        positionOrder[mapToMainPosition(b.stats?.position || "")] || 99;
+      const posA = getPositionOrder(a.stats?.position || "");
+      const posB = getPositionOrder(b.stats?.position || "");
       if (posA !== posB) return posA - posB;
       return (a.stats.number || 0) - (b.stats.number || 0);
     });
   }, [players]);
-
+  
   const groupedByPosition = useMemo(() => {
     const groups: { position: string; players: PlayerWithStats[] }[] = [];
     let currentPos: string | null = null;

@@ -1,3 +1,5 @@
+import { Lineup } from "./Lineup";
+
 export type Match = {
   id: number;
   category: "Senior" | "U19" | "U17" | "U15";
@@ -17,4 +19,5 @@ export type Match = {
   location?: string;
   events?: JSON[];
   statusTime?: "1st" | "interval" | "2nd" | "extra" | "penalties";
+  Lineups?: Lineup[]; 
 };

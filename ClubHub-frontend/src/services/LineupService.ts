@@ -17,4 +17,8 @@ export const LineupService = {
     const { data } = await api.patch(`/lineups/${id}`, updates);
     return data;
   },
+
+  deleteByMatch: async (matchId: number): Promise<void> => {
+    await api.delete(`/lineups?matchId=${matchId}`);
+  }
 };

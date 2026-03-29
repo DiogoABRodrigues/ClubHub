@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { PlayerLineup } from "../../../components/PlayerLineup";
 import { LiveBadge } from "../../../components/LiveBadge";
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from "@expo/vector-icons";
 import { styles } from "../../MatchDetails/MatchDetail.styles";
@@ -13,8 +12,10 @@ import { adminStyles } from "./AdminMatchDetail.styles";
 import { COLORS } from "../../../theme/colors";
 import { LocationModal } from "./Components/LocationModal";
 import { DateTimePickerModal } from "./Components/DateTimePickerModal";
-import { AddLineupModal, LineupEntry } from "./Components/AddLineupModal";
+import { AddLineupModal } from "./Components/AddLineupModal";
 import { AddEventModal } from "./Components/AddEventModal";
+import { usePlayers } from "../../../contexts/PlayersContext";
+import { mapToMainPosition } from "../../../utils/playerPositionUtils";
 
 type EventType = "goal" | "yellow_card" | "red_card" | "substitution";
 
@@ -37,11 +38,10 @@ export const AdminMatchDetail = () => {
     saveLineup,
     updateMatch,
     startMatch,
-    pauseMatch,
     finishMatch,
-    getLiveMinute,
   } = useMatches();
   const { teams } = useTeams();
+  const { players } = usePlayers();
 
   const match = useMemo(() => matches.find((m) => m.id === id), [matches, id]);
 
@@ -77,14 +77,6 @@ export const AdminMatchDetail = () => {
       });
     },
     [match, addMatchEvent],
-  );
-
-  // onSave agora recebe (matchId, LineupEntry[]) — delega no contexto/serviço
-  const handleSaveLineup = useCallback(
-    async (matchId: number | string, entries: LineupEntry[]) => {
-      await saveLineup(matchId, entries);
-    },
-    [saveLineup],
   );
 
   const handleSaveDateTime = useCallback(
@@ -133,13 +125,18 @@ export const AdminMatchDetail = () => {
   const location = homeTeamName === teamConfig.name ? teamConfig.team_stadium : match.location;
 
   // Formação existente para pré-selecionar no modal
-  const existingLineup: LineupEntry[] = useMemo(
-    () => match.lineup?.map((e: any) => ({
-      playerId: e.playerId,
-      isStarting: e.isStarting,
-    })) ?? [],
-    [match.lineup]
-  );
+  const existingLineup = match.Lineups;
+
+  //ordernar por posição (Guarda-Redes, Defesas, Médios, Avançados)
+  const sortedLineup = existingLineup?.slice().sort((a, b) => {
+    const playerA = players.find((p) => String(p.id) === String(a.playerId));
+    const playerB = players.find((p) => String(p.id) === String(b.playerId));
+    const posA = playerA ? mapToMainPosition(playerA.stats?.position) : "N/A";
+    const posB = playerB ? mapToMainPosition(playerB.stats?.position) : "N/A";
+    const orderA = posA === "Guarda Redes" ? 1 : posA === "Defesa" ? 2 : posA === "Médio" ? 3 : posA === "Avançado" ? 4 : 5;
+    const orderB = posB === "Guarda Redes" ? 1 : posB === "Defesa" ? 2 : posB === "Médio" ? 3 : posB === "Avançado" ? 4 : 5;
+    return orderA - orderB;
+  });
 
   const isLive = match.status === "live";
   const isHalftime = match.status === "halftime";
@@ -207,7 +204,7 @@ export const AdminMatchDetail = () => {
                 {formatDateWithWeekdayPT(match.date)} • {match.time}
               </Text>
               {canEditDateTime && (
-                <TouchableOpacity style={adminStyles.inlineEditButton} onPress={() => setShowDateModal(true)}>
+                <TouchableOpacity onPress={() => setShowDateModal(true)}>
                   <Ionicons name="create-outline" size={16} color={COLORS.primary} />
                 </TouchableOpacity>
               )}
@@ -216,7 +213,7 @@ export const AdminMatchDetail = () => {
               <Ionicons name="location-outline" size={16} color={COLORS.textSecondary} />
               <Text style={styles.infoText}>{location}</Text>
               {canEditDateTime && (
-                <TouchableOpacity style={adminStyles.inlineEditButton} onPress={() => setShowLocationModal(true)}>
+                <TouchableOpacity onPress={() => setShowLocationModal(true)}>
                   <Ionicons name="create-outline" size={16} color={COLORS.primary} />
                 </TouchableOpacity>
               )}
@@ -227,11 +224,15 @@ export const AdminMatchDetail = () => {
           {isUpcoming && gameIsToday && (
           <View style={adminStyles.adminActions}>
             <TouchableOpacity
-              style={[adminStyles.adminBtn, adminStyles.adminBtnPrimary]}
+              style={[adminStyles.adminBtn, adminStyles.adminBtn]}
               onPress={() => updateMatch(match.id, { result: "0-0", status: "live", statusTime: "1st" })}
             >
-              <Ionicons name="play-circle-outline" size={16} color="#fff" />
-              <Text style={[adminStyles.adminBtnText, { color: "#fff" }]}>Começar jogo</Text>
+              <Ionicons name="play-circle-outline" size={16} color={COLORS.primary} />
+              <Text style={[adminStyles.adminBtnText]}>Começar jogo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={adminStyles.adminBtn} onPress={() => setShowLineupModal(true)}>
+              <Ionicons name="people-outline" size={16} color={COLORS.primary} />
+              <Text style={adminStyles.adminBtnText}>Formação</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -240,12 +241,11 @@ export const AdminMatchDetail = () => {
             <TouchableOpacity style={adminStyles.adminBtn} onPress={() => setShowEventModal(true)}>
               <Ionicons name="add-circle-outline" size={16} color={COLORS.primary} />
               <Text style={adminStyles.adminBtnText}>Evento</Text>
-            </TouchableOpacity>
+            </TouchableOpacity>  
             <TouchableOpacity style={adminStyles.adminBtn} onPress={() => setShowLineupModal(true)}>
               <Ionicons name="people-outline" size={16} color={COLORS.primary} />
               <Text style={adminStyles.adminBtnText}>Formação</Text>
             </TouchableOpacity>
-
             {match.statusTime === "1st" && (
               <TouchableOpacity
                 style={adminStyles.adminBtn}
@@ -279,7 +279,7 @@ export const AdminMatchDetail = () => {
           {isHalftime && (
             <View style={adminStyles.adminActions}>
               <TouchableOpacity
-                style={[adminStyles.adminBtn, adminStyles.adminBtnPrimary]}
+                style={[adminStyles.adminBtn, adminStyles.adminBtn]}
                 onPress={() => startMatch(match.id)}
               >
                 <Ionicons name="play-circle-outline" size={16} color="#fff" />
@@ -344,17 +344,65 @@ export const AdminMatchDetail = () => {
               )
             )}
             {activeTab === "lineup" && (
-              <>
-                {match.homeLineup && <PlayerLineup players={match.homeLineup} teamName={homeTeamName} />}
-                {match.awayLineup && <PlayerLineup players={match.awayLineup} teamName={awayTeamName} />}
-                {!match.homeLineup && !match.awayLineup && (
-                  <View style={styles.emptyState}>
-                    <FontAwesome5 name="hourglass-half" size={36} color={COLORS.textSecondary} />
-                    <Text style={styles.mutedText}>Formação não disponível</Text>
-                  </View>
-                )}
-              </>
-            )}
+            <>
+              {sortedLineup && sortedLineup.length > 0 ? (
+                <>
+                  {/* Titulares */}
+                  <Text style={adminStyles.lineupSectionTitle}>Titulares</Text>
+                  {sortedLineup
+                    .filter((e: any) => e.isStarting)
+                    .map((e: any) => {
+                      const player = players.find((p) => String(p.id) === String(e.playerId));
+                      if (!player) return null;
+                      return (
+                        <View key={String(e.playerId)} style={adminStyles.lineupRow}>
+                          {player.photoUrl ? (
+                            <Image source={{ uri: player.photoUrl }} style={adminStyles.lineupPhoto} />
+                          ) : (
+                            <View style={adminStyles.lineupAvatar}>
+                              <Text style={adminStyles.lineupAvatarText}>
+                                {player.name.split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase()}
+                              </Text>
+                            </View>
+                          )}
+                          <Text style={adminStyles.lineupName}>{player.name}</Text>
+                          <Text style={adminStyles.lineupPosition}>{player.stats?.position}</Text>
+                        </View>
+                      );
+                    })}
+
+                  {/* Suplentes */}
+                  <Text style={adminStyles.lineupSectionTitle}>Suplentes</Text>
+                  {sortedLineup
+                    .filter((e: any) => !e.isStarting)
+                    .map((e: any) => {
+                      const player = players.find((p) => String(p.id) === String(e.playerId));
+                      if (!player) return null;
+                      return (
+                        <View key={String(e.playerId)} style={adminStyles.lineupRow}>
+                          {player.photoUrl ? (
+                            <Image source={{ uri: player.photoUrl }} style={adminStyles.lineupPhoto} />
+                          ) : (
+                            <View style={adminStyles.lineupAvatar}>
+                              <Text style={adminStyles.lineupAvatarText}>
+                                {player.name.split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase()}
+                              </Text>
+                            </View>
+                          )}
+                          <Text style={adminStyles.lineupName}>{player.name}</Text>
+                          <Text style={adminStyles.lineupPosition}>{player.stats?.position}</Text>
+                        </View>
+                      );
+                    })}
+                </>
+              ) : (
+                <View style={styles.emptyState}>
+                  <FontAwesome5 name="hourglass-half" size={36} color={COLORS.textSecondary} />
+                  <Text style={styles.mutedText}>Formação não disponível</Text>
+                </View>
+              )}
+            </>
+          )}
           </View>
         </View>
       </ScrollView>
@@ -369,7 +417,6 @@ export const AdminMatchDetail = () => {
         visible={showLineupModal}
         matchId={match.id}
         onClose={() => setShowLineupModal(false)}
-        onSave={handleSaveLineup}
         existingLineup={existingLineup}
       />
       <DateTimePickerModal
