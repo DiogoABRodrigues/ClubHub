@@ -6,6 +6,7 @@ export type Player = {
   name: string;
   photoUrl?: string | null;
   age: number | null;
+  stillOnTeam?: boolean;
 };
 
 export interface PlayerWithStats extends Player {
