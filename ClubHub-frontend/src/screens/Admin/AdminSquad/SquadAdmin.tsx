@@ -5,7 +5,7 @@ import { PlayerWithStats } from "../../../models/Player";
 import { styles as globalStyles } from "../../Squad/Squad.styles";
 import { mapToMainPosition, getPositionOrder } from "../../../utils/playerPositionUtils";
 
-export function SquadAdminScreen() {
+export function AdminSquadScreen() {
   const { players, updatePlayer } = usePlayers();
 
   const sortedPlayers = useMemo(() => {

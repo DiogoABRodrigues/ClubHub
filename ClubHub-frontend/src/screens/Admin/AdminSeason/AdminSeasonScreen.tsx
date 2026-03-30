@@ -3,10 +3,10 @@ import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Trophy, Users, BarChart3, ArrowLeft } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { styles } from "./Season.styles";
-import { SquadScreen } from "../Squad/Squad";
-import { Standings } from "../Standings/Standings";
-import { SquadStats } from "../Stats/Stats";
-import { useSeasons } from "../../contexts/SeasonContext";
+import { AdminSquadScreen } from "../AdminSquad/SquadAdmin";
+import { Standings } from "../../Standings/Standings";
+import { SquadStats } from "../../Stats/Stats";
+import { useSeasons } from "../../../contexts/SeasonContext";
 
 type SeasonTab = "standings" | "squad" | "stats";
 
@@ -16,7 +16,7 @@ interface Tab {
   icon: any;
 }
 
-export function SeasonScreen() {
+export function AdminSeasonScreen() {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState<SeasonTab>("standings");
   const { seasons } = useSeasons();
@@ -51,7 +51,7 @@ export function SeasonScreen() {
       case "standings":
         return <Standings />;
       case "squad":
-        return <SquadScreen />;
+        return <AdminSquadScreen />;
       case "stats":
         return <SquadStats />;
     }

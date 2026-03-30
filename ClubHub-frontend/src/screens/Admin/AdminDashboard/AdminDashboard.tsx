@@ -6,7 +6,7 @@ import { AdminNewsStack } from "../../../navigation/AdminNewsStack";
 import { AdminMatchesStack } from "../../../navigation/AdminMatchsStack ";
 import { AdminNotifications } from "../AdminNotifications/AdminNotifications";
 import { useNavigation } from "@react-navigation/native";
-import { SquadAdminScreen } from "../SquadAdmin/SquadAdmin";
+import { AdminSquadScreen } from "../AdminSquad/SquadAdmin";
 
 type AdminTab = "matches" | "news" | "notifications";
 
@@ -54,7 +54,7 @@ export function AdminDashboard() {
       case "news":
         return <AdminNewsStack/>;
       case "notifications":
-        return <SquadAdminScreen/>;
+        return <AdminSquadScreen/>;
     }
   }, [activeTab, navigation]);
 

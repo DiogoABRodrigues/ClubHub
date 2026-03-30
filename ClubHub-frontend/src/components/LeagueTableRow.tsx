@@ -27,15 +27,6 @@ export const LeagueTableRow = React.memo(
     const { teams } = useTeams();
     const [expanded, setExpanded] = useState(false);
 
-    useEffect(() => {
-      if (
-        Platform.OS === "android" &&
-        UIManager.setLayoutAnimationEnabledExperimental
-      ) {
-        UIManager.setLayoutAnimationEnabledExperimental(true);
-      }
-    }, []);
-
     const toggleExpand = useCallback(() => {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       setExpanded((prev) => !prev);
