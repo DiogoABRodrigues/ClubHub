@@ -83,6 +83,8 @@ export async function saveMatches(
       seasonId = competition.seasonId;
     }
 
+    const location = match.homeOrAway === "C" ? teamConfig.teamLocation : null;
+
     await Match.upsert({
       teamName,
       date: match.date,
@@ -95,6 +97,7 @@ export async function saveMatches(
       round: match.round,
       outcome: match.outcome,
       status: match.result ? "finished" : "upcoming",
+      location,
     });
   }
   console.log(

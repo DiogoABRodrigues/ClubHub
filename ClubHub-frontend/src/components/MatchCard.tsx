@@ -34,11 +34,7 @@ export const MatchCard = React.memo(
     const homeTeam = match.homeOrAway === "C" ? match.teamName : match.opponent;
     const awayTeam = match.homeOrAway === "F" ? match.teamName : match.opponent;
 
-    const location = useMemo(() => {
-      return homeTeam === teamConfig.name
-        ? teamConfig.team_stadium
-        : match.location;
-    }, [homeTeam, match.location]);
+    const location = useMemo(() => { return match.location }, [match.location]);
 
     const copyLocation = useCallback(async () => {
       await Clipboard.setStringAsync(location || "Localização não disponível");
