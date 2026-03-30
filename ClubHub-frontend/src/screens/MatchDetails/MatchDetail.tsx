@@ -3,10 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { LiveBadge } from "../../components/LiveBadge";
 import { COLORS } from "../../theme/colors";
-import {
-  Ionicons,
-  FontAwesome5,
-} from "@expo/vector-icons";
+import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { styles } from "./MatchDetail.styles";
 import { useMatches } from "../../contexts/MatchesContext";
 import { useTeams } from "../../contexts/TeamsContext";
@@ -22,7 +19,7 @@ export const MatchDetail = () => {
   const { id } = route.params as { id: number };
 
   const { getActivePlayers } = usePlayers();
-    
+
   const players = getActivePlayers();
   const { matches, loading } = useMatches();
   const { teams, loading: teamsLoading } = useTeams();
@@ -75,19 +72,40 @@ export const MatchDetail = () => {
     homeTeamName === teamConfig.name ? teamConfig.team_stadium : match.location;
 
   const existingLineup = match.Lineups;
-  
+
   //ordernar por posição (Guarda-Redes, Defesas, Médios, Avançados)
   const sortedLineup = existingLineup?.slice().sort((a, b) => {
     const playerA = players.find((p) => String(p.id) === String(a.playerId));
     const playerB = players.find((p) => String(p.id) === String(b.playerId));
     const posA = playerA ? mapToMainPosition(playerA.stats?.position) : "N/A";
     const posB = playerB ? mapToMainPosition(playerB.stats?.position) : "N/A";
-    const orderA = posA === "Guarda Redes" ? 1 : posA === "Defesa" ? 2 : posA === "Médio" ? 3 : posA === "Avançado" ? 4 : 5;
-    const orderB = posB === "Guarda Redes" ? 1 : posB === "Defesa" ? 2 : posB === "Médio" ? 3 : posB === "Avançado" ? 4 : 5;
+    const orderA =
+      posA === "Guarda Redes"
+        ? 1
+        : posA === "Defesa"
+          ? 2
+          : posA === "Médio"
+            ? 3
+            : posA === "Avançado"
+              ? 4
+              : 5;
+    const orderB =
+      posB === "Guarda Redes"
+        ? 1
+        : posB === "Defesa"
+          ? 2
+          : posB === "Médio"
+            ? 3
+            : posB === "Avançado"
+              ? 4
+              : 5;
     return orderA - orderB;
   });
 
-  const isHomeGame = useMemo(() => match.homeOrAway === "C", [match.homeOrAway]);
+  const isHomeGame = useMemo(
+    () => match.homeOrAway === "C",
+    [match.homeOrAway],
+  );
 
   return (
     <ScrollView style={styles.container}>
@@ -102,7 +120,9 @@ export const MatchDetail = () => {
         <Text style={styles.title}>Detalhes do jogo</Text>
 
         <View style={styles.statusContainer}>
-          {match.status === "live" && <LiveBadge interval={match.statusTime === "interval"} />}
+          {match.status === "live" && (
+            <LiveBadge interval={match.statusTime === "interval"} />
+          )}
           {match.status === "upcoming" && (
             <View style={styles.upcomingBadge}>
               <Text style={styles.badgeText}>Agendado</Text>
@@ -134,22 +154,12 @@ export const MatchDetail = () => {
 
           {/* Score */}
           <View style={styles.scoreContainer}>
-            <Text
-              style={[
-                styles.scoreText,
-                { color: COLORS.textPrimary },
-              ]}
-            >
-               {(match.result?.split("-")[0])}
+            <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
+              {match.result?.split("-")[0]}
             </Text>
             <Text style={styles.colon}>:</Text>
-            <Text
-              style={[
-                styles.scoreText,
-                { color: COLORS.textPrimary },
-              ]}
-            >
-              {(match.result?.split("-")[1])}
+            <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
+              {match.result?.split("-")[1]}
             </Text>
           </View>
 
@@ -212,17 +222,20 @@ export const MatchDetail = () => {
         </View>
 
         {/* Content */}
-          <View style={styles.tabContent}>
-            {activeTab === "timeline" && (
-              match.events && match.events.length > 0 ? (() => {
+        <View style={styles.tabContent}>
+          {activeTab === "timeline" &&
+            (match.events && match.events.length > 0 ? (
+              (() => {
                 // @ts-ignore comment
-                const sorted = [...match.events].sort((a, b) => a.minute - b.minute);
+                const sorted = [...match.events].sort(
+                  (a, b) => a.minute - b.minute,
+                );
 
                 // agrupa por 1ª/2ª parte
                 // @ts-ignore comment
-                const firstHalf  = sorted.filter(e => e.minute <= 45);
+                const firstHalf = sorted.filter((e) => e.minute <= 45);
                 // @ts-ignore comment
-                const secondHalf = sorted.filter(e => e.minute > 45);
+                const secondHalf = sorted.filter((e) => e.minute > 45);
 
                 const scoreAt = (events: any[]) => {
                   // score após esses eventos — só se tiveres o campo no evento
@@ -241,7 +254,9 @@ export const MatchDetail = () => {
                           <EventRow
                             key={event.id}
                             event={event}
-                            isOurs={isHomeGame ? !event.isOpponent : event.isOpponent}
+                            isOurs={
+                              isHomeGame ? !event.isOpponent : event.isOpponent
+                            }
                           />
                         ))}
                       </>
@@ -255,21 +270,27 @@ export const MatchDetail = () => {
                           <EventRow
                             key={event.id}
                             event={event}
-                            isOurs={isHomeGame ? !event.isOpponent : event.isOpponent}
+                            isOurs={
+                              isHomeGame ? !event.isOpponent : event.isOpponent
+                            }
                           />
                         ))}
                       </>
                     )}
                   </>
                 );
-              })() : (
-                <View style={styles.emptyState}>
-                  <FontAwesome5 name="hourglass-half" size={36} color={COLORS.textSecondary} />
-                  <Text style={styles.mutedText}>Sem eventos ainda</Text>
-                </View>
-              )
-            )}
-            {activeTab === "lineup" && (
+              })()
+            ) : (
+              <View style={styles.emptyState}>
+                <FontAwesome5
+                  name="hourglass-half"
+                  size={36}
+                  color={COLORS.textSecondary}
+                />
+                <Text style={styles.mutedText}>Sem eventos ainda</Text>
+              </View>
+            ))}
+          {activeTab === "lineup" && (
             <>
               {sortedLineup && sortedLineup.length > 0 ? (
                 <>
@@ -278,21 +299,34 @@ export const MatchDetail = () => {
                   {sortedLineup
                     .filter((e: any) => e.isStarting)
                     .map((e: any) => {
-                      const player = players.find((p) => String(p.id) === String(e.playerId));
+                      const player = players.find(
+                        (p) => String(p.id) === String(e.playerId),
+                      );
                       if (!player) return null;
                       return (
                         <View key={String(e.playerId)} style={styles.lineupRow}>
                           {player.photoUrl ? (
-                            <Image source={{ uri: player.photoUrl }} style={styles.lineupPhoto} resizeMode="contain" />
+                            <Image
+                              source={{ uri: player.photoUrl }}
+                              style={styles.lineupPhoto}
+                              resizeMode="contain"
+                            />
                           ) : (
                             <View style={styles.lineupAvatar}>
                               <Text style={styles.lineupAvatarText}>
-                                {player.name.split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase()}
+                                {player.name
+                                  .split(" ")
+                                  .map((w: string) => w[0])
+                                  .slice(0, 2)
+                                  .join("")
+                                  .toUpperCase()}
                               </Text>
                             </View>
                           )}
                           <Text style={styles.lineupName}>{player.name}</Text>
-                          <Text style={styles.lineupPosition}>{player.stats?.position}</Text>
+                          <Text style={styles.lineupPosition}>
+                            {player.stats?.position}
+                          </Text>
                         </View>
                       );
                     })}
@@ -302,34 +336,51 @@ export const MatchDetail = () => {
                   {sortedLineup
                     .filter((e: any) => !e.isStarting)
                     .map((e: any) => {
-                      const player = players.find((p) => String(p.id) === String(e.playerId));
+                      const player = players.find(
+                        (p) => String(p.id) === String(e.playerId),
+                      );
                       if (!player) return null;
                       return (
                         <View key={String(e.playerId)} style={styles.lineupRow}>
                           {player.photoUrl ? (
-                            <Image source={{ uri: player.photoUrl }} style={styles.lineupPhoto} resizeMode="contain"/>
+                            <Image
+                              source={{ uri: player.photoUrl }}
+                              style={styles.lineupPhoto}
+                              resizeMode="contain"
+                            />
                           ) : (
                             <View style={styles.lineupAvatar}>
                               <Text style={styles.lineupAvatarText}>
-                                {player.name.split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase()}
+                                {player.name
+                                  .split(" ")
+                                  .map((w: string) => w[0])
+                                  .slice(0, 2)
+                                  .join("")
+                                  .toUpperCase()}
                               </Text>
                             </View>
                           )}
                           <Text style={styles.lineupName}>{player.name}</Text>
-                          <Text style={styles.lineupPosition}>{player.stats?.position}</Text>
+                          <Text style={styles.lineupPosition}>
+                            {player.stats?.position}
+                          </Text>
                         </View>
                       );
                     })}
                 </>
               ) : (
                 <View style={styles.emptyState}>
-                  <FontAwesome5 name="hourglass-half" size={36} color={COLORS.textSecondary} />
+                  <FontAwesome5
+                    name="hourglass-half"
+                    size={36}
+                    color={COLORS.textSecondary}
+                  />
                   <Text style={styles.mutedText}>Formação não disponível</Text>
                 </View>
               )}
             </>
           )}
-          </View>
+        </View>
       </View>
     </ScrollView>
   );

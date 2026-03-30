@@ -175,11 +175,11 @@ export const styles = StyleSheet.create({
     fontWeight: "700",
   },
   imagePickerBtn: {
-  backgroundColor: COLORS.primary,
-  paddingVertical: 12,
-  paddingHorizontal: 16,
-  borderRadius: 10,
-  alignItems: "center",
-  marginTop: 8,
-},
+    backgroundColor: COLORS.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 8,
+  },
 });

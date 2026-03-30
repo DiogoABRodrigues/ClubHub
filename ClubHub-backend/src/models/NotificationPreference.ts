@@ -17,10 +17,19 @@ NotificationPreference.init(
       allowNull: false,
       references: { model: Device, key: "id" },
     },
-    events: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: false, defaultValue: [] },
+    events: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: false,
+      defaultValue: [],
+    },
     news: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
   },
-  { sequelize, modelName: "NotificationPreference", tableName: "notification_preferences", timestamps: true }
+  {
+    sequelize,
+    modelName: "NotificationPreference",
+    tableName: "notification_preferences",
+    timestamps: true,
+  },
 );
 
 NotificationPreference.belongsTo(Device, { foreignKey: "deviceId" });

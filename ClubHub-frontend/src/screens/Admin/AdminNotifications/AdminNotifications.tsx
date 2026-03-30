@@ -129,7 +129,9 @@ export const AdminNotifications: React.FC = ({ navigation }: any) => {
         {/* Manual Notification */}
         {activeTab === "manual" && (
           <View style={styles.tabContent}>
-            <Text style={styles.sectionTitle}>Criar notificação personalizada</Text>
+            <Text style={styles.sectionTitle}>
+              Criar notificação personalizada
+            </Text>
 
             <Text style={styles.label}>Público-alvo</Text>
             <TextInput
@@ -242,4 +244,4 @@ export const AdminNotifications: React.FC = ({ navigation }: any) => {
       </ScrollView>
     </View>
   );
-};  
+};

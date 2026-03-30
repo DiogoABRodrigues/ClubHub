@@ -19,5 +19,5 @@ export type Match = {
   location?: string;
   events?: JSON[];
   statusTime?: "1st" | "interval" | "2nd" | "extra" | "penalties";
-  Lineups?: Lineup[]; 
+  Lineups?: Lineup[];
 };

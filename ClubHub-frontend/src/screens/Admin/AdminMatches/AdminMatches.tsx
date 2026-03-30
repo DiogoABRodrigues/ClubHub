@@ -26,21 +26,23 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
     (teamName: string) => {
       const normalized = teamName.trim().toLowerCase();
       const team = teams.find(
-        (t) => t.name.trim().toLowerCase() === normalized
+        (t) => t.name.trim().toLowerCase() === normalized,
       );
       return team?.logoUrl;
     },
-    [teams]
+    [teams],
   );
 
   const getHomeTeam = useCallback(
-    (match: any) => (match.homeOrAway === "C" ? match.teamName : match.opponent),
-    []
+    (match: any) =>
+      match.homeOrAway === "C" ? match.teamName : match.opponent,
+    [],
   );
 
   const getAwayTeam = useCallback(
-    (match: any) => (match.homeOrAway === "F" ? match.teamName : match.opponent),
-    []
+    (match: any) =>
+      match.homeOrAway === "F" ? match.teamName : match.opponent,
+    [],
   );
 
   // ── Filtragem eficiente ───────────────────────────────
@@ -56,22 +58,22 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
         (match) =>
           query === "" ||
           match.homeTeamLower.includes(query) ||
-          match.awayTeamLower.includes(query)
+          match.awayTeamLower.includes(query),
       );
   }, [matches, searchQuery, getHomeTeam, getAwayTeam]);
 
   // ── Matches por status ───────────────────────────────
   const liveMatches = useMemo(
     () => filteredMatches.filter((m) => m.status === "live"),
-    [filteredMatches]
+    [filteredMatches],
   );
   const upcomingMatches = useMemo(
     () => filteredMatches.filter((m) => m.status === "upcoming").toReversed(),
-    [filteredMatches]
+    [filteredMatches],
   );
   const finishedMatches = useMemo(
     () => filteredMatches.filter((m) => m.status === "finished"),
-    [filteredMatches]
+    [filteredMatches],
   );
 
   const renderItem = useCallback(
@@ -81,11 +83,13 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
           match={item}
           homeLogo={getTeamLogo(getHomeTeam(item)) || ""}
           awayLogo={getTeamLogo(getAwayTeam(item)) || ""}
-          onPress={() => navigation.navigate("AdminMatchDetail", { id: item.id })}
+          onPress={() =>
+            navigation.navigate("AdminMatchDetail", { id: item.id })
+          }
         />
       </View>
     ),
-    [navigation, getTeamLogo, getHomeTeam, getAwayTeam]
+    [navigation, getTeamLogo, getHomeTeam, getAwayTeam],
   );
 
   // ── Função para renderizar cada secção ─────────────
@@ -93,12 +97,18 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
     title: string,
     matchesArray: any[],
     showAll: boolean,
-    toggleShowAll: () => void
+    toggleShowAll: () => void,
   ) => {
     const displayMatches = showAll ? matchesArray : matchesArray.slice(0, 3);
     return (
       <View style={{ marginBottom: 20 }}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 8 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 8,
+          }}
+        >
           <Text style={{ fontWeight: "600", fontSize: 16 }}>{title}</Text>
           {matchesArray.length > 3 && (
             <TouchableOpacity onPress={toggleShowAll}>
@@ -138,50 +148,50 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
         </View>
       ) : (
         <FlatList
-  data={[{ key: "live" }, { key: "upcoming" }, { key: "finished" }]}
-  keyExtractor={(item) => item.key}
-  ListHeaderComponent={
-    <>
-      {/* Botão Adicionar no topo do scroll */}
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => navigation.navigate("AdminAddMatch")}
-      >
-        <Plus width={16} height={16} color="#fff" />
-        <Text style={styles.addButtonText}>Adicionar</Text>
-      </TouchableOpacity>
-    </>
-  }
-  renderItem={({ item }) => {
-    if (item.key === "live" && liveMatches.length > 0) {
-      return renderMatchesSection(
-        "A Decorrer",
-        liveMatches,
-        showAllLive,
-        () => setShowAllLive(!showAllLive)
-      );
-    }
-    if (item.key === "upcoming" && upcomingMatches.length > 0) {
-      return renderMatchesSection(
-        "Próximos Jogos",
-        upcomingMatches,
-        showAllUpcoming,
-        () => setShowAllUpcoming(!showAllUpcoming)
-      );
-    }
-    if (item.key === "finished" && finishedMatches.length > 0) {
-      return renderMatchesSection(
-        "Últimos Resultados",
-        finishedMatches,
-        showAllFinished,
-        () => setShowAllFinished(!showAllFinished)
-      );
-    }
-    return null;
-  }}
-  contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
-  showsVerticalScrollIndicator={false}
-/>
+          data={[{ key: "live" }, { key: "upcoming" }, { key: "finished" }]}
+          keyExtractor={(item) => item.key}
+          ListHeaderComponent={
+            <>
+              {/* Botão Adicionar no topo do scroll */}
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={() => navigation.navigate("AdminAddMatch")}
+              >
+                <Plus width={16} height={16} color="#fff" />
+                <Text style={styles.addButtonText}>Adicionar</Text>
+              </TouchableOpacity>
+            </>
+          }
+          renderItem={({ item }) => {
+            if (item.key === "live" && liveMatches.length > 0) {
+              return renderMatchesSection(
+                "A Decorrer",
+                liveMatches,
+                showAllLive,
+                () => setShowAllLive(!showAllLive),
+              );
+            }
+            if (item.key === "upcoming" && upcomingMatches.length > 0) {
+              return renderMatchesSection(
+                "Próximos Jogos",
+                upcomingMatches,
+                showAllUpcoming,
+                () => setShowAllUpcoming(!showAllUpcoming),
+              );
+            }
+            if (item.key === "finished" && finishedMatches.length > 0) {
+              return renderMatchesSection(
+                "Últimos Resultados",
+                finishedMatches,
+                showAllFinished,
+                () => setShowAllFinished(!showAllFinished),
+              );
+            }
+            return null;
+          }}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
+        />
       )}
     </View>
   );

@@ -16,7 +16,11 @@ Notification.init(
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     title: { type: DataTypes.STRING, allowNull: false },
     message: { type: DataTypes.TEXT, allowNull: false },
-    automatic: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    automatic: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     hourToSend: { type: DataTypes.DATE, allowNull: true },
     dayToSend: { type: DataTypes.DATE, allowNull: true },
     recipientRoleId: {

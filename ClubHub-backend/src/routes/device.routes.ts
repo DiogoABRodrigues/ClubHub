@@ -5,6 +5,11 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = Router();
 
-router.post("/register", authMiddleware, authorizeRoles("admin"), deviceController.registerDevice);
+router.post(
+  "/register",
+  authMiddleware,
+  authorizeRoles("admin"),
+  deviceController.registerDevice,
+);
 
 export default router;

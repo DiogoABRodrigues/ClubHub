@@ -4,7 +4,6 @@ import { initAssociations } from "./models/associations";
 
 initAssociations();
 
-
 const PORT = 3000;
 
 async function startServer() {

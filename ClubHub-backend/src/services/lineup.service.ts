@@ -7,7 +7,11 @@ export default class LineupService {
     return Lineup.findAll({ where: whereClause });
   }
 
-  async create(data: { matchId: number; playerId: number; isStarting?: boolean }) {
+  async create(data: {
+    matchId: number;
+    playerId: number;
+    isStarting?: boolean;
+  }) {
     // Cria o lineup
     const lineup = await Lineup.create(data);
 

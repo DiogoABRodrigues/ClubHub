@@ -65,11 +65,7 @@ export const PlayersProvider = ({
       await PlayerService.updatePlayer(id, data);
 
       setPlayers((prev) =>
-        prev.map((p) =>
-          p.id === id
-            ? { ...p, ...data }
-            : p
-        )
+        prev.map((p) => (p.id === id ? { ...p, ...data } : p)),
       );
     } catch (error) {
       console.error("Erro ao atualizar player:", error);
@@ -86,7 +82,13 @@ export const PlayersProvider = ({
 
   return (
     <PlayersContext.Provider
-      value={{ players, loading, refreshPlayers: fetchPlayers, updatePlayer, getActivePlayers }}
+      value={{
+        players,
+        loading,
+        refreshPlayers: fetchPlayers,
+        updatePlayer,
+        getActivePlayers,
+      }}
     >
       {children}
     </PlayersContext.Provider>

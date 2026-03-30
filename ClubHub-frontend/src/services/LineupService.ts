@@ -20,5 +20,5 @@ export const LineupService = {
 
   deleteByMatch: async (matchId: number): Promise<void> => {
     await api.delete(`/lineups?matchId=${matchId}`);
-  }
+  },
 };

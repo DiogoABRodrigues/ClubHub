@@ -24,7 +24,11 @@ Player.init(
     name: { type: DataTypes.STRING, allowNull: false },
     photoUrl: { type: DataTypes.STRING, allowNull: true },
     age: { type: DataTypes.INTEGER, allowNull: true },
-    stillOnTeam: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+    stillOnTeam: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
   },
   {
     sequelize,

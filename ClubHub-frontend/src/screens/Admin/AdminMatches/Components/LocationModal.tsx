@@ -60,23 +60,15 @@ export const LocationModal = ({
           <View style={modalStyles.handle} />
 
           <View style={modalStyles.sheetHeader}>
-            <Text style={modalStyles.sheetTitle}>
-              Editar Localização
-            </Text>
+            <Text style={modalStyles.sheetTitle}>Editar Localização</Text>
 
             <TouchableOpacity onPress={onClose}>
-              <Ionicons
-                name="close"
-                size={22}
-                color={COLORS.textSecondary}
-              />
+              <Ionicons name="close" size={22} color={COLORS.textSecondary} />
             </TouchableOpacity>
           </View>
 
           <View style={modalStyles.sheetContent}>
-            <Text style={modalStyles.fieldLabel}>
-              Local do jogo
-            </Text>
+            <Text style={modalStyles.fieldLabel}>Local do jogo</Text>
 
             <TextInput
               style={modalStyles.input}
@@ -96,9 +88,7 @@ export const LocationModal = ({
               {saving ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={modalStyles.saveBtnText}>
-                  Guardar
-                </Text>
+                <Text style={modalStyles.saveBtnText}>Guardar</Text>
               )}
             </TouchableOpacity>
           </View>

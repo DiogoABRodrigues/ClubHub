@@ -15,44 +15,43 @@ type Props = NativeStackScreenProps<AdminNewsStackParamList, "AdminNews">;
 export const AdminNews: React.FC<Props> = ({ navigation }) => {
   const { news, loading, deleteNews } = useNews();
 
-
   const handleDelete = useCallback(
     (id: number, title: string) => {
-        // 📱 Mobile: usa Alert
-        Alert.alert(
-          "Eliminar notícia?",
-          `Tens a certeza que queres eliminar "${title}"? Esta ação não pode ser desfeita.`,
-          [
-            { text: "Cancelar", style: "cancel" },
-            {
-              text: "Eliminar",
-              style: "destructive",
-              onPress: async () => {
-                try {
-                  await deleteNews(id);
-                  console.log("Notícia eliminada com sucesso");
-                } catch (err) {
-                  console.error("Não foi possível eliminar a notícia.", err);
-                  Alert.alert("Erro", "Não foi possível eliminar a notícia.");
-                }
-              },
+      // 📱 Mobile: usa Alert
+      Alert.alert(
+        "Eliminar notícia?",
+        `Tens a certeza que queres eliminar "${title}"? Esta ação não pode ser desfeita.`,
+        [
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: "Eliminar",
+            style: "destructive",
+            onPress: async () => {
+              try {
+                await deleteNews(id);
+                console.log("Notícia eliminada com sucesso");
+              } catch (err) {
+                console.error("Não foi possível eliminar a notícia.", err);
+                Alert.alert("Erro", "Não foi possível eliminar a notícia.");
+              }
             },
-          ]
-        );
+          },
+        ],
+      );
     },
-    [deleteNews]
+    [deleteNews],
   );
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => navigation.navigate("AdminNewsForm" as never)}
-      >
-        <Plus width={16} height={16} color="#fff" />
-        <Text style={styles.addButtonText}>Adicionar</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => navigation.navigate("AdminNewsForm" as never)}
+        >
+          <Plus width={16} height={16} color="#fff" />
+          <Text style={styles.addButtonText}>Adicionar</Text>
+        </TouchableOpacity>
         {loading ? (
           <Text style={styles.loadingText}>A carregar notícias...</Text>
         ) : news.length > 0 ? (
@@ -61,7 +60,9 @@ export const AdminNews: React.FC<Props> = ({ navigation }) => {
               <View key={item.id} style={styles.newsWrapper}>
                 <NewsCard
                   news={item}
-                  onPress={() => navigation.navigate("AdminNewsForm", { id: item.id })}
+                  onPress={() =>
+                    navigation.navigate("AdminNewsForm", { id: item.id })
+                  }
                 />
                 <View style={styles.newsActions}>
                   <TouchableOpacity

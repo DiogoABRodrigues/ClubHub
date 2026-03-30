@@ -2,10 +2,10 @@ import { Request, Response } from "express";
 import newsService from "../services/news.service";
 
 class NewsController {
-    async create(req: Request, res: Response) {
+  async create(req: Request, res: Response) {
     try {
-      console.log('File received:', req.file); // Debug
-      console.log('Body received:', req.body); // Debug
+      console.log("File received:", req.file); // Debug
+      console.log("Body received:", req.body); // Debug
 
       // Verifica se o arquivo foi recebido corretamente
       let imageFilename = null;
@@ -23,7 +23,7 @@ class NewsController {
 
       return res.status(201).json(news);
     } catch (error) {
-      console.error('Erro ao criar notícia:', error);
+      console.error("Erro ao criar notícia:", error);
       return res.status(500).json({ message: "Erro ao criar notícia", error });
     }
   }
@@ -31,7 +31,7 @@ class NewsController {
   async update(req: Request, res: Response) {
     try {
       const id = Number(req.params.id);
-      
+
       let imageFilename = undefined;
       if (req.file) {
         imageFilename = req.file.filename;
@@ -45,7 +45,7 @@ class NewsController {
       };
 
       // Remove o campo image do body se ele existir como string
-      if (updateData.image === '[object Object]') {
+      if (updateData.image === "[object Object]") {
         delete updateData.image;
       }
 
@@ -57,7 +57,7 @@ class NewsController {
 
       return res.json(updated);
     } catch (error) {
-      console.error('Erro ao atualizar notícia:', error);
+      console.error("Erro ao atualizar notícia:", error);
       return res.status(500).json({ message: "Erro ao atualizar notícia" });
     }
   }

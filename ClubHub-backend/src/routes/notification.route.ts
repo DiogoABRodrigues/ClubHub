@@ -4,8 +4,18 @@ import { authMiddleware, authorizeRoles } from "../middlewares/authMiddleware";
 
 const router = Router();
 
-router.post("/", authMiddleware, authorizeRoles("admin"), NotificationController.create);
-router.put("/:id", authMiddleware, authorizeRoles("admin"), NotificationController.update);
+router.post(
+  "/",
+  authMiddleware,
+  authorizeRoles("admin"),
+  NotificationController.create,
+);
+router.put(
+  "/:id",
+  authMiddleware,
+  authorizeRoles("admin"),
+  NotificationController.update,
+);
 router.get("/", NotificationController.getAll);
 
 export default router;

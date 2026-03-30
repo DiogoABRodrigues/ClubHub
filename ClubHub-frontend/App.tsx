@@ -11,7 +11,7 @@ import { StatsProvider } from "./src/contexts/StatsContext";
 import { SeasonsProvider } from "./src/contexts/SeasonContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StyleSheet } from "react-native";
-import  { AuthProvider } from "./src/contexts/AuthContext";
+import { AuthProvider } from "./src/contexts/AuthContext";
 
 export default function App() {
   const [splashDone, setSplashDone] = useState(false);

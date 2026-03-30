@@ -85,7 +85,7 @@ export function SeasonScreen() {
       </View>
 
       {/* Content */}
-        {renderContent}
+      {renderContent}
     </View>
   );
 }

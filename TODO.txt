@@ -1,26 +1,23 @@
+-- Features --
 OPÇÃO DE COMUNICADO EM HOME na parte das admin notifications
-
-- botão de ver qualificação nos match detail
-
-botão de recarregar jogos, plantel, etc em admin
-
-- resolver go back no admin
-
-editar plantel: ideia -> status no player para meter true ou false. Pode meter true/false quem quiser e quando o backend vai ver os jogadores, nao mudar status
 
 apagar/editar evento
 
+historico de epocas
+
+notifications
+
+
+ -- Performance --
 nos context usar lista objects com ids para melhor performance
 
 juntar player e stats no backend ao fazer get estilo match e lineup
 sockets!!!
 
-historico de epocas 
-
 PROTEGER ROTAS!!!
 
 
-
+-- Comandos --
 npx prettier --write .
 
 npx expo-doctor

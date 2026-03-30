@@ -26,7 +26,7 @@ class AuthService {
     const valid = await bcrypt.compare(password, admin.password);
     if (!valid) throw new Error("Password inválida");
 
-    const payload = { id: admin.id, role: admin.roleId.toString() }; 
+    const payload = { id: admin.id, role: admin.roleId.toString() };
     return {
       accessToken: this.generateAccessToken(payload),
       refreshToken: this.generateRefreshToken(payload),

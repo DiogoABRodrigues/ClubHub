@@ -24,7 +24,7 @@ export default class PlayerController {
   static async updatePlayer(req: Request, res: Response) {
     const playerId = parseInt(String(req.params.playerId));
     const updates = req.body; // { stillOnTeam: boolean }
-    
+
     try {
       const updatedPlayer = await service.updatePlayer(playerId, updates);
       res.json(updatedPlayer);

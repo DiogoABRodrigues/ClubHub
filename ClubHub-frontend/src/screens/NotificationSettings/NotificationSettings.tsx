@@ -4,11 +4,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { Switch } from "../../components/Switch";
 import { styles } from "./NotificationSettings.styles";
 import { COLORS } from "../../theme/colors";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 //import * as Notifications from 'expo-notifications';
 
 // URL do teu backend
-const BACKEND_URL = 'https://teu-backend.com/api/device/preferences';
+const BACKEND_URL = "https://teu-backend.com/api/device/preferences";
 
 export const NotificationSettings = ({ navigation }: any) => {
   const [preferences, setPreferences] = useState({
@@ -25,10 +25,10 @@ export const NotificationSettings = ({ navigation }: any) => {
   useEffect(() => {
     const loadPreferences = async () => {
       try {
-        const stored = await AsyncStorage.getItem('notificationPrefs');
+        const stored = await AsyncStorage.getItem("notificationPrefs");
         if (stored) setPreferences(JSON.parse(stored));
       } catch (e) {
-        console.log('Erro a carregar preferências', e);
+        console.log("Erro a carregar preferências", e);
       }
     };
     loadPreferences();
@@ -37,17 +37,17 @@ export const NotificationSettings = ({ navigation }: any) => {
   // 3️⃣ Guardar preferências local + enviar para backend
   const savePreferences = async (newPrefs: typeof preferences) => {
     setPreferences(newPrefs);
-    await AsyncStorage.setItem('notificationPrefs', JSON.stringify(newPrefs));
+    await AsyncStorage.setItem("notificationPrefs", JSON.stringify(newPrefs));
 
     if (deviceId && pushToken) {
       try {
         await fetch(BACKEND_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ deviceId, pushToken, preferences: newPrefs }),
         });
       } catch (e) {
-        console.log('Erro a enviar preferências para o backend', e);
+        console.log("Erro a enviar preferências para o backend", e);
       }
     }
   };

@@ -1,12 +1,12 @@
 import { Player } from "../models/Player";
 
 export type EventType = "goal" | "yellow_card" | "red_card" | "substitution";
- 
+
 export interface EventForm {
   type: EventType;
   player?: Player | null;
   playerOut?: Player | null; // para substituição: jogador que sai
-  playerIn?: Player | null;  // para substituição: jogador que entra
+  playerIn?: Player | null; // para substituição: jogador que entra
   minute?: string;
   isOpponent: boolean;
 }

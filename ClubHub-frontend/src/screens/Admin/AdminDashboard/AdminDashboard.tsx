@@ -26,7 +26,9 @@ const TabButton = React.memo(({ label, active, onPress }: TabButtonProps) => (
     style={[styles.tab, active && styles.tabActive]}
     onPress={onPress}
   >
-    <Text style={[styles.tabText, active && styles.tabTextActive]}>{label}</Text>
+    <Text style={[styles.tabText, active && styles.tabTextActive]}>
+      {label}
+    </Text>
   </TouchableOpacity>
 ));
 
@@ -36,11 +38,11 @@ export function AdminDashboard() {
 
   const tabs: Tab[] = useMemo(
     () => [
-      { key: "matches", label: "Jogos"},
-      { key: "news", label: "Notícias"},
-      { key: "notifications", label: "Notificações"},
+      { key: "matches", label: "Jogos" },
+      { key: "news", label: "Notícias" },
+      { key: "notifications", label: "Notificações" },
     ],
-    []
+    [],
   );
 
   const handleTabPress = useCallback((tab: AdminTab) => {
@@ -50,11 +52,11 @@ export function AdminDashboard() {
   const renderContent = useMemo(() => {
     switch (activeTab) {
       case "matches":
-        return <AdminMatchesStack/>;
+        return <AdminMatchesStack />;
       case "news":
-        return <AdminNewsStack/>;
+        return <AdminNewsStack />;
       case "notifications":
-        return <AdminSquadScreen/>;
+        return <AdminSquadScreen />;
     }
   }, [activeTab, navigation]);
 

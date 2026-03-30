@@ -40,6 +40,6 @@ export const formatToDateStr = (date: Date): string => {
 
 export const formatToTimeStr = (date: Date): string => {
   return `${String(date.getHours()).padStart(2, "0")}:${String(
-    date.getMinutes()
+    date.getMinutes(),
   ).padStart(2, "0")}`;
 };

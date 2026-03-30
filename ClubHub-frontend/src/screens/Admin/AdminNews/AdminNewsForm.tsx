@@ -1,4 +1,4 @@
-    import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -89,7 +89,8 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
     try {
       if (isEditing && editId) {
         // Para edição, verifica se a imagem foi alterada
-        const imageUri = form.image !== existingNews?.image ? form.image : undefined;
+        const imageUri =
+          form.image !== existingNews?.image ? form.image : undefined;
         await updateNews(editId, form, imageUri);
       } else {
         // Para criação
@@ -98,8 +99,11 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
       }
       navigation.goBack();
     } catch (e) {
-      console.error('Erro ao salvar:', e);
-      Alert.alert("Erro", "Não foi possível guardar a notícia. Tenta novamente.");
+      console.error("Erro ao salvar:", e);
+      Alert.alert(
+        "Erro",
+        "Não foi possível guardar a notícia. Tenta novamente.",
+      );
     } finally {
       setSaving(false);
     }
@@ -130,7 +134,8 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
     }
   };
 
-  const hasImagePreview = typeof form.image === "string" && form.image.length > 0;
+  const hasImagePreview =
+    typeof form.image === "string" && form.image.length > 0;
 
   const pickImage = async () => {
     // Pedir permissão
@@ -139,7 +144,7 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
       Alert.alert("Permissão negada", "Precisas de permitir acesso às fotos.");
       return;
     }
-    
+
     // Abre a galeria para escolher imagem
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
@@ -149,7 +154,7 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
     });
 
     if (!result.canceled && result.assets.length > 0) {
-      setForm(prev => ({ ...prev, image: result.assets[0].uri }));
+      setForm((prev) => ({ ...prev, image: result.assets[0].uri }));
     }
   };
 
@@ -161,7 +166,12 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
       {/* HEADER */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleCancel} style={styles.headerBtn}>
-          <Ionicons name="arrow-back" size={24} color={COLORS.textSecondary} onPress={navigation.goBack} />
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color={COLORS.textSecondary}
+            onPress={navigation.goBack}
+          />
         </TouchableOpacity>
       </View>
 
@@ -180,17 +190,16 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
           ) : (
             <View style={styles.imagePlaceholder}>
               <Ionicons name="image-outline" size={40} color={COLORS.muted} />
-              <Text style={styles.imagePlaceholderText}>Pré-visualização da imagem</Text>
+              <Text style={styles.imagePlaceholderText}>
+                Pré-visualização da imagem
+              </Text>
             </View>
           )}
         </View>
 
         {/* IMAGE URL */}
         <Field label="Imagem" optional>
-          <TouchableOpacity
-            style={styles.imagePickerBtn}
-            onPress={pickImage}
-          >
+          <TouchableOpacity style={styles.imagePickerBtn} onPress={pickImage}>
             <Text style={{ color: "#fff" }}>
               {form.image ? "Alterar imagem" : "Selecionar imagem"}
             </Text>
@@ -213,7 +222,11 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
         {/* RESUMO */}
         <Field label="Resumo" error={errors.excerpt}>
           <TextInput
-            style={[styles.input, styles.textArea, errors.excerpt && styles.inputError]}
+            style={[
+              styles.input,
+              styles.textArea,
+              errors.excerpt && styles.inputError,
+            ]}
             value={form.excerpt}
             onChangeText={updateField("excerpt")}
             placeholder="Breve descrição da notícia (aparece nos cards)"
@@ -251,7 +264,11 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
             <ActivityIndicator size="small" color="#fff" />
           ) : (
             <>
-              <Ionicons name="checkmark-circle-outline" size={18} color="#fff" />
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={18}
+                color="#fff"
+              />
               <Text style={styles.bottomSaveBtnText}>
                 {isEditing ? "Guardar Alterações" : "Publicar Notícia"}
               </Text>

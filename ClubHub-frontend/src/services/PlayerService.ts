@@ -15,8 +15,11 @@ export const PlayerService = {
     const { data } = await api.get("/players/current");
     return data;
   },
-  updatePlayer: async (playerId: number, updates: Partial<Player>): Promise<Player> => {
+  updatePlayer: async (
+    playerId: number,
+    updates: Partial<Player>,
+  ): Promise<Player> => {
     const { data } = await api.put(`/players/${playerId}`, updates);
     return data;
-  }
+  },
 };

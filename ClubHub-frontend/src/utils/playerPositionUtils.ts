@@ -1,9 +1,9 @@
 export const POSITION_ORDER: Record<string, number> = {
   "Guarda Redes": 1,
-  "Defesa": 2,
-  "Médio": 3,
-  "Avançado": 4,
-  "Treinador": 5,
+  Defesa: 2,
+  Médio: 3,
+  Avançado: 4,
+  Treinador: 5,
   "Outros Técnicos": 6,
 };
 

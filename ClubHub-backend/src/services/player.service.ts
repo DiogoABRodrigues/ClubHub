@@ -30,5 +30,5 @@ export default class PlayerService {
 
     await player.update(updates);
     return player;
-  } 
+  }
 }

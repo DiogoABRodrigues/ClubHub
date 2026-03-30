@@ -15,10 +15,14 @@ class AuthController {
   async refresh(req: Request, res: Response) {
     try {
       const { refreshToken } = req.body;
-      if (!refreshToken) return res.status(400).json({ message: "Refresh token obrigatório" });
+      if (!refreshToken)
+        return res.status(400).json({ message: "Refresh token obrigatório" });
 
       const decoded = AuthService.verifyToken(refreshToken);
-      const accessToken = AuthService.generateAccessToken({ id: decoded.id, role: decoded.role });
+      const accessToken = AuthService.generateAccessToken({
+        id: decoded.id,
+        role: decoded.role,
+      });
 
       res.status(200).json({ accessToken });
     } catch (err: any) {

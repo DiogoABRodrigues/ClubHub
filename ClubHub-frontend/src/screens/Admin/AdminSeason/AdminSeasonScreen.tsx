@@ -85,7 +85,7 @@ export function AdminSeasonScreen() {
       </View>
 
       {/* Content */}
-        {renderContent}
+      {renderContent}
     </View>
   );
 }

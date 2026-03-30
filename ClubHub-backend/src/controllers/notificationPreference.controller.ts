@@ -3,9 +3,15 @@ import * as preferenceService from "../services/notificationPreference.service";
 
 export const addOrUpdatePreference = async (req: Request, res: Response) => {
   const { deviceId, teamId, matchId, events } = req.body;
-  if (!deviceId || !teamId || !events) return res.status(400).json({ message: "Missing fields" });
+  if (!deviceId || !teamId || !events)
+    return res.status(400).json({ message: "Missing fields" });
 
-  const pref = await preferenceService.addOrUpdatePreference(deviceId, teamId, matchId ?? null, events);
+  const pref = await preferenceService.addOrUpdatePreference(
+    deviceId,
+    teamId,
+    matchId ?? null,
+    events,
+  );
   res.status(200).json(pref);
 };
 

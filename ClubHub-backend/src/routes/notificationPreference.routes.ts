@@ -4,7 +4,17 @@ import { authMiddleware, authorizeRoles } from "../middlewares/authMiddleware";
 
 const router = Router();
 
-router.post("/add", authMiddleware, authorizeRoles("admin"), preferenceController.addOrUpdatePreference);
-router.delete("/remove", authMiddleware, authorizeRoles("admin"), preferenceController.removePreference);
+router.post(
+  "/add",
+  authMiddleware,
+  authorizeRoles("admin"),
+  preferenceController.addOrUpdatePreference,
+);
+router.delete(
+  "/remove",
+  authMiddleware,
+  authorizeRoles("admin"),
+  preferenceController.removePreference,
+);
 
 export default router;

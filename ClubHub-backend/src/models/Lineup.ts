@@ -32,5 +32,4 @@ Lineup.init(
   { sequelize, modelName: "Lineup", tableName: "lineups", timestamps: true },
 );
 
-
 export default Lineup;

@@ -22,7 +22,6 @@ import { useMatches } from "../../../../contexts/MatchesContext";
 import { mapToMainPosition } from "../../../../utils/playerPositionUtils";
 import { Lineup } from "../../../../models/Lineup";
 
-
 interface Props {
   visible: boolean;
   matchId: number | string;
@@ -49,7 +48,10 @@ const PlayerCard = ({
     activeOpacity={0.7}
   >
     {player.photoUrl ? (
-      <Image source={{ uri: player.photoUrl }} style={adminStyles.playerCardPhoto} />
+      <Image
+        source={{ uri: player.photoUrl }}
+        style={adminStyles.playerCardPhoto}
+      />
     ) : (
       <View style={adminStyles.playerCardAvatar}>
         <Text style={adminStyles.playerCardAvatarText}>
@@ -88,7 +90,7 @@ export const AddLineupModal = ({
   existingLineup = [],
 }: Props) => {
   const { getActivePlayers, loading } = usePlayers();
-  
+
   const players = getActivePlayers();
   const { saveLineup } = useMatches();
 
@@ -111,23 +113,23 @@ export const AddLineupModal = ({
       new Set(
         existingLineup
           .filter((e) => e.isStarting)
-          .map((e) => String(e.playerId))
-      )
+          .map((e) => String(e.playerId)),
+      ),
     );
 
     setSubIds(
       new Set(
         existingLineup
           .filter((e) => !e.isStarting)
-          .map((e) => String(e.playerId))
-      )
+          .map((e) => String(e.playerId)),
+      ),
     );
   }, [visible, existingLineup]);
 
   const eligiblePlayers = useMemo(() => {
     const excluded = ["Treinador", "Outros Técnicos"];
     return players.filter(
-      (p) => !excluded.includes(mapToMainPosition(p.stats?.position || ""))
+      (p) => !excluded.includes(mapToMainPosition(p.stats?.position || "")),
     );
   }, [players]);
 
@@ -139,9 +141,7 @@ export const AddLineupModal = ({
 
   const displayPlayers = useMemo(() => {
     if (phase === "subs") {
-      return filteredPlayers.filter(
-        (p) => !starterIds.has(String(p.id))
-      );
+      return filteredPlayers.filter((p) => !starterIds.has(String(p.id)));
     }
 
     return filteredPlayers;
@@ -157,7 +157,7 @@ export const AddLineupModal = ({
         if (next.size >= MAX_STARTERS) {
           Alert.alert(
             "Limite atingido",
-            `Só podes selecionar ${MAX_STARTERS} titulares.`
+            `Só podes selecionar ${MAX_STARTERS} titulares.`,
           );
           return prev;
         }
@@ -198,7 +198,7 @@ export const AddLineupModal = ({
         [
           { text: "Cancelar", style: "cancel" },
           { text: "Continuar", onPress: () => setPhase("subs") },
-        ]
+        ],
       );
       return;
     }
@@ -208,7 +208,10 @@ export const AddLineupModal = ({
 
   const handleSave = async () => {
     const allEntries = [
-      ...Array.from(starterIds).map((id) => ({ playerId: id, isStarting: true })),
+      ...Array.from(starterIds).map((id) => ({
+        playerId: id,
+        isStarting: true,
+      })),
       ...Array.from(subIds).map((id) => ({ playerId: id, isStarting: false })),
     ];
 
@@ -233,7 +236,12 @@ export const AddLineupModal = ({
   const toggle = isStarters ? toggleStarter : toggleSub;
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent
+      onRequestClose={onClose}
+    >
       <Pressable style={adminStyles.overlay} onPress={onClose} />
 
       <KeyboardAvoidingView
@@ -241,7 +249,6 @@ export const AddLineupModal = ({
         style={adminStyles.sheetWrapper}
       >
         <View style={[adminStyles.sheet, adminStyles.sheetTall]}>
-
           <View style={adminStyles.handle} />
 
           {/* Header */}
@@ -311,7 +318,10 @@ export const AddLineupModal = ({
           {/* Footer */}
           <View style={adminStyles.sheetFooter}>
             {isStarters ? (
-              <TouchableOpacity style={adminStyles.saveBtn} onPress={handleAdvance}>
+              <TouchableOpacity
+                style={adminStyles.saveBtn}
+                onPress={handleAdvance}
+              >
                 <Text style={adminStyles.saveBtnText}>
                   Continuar para suplentes →
                 </Text>

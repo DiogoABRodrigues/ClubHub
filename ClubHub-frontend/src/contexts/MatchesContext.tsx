@@ -1,4 +1,11 @@
-import React, { createContext, useState, useEffect, useContext, useCallback, useRef } from "react";
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  useRef,
+} from "react";
 import { Alert } from "react-native";
 import { Match } from "../models/Match";
 import { MatchService } from "../services/MatchService";
@@ -22,7 +29,10 @@ interface MatchesContextType {
 
   addMatchEvent: (id: number, event: any) => Promise<void>;
 
-  saveLineup: (matchId: number, entries: { playerId: number | string; isStarting: boolean }[]) => Promise<void>;
+  saveLineup: (
+    matchId: number,
+    entries: { playerId: number | string; isStarting: boolean }[],
+  ) => Promise<void>;
 }
 
 // ─── Contexto ─────────────────────────────────────────────────────────────────
@@ -56,7 +66,9 @@ export const MatchesProvider = ({ children }: any) => {
     setLoading(true);
     try {
       const dbMatches = await MatchService.getByCurrentSeasonId();
-      dbMatches.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      dbMatches.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      );
       setMatches(dbMatches);
     } catch (err) {
       console.error("Erro a buscar matches:", err);
@@ -94,8 +106,8 @@ export const MatchesProvider = ({ children }: any) => {
       prev.map((m) =>
         String(m.id) === String(id)
           ? { ...updatedMatch, Lineups: m.Lineups ?? [] } // mantém Lineups
-          : m
-      )
+          : m,
+      ),
     );
   }, []);
 
@@ -109,14 +121,14 @@ export const MatchesProvider = ({ children }: any) => {
         throw err;
       }
     },
-    [updateLocalMatch]
+    [updateLocalMatch],
   );
 
   const saveMatch = useCallback(
     async (id: number, updates: Partial<Match>) => {
       await updateMatch(id, updates);
     },
-    [updateMatch]
+    [updateMatch],
   );
 
   // ─── Controlo de jogo ────────────────────────────────────────────────────────
@@ -127,7 +139,7 @@ export const MatchesProvider = ({ children }: any) => {
       if (alreadyLive) {
         Alert.alert(
           "Jogo já em direto",
-          `O jogo contra ${alreadyLive.opponent} já está a decorrer. Termina-o antes de começar outro.`
+          `O jogo contra ${alreadyLive.opponent} já está a decorrer. Termina-o antes de começar outro.`,
         );
         return;
       }
@@ -136,14 +148,14 @@ export const MatchesProvider = ({ children }: any) => {
         date: new Date().toISOString(),
       });
     },
-    [matches, updateMatch]
+    [matches, updateMatch],
   );
 
   const pauseMatch = useCallback(
     async (id: number) => {
       await updateMatch(id, { status: "halftime" });
     },
-    [updateMatch]
+    [updateMatch],
   );
 
   const finishMatch = useCallback(
@@ -151,7 +163,7 @@ export const MatchesProvider = ({ children }: any) => {
       console.log("A terminar jogo", id);
       await updateMatch(id, { status: "finished" });
     },
-    [updateMatch]
+    [updateMatch],
   );
 
   const addMatchEvent = useCallback(
@@ -168,13 +180,13 @@ export const MatchesProvider = ({ children }: any) => {
       let result = match.result || "0-0";
       let [goalsFor, goalsAgainst] = result.split("-").map(Number);
 
-      if(event.type === "goal") {
+      if (event.type === "goal") {
         const isForUs = !event.isOpponent;
-        if(isForUs && houseGame) {
+        if (isForUs && houseGame) {
           goalsFor += 1;
-        } else if(isForUs && !houseGame) {
+        } else if (isForUs && !houseGame) {
           goalsAgainst += 1;
-        } else if(!isForUs && houseGame) {
+        } else if (!isForUs && houseGame) {
           goalsAgainst += 1;
         } else {
           goalsFor += 1;
@@ -182,43 +194,43 @@ export const MatchesProvider = ({ children }: any) => {
         await updateMatch(id, { result: `${goalsFor}-${goalsAgainst}` });
       }
     },
-    [matches, updateMatch]
+    [matches, updateMatch],
   );
 
   const saveLineup = useCallback(
-  async (
-    matchId: number,
-    entries: { playerId: number | string; isStarting: boolean }[]
-  ) => {
-    try {
-      // 1. Apaga a formação existente
-      await LineupService.deleteByMatch(matchId);
+    async (
+      matchId: number,
+      entries: { playerId: number | string; isStarting: boolean }[],
+    ) => {
+      try {
+        // 1. Apaga a formação existente
+        await LineupService.deleteByMatch(matchId);
 
-      // 2. Cria a nova formação
-      const createdLineups: Lineup[] = await Promise.all(
-        entries.map((entry) =>
-          LineupService.create({
-            matchId,
-            playerId: Number(entry.playerId),
-            isStarting: entry.isStarting,
-          })
-        )
-      );
+        // 2. Cria a nova formação
+        const createdLineups: Lineup[] = await Promise.all(
+          entries.map((entry) =>
+            LineupService.create({
+              matchId,
+              playerId: Number(entry.playerId),
+              isStarting: entry.isStarting,
+            }),
+          ),
+        );
 
-      // 3. Atualiza o state
-      setMatches((prev) =>
-        prev.map((match) => {
-          if (match.id !== matchId) return match;
-          return { ...match, Lineups: createdLineups };
-        })
-      );
-    } catch (err) {
-      console.error("Erro ao guardar lineup:", err);
-      throw err;
-    }
-  },
-  []
-);
+        // 3. Atualiza o state
+        setMatches((prev) =>
+          prev.map((match) => {
+            if (match.id !== matchId) return match;
+            return { ...match, Lineups: createdLineups };
+          }),
+        );
+      } catch (err) {
+        console.error("Erro ao guardar lineup:", err);
+        throw err;
+      }
+    },
+    [],
+  );
 
   return (
     <MatchesContext.Provider

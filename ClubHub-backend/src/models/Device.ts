@@ -11,9 +11,12 @@ Device.init(
   {
     id: { type: DataTypes.STRING, primaryKey: true },
     pushToken: { type: DataTypes.STRING, allowNull: false },
-    platform: { type: DataTypes.ENUM("android", "ios", "web"), allowNull: false },
+    platform: {
+      type: DataTypes.ENUM("android", "ios", "web"),
+      allowNull: false,
+    },
   },
-  { sequelize, modelName: "Device", tableName: "devices", timestamps: true }
+  { sequelize, modelName: "Device", tableName: "devices", timestamps: true },
 );
 
 export default Device;

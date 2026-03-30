@@ -27,15 +27,24 @@ export const AdminSettings = ({ navigation }: any) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={20} color={COLORS.textSecondary} />
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Ionicons
+              name="arrow-back"
+              size={20}
+              color={COLORS.textSecondary}
+            />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Definições</Text>
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Section: Atualizar Dados */}
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>SINCRONIZAÇÃO</Text>
@@ -43,7 +52,11 @@ export const AdminSettings = ({ navigation }: any) => {
           <View style={styles.card}>
             <View style={styles.cardIconRow}>
               <View style={styles.iconCircle}>
-                <Ionicons name="sync-outline" size={22} color={COLORS.primary} />
+                <Ionicons
+                  name="sync-outline"
+                  size={22}
+                  color={COLORS.primary}
+                />
               </View>
               <View style={styles.cardTextBlock}>
                 <Text style={styles.cardTitle}>Atualizar Dados</Text>
@@ -54,9 +67,15 @@ export const AdminSettings = ({ navigation }: any) => {
             </View>
 
             <View style={styles.infoBanner}>
-              <Ionicons name="information-circle-outline" size={15} color={COLORS.primary} style={{ marginTop: 1 }} />
+              <Ionicons
+                name="information-circle-outline"
+                size={15}
+                color={COLORS.primary}
+                style={{ marginTop: 1 }}
+              />
               <Text style={styles.infoBannerText}>
-                Esta ação pode demorar alguns minutos e não vai interromper a aplicação enquanto executa.
+                Esta ação pode demorar alguns minutos e não vai interromper a
+                aplicação enquanto executa.
               </Text>
             </View>
 
@@ -72,24 +91,38 @@ export const AdminSettings = ({ navigation }: any) => {
             >
               {isUpdating ? (
                 <View style={styles.buttonInner}>
-                  <Ionicons name="sync" size={16} color="#fff" style={styles.spinIcon} />
+                  <Ionicons
+                    name="sync"
+                    size={16}
+                    color="#fff"
+                    style={styles.spinIcon}
+                  />
                   <Text style={styles.actionButtonText}>A atualizar...</Text>
                 </View>
               ) : updateDone ? (
                 <View style={styles.buttonInner}>
-                  <Ionicons name="checkmark-circle-outline" size={16} color="#fff" />
+                  <Ionicons
+                    name="checkmark-circle-outline"
+                    size={16}
+                    color="#fff"
+                  />
                   <Text style={styles.actionButtonText}>Atualizado</Text>
                 </View>
               ) : (
                 <View style={styles.buttonInner}>
-                  <Ionicons name="cloud-download-outline" size={16} color="#fff" />
-                  <Text style={styles.actionButtonText}>Iniciar Atualização</Text>
+                  <Ionicons
+                    name="cloud-download-outline"
+                    size={16}
+                    color="#fff"
+                  />
+                  <Text style={styles.actionButtonText}>
+                    Iniciar Atualização
+                  </Text>
                 </View>
               )}
             </TouchableOpacity>
           </View>
         </View>
-
       </ScrollView>
     </View>
   );

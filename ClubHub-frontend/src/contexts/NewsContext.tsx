@@ -9,7 +9,11 @@ interface NewsContextType {
   refreshNews: () => Promise<void>;
   deleteNews: (id: number) => Promise<void>;
   createNews: (news: Partial<News>, imageUri?: string) => Promise<void>;
-  updateNews: (id: number, news: Partial<News>, imageUri?: string) => Promise<void>;
+  updateNews: (
+    id: number,
+    news: Partial<News>,
+    imageUri?: string,
+  ) => Promise<void>;
 }
 
 const NewsContext = createContext<NewsContextType>({
@@ -32,7 +36,9 @@ const formatNewsImage = (image?: string) => {
   return `${baseUrl}/${image}`;
 };
 
-export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,7 +46,7 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       const dbNews = await NewsService.getLast10();
-      const formattedNews = dbNews.map(n => ({
+      const formattedNews = dbNews.map((n) => ({
         ...n,
         image: formatNewsImage(n.image),
       }));
@@ -55,7 +61,7 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const deleteNews = async (id: number) => {
     try {
       await NewsService.delete(id);
-      setNews(prev => prev.filter(n => n.id !== id));
+      setNews((prev) => prev.filter((n) => n.id !== id));
     } catch (err) {
       console.error("Erro ao deletar notícia:", err);
       throw err;
@@ -65,7 +71,7 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const createNews = async (newsData: Partial<News>, imageUri?: string) => {
     try {
       const newNews = await NewsService.create(newsData as News, imageUri);
-      setNews(prev => [
+      setNews((prev) => [
         { ...newNews, image: formatNewsImage(newNews.image) },
         ...prev,
       ]);
@@ -75,11 +81,23 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const updateNews = async (id: number, newsData: Partial<News>, imageUri?: string) => {
+  const updateNews = async (
+    id: number,
+    newsData: Partial<News>,
+    imageUri?: string,
+  ) => {
     try {
-      const updatedNews = await NewsService.update(id, newsData as News, imageUri);
-      setNews(prev =>
-        prev.map(n => (n.id === id ? { ...updatedNews, image: formatNewsImage(updatedNews.image) } : n))
+      const updatedNews = await NewsService.update(
+        id,
+        newsData as News,
+        imageUri,
+      );
+      setNews((prev) =>
+        prev.map((n) =>
+          n.id === id
+            ? { ...updatedNews, image: formatNewsImage(updatedNews.image) }
+            : n,
+        ),
       );
     } catch (err) {
       console.error("Erro ao atualizar notícia:", err);
@@ -93,7 +111,14 @@ export const NewsProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <NewsContext.Provider
-      value={{ news, loading, refreshNews: fetchNews, deleteNews, createNews, updateNews }}
+      value={{
+        news,
+        loading,
+        refreshNews: fetchNews,
+        deleteNews,
+        createNews,
+        updateNews,
+      }}
     >
       {children}
     </NewsContext.Provider>

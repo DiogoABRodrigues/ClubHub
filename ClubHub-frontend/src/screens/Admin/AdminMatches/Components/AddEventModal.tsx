@@ -21,8 +21,7 @@ import { Player, PlayerWithStats } from "../../../../models/Player";
 import { EventForm } from "../../../../utils/events";
 
 type EventType = "goal" | "yellow_card" | "red_card" | "substitution";
- 
- 
+
 interface Props {
   visible: boolean;
   onClose: () => void;
@@ -30,7 +29,7 @@ interface Props {
   startingPlayers: PlayerWithStats[];
   substitutePlayers: PlayerWithStats[];
 }
- 
+
 // ─── Constantes ───────────────────────────────────────────────────────────────
 const EMPTY_FORM: EventForm = {
   type: "goal",
@@ -40,13 +39,13 @@ const EMPTY_FORM: EventForm = {
   minute: "",
   isOpponent: false,
 };
- 
+
 const EVENT_TYPES: { key: EventType; label: string; icon: string }[] = [
   { key: "goal", label: "Golo", icon: "⚽" },
   { key: "red_card", label: "Vermelho", icon: "🟥" },
   { key: "substitution", label: "Substituição", icon: "🔄" },
 ];
- 
+
 // ─── PlayerPicker ─────────────────────────────────────────────────────────────
 interface PlayerPickerProps {
   label: string;
@@ -55,73 +54,101 @@ interface PlayerPickerProps {
   onSelect: (p: Player | null) => void;
   excludePlayer?: Player | null;
 }
- 
-const PlayerPicker = ({ label, players, selected, onSelect, excludePlayer }: PlayerPickerProps) => {
+
+const PlayerPicker = ({
+  label,
+  players,
+  selected,
+  onSelect,
+  excludePlayer,
+}: PlayerPickerProps) => {
   const [search, setSearch] = useState("");
- 
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     return players.filter(
       (p) =>
-        p.id !== excludePlayer?.id &&
-        (!q || p.name.toLowerCase().includes(q))
+        p.id !== excludePlayer?.id && (!q || p.name.toLowerCase().includes(q)),
     );
   }, [players, search, excludePlayer]);
- 
+
   return (
     <View style={{ marginTop: 8 }}>
       <Text style={adminStyles.fieldLabel}>{label}</Text>
-  {filtered.length > 0 ? (
-    <ScrollView
-      style={{ maxHeight: 200, borderWidth: 1, borderColor: COLORS.border, borderRadius: 4 }} // altura máxima da box da lista
-      nestedScrollEnabled // permite scroll dentro de scroll externo
-    >
-      {filtered.map((p) => {
-        const isSelected = selected?.id === p.id;
-        return (
-          <TouchableOpacity
-            key={p.id}
-            style={[eventStyles.playerItem, isSelected && eventStyles.playerItemActive]}
-            onPress={() => onSelect(isSelected ? null : p)}
-          >
-            <Text style={[eventStyles.playerName, isSelected && eventStyles.playerNameActive]}>
-              {p.name}
-            </Text>
-            {isSelected && (
-              <Ionicons name="checkmark-circle" size={18} color={COLORS.primary} />
-            )}
-          </TouchableOpacity>
-        );
-      })}
-    </ScrollView>
-  ) : (
-    <Text style={eventStyles.noResults}>Nenhum jogador encontrado</Text>
-  )}
-</View>
+      {filtered.length > 0 ? (
+        <ScrollView
+          style={{
+            maxHeight: 200,
+            borderWidth: 1,
+            borderColor: COLORS.border,
+            borderRadius: 4,
+          }} // altura máxima da box da lista
+          nestedScrollEnabled // permite scroll dentro de scroll externo
+        >
+          {filtered.map((p) => {
+            const isSelected = selected?.id === p.id;
+            return (
+              <TouchableOpacity
+                key={p.id}
+                style={[
+                  eventStyles.playerItem,
+                  isSelected && eventStyles.playerItemActive,
+                ]}
+                onPress={() => onSelect(isSelected ? null : p)}
+              >
+                <Text
+                  style={[
+                    eventStyles.playerName,
+                    isSelected && eventStyles.playerNameActive,
+                  ]}
+                >
+                  {p.name}
+                </Text>
+                {isSelected && (
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={18}
+                    color={COLORS.primary}
+                  />
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      ) : (
+        <Text style={eventStyles.noResults}>Nenhum jogador encontrado</Text>
+      )}
+    </View>
   );
 };
- 
+
 // ─── Componente Principal ─────────────────────────────────────────────────────
-export const AddEventModal = ({ visible, onClose, onSave, startingPlayers, substitutePlayers }: Props) => {
+export const AddEventModal = ({
+  visible,
+  onClose,
+  onSave,
+  startingPlayers,
+  substitutePlayers,
+}: Props) => {
   const [form, setForm] = useState<EventForm>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
- 
+
   // Reset ao fechar
   React.useEffect(() => {
     if (!visible) setForm(EMPTY_FORM);
   }, [visible]);
- 
+
   const isOpponent = !!form.isOpponent;
   const isSubstitution = form.type === "substitution";
   // Golo e Vermelho suportam switch de adversário; substituição é sempre da equipa
   const supportsOpponent = form.type === "goal" || form.type === "red_card";
- 
+
   const handleSave = async () => {
     if (!form.minute) {
       Alert.alert("Atenção", "O minuto é obrigatório.");
       return;
     }
- 
+
     if (!isOpponent) {
       if (isSubstitution) {
         if (!form.playerOut || !form.playerIn) {
@@ -135,7 +162,7 @@ export const AddEventModal = ({ visible, onClose, onSave, startingPlayers, subst
         }
       }
     }
- 
+
     setSaving(true);
     try {
       await onSave(form);
@@ -148,21 +175,34 @@ export const AddEventModal = ({ visible, onClose, onSave, startingPlayers, subst
     }
   };
 
-    //juntar starting + substitute, garantindo que não há duplicados (jogadores que estão em ambos aparecem só uma vez) e ordenados por nome
+  //juntar starting + substitute, garantindo que não há duplicados (jogadores que estão em ambos aparecem só uma vez) e ordenados por nome
   const allPlayers = useMemo(() => {
     const map = new Map<number, Player>();
     startingPlayers.forEach((p) => map.set(p.id, p));
     substitutePlayers.forEach((p) => map.set(p.id, p));
-    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+    return Array.from(map.values()).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
   }, [startingPlayers, substitutePlayers]);
- 
+
   const setField = <K extends keyof EventForm>(key: K, value: EventForm[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
-  const OpPlayer = {id: -1, externalId: -1, name: "Adversário", photoUrl: null,age: null} as Player;
- 
+  const OpPlayer = {
+    id: -1,
+    externalId: -1,
+    name: "Adversário",
+    photoUrl: null,
+    age: null,
+  } as Player;
+
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent
+      onRequestClose={onClose}
+    >
       <Pressable style={adminStyles.overlay} onPress={onClose} />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -170,7 +210,7 @@ export const AddEventModal = ({ visible, onClose, onSave, startingPlayers, subst
       >
         <View style={[adminStyles.sheet, adminStyles.sheetTall]}>
           <View style={adminStyles.handle} />
- 
+
           {/* Header */}
           <View style={adminStyles.sheetHeader}>
             <Text style={adminStyles.sheetTitle}>Adicionar Evento</Text>
@@ -178,7 +218,7 @@ export const AddEventModal = ({ visible, onClose, onSave, startingPlayers, subst
               <Ionicons name="close" size={22} color={COLORS.textSecondary} />
             </TouchableOpacity>
           </View>
- 
+
           <ScrollView
             contentContainerStyle={adminStyles.sheetContent}
             keyboardShouldPersistTaps="handled"
@@ -189,7 +229,10 @@ export const AddEventModal = ({ visible, onClose, onSave, startingPlayers, subst
               {EVENT_TYPES.map((et) => (
                 <TouchableOpacity
                   key={et.key}
-                  style={[adminStyles.chip, form.type === et.key && adminStyles.chipActive]}
+                  style={[
+                    adminStyles.chip,
+                    form.type === et.key && adminStyles.chipActive,
+                  ]}
                   onPress={() =>
                     setForm((prev) => ({
                       ...EMPTY_FORM,
@@ -199,20 +242,27 @@ export const AddEventModal = ({ visible, onClose, onSave, startingPlayers, subst
                   }
                 >
                   <Text style={adminStyles.chipEmoji}>{et.icon}</Text>
-                  <Text style={[adminStyles.chipText, form.type === et.key && adminStyles.chipTextActive]}>
+                  <Text
+                    style={[
+                      adminStyles.chipText,
+                      form.type === et.key && adminStyles.chipTextActive,
+                    ]}
+                  >
                     {et.label}
                   </Text>
                 </TouchableOpacity>
               ))}
             </View>
- 
+
             {/* Switch equipa adversária (só para golo e vermelho) */}
             {supportsOpponent && (
               <View style={adminStyles.switchRow}>
                 <View>
                   <Text style={adminStyles.fieldLabel}>Equipa adversária</Text>
                   <Text style={adminStyles.switchSubtext}>
-                    {isOpponent ? "Apenas regista o minuto" : "Seleciona o jogador da tua equipa"}
+                    {isOpponent
+                      ? "Apenas regista o minuto"
+                      : "Seleciona o jogador da tua equipa"}
                   </Text>
                 </View>
                 <Switch
@@ -224,12 +274,15 @@ export const AddEventModal = ({ visible, onClose, onSave, startingPlayers, subst
                       player: OpPlayer, // valor fictício para indicar que é adversário
                     }))
                   }
-                  trackColor={{ false: COLORS.surface, true: COLORS.primary + "55" }}
+                  trackColor={{
+                    false: COLORS.surface,
+                    true: COLORS.primary + "55",
+                  }}
                   thumbColor={isOpponent ? COLORS.primary : COLORS.muted}
                 />
               </View>
             )}
- 
+
             {/* Minuto */}
             <Text style={adminStyles.fieldLabel}>Minuto</Text>
             <TextInput
@@ -252,18 +305,20 @@ export const AddEventModal = ({ visible, onClose, onSave, startingPlayers, subst
               placeholderTextColor={COLORS.muted}
               keyboardType="number-pad"
             />
- 
+
             {/* Seleção de jogador(es) */}
-            {!isOpponent && (
-              isSubstitution ? (
+            {!isOpponent &&
+              (isSubstitution ? (
                 /* ── Substituição: jogador que sai + que entra ── */
                 <>
                   <View style={adminStyles.substitutionDivider}>
                     <View style={adminStyles.substitutionDividerLine} />
-                    <Text style={adminStyles.substitutionDividerText}>Substituição</Text>
+                    <Text style={adminStyles.substitutionDividerText}>
+                      Substituição
+                    </Text>
                     <View style={adminStyles.substitutionDividerLine} />
                   </View>
- 
+
                   <PlayerPicker
                     label="🔴  Sai"
                     players={startingPlayers}
@@ -271,9 +326,9 @@ export const AddEventModal = ({ visible, onClose, onSave, startingPlayers, subst
                     onSelect={(p) => setField("playerOut", p)}
                     excludePlayer={form.playerIn}
                   />
- 
+
                   <View style={{ height: 12 }} />
- 
+
                   <PlayerPicker
                     label="🟢  Entra"
                     players={substitutePlayers}
@@ -290,12 +345,14 @@ export const AddEventModal = ({ visible, onClose, onSave, startingPlayers, subst
                   selected={form.player}
                   onSelect={(p) => setField("player", p)}
                 />
-              )
-            )}
- 
+              ))}
+
             {/* Botão guardar */}
             <TouchableOpacity
-              style={[adminStyles.saveBtn, saving && adminStyles.saveBtnDisabled]}
+              style={[
+                adminStyles.saveBtn,
+                saving && adminStyles.saveBtnDisabled,
+              ]}
               onPress={handleSave}
               disabled={saving}
             >
@@ -311,4 +368,3 @@ export const AddEventModal = ({ visible, onClose, onSave, startingPlayers, subst
     </Modal>
   );
 };
-

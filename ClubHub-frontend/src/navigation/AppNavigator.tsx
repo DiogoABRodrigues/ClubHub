@@ -21,13 +21,13 @@ import { AdminSettings } from "../screens/Admin/AdminSettings/AdminSettings";
 const Tab = createBottomTabNavigator();
 
 const ICON_MAP: Record<string, string> = {
-  "Início": "home-outline",
-  "Jogos": "trophy-outline",
-  "Época": "calendar-outline",
-  "Notícias": "newspaper-outline",
-  "Definições": "settings-outline",
-  "Plantel": "people-outline",
-  "Notificações": "notifications-outline",
+  Início: "home-outline",
+  Jogos: "trophy-outline",
+  Época: "calendar-outline",
+  Notícias: "newspaper-outline",
+  Definições: "settings-outline",
+  Plantel: "people-outline",
+  Notificações: "notifications-outline",
 };
 
 export const AppNavigator = () => {
@@ -47,7 +47,9 @@ export const AppNavigator = () => {
           },
           tabBarIcon: ({ color, size }) => {
             const iconName = ICON_MAP[route.name] ?? "ellipse-outline";
-            return <Ionicons name={iconName as any} size={size} color={color} />;
+            return (
+              <Ionicons name={iconName as any} size={size} color={color} />
+            );
           },
         })}
       >
@@ -62,9 +64,9 @@ export const AppNavigator = () => {
           name="Notícias"
           component={adminMode ? AdminNewsStack : NewsStack}
         />
-        <Tab.Screen 
-          name="Época" 
-          component={adminMode ? AdminSeasonScreen : SeasonScreen} 
+        <Tab.Screen
+          name="Época"
+          component={adminMode ? AdminSeasonScreen : SeasonScreen}
         />
         <Tab.Screen
           name="Definições"

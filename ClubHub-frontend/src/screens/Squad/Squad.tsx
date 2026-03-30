@@ -9,7 +9,7 @@ export function SquadScreen() {
   const { getActivePlayers } = usePlayers();
 
   const activePlayers = getActivePlayers();
-  
+
   const mapToMainPosition = useCallback((position: string) => {
     const pos = position?.toLowerCase() || "";
     if (pos === "guarda redes") return "Guarda Redes";
@@ -22,15 +22,14 @@ export function SquadScreen() {
   }, []);
 
   const sortedPlayers = useMemo(() => {
-    return activePlayers
-      .sort((a, b) => {
-        const posA = getPositionOrder(a.stats?.position || "");
-        const posB = getPositionOrder(b.stats?.position || "");
-        if (posA !== posB) return posA - posB;
-        return (a.stats.number || 0) - (b.stats.number || 0);
-      });
+    return activePlayers.sort((a, b) => {
+      const posA = getPositionOrder(a.stats?.position || "");
+      const posB = getPositionOrder(b.stats?.position || "");
+      if (posA !== posB) return posA - posB;
+      return (a.stats.number || 0) - (b.stats.number || 0);
+    });
   }, [activePlayers]);
-  
+
   const groupedByPosition = useMemo(() => {
     const groups: { position: string; players: PlayerWithStats[] }[] = [];
     let currentPos: string | null = null;

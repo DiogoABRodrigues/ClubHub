@@ -20,6 +20,5 @@ export const AdminMatchesStack = () => (
   >
     <Stack.Screen name="AdminMatches" component={AdminMatches} />
     <Stack.Screen name="AdminMatchDetail" component={AdminMatchDetail} />
-
   </Stack.Navigator>
 );

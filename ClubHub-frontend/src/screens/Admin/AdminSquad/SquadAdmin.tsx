@@ -3,7 +3,10 @@ import { View, Text, ScrollView, Image, Switch, Alert } from "react-native";
 import { usePlayers } from "../../../contexts/PlayersContext";
 import { PlayerWithStats } from "../../../models/Player";
 import { styles as globalStyles } from "../../Squad/Squad.styles";
-import { mapToMainPosition, getPositionOrder } from "../../../utils/playerPositionUtils";
+import {
+  mapToMainPosition,
+  getPositionOrder,
+} from "../../../utils/playerPositionUtils";
 
 export function AdminSquadScreen() {
   const { players, updatePlayer } = usePlayers();
@@ -56,7 +59,7 @@ export function AdminSquadScreen() {
             updatePlayer(player.id, { stillOnTeam: newValue });
           },
         },
-      ]
+      ],
     );
   }, []);
 
