@@ -1,12 +1,10 @@
 import React, { useMemo, useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { PlayerLineup } from "../../components/PlayerLineup";
 import { LiveBadge } from "../../components/LiveBadge";
 import { COLORS } from "../../theme/colors";
 import {
   Ionicons,
-  MaterialCommunityIcons,
   FontAwesome5,
 } from "@expo/vector-icons";
 import { styles } from "./MatchDetail.styles";
@@ -16,6 +14,7 @@ import { formatDateWithWeekdayPT } from "../../utils/dateUtils";
 import { teamConfig } from "../../config/teamConfig";
 import { usePlayers } from "../../contexts/PlayersContext";
 import { mapToMainPosition } from "../../utils/playerPositionUtils";
+import { EventRow } from "../../components/EventRow";
 
 export const MatchDetail = () => {
   const route = useRoute();
@@ -211,33 +210,52 @@ export const MatchDetail = () => {
         {/* Content */}
           <View style={styles.tabContent}>
             {activeTab === "timeline" && (
-              match.events && match.events.length > 0 ? (
-                match.events.slice().reverse().map((event: any) => (
-                  <View key={event.id} style={styles.eventCard}>
-                    <View style={styles.eventMinute}>
-                      <Text style={styles.eventMinuteText}>{event.minute}'</Text>
-                    </View>
-                    <View style={styles.eventInfo}>
-                      <View style={styles.eventTypeRow}>
-                        {event.type === "goal" && (
-                          <MaterialCommunityIcons name="target" size={16} color={COLORS.success} />
-                        )}
-                        {event.type === "yellow_card" && (
-                          <View style={[styles.cardIcon, { backgroundColor: "#FFD700" }]} />
-                        )}
-                        {event.type === "red_card" && (
-                          <View style={[styles.cardIcon, { backgroundColor: COLORS.error }]} />
-                        )}
-                        <Text style={styles.eventTypeText}>{event.type.replace("_", " ")}</Text>
-                      </View>
-                      <Text style={styles.eventPlayer}>{event.player}</Text>
-                      {event.description && (
-                        <Text style={styles.eventDescription}>{event.description}</Text>
-                      )}
-                    </View>
-                  </View>
-                ))
-              ) : (
+              match.events && match.events.length > 0 ? (() => {
+                const sorted = [...match.events].sort((a, b) => a.minute - b.minute);
+
+                // agrupa por 1ª/2ª parte
+                const firstHalf  = sorted.filter(e => e.minute <= 45);
+                const secondHalf = sorted.filter(e => e.minute > 45);
+
+                const scoreAt = (events: any[]) => {
+                  // score após esses eventos — só se tiveres o campo no evento
+                  // se não tiveres, omite o score no header
+                  return "";
+                };
+
+                return (
+                  <>
+                    {firstHalf.length > 0 && (
+                      <>
+                        <View style={styles.halfHeader}>
+                          <Text style={styles.halfHeaderText}>1ª Parte</Text>
+                        </View>
+                        {firstHalf.map((event: any) => (
+                          <EventRow
+                            key={event.id}
+                            event={event}
+                            isOurs={!event.isOpponent}
+                          />
+                        ))}
+                      </>
+                    )}
+                    {secondHalf.length > 0 && (
+                      <>
+                        <View style={[styles.halfHeader, { marginTop: 4 }]}>
+                          <Text style={styles.halfHeaderText}>2ª Parte</Text>
+                        </View>
+                        {secondHalf.map((event: any) => (
+                          <EventRow
+                            key={event.id}
+                            event={event}
+                            isOurs={!event.isOpponent}
+                          />
+                        ))}
+                      </>
+                    )}
+                  </>
+                );
+              })() : (
                 <View style={styles.emptyState}>
                   <FontAwesome5 name="hourglass-half" size={36} color={COLORS.textSecondary} />
                   <Text style={styles.mutedText}>Sem eventos ainda</Text>

@@ -4,6 +4,7 @@ import { Match } from "../models/Match";
 import { MatchService } from "../services/MatchService";
 import { LineupService } from "../services/LineupService";
 import { Lineup } from "../models/Lineup";
+import { EventForm } from "../utils/events";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -154,12 +155,17 @@ export const MatchesProvider = ({ children }: any) => {
   );
 
   const addMatchEvent = useCallback(
-    async (id: number, event: any) => {
+    async (id: number, event: EventForm) => {
       const match = matches.find((m) => String(m.id) === String(id));
       console.log("A adicionar evento", event, "ao jogo", match);
       if (!match) return;
       const updatedEvents = [...(match.events ?? []), event];
       await updateMatch(id, { events: updatedEvents });
+
+      if(event.type === "goal") {
+        const isHome = !event.isOpponent;
+        await updateMatch(id, { goalsFor, goalsAgainst });
+      }
       console.log("A adicionar evento", event, "ao jogo", match);
     },
     [matches, updateMatch]

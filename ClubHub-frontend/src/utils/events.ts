@@ -33,7 +33,7 @@ export const createEventFromForm = (form: EventForm) => {
       player: form.player?.name || null,
       description: form.isOpponent
         ? `Golo da equipa adversária`
-        : `Golo de ${form.player?.name}`,
+        : ``,
     };
   }
 

@@ -158,11 +158,6 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: SPACING.sm,
   },
-  eventMinuteText: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.primary,
-    fontWeight: "500",
-  },
   eventInfo: {
     flex: 1,
   },
@@ -176,29 +171,11 @@ export const styles = StyleSheet.create({
     fontSize: FONT_SIZE.sm,
     textTransform: "capitalize",
   },
-  eventPlayer: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: "500",
-  },
   eventDescription: {
     fontSize: FONT_SIZE.xs,
     color: COLORS.textSecondary,
     marginTop: 2,
   },
-  cardIcon: {
-    width: 12,
-    height: 16,
-    borderRadius: 2,
-  },
-
-  // Empty State
-  emptyState: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 48,
-  },
-
-  // Stats
   statsCard: {
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
@@ -287,6 +264,86 @@ lineupName: {
 lineupPosition: {
   fontSize: 12,
   color: COLORS.textSecondary,
+},
+// Timeline Events
+halfHeader: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  paddingHorizontal: 14,
+  paddingVertical: 8,
+  backgroundColor: COLORS.surface,
+  marginBottom: 2,
+},
+halfHeaderText: {
+  fontSize: 11,
+  fontWeight: "500",
+  color: COLORS.textSecondary,
+  textTransform: "uppercase",
+  letterSpacing: 0.4,
+},
+halfHeaderScore: {
+  fontSize: 11,
+  fontWeight: "600",
+  color: COLORS.textSecondary,
+},
+eventRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  paddingHorizontal: 14,
+  paddingVertical: 7,
+  minHeight: 36,
+  borderBottomWidth: 0.5,
+  borderBottomColor: COLORS.border,
+  gap: 6,
+},
+eventMinuteTextRight: {
+  fontSize: 12,
+  color: COLORS.textSecondary,
+  width: 26,
+  textAlign: "right",
+},
+eventSide: {
+  flex: 1,
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 5,
+},
+eventSideRight: {
+  flex: 1,
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  gap: 5,
+},
+eventPlayer: {
+  fontSize: 13,
+  fontWeight: "500",
+  color: COLORS.textPrimary,
+},
+eventAssist: {
+  fontSize: 12,
+  color: COLORS.textSecondary,
+},
+eventScore: {
+  fontSize: 12,
+  fontWeight: "600",
+  color: COLORS.success,
+},
+eventIconText: {
+  fontSize: 14,
+  width: 20,
+  textAlign: "center",
+},
+cardIcon: {
+  width: 10,
+  height: 14,
+  borderRadius: 2,
+},
+emptyState: {
+  alignItems: "center",
+  justifyContent: "center",
+  paddingVertical: 48,
 },
 });
 
