@@ -23,4 +23,12 @@ export default class PlayerService {
     });
     return players;
   }
+
+  async updatePlayer(playerId: number, updates: Partial<Player>) {
+    const player = await Player.findByPk(playerId);
+    if (!player) throw new Error("Player not found");
+
+    await player.update(updates);
+    return player;
+  } 
 }

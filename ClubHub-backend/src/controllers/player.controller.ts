@@ -20,4 +20,17 @@ export default class PlayerController {
     const data = await service.getByCurrentSeasonId();
     res.json(data);
   }
+
+  static async updatePlayer(req: Request, res: Response) {
+    const playerId = parseInt(String(req.params.playerId));
+    const updates = req.body; // { stillOnTeam: boolean }
+    
+    try {
+      const updatedPlayer = await service.updatePlayer(playerId, updates);
+      res.json(updatedPlayer);
+    } catch (err) {
+      console.error("Erro a atualizar jogador:", err);
+      res.status(500).json({ error: "Erro a atualizar jogador" });
+    }
+  }
 }
