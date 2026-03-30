@@ -7,8 +7,6 @@ import { LiveBadge } from "./LiveBadge";
 import { Ionicons } from "@expo/vector-icons";
 import { formatDateWithWeekdayPT } from "../utils/dateUtils";
 import * as Clipboard from "expo-clipboard";
-import { teamConfig } from "../config/teamConfig";
-import { Season } from "../models/Season";
 import { Competition } from "../models/Competition";
 
 interface MatchCardProps {

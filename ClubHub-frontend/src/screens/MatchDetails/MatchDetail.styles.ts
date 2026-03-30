@@ -345,6 +345,12 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 48,
   },
+  competition: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textSecondary,
+    marginBottom: SPACING.sm,
+    textAlign: "center",
+  },
 });
 
 export const pickerStyles = {

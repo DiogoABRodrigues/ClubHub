@@ -12,6 +12,8 @@ import { teamConfig } from "../../config/teamConfig";
 import { usePlayers } from "../../contexts/PlayersContext";
 import { mapToMainPosition } from "../../utils/playerPositionUtils";
 import { EventRow } from "../../components/EventRow";
+import { Competition } from "../../models/Competition";
+import { useCompetitions } from "../../contexts/CompetitionContext";
 
 export const MatchDetail = () => {
   const route = useRoute();
@@ -20,6 +22,7 @@ export const MatchDetail = () => {
 
   const { getActivePlayers } = usePlayers();
 
+  const { competitions } = useCompetitions();
   const players = getActivePlayers();
   const { matches, loading } = useMatches();
   const { teams, loading: teamsLoading } = useTeams();
@@ -107,6 +110,8 @@ export const MatchDetail = () => {
     [match.homeOrAway],
   );
 
+  const competition = useMemo(() => { return competitions.find((c) => c.id === match.competitionId) as Competition; }, [match.competitionId, competitions]);
+
   return (
     <ScrollView style={styles.container}>
       {/* Header */}
@@ -134,7 +139,9 @@ export const MatchDetail = () => {
             </View>
           )}
         </View>
-
+        <Text style={styles.competition}>
+          {competition?.name || ""} {match.round ? `- ${match.round}` : ""}
+        </Text>
         {/* Score */}
         <View style={styles.scoreCard}>
           {/* Home */}
@@ -226,8 +233,9 @@ export const MatchDetail = () => {
           {activeTab === "timeline" &&
             (match.events && match.events.length > 0 ? (
               (() => {
-                // @ts-ignore comment
+                
                 const sorted = [...match.events].sort(
+                  // @ts-ignore comment
                   (a, b) => a.minute - b.minute,
                 );
 
@@ -237,11 +245,6 @@ export const MatchDetail = () => {
                 // @ts-ignore comment
                 const secondHalf = sorted.filter((e) => e.minute > 45);
 
-                const scoreAt = (events: any[]) => {
-                  // score após esses eventos — só se tiveres o campo no evento
-                  // se não tiveres, omite o score no header
-                  return "";
-                };
 
                 return (
                   <>

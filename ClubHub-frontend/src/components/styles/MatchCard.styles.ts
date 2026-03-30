@@ -118,9 +118,8 @@ export const styles = StyleSheet.create({
   flexDirection: "column",
   gap: 2,
 },
-
-competition: {
-  fontSize: 11,
-  color: COLORS.textSecondary,
-},
+  competition: {
+    fontSize: 11,
+    color: COLORS.textSecondary,
+  },
 });

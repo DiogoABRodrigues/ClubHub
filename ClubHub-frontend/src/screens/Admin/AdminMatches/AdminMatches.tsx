@@ -4,19 +4,19 @@ import {
   Text,
   TouchableOpacity,
   FlatList,
-  TextInput,
 } from "react-native";
-import { Plus, Edit, Trash2 } from "lucide-react-native";
+import { Plus } from "lucide-react-native";
 import { styles } from "./AdminMatches.styles";
 import { MatchCard } from "../../../components/MatchCard";
 import { COLORS } from "../../../theme/colors";
 import { useMatches } from "../../../contexts/MatchesContext";
 import { useTeams } from "../../../contexts/TeamsContext";
+import { useCompetitions } from "../../../contexts/CompetitionContext";
 
 export const AdminMatches: React.FC = ({ navigation }: any) => {
   const { matches, loading } = useMatches();
   const { teams } = useTeams();
-
+  const { competitions } = useCompetitions();
   const [searchQuery, setSearchQuery] = useState("");
   const [showAllLive, setShowAllLive] = useState(false);
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
@@ -86,6 +86,7 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
           onPress={() =>
             navigation.navigate("AdminMatchDetail", { id: item.id })
           }
+          competition={competitions.find((c) => c.id === item.competitionId)}
         />
       </View>
     ),
@@ -126,7 +127,7 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
         />
       </View>
     );
-  };
+  };  
 
   return (
     <View style={styles.container}>

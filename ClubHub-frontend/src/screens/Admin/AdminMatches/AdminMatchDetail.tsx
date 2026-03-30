@@ -31,6 +31,8 @@ import { PlayerWithStats } from "../../../models/Player";
 import { createEventFromForm } from "../../../utils/events";
 import { EventForm } from "../../../utils/events";
 import { EventRow } from "../../../components/EventRow";
+import { useCompetitions } from "../../../contexts/CompetitionContext";
+import { Competition } from "../../../models/Competition";
 
 export const AdminMatchDetail = () => {
   const route = useRoute();
@@ -43,6 +45,8 @@ export const AdminMatchDetail = () => {
 
   const players = getActivePlayers();
   const match = useMemo(() => matches.find((m) => m.id === id), [matches, id]);
+
+  const { competitions } = useCompetitions();
 
   const [activeTab, setActiveTab] = useState<"timeline" | "lineup">("timeline");
   const [showEventModal, setShowEventModal] = useState(false);
@@ -204,6 +208,8 @@ export const AdminMatchDetail = () => {
     [match.homeOrAway],
   );
 
+  const competition = useMemo(() => { return competitions.find((c) => c.id === match.competitionId) as Competition; }, [match.competitionId, competitions]);
+
   return (
     <>
       <ScrollView style={styles.container}>
@@ -226,6 +232,9 @@ export const AdminMatchDetail = () => {
                 <Text>Intervalo</Text>
               </View>
             )}
+            <Text style={styles.competition}>
+              {competition?.name || ""} {match.round ? `- ${match.round}` : ""}
+            </Text>
           </View>
 
           {/* Score */}
@@ -484,6 +493,7 @@ export const AdminMatchDetail = () => {
                   (() => {
                     // @ts-ignore comment
                     const sorted = [...match.events].sort(
+                      // @ts-ignore comment
                       (a, b) => a.minute - b.minute,
                     );
                     // @ts-ignore comment
