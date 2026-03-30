@@ -11,6 +11,7 @@ import standingRoutes from "./routes/standing.routes";
 import squadRoutes from "./routes/squad.routes";
 import newsRoutes from "./routes/news.routes";
 import path from "path";
+import scraperRoutes from "./routes/scraperRoutes";
 
 const app = express();
 
@@ -40,5 +41,6 @@ app.use("/api/standings", standingRoutes);
 app.use("/api/squads", squadRoutes);
 app.use("/api/news", newsRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+app.use("/api", scraperRoutes);
 
 export default app;
