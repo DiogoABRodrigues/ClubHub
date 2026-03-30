@@ -90,7 +90,11 @@ export const MatchesProvider = ({ children }: any) => {
 
   const updateLocalMatch = useCallback((id: number, updatedMatch: Match) => {
     setMatches((prev) =>
-      prev.map((m) => (String(m.id) === String(id) ? updatedMatch : m))
+      prev.map((m) =>
+        String(m.id) === String(id)
+          ? { ...updatedMatch, Lineups: m.Lineups ?? [] } // mantém Lineups
+          : m
+      )
     );
   }, []);
 
@@ -152,9 +156,11 @@ export const MatchesProvider = ({ children }: any) => {
   const addMatchEvent = useCallback(
     async (id: number, event: any) => {
       const match = matches.find((m) => String(m.id) === String(id));
+      console.log("A adicionar evento", event, "ao jogo", match);
       if (!match) return;
       const updatedEvents = [...(match.events ?? []), event];
       await updateMatch(id, { events: updatedEvents });
+      console.log("A adicionar evento", event, "ao jogo", match);
     },
     [matches, updateMatch]
   );

@@ -124,7 +124,7 @@ export const adminStyles = StyleSheet.create({
     color: COLORS.textSecondary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    marginBottom: 2,
+    marginBottom: 8,
   },
   input: {
     backgroundColor: COLORS.surface,
@@ -398,4 +398,40 @@ lineupPosition: {
   fontSize: 12,
   color: COLORS.textSecondary,
 },
+ switchRow:{
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+  backgroundColor: COLORS.surface,
+  borderRadius: 12,
+  paddingHorizontal: 14,
+  paddingVertical: 12,
+},
+ 
+ switchSubtext:  {
+  fontSize: 12,
+  color: COLORS.muted,
+  marginTop: 2,
+},
+ 
+ substitutionDivider:   {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 8,
+  marginVertical: 4,
+},
+ 
+substitutionDividerLine:  {
+  flex: 1,
+  height: 1,
+  backgroundColor: COLORS.surface,
+},
+ 
+ substitutionDividerText:   {
+  fontSize: 12,
+  fontWeight: "600",
+  color: COLORS.textSecondary,
+  textTransform: "uppercase",
+  letterSpacing: 0.5,
+}
 });

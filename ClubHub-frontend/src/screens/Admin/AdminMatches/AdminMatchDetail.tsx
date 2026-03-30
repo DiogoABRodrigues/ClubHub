@@ -16,17 +16,9 @@ import { AddLineupModal } from "./Components/AddLineupModal";
 import { AddEventModal } from "./Components/AddEventModal";
 import { usePlayers } from "../../../contexts/PlayersContext";
 import { mapToMainPosition } from "../../../utils/playerPositionUtils";
-
-type EventType = "goal" | "yellow_card" | "red_card" | "substitution";
-
-interface EventForm {
-  type: EventType;
-  minute: string;
-  player: string;
-  description: string;
-}
-
-// ─── AdminMatchDetail ─────────────────────────────────────────────────────────
+import { PlayerWithStats } from "../../../models/Player";
+import { createEventFromForm } from "../../../utils/events";
+import { EventForm } from "../../../utils/events";
 
 export const AdminMatchDetail = () => {
   const route = useRoute();
@@ -35,7 +27,6 @@ export const AdminMatchDetail = () => {
   const {
     matches,
     addMatchEvent,
-    saveLineup,
     updateMatch,
     startMatch,
     finishMatch,
@@ -70,13 +61,12 @@ export const AdminMatchDetail = () => {
   const handleSaveEvent = useCallback(
     async (eventForm: EventForm) => {
       if (!match) return;
-      await addMatchEvent(match.id, {
-        ...eventForm,
-        minute: Number(eventForm.minute),
-        id: Date.now().toString(),
-      });
+
+      const newEvent = createEventFromForm(eventForm);
+
+      await addMatchEvent(match.id, newEvent);
     },
-    [match, addMatchEvent],
+    [match, addMatchEvent]
   );
 
   const handleSaveDateTime = useCallback(
@@ -138,6 +128,27 @@ export const AdminMatchDetail = () => {
     return orderA - orderB;
   });
 
+  const startingPlayers = useMemo(() => {
+    if (!sortedLineup || sortedLineup.length === 0) 
+      return players.slice().sort((a, b) => a.name.localeCompare(b.name));
+
+    return sortedLineup
+      .filter((l) => l.isStarting)
+      .map((l) => players.find((p) => p.id === l.playerId))
+      .filter((p): p is PlayerWithStats => p !== undefined)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [sortedLineup, players]);
+
+  const substitutePlayers = useMemo(() => {
+    if (!sortedLineup || sortedLineup.length === 0) return [];
+
+    return sortedLineup
+      .filter((l) => !l.isStarting)
+      .map((l) => players.find((p) => p.id === l.playerId))
+      .filter((p): p is PlayerWithStats => p !== undefined)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [sortedLineup, players]);
+
   const isLive = match.status === "live";
   const isHalftime = match.status === "halftime";
   const isUpcoming = match.status === "upcoming";
@@ -162,8 +173,8 @@ export const AdminMatchDetail = () => {
           <View style={styles.statusContainer}>
             {isLive && <LiveBadge interval={match.statusTime === "interval"} />}
             {isHalftime && (
-              <View style={adminStyles.halftimeBadge}>
-                <Text style={adminStyles.halftimeBadgeText}>Intervalo</Text>
+              <View >
+                <Text >Intervalo</Text>
               </View>
             )}
           </View>
@@ -314,7 +325,7 @@ export const AdminMatchDetail = () => {
                 match.events.slice().reverse().map((event: any) => (
                   <View key={event.id} style={styles.eventCard}>
                     <View style={styles.eventMinute}>
-                      <Text style={styles.eventMinuteText}>{event.minute}'</Text>
+                      <Text style={styles.eventMinuteText}>{event.minute > 90 ? `${'90'}'`+`${'+'}` : `${event.minute}'`}</Text>
                     </View>
                     <View style={styles.eventInfo}>
                       <View style={styles.eventTypeRow}>
@@ -411,7 +422,8 @@ export const AdminMatchDetail = () => {
         visible={showEventModal}
         onClose={() => setShowEventModal(false)}
         onSave={handleSaveEvent}
-        players={[]}
+        startingPlayers={startingPlayers}
+        substitutePlayers={substitutePlayers}
       />
       <AddLineupModal
         visible={showLineupModal}

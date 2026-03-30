@@ -1,18 +1,25 @@
 OPÇÃO DE COMUNICADO EM HOME na parte das admin notifications
 
-botão de ver qualificação nos match detail
+- botão de ver qualificação nos match detail
 
 botão de recarregar jogos, plantel, etc em admin
 
-historico de epocas 
+- resolver go back no admin
 
-ao meter live meter result 0-0
+editar plantel: ideia -> status no player para meter true ou false. Pode meter true/false quem quiser e quando o backend vai ver os jogadores, nao mudar status
 
-resolver go back no admin
+apagar/editar evento
 
+nos context usar lista objects com ids para melhor performance
+
+juntar player e stats no backend ao fazer get estilo match e lineup
 sockets!!!
 
+historico de epocas 
+
 PROTEGER ROTAS!!!
+
+
 
 npx prettier --write .
 
