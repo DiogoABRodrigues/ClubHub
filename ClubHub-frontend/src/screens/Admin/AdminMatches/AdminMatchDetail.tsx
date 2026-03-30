@@ -19,6 +19,7 @@ import { mapToMainPosition } from "../../../utils/playerPositionUtils";
 import { PlayerWithStats } from "../../../models/Player";
 import { createEventFromForm } from "../../../utils/events";
 import { EventForm } from "../../../utils/events";
+import { EventRow } from "../../../components/EventRow";
 
 export const AdminMatchDetail = () => {
   const route = useRoute();
@@ -59,10 +60,10 @@ export const AdminMatchDetail = () => {
   );
 
   const handleSaveEvent = useCallback(
-    async (eventForm: EventForm) => {
+    async (event: EventForm) => {
       if (!match) return;
 
-      const newEvent = createEventFromForm(eventForm);
+      const newEvent = createEventFromForm(event);
 
       await addMatchEvent(match.id, newEvent);
     },
@@ -161,6 +162,8 @@ export const AdminMatchDetail = () => {
       today.getMonth() === matchDate.getMonth() &&
       today.getDate() === matchDate.getDate());
   }, [match.date]);
+
+  const isHomeGame = useMemo(() => match.homeOrAway === "C", [match.homeOrAway]);
 
   return (
     <>
@@ -320,40 +323,57 @@ export const AdminMatchDetail = () => {
             ))}
           </View>
           <View style={styles.tabContent}>
-            {activeTab === "timeline" && (
-              match.events && match.events.length > 0 ? (
-                match.events.slice().reverse().map((event: any) => (
-                  <View key={event.id} style={styles.eventCard}>
-                    <View style={styles.eventMinute}>
-                      <Text style={styles.eventMinuteText}>{event.minute > 90 ? `${'90'}'`+`${'+'}` : `${event.minute}'`}</Text>
-                    </View>
-                    <View style={styles.eventInfo}>
-                      <View style={styles.eventTypeRow}>
-                        {event.type === "goal" && (
-                          <MaterialCommunityIcons name="target" size={16} color={COLORS.success} />
-                        )}
-                        {event.type === "yellow_card" && (
-                          <View style={[styles.cardIcon, { backgroundColor: "#FFD700" }]} />
-                        )}
-                        {event.type === "red_card" && (
-                          <View style={[styles.cardIcon, { backgroundColor: COLORS.error }]} />
-                        )}
-                        <Text style={styles.eventTypeText}>{event.type.replace("_", " ")}</Text>
-                      </View>
-                      <Text style={styles.eventPlayer}>{event.player}</Text>
-                      {event.description && (
-                        <Text style={styles.eventDescription}>{event.description}</Text>
+            <View style={styles.tabContent}>
+              {activeTab === "timeline" && (
+                match.events && match.events.length > 0 ? (() => {
+                  const sorted = [...match.events].sort((a, b) => a.minute - b.minute);
+            
+                  const firstHalf  = sorted.filter(e => e.minute <= 45);
+                  const secondHalf = sorted.filter(e => e.minute > 45);
+            
+                  const scoreAt = (events: any[]) => {
+                    return "";
+                  };
+            
+                  return (
+                    <>
+                      {firstHalf.length > 0 && (
+                        <>
+                          <View style={styles.halfHeader}>
+                            <Text style={styles.halfHeaderText}>1ª Parte</Text>
+                          </View>
+                          {firstHalf.map((event: any) => (
+                            <EventRow
+                              key={event.id}
+                              event={event}
+                              isOurs={isHomeGame ? !event.isOpponent : event.isOpponent}
+                            />
+                          ))}
+                        </>
                       )}
-                    </View>
+                      {secondHalf.length > 0 && (
+                        <>
+                          <View style={[styles.halfHeader, { marginTop: 4 }]}>
+                            <Text style={styles.halfHeaderText}>2ª Parte</Text>
+                          </View>
+                          {secondHalf.map((event: any) => (
+                            <EventRow
+                              key={event.id}
+                              event={event}
+                              isOurs={isHomeGame ? !event.isOpponent : event.isOpponent}
+                            />
+                          ))}
+                        </>
+                      )}
+                    </>
+                  );
+                })() : (
+                  <View style={styles.emptyState}>
+                    <FontAwesome5 name="hourglass-half" size={36} color={COLORS.textSecondary} />
+                    <Text style={styles.mutedText}>Sem eventos ainda</Text>
                   </View>
-                ))
-              ) : (
-                <View style={styles.emptyState}>
-                  <FontAwesome5 name="hourglass-half" size={36} color={COLORS.textSecondary} />
-                  <Text style={styles.mutedText}>Sem eventos ainda</Text>
-                </View>
-              )
-            )}
+                )
+              )}
             {activeTab === "lineup" && (
             <>
               {sortedLineup && sortedLineup.length > 0 ? (
@@ -415,6 +435,7 @@ export const AdminMatchDetail = () => {
             </>
           )}
           </View>
+        </View>
         </View>
       </ScrollView>
 

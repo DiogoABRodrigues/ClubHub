@@ -85,6 +85,8 @@ export const MatchDetail = () => {
     return orderA - orderB;
   });
 
+  const isHomeGame = useMemo(() => match.homeOrAway === "C", [match.homeOrAway]);
+
   return (
     <ScrollView style={styles.container}>
       {/* Header */}
@@ -234,7 +236,7 @@ export const MatchDetail = () => {
                           <EventRow
                             key={event.id}
                             event={event}
-                            isOurs={!event.isOpponent}
+                            isOurs={isHomeGame ? !event.isOpponent : event.isOpponent}
                           />
                         ))}
                       </>
@@ -248,7 +250,7 @@ export const MatchDetail = () => {
                           <EventRow
                             key={event.id}
                             event={event}
-                            isOurs={!event.isOpponent}
+                            isOurs={isHomeGame ? !event.isOpponent : event.isOpponent}
                           />
                         ))}
                       </>

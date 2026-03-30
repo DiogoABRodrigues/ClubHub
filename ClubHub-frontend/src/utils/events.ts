@@ -8,7 +8,7 @@ export interface EventForm {
   playerOut?: Player | null; // para substituição: jogador que sai
   playerIn?: Player | null;  // para substituição: jogador que entra
   minute?: string;
-  isOpponent?: boolean;
+  isOpponent: boolean;
 }
 
 export const createEventFromForm = (form: EventForm) => {
@@ -21,7 +21,7 @@ export const createEventFromForm = (form: EventForm) => {
       minute,
       playerOut: form.playerOut?.name || null,
       playerIn: form.playerIn?.name || null,
-      description: `Substituição: ${form.playerOut?.name} sai, ${form.playerIn?.name} entra`,
+      isOpponent: form.isOpponent,
     };
   }
 
@@ -31,9 +31,7 @@ export const createEventFromForm = (form: EventForm) => {
       type: form.type,
       minute,
       player: form.player?.name || null,
-      description: form.isOpponent
-        ? `Golo da equipa adversária`
-        : ``,
+      isOpponent: form.isOpponent,
     };
   }
 
@@ -43,9 +41,7 @@ export const createEventFromForm = (form: EventForm) => {
       type: form.type,
       minute,
       player: form.player?.name || null,
-      description: form.isOpponent
-        ? `Cartão vermelho adversário`
-        : `Cartão vermelho para ${form.player?.name}`,
+      isOpponent: form.isOpponent,
     };
   }
 
@@ -54,6 +50,6 @@ export const createEventFromForm = (form: EventForm) => {
     type: form.type,
     minute,
     player: form.player?.name || null,
-    description: "",
+    isOpponent: form.isOpponent,
   };
 };

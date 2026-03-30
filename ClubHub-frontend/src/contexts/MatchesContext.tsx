@@ -162,11 +162,24 @@ export const MatchesProvider = ({ children }: any) => {
       const updatedEvents = [...(match.events ?? []), event];
       await updateMatch(id, { events: updatedEvents });
 
+      const houseGame = match.homeOrAway === "C";
+
+      let result = match.result || "0-0";
+      let [goalsFor, goalsAgainst] = result.split("-").map(Number);
+
       if(event.type === "goal") {
-        const isHome = !event.isOpponent;
-        await updateMatch(id, { goalsFor, goalsAgainst });
+        const isForUs = !event.isOpponent;
+        if(isForUs && houseGame) {
+          goalsFor += 1;
+        } else if(isForUs && !houseGame) {
+          goalsAgainst += 1;
+        } else if(!isForUs && houseGame) {
+          goalsAgainst += 1;
+        } else {
+          goalsFor += 1;
+        }
+        await updateMatch(id, { result: `${goalsFor}-${goalsAgainst}` });
       }
-      console.log("A adicionar evento", event, "ao jogo", match);
     },
     [matches, updateMatch]
   );

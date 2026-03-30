@@ -18,17 +18,10 @@ import { COLORS } from "../../../../theme/colors";
 import { adminStyles } from "../AdminMatchDetail.styles";
 import { eventStyles } from "../../../MatchDetails/MatchDetail.styles";
 import { Player, PlayerWithStats } from "../../../../models/Player";
- 
+import { EventForm } from "../../../../utils/events";
+
 type EventType = "goal" | "yellow_card" | "red_card" | "substitution";
  
-export interface EventForm {
-  type: EventType;
-  player?: Player | null;
-  playerOut?: Player | null; // para substituição: jogador que sai
-  playerIn?: Player | null;  // para substituição: jogador que entra
-  minute?: string;
-  isOpponent?: boolean;
-}
  
 interface Props {
   visible: boolean;
@@ -165,6 +158,8 @@ export const AddEventModal = ({ visible, onClose, onSave, startingPlayers, subst
  
   const setField = <K extends keyof EventForm>(key: K, value: EventForm[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
+
+  const OpPlayer = {id: -1, externalId: -1, name: "Adversário", photoUrl: null,age: null} as Player;
  
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
@@ -226,7 +221,7 @@ export const AddEventModal = ({ visible, onClose, onSave, startingPlayers, subst
                     setForm((prev) => ({
                       ...prev,
                       isOpponent: val,
-                      player: null,
+                      player: OpPlayer, // valor fictício para indicar que é adversário
                     }))
                   }
                   trackColor={{ false: COLORS.surface, true: COLORS.primary + "55" }}
