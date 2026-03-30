@@ -6,6 +6,7 @@ import { AdminNewsStack } from "../../../navigation/AdminNewsStack";
 import { AdminMatchesStack } from "../../../navigation/AdminMatchsStack ";
 import { AdminNotifications } from "../AdminNotifications/AdminNotifications";
 import { useNavigation } from "@react-navigation/native";
+import { SquadAdminScreen } from "../SquadAdmin/SquadAdmin";
 
 type AdminTab = "matches" | "news" | "notifications";
 
@@ -53,7 +54,7 @@ export function AdminDashboard() {
       case "news":
         return <AdminNewsStack/>;
       case "notifications":
-        return <AdminNotifications/>;
+        return <SquadAdminScreen/>;
     }
   }, [activeTab, navigation]);
 
@@ -61,12 +62,6 @@ export function AdminDashboard() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color="#000" />
-        </TouchableOpacity>
         <Text style={styles.title}>Painel Admin</Text>
         <View style={styles.placeholder} />
       </View>

@@ -87,7 +87,9 @@ export const AddLineupModal = ({
   onClose,
   existingLineup = [],
 }: Props) => {
-  const { players, loading } = usePlayers();
+  const { getActivePlayers, loading } = usePlayers();
+  
+  const players = getActivePlayers();
   const { saveLineup } = useMatches();
 
   const [phase, setPhase] = useState<Phase>("starters");

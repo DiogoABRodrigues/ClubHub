@@ -160,6 +160,7 @@ export const MatchesProvider = ({ children }: any) => {
       console.log("A adicionar evento", event, "ao jogo", match);
       if (!match) return;
       const updatedEvents = [...(match.events ?? []), event];
+      // @ts-ignore comment
       await updateMatch(id, { events: updatedEvents });
 
       const houseGame = match.homeOrAway === "C";

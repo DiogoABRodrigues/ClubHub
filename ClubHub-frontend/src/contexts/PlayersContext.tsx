@@ -7,12 +7,16 @@ interface PlayersContextType {
   players: PlayerWithStats[];
   loading: boolean;
   refreshPlayers: () => Promise<void>;
+  updatePlayer: (id: number, data: Partial<Player>) => Promise<void>;
+  getActivePlayers: () => PlayerWithStats[];
 }
 
 const PlayersContext = createContext<PlayersContextType>({
   players: [],
   loading: true,
   refreshPlayers: async () => {},
+  updatePlayer: async () => {},
+  getActivePlayers: () => [],
 });
 
 export const PlayersProvider = ({
@@ -56,13 +60,33 @@ export const PlayersProvider = ({
     }
   };
 
+  const updatePlayer = async (id: number, data: Partial<Player>) => {
+    try {
+      await PlayerService.updatePlayer(id, data);
+
+      setPlayers((prev) =>
+        prev.map((p) =>
+          p.id === id
+            ? { ...p, ...data }
+            : p
+        )
+      );
+    } catch (error) {
+      console.error("Erro ao atualizar player:", error);
+    }
+  };
+
+  const getActivePlayers = () => {
+    return players.filter((p) => p.stillOnTeam === true);
+  };
+
   useEffect(() => {
     fetchPlayers();
   }, [stats]); // refetch quando os stats mudarem
 
   return (
     <PlayersContext.Provider
-      value={{ players, loading, refreshPlayers: fetchPlayers }}
+      value={{ players, loading, refreshPlayers: fetchPlayers, updatePlayer, getActivePlayers }}
     >
       {children}
     </PlayersContext.Provider>

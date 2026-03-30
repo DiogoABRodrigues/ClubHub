@@ -21,7 +21,9 @@ export const MatchDetail = () => {
   const navigation = useNavigation();
   const { id } = route.params as { id: number };
 
-  const { players } = usePlayers();
+  const { getActivePlayers } = usePlayers();
+    
+  const players = getActivePlayers();
   const { matches, loading } = useMatches();
   const { teams, loading: teamsLoading } = useTeams();
 
@@ -213,10 +215,13 @@ export const MatchDetail = () => {
           <View style={styles.tabContent}>
             {activeTab === "timeline" && (
               match.events && match.events.length > 0 ? (() => {
+                // @ts-ignore comment
                 const sorted = [...match.events].sort((a, b) => a.minute - b.minute);
 
                 // agrupa por 1ª/2ª parte
+                // @ts-ignore comment
                 const firstHalf  = sorted.filter(e => e.minute <= 45);
+                // @ts-ignore comment
                 const secondHalf = sorted.filter(e => e.minute > 45);
 
                 const scoreAt = (events: any[]) => {

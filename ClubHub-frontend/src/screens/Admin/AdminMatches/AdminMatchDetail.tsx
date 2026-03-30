@@ -33,8 +33,9 @@ export const AdminMatchDetail = () => {
     finishMatch,
   } = useMatches();
   const { teams } = useTeams();
-  const { players } = usePlayers();
+  const { getActivePlayers } = usePlayers();
 
+  const players = getActivePlayers();
   const match = useMemo(() => matches.find((m) => m.id === id), [matches, id]);
 
   const [activeTab, setActiveTab] = useState<"timeline" | "lineup">("timeline");
@@ -326,9 +327,11 @@ export const AdminMatchDetail = () => {
             <View style={styles.tabContent}>
               {activeTab === "timeline" && (
                 match.events && match.events.length > 0 ? (() => {
+                  // @ts-ignore comment
                   const sorted = [...match.events].sort((a, b) => a.minute - b.minute);
-            
+                  // @ts-ignore comment
                   const firstHalf  = sorted.filter(e => e.minute <= 45);
+                  // @ts-ignore comment
                   const secondHalf = sorted.filter(e => e.minute > 45);
             
                   const scoreAt = (events: any[]) => {

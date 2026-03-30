@@ -3,23 +3,13 @@ import { View, Text, ScrollView, Image, StyleSheet } from "react-native";
 import { usePlayers } from "../../contexts/PlayersContext";
 import { PlayerWithStats } from "../../models/Player";
 import { styles as globalStyles } from "./Squad.styles";
-import { mapToMainPosition, POSITION_ORDER, getPositionOrder } from "../../utils/playerPositionUtils";
+import { getPositionOrder } from "../../utils/playerPositionUtils";
 
 export function SquadScreen() {
-  const { players } = usePlayers();
+  const { getActivePlayers } = usePlayers();
 
-  const positionOrder = useMemo(
-    () => ({
-      "Guarda Redes": 1,
-      Defesa: 2,
-      Médio: 3,
-      Avançado: 4,
-      Treinador: 5,
-      "Outros Técnicos": 6,
-    }),
-    [],
-  );
-
+  const activePlayers = getActivePlayers();
+  
   const mapToMainPosition = useCallback((position: string) => {
     const pos = position?.toLowerCase() || "";
     if (pos === "guarda redes") return "Guarda Redes";
@@ -32,13 +22,14 @@ export function SquadScreen() {
   }, []);
 
   const sortedPlayers = useMemo(() => {
-    return [...players].sort((a, b) => {
-      const posA = getPositionOrder(a.stats?.position || "");
-      const posB = getPositionOrder(b.stats?.position || "");
-      if (posA !== posB) return posA - posB;
-      return (a.stats.number || 0) - (b.stats.number || 0);
-    });
-  }, [players]);
+    return activePlayers
+      .sort((a, b) => {
+        const posA = getPositionOrder(a.stats?.position || "");
+        const posB = getPositionOrder(b.stats?.position || "");
+        if (posA !== posB) return posA - posB;
+        return (a.stats.number || 0) - (b.stats.number || 0);
+      });
+  }, [activePlayers]);
   
   const groupedByPosition = useMemo(() => {
     const groups: { position: string; players: PlayerWithStats[] }[] = [];
