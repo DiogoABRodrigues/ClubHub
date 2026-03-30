@@ -9,6 +9,7 @@ import { StandingsProvider } from "./src/contexts/StandingsContext";
 import { PlayersProvider } from "./src/contexts/PlayersContext";
 import { StatsProvider } from "./src/contexts/StatsContext";
 import { SeasonsProvider } from "./src/contexts/SeasonContext";
+import { CompetitionsProvider } from "./src/contexts/CompetitionContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StyleSheet } from "react-native";
 import { AuthProvider } from "./src/contexts/AuthContext";
@@ -26,11 +27,13 @@ export default function App() {
                 <StatsProvider>
                   <PlayersProvider>
                     <SeasonsProvider>
-                      {!splashDone ? (
-                        <SplashScreen onFinish={() => setSplashDone(true)} />
-                      ) : (
-                        <AppNavigator />
-                      )}
+                      <CompetitionsProvider>
+                        {!splashDone ? (
+                          <SplashScreen onFinish={() => setSplashDone(true)} />
+                        ) : (
+                          <AppNavigator />
+                        )}
+                      </CompetitionsProvider>
                     </SeasonsProvider>
                   </PlayersProvider>
                 </StatsProvider>

@@ -13,6 +13,7 @@ import { Image } from "react-native";
 
 import { useNews } from "../../contexts/NewsContext";
 import { formatDatePT } from "../../utils/dateUtils";
+import { useCompetitions } from "../../contexts/CompetitionContext";
 
 export const Home = ({ navigation }: any) => {
   const { news } = useNews();
@@ -20,7 +21,8 @@ export const Home = ({ navigation }: any) => {
   const recentNews = news.slice(0, 3);
 
   const { matches, loading } = useMatches();
-
+  const { competitions } = useCompetitions();
+  
   const liveMatches = useMemo(
     () => matches.filter((m) => m.status === "live"),
     [matches],
@@ -101,6 +103,7 @@ export const Home = ({ navigation }: any) => {
                 onPress={() =>
                   navigation.navigate("MatchDetail", { id: match.id })
                 }
+                competition={competitions.find((c) => c.id === match.competitionId)}
               />
             ))}
           </View>
@@ -125,6 +128,7 @@ export const Home = ({ navigation }: any) => {
               onPress={() =>
                 navigation.navigate("MatchDetail", { id: nextMatch.id })
               }
+              competition={competitions.find((c) => c.id === nextMatch.competitionId)}
             />
           </View>
         )}
@@ -148,6 +152,7 @@ export const Home = ({ navigation }: any) => {
               onPress={() =>
                 navigation.navigate("MatchDetail", { id: recentMatch.id })
               }
+              competition={competitions.find((c) => c.id === recentMatch.competitionId)}
             />
           </View>
         )}

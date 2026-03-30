@@ -8,16 +8,19 @@ import { Ionicons } from "@expo/vector-icons";
 import { formatDateWithWeekdayPT } from "../utils/dateUtils";
 import * as Clipboard from "expo-clipboard";
 import { teamConfig } from "../config/teamConfig";
+import { Season } from "../models/Season";
+import { Competition } from "../models/Competition";
 
 interface MatchCardProps {
   match: Match;
   homeLogo: string;
   awayLogo: string;
   onPress?: () => void;
+  competition?: Competition;
 }
 
 export const MatchCard = React.memo(
-  ({ match, homeLogo, awayLogo, onPress }: MatchCardProps) => {
+  ({ match, homeLogo, awayLogo, onPress, competition }: MatchCardProps) => {
     const formattedDate = useMemo(
       () => `${formatDateWithWeekdayPT(match.date)} • ${match.time}`,
       [match.date, match.time],
@@ -46,10 +49,12 @@ export const MatchCard = React.memo(
       <TouchableOpacity style={styles.card} onPress={onPress}>
         {/* HEADER */}
         <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.date}>{formattedDate}</Text>
-          </View>
-
+<View style={styles.headerInfo}>
+  <Text style={styles.date}>{formattedDate}</Text>
+  <Text style={styles.competition}>
+    {competition?.name || ""} {match.round ? `- ${match.round}` : ""}
+  </Text>
+</View>
           {match.status === "live" && (
             <LiveBadge interval={match.statusTime === "interval"} />
           )}

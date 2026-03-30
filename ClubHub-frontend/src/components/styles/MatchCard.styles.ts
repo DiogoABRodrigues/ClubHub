@@ -114,4 +114,13 @@ export const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 6,
   },
+  headerInfo: {
+  flexDirection: "column",
+  gap: 2,
+},
+
+competition: {
+  fontSize: 11,
+  color: COLORS.textSecondary,
+},
 });

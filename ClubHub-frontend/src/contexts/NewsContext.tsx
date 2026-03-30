@@ -30,8 +30,8 @@ const formatNewsImage = (image?: string) => {
 
   const baseUrl =
     Platform.OS === "android"
-      ? "http://192.168.1.105:3000/uploads"
-      : "http://192.168.1.105:3000/uploads";
+      ? "http://192.168.1.107:3000/uploads"
+      : "http://192.168.1.107:3000/uploads";
 
   return `${baseUrl}/${image}`;
 };

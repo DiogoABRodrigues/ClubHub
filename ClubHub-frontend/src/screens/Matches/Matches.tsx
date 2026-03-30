@@ -6,6 +6,7 @@ import { MatchCard } from "../../components/MatchCard";
 import { COLORS } from "../../theme/colors";
 import { useMatches } from "../../contexts/MatchesContext";
 import { useTeams } from "../../contexts/TeamsContext";
+import { useCompetitions } from "../../contexts/CompetitionContext";
 
 interface MatchesSectionProps {
   title: string;
@@ -33,6 +34,7 @@ const MatchesSection: React.FC<MatchesSectionProps> = ({
     [matches, showAll],
   );
 
+  const { competitions } = useCompetitions();
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
@@ -52,6 +54,7 @@ const MatchesSection: React.FC<MatchesSectionProps> = ({
           homeLogo={getTeamLogo(getHomeTeam(match)) || ""}
           awayLogo={getTeamLogo(getAwayTeam(match)) || ""}
           onPress={() => navigation.navigate("MatchDetail", { id: match.id })}
+          competition={competitions.find((c) => c.id === match.competitionId)}
         />
       ))}
     </View>

@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import PlayerService from "../services/player.service";
+import CompetitionService from "../services/competition.service";
 
-const service = new PlayerService();
+const service = new CompetitionService();
 
-export default class PlayerController {
+export default class CompetitionController {
   static async getAll(req: Request, res: Response) {
     const data = await service.getAll();
     res.json(data);
