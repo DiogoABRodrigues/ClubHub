@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { styles } from "./Home.styles";
+import { useStatements } from "../../contexts/StatementContext";
 
 import { MatchCard } from "../../components/MatchCard";
 
@@ -20,6 +21,8 @@ export const Home = ({ navigation }: any) => {
 
   const recentNews = news.slice(0, 3);
 
+  const { statements } = useStatements();
+  const activeStatement = statements?.[0];
   const { matches, loading } = useMatches();
   const { competitions } = useCompetitions();
   
@@ -83,7 +86,15 @@ export const Home = ({ navigation }: any) => {
             )}
           </View>
         </View>
-
+        {activeStatement && (
+        <View style={styles.statementBanner}>
+          <View style={styles.statementIconRow}>
+            <Ionicons name="megaphone-outline" size={16} color={COLORS.primary} />
+            <Text style={styles.statementTitle}>{activeStatement.title}</Text>
+          </View>
+          <Text style={styles.statementMessage}>{activeStatement.message}</Text>
+        </View>
+      )}
         {/* LIVE MATCHES */}
         {liveMatches.length > 0 && (
           <View style={styles.section}>

@@ -105,4 +105,33 @@ export const styles = StyleSheet.create({
     marginRight: SPACING.sm,
   },
   relatedDate: { fontSize: FONT_SIZE.xs, color: COLORS.textSecondary },
+  statementBanner: {
+  backgroundColor: COLORS.primaryLight, // ou uma cor de destaque suave
+  borderLeftWidth: 4,
+  borderLeftColor: COLORS.primary,
+  borderRadius: 8,
+  padding: 12,
+  marginBottom: 16,
+},
+statementIconRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 6,
+  marginBottom: 4,
+},
+statementTitle: {
+  fontSize: 14,
+  fontWeight: "600",
+  color: COLORS.primary,
+},
+statementMessage: {
+  fontSize: 14,
+  color: COLORS.textPrimary,
+  lineHeight: 20,
+  marginBottom: 6,
+},
+statementExpiry: {
+  fontSize: 12,
+  color: COLORS.textSecondary,
+},
 });
