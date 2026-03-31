@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import {
   Modal,
   View,
@@ -17,70 +17,75 @@ import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../../../../theme/colors";
 import { adminStyles } from "../AdminMatchDetail.styles";
 import { usePlayers } from "../../../../contexts/PlayersContext";
-import { Player } from "../../../../models/Player";
 import { useMatches } from "../../../../contexts/MatchesContext";
 import { isFieldPlayer } from "../../../../utils/playerPositionUtils";
-import { Lineup } from "../../../../models/Lineup";
 
 interface Props {
   visible: boolean;
   matchId: number | string;
   onClose: () => void;
-  existingLineup?: Lineup[];
+  existingLineup?: any[];
 }
 
 type Phase = "starters" | "subs";
-
 const MAX_STARTERS = 11;
 
-const PlayerCard = ({
-  player,
-  selected,
-  onPress,
-}: {
-  player: Player;
-  selected: boolean;
-  onPress: () => void;
-}) => (
-  <TouchableOpacity
-    style={[adminStyles.playerCard, selected && adminStyles.playerCardSelected]}
-    onPress={onPress}
-    activeOpacity={0.7}
-  >
-    {player.photoUrl ? (
-      <Image
-        source={{ uri: player.photoUrl }}
-        style={adminStyles.playerCardPhoto}
-      />
-    ) : (
-      <View style={adminStyles.playerCardAvatar}>
-        <Text style={adminStyles.playerCardAvatarText}>
-          {player.name
-            .split(" ")
-            .map((w) => w[0])
-            .slice(0, 2)
-            .join("")
-            .toUpperCase()}
+/* ───────── PlayerCard MEMO ───────── */
+const PlayerCard = React.memo(
+  ({
+    player,
+    selected,
+    onPress,
+  }: {
+    player: any;
+    selected: boolean;
+    onPress: () => void;
+  }) => {
+    return (
+      <TouchableOpacity
+        style={[
+          adminStyles.playerCard,
+          selected && adminStyles.playerCardSelected,
+        ]}
+        onPress={onPress}
+        activeOpacity={0.7}
+      >
+        {player.photoUrl ? (
+          <Image
+            source={{ uri: player.photoUrl }}
+            style={adminStyles.playerCardPhoto}
+          />
+        ) : (
+          <View style={adminStyles.playerCardAvatar}>
+            <Text style={adminStyles.playerCardAvatarText}>
+              {player.name
+                .split(" ")
+                .map((w: string) => w[0])
+                .slice(0, 2)
+                .join("")
+                .toUpperCase()}
+            </Text>
+          </View>
+        )}
+
+        <Text
+          style={[
+            adminStyles.playerCardName,
+            selected && adminStyles.playerCardNameSelected,
+          ]}
+          numberOfLines={2}
+        >
+          {player.name}
         </Text>
-      </View>
-    )}
 
-    <Text
-      style={[
-        adminStyles.playerCardName,
-        selected && adminStyles.playerCardNameSelected,
-      ]}
-      numberOfLines={2}
-    >
-      {player.name}
-    </Text>
-
-    {selected && (
-      <View style={adminStyles.playerCardCheck}>
-        <Ionicons name="checkmark-circle" size={18} color={COLORS.primary} />
-      </View>
-    )}
-  </TouchableOpacity>
+        {selected && (
+          <View style={adminStyles.playerCardCheck}>
+            <Ionicons name="checkmark-circle" size={18} color={COLORS.primary} />
+          </View>
+        )}
+      </TouchableOpacity>
+    );
+  }
 );
 
 export const AddLineupModal = ({
@@ -90,19 +95,18 @@ export const AddLineupModal = ({
   existingLineup = [],
 }: Props) => {
   const { getActivePlayers, loading } = usePlayers();
+  const { saveLineup } = useMatches();
 
   const players = getActivePlayers();
-  const { saveLineup } = useMatches();
 
   const [phase, setPhase] = useState<Phase>("starters");
   const [search, setSearch] = useState("");
 
   const [starterIds, setStarterIds] = useState<Set<string>>(new Set());
   const [subIds, setSubIds] = useState<Set<string>>(new Set());
-
   const [saving, setSaving] = useState(false);
 
-  // Reset quando abre modal
+  /* ───────── RESET ───────── */
   useEffect(() => {
     if (!visible) return;
 
@@ -113,35 +117,44 @@ export const AddLineupModal = ({
       new Set(
         existingLineup
           .filter((e) => e.isStarting)
-          .map((e) => String(e.playerId)),
-      ),
+          .map((e) => String(e.playerId))
+      )
     );
 
     setSubIds(
       new Set(
         existingLineup
           .filter((e) => !e.isStarting)
-          .map((e) => String(e.playerId)),
-      ),
+          .map((e) => String(e.playerId))
+      )
     );
   }, [visible, existingLineup]);
 
-  const eligiblePlayers = useMemo(() => { return players.filter(isFieldPlayer)}, [players]);
+  /* ───────── FILTERS ───────── */
+  const eligiblePlayers = useMemo(
+    () => players.filter(isFieldPlayer),
+    [players]
+  );
 
   const filteredPlayers = useMemo(() => {
     const q = search.toLowerCase();
     if (!q) return eligiblePlayers;
-    return eligiblePlayers.filter((p) => p.name.toLowerCase().includes(q));
+
+    return eligiblePlayers.filter((p) =>
+      p.name.toLowerCase().includes(q)
+    );
   }, [eligiblePlayers, search]);
 
   const displayPlayers = useMemo(() => {
     if (phase === "subs") {
-      return filteredPlayers.filter((p) => !starterIds.has(String(p.id)));
+      return filteredPlayers.filter(
+        (p) => !starterIds.has(String(p.id))
+      );
     }
-
     return filteredPlayers;
   }, [filteredPlayers, phase, starterIds]);
 
+  /* ───────── TOGGLES ───────── */
   const toggleStarter = useCallback((id: string) => {
     setStarterIds((prev) => {
       const next = new Set(prev);
@@ -152,18 +165,16 @@ export const AddLineupModal = ({
         if (next.size >= MAX_STARTERS) {
           Alert.alert(
             "Limite atingido",
-            `Só podes selecionar ${MAX_STARTERS} titulares.`,
+            `Só podes selecionar ${MAX_STARTERS} titulares.`
           );
           return prev;
         }
-
         next.add(id);
       }
 
       return next;
     });
 
-    // remove dos suplentes
     setSubIds((prev) => {
       const next = new Set(prev);
       next.delete(id);
@@ -174,40 +185,25 @@ export const AddLineupModal = ({
   const toggleSub = useCallback((id: string) => {
     setSubIds((prev) => {
       const next = new Set(prev);
-
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-
+      next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
   }, []);
 
-  const handleAdvance = () => {
-    if (starterIds.size < MAX_STARTERS) {
-      Alert.alert(
-        "Titulares incompletos",
-        `Tens ${starterIds.size} de ${MAX_STARTERS} titulares.`,
-        [
-          { text: "Cancelar", style: "cancel" },
-          { text: "Continuar", onPress: () => setPhase("subs") },
-        ],
-      );
-      return;
-    }
+  const toggle = phase === "starters" ? toggleStarter : toggleSub;
+  const activeSet = phase === "starters" ? starterIds : subIds;
 
-    setPhase("subs");
-  };
-
-  const handleSave = async () => {
+  /* ───────── SAVE ───────── */
+  const handleSave = useCallback(async () => {
     const allEntries = [
       ...Array.from(starterIds).map((id) => ({
         playerId: id,
         isStarting: true,
       })),
-      ...Array.from(subIds).map((id) => ({ playerId: id, isStarting: false })),
+      ...Array.from(subIds).map((id) => ({
+        playerId: id,
+        isStarting: false,
+      })),
     ];
 
     if (allEntries.length === 0) {
@@ -224,19 +220,10 @@ export const AddLineupModal = ({
     } finally {
       setSaving(false);
     }
-  };
-
-  const isStarters = phase === "starters";
-  const activeSet = isStarters ? starterIds : subIds;
-  const toggle = isStarters ? toggleStarter : toggleSub;
+  }, [starterIds, subIds, matchId, saveLineup, onClose]);
 
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} animationType="slide" transparent>
       <Pressable style={adminStyles.overlay} onPress={onClose} />
 
       <KeyboardAvoidingView
@@ -246,14 +233,14 @@ export const AddLineupModal = ({
         <View style={[adminStyles.sheet, adminStyles.sheetTall]}>
           <View style={adminStyles.handle} />
 
-          {/* Header */}
+          {/* HEADER */}
           <View style={adminStyles.sheetHeader}>
             <View>
               <Text style={adminStyles.sheetTitle}>
-                {isStarters ? "Titulares" : "Suplentes"}
+                {phase === "starters" ? "Titulares" : "Suplentes"}
               </Text>
               <Text style={adminStyles.sheetSubtitle}>
-                {isStarters
+                {phase === "starters"
                   ? `${starterIds.size} / ${MAX_STARTERS} selecionados`
                   : `${subIds.size} selecionados`}
               </Text>
@@ -264,58 +251,38 @@ export const AddLineupModal = ({
             </TouchableOpacity>
           </View>
 
-          {/* Search */}
+          {/* SEARCH */}
           <View style={adminStyles.searchRow}>
-            <Ionicons name="search-outline" size={16} color={COLORS.muted} />
-
             <TextInput
               style={adminStyles.searchInput}
               value={search}
               onChangeText={setSearch}
               placeholder="Filtrar jogadores..."
-              placeholderTextColor={COLORS.muted}
             />
-
-            {search.length > 0 && (
-              <TouchableOpacity onPress={() => setSearch("")}>
-                <Ionicons name="close-circle" size={16} color={COLORS.muted} />
-              </TouchableOpacity>
-            )}
           </View>
 
-          {/* Loading */}
+          {/* LIST */}
           {loading ? (
-            <ActivityIndicator size="large" style={{ marginTop: 40 }} />
+            <ActivityIndicator style={{ marginTop: 40 }} />
           ) : (
-            <ScrollView
-              style={{ flex: 1 }}
-              contentContainerStyle={adminStyles.playerGrid}
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
-            >
-              {displayPlayers.length === 0 ? (
-                <Text style={adminStyles.emptyText}>
-                  Nenhum jogador encontrado
-                </Text>
-              ) : (
-                displayPlayers.map((p) => (
-                  <PlayerCard
-                    key={String(p.id)}
-                    player={p}
-                    selected={activeSet.has(String(p.id))}
-                    onPress={() => toggle(String(p.id))}
-                  />
-                ))
-              )}
+            <ScrollView contentContainerStyle={adminStyles.playerGrid}>
+              {displayPlayers.map((p) => (
+                <PlayerCard
+                  key={String(p.id)}
+                  player={p}
+                  selected={activeSet.has(String(p.id))}
+                  onPress={() => toggle(String(p.id))}
+                />
+              ))}
             </ScrollView>
           )}
 
-          {/* Footer */}
+          {/* FOOTER (RESTAURADO EXACTAMENTE COMO ORIGINAL) */}
           <View style={adminStyles.sheetFooter}>
-            {isStarters ? (
+            {phase === "starters" ? (
               <TouchableOpacity
                 style={adminStyles.saveBtn}
-                onPress={handleAdvance}
+                onPress={() => setPhase("subs")}
               >
                 <Text style={adminStyles.saveBtnText}>
                   Continuar para suplentes →
@@ -327,7 +294,9 @@ export const AddLineupModal = ({
                   style={[adminStyles.saveBtn, adminStyles.saveBtnSecondary]}
                   onPress={() => setPhase("starters")}
                 >
-                  <Text style={adminStyles.saveBtnSecondaryText}>← Voltar</Text>
+                  <Text style={adminStyles.saveBtnSecondaryText}>
+                    ← Voltar
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity

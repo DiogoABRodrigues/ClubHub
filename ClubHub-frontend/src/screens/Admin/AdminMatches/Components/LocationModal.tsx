@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Modal,
   View,
@@ -22,60 +22,98 @@ interface Props {
   onSave: (location: string) => Promise<void>;
 }
 
-export const LocationModal = ({
+export const LocationModal = React.memo(({
   visible,
   initialValue,
   onClose,
   onSave,
 }: Props) => {
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState("");
   const [saving, setSaving] = useState(false);
 
+  // 🔥 sincronização correta (evita stale state)
   useEffect(() => {
-    if (visible) setValue(initialValue);
+    if (visible) {
+      setValue(initialValue ?? "");
+      setSaving(false);
+    }
   }, [visible, initialValue]);
 
-  const handleSave = async () => {
+  // 🔥 evita double save / race condition
+  const handleSave = useCallback(async () => {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      Alert.alert("Erro", "Localização não pode estar vazia.");
+      return;
+    }
+
+    if (saving) return;
+
     setSaving(true);
 
     try {
-      await onSave(value.trim());
+      await onSave(trimmed);
       onClose();
-    } catch {
+    } catch (e) {
+      console.error(e);
       Alert.alert("Erro", "Não foi possível guardar.");
     } finally {
       setSaving(false);
     }
-  };
+  }, [value, saving, onSave, onClose]);
+
+  // 🔥 evita re-criação do handler
+  const handleChangeText = useCallback((text: string) => {
+    setValue(text);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    if (saving) return; // evita fechar no meio do save
+    onClose();
+  }, [saving, onClose]);
 
   return (
     <Modal visible={visible} transparent animationType="slide">
-      <Pressable style={modalStyles.overlay} onPress={onClose} />
+      
+      {/* overlay separado (evita re-render do sheet ao tocar fora) */}
+      <Pressable style={modalStyles.overlay} onPress={handleClose} />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={modalStyles.sheetWrapper}
       >
         <View style={modalStyles.sheet}>
+          
           <View style={modalStyles.handle} />
 
           <View style={modalStyles.sheetHeader}>
-            <Text style={modalStyles.sheetTitle}>Editar Localização</Text>
+            <Text style={modalStyles.sheetTitle}>
+              Editar Localização
+            </Text>
 
-            <TouchableOpacity onPress={onClose}>
-              <Ionicons name="close" size={22} color={COLORS.textSecondary} />
+            <TouchableOpacity onPress={handleClose}>
+              <Ionicons
+                name="close"
+                size={22}
+                color={COLORS.textSecondary}
+              />
             </TouchableOpacity>
           </View>
 
           <View style={modalStyles.sheetContent}>
-            <Text style={modalStyles.fieldLabel}>Local do jogo</Text>
+            <Text style={modalStyles.fieldLabel}>
+              Local do jogo
+            </Text>
 
             <TextInput
               style={modalStyles.input}
               value={value}
-              onChangeText={setValue}
+              onChangeText={handleChangeText}
               placeholder="Ex: Estádio Municipal"
               autoFocus
+              returnKeyType="done"
+              editable={!saving}
             />
 
             <TouchableOpacity
@@ -84,16 +122,21 @@ export const LocationModal = ({
                 saving && modalStyles.saveBtnDisabled,
               ]}
               onPress={handleSave}
+              activeOpacity={0.8}
+              disabled={saving}
             >
               {saving ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={modalStyles.saveBtnText}>Guardar</Text>
+                <Text style={modalStyles.saveBtnText}>
+                  Guardar
+                </Text>
               )}
             </TouchableOpacity>
+
           </View>
         </View>
       </KeyboardAvoidingView>
     </Modal>
   );
-};
+});

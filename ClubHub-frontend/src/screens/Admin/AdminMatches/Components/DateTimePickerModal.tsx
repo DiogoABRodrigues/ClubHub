@@ -1,42 +1,32 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Alert, Platform } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Alert } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-interface Props {
-  visible: boolean;
-  initialDate: string;
-  initialTime: string;
-  onClose: () => void;
-  onSave: (date: string, time: string) => Promise<void>;
-}
+const parseDate = (d: string) => {
+  if (!d) return new Date();
 
-/** "YYYY-MM-DD" → Date */
-const parseDateStr = (dateStr: string): Date => {
-  const [y, m, d] = dateStr.split("-").map(Number);
-  const date = new Date();
-  date.setFullYear(y, m - 1, d);
-  date.setHours(0, 0, 0, 0);
-  return isNaN(date.getTime()) ? new Date() : date;
+  const parts = d.split("-").map(Number);
+  if (parts.length !== 3 || parts.some(isNaN)) return new Date();
+
+  const [y, m, day] = parts;
+  return new Date(y, m - 1, day);
 };
 
-/** "HH:MM" → aplica a hora num Date existente */
-const applyTimeStr = (base: Date, timeStr: string): Date => {
-  const [h, m] = timeStr.split(":").map(Number);
-  const date = new Date(base);
-  date.setHours(h ?? 0, m ?? 0, 0, 0);
-  return date;
+const applyTime = (date: Date, time: string) => {
+  if (!time) return new Date(date);
+
+  const parts = time.split(":").map(Number);
+
+  const h = parts[0] ?? 0;
+  const m = parts[1] ?? 0;
+
+  const d = new Date(date);
+  d.setHours(h, m);
+
+  return d;
 };
 
-/** Date → "YYYY-MM-DD" */
-const formatToDateStr = (date: Date): string => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-};
-
-/** Date → "HH:MM" */
-const formatToTimeStr = (date: Date): string => {
+const formatTime = (date: Date) => {
   const h = String(date.getHours()).padStart(2, "0");
   const m = String(date.getMinutes()).padStart(2, "0");
   return `${h}:${m}`;
@@ -48,49 +38,43 @@ export const DateTimePickerModal = ({
   initialTime,
   onClose,
   onSave,
-}: Props) => {
+}: any) => {
   const [phase, setPhase] = useState<"date" | "time">("date");
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [value, setValue] = useState(new Date());
 
   useEffect(() => {
-    if (visible) {
-      setPhase("date");
-      const base = parseDateStr(initialDate);
-      setSelectedDate(applyTimeStr(base, initialTime));
-    }
+    if (!visible) return;
+
+    setPhase("date");
+    setValue(applyTime(parseDate(initialDate), initialTime));
   }, [visible, initialDate, initialTime]);
 
-  const today = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
-  }, []);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-  const handleChange = async (event: any, date?: Date) => {
-    if (event.type === "dismissed") {
-      onClose();
-      return;
-    }
-    if (!date) {
-      onClose();
-      return;
-    }
+  const handleChange = async (_: any, date?: Date) => {
+    if (!date) return onClose();
 
     if (phase === "date") {
       const merged = new Date(date);
-      merged.setHours(selectedDate.getHours(), selectedDate.getMinutes(), 0, 0);
-      setSelectedDate(merged);
+      merged.setHours(value.getHours(), value.getMinutes());
+      setValue(merged);
       setPhase("time");
-    } else {
-      const merged = new Date(selectedDate);
-      merged.setHours(date.getHours(), date.getMinutes(), 0, 0);
-      try {
-        await onSave(formatToDateStr(merged), formatToTimeStr(merged));
-      } catch {
-        Alert.alert("Erro", "Não foi possível guardar a data/hora.");
-      } finally {
-        onClose();
-      }
+      return;
+    }
+
+    try {
+      const final = new Date(value);
+      final.setHours(date.getHours(), date.getMinutes());
+
+      await onSave(
+        final.toISOString().slice(0, 10),
+        formatTime(final)
+      );
+    } catch {
+      Alert.alert("Erro", "Falha ao guardar data");
+    } finally {
+      onClose();
     }
   };
 
@@ -98,10 +82,9 @@ export const DateTimePickerModal = ({
 
   return (
     <DateTimePicker
-      value={selectedDate}
+      value={value}
       mode={phase}
       minimumDate={phase === "date" ? today : undefined}
-      display="default"
       onChange={handleChange}
     />
   );

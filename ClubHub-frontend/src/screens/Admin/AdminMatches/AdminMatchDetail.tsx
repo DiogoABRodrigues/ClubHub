@@ -43,7 +43,17 @@ export const AdminMatchDetail = () => {
   const { teams, refreshTeams } = useTeams();
   const { getActivePlayers, refreshPlayers } = usePlayers();
 
-  const players = useMemo(() => getActivePlayers().filter(isFieldPlayer), [getActivePlayers]);
+  const players = useMemo(() => {
+    return getActivePlayers().filter(isFieldPlayer);
+  }, [getActivePlayers, refreshPlayers]);
+
+  const playersMap = useMemo(() => {
+    const map = new Map<string, PlayerWithStats>();
+    for (const p of players) {
+      map.set(String(p.id), p);
+    }
+    return map;
+  }, [players]);
   const match = useMemo(
     () => matches.find((m) => m.id === id),
     [matches, id],
@@ -71,11 +81,12 @@ export const AdminMatchDetail = () => {
     setRefreshing(true);
 
     try {
-      await refreshMatches();
-      await refreshCompetitions();
-      await refreshTeams();
-      await refreshPlayers();
-
+      await Promise.all([
+        refreshMatches(),
+        refreshCompetitions(),
+        refreshTeams(),
+        refreshPlayers(),
+      ]);
     } catch (e) {
       console.error(e);
     } finally {
@@ -152,32 +163,18 @@ export const AdminMatchDetail = () => {
   
   const [editingEvent, setEditingEvent] = useState<MatchEvent | null>(null);
 
-  const handleEditEvent = (event: MatchEvent) => {
+  const handleEditEvent = useCallback((event: MatchEvent) => {
     setEditingEvent(event);
     setShowEventModal(true);
-  };
+  }, []);
 
-  const handleSaveDateTime = useCallback(
-    async (date: string, time: string) => {
-      try {
-        await updateMatch(match.id, { date, time });
-      } catch (e) {
-        console.error("Erro update date:", e);
-      }
-    },
-    [match.id, updateMatch],
-  );
+  const handleSaveDateTime = useCallback(async (date: string, time: string) => {
+    await updateMatch(match.id, { date, time });
+  }, [match.id, updateMatch]);
 
-  const handleSaveLocation = useCallback(
-    async (location: string) => {
-      try {
-        await updateMatch(match.id, { location });
-      } catch (e) {
-        console.error("Erro update location:", e);
-      }
-    },
-    [match.id, updateMatch],
-  );
+  const handleSaveLocation = useCallback(async (location: string) => {
+    await updateMatch(match.id, { location });
+  }, [match.id, updateMatch]);
 
   const handleFinishMatch = useCallback(() => {
     if (!match) return;
@@ -213,35 +210,27 @@ export const AdminMatchDetail = () => {
     match.homeOrAway === "F" ? match.teamName : match.opponent;
   const homeLogo = getTeamLogo(homeTeamName);
   const awayLogo = getTeamLogo(awayTeamName);
-  const location =
-    homeTeamName === teamConfig.name ? teamConfig.team_stadium : match.location;
+  const location = match.location;
 
   // Formação existente para pré-selecionar no modal
   const existingLineup = match.Lineups;
-    const playersMap = useMemo(() => {
-    const map = new Map<string, PlayerWithStats>();
-
-    players.forEach((p) => {
-      map.set(String(p.id), p);
-    });
-
-    return map;
-  }, [players]);
 
   //ordernar por posição (Guarda-Redes, Defesas, Médios, Avançados)
   const sortedLineup = useMemo(() => {
     if (!match.Lineups) return [];
 
     return [...match.Lineups].sort((a, b) => {
-      const aP = playersMap.get(String(a.playerId));
-      const bP = playersMap.get(String(b.playerId));
-
-      const aPos = aP?.stats?.position ?? "";
-      const bPos = bP?.stats?.position ?? "";
-
+      const aPos = playersMap.get(String(a.playerId))?.stats?.position ?? "";
+      const bPos = playersMap.get(String(b.playerId))?.stats?.position ?? "";
       return aPos.localeCompare(bPos);
     });
   }, [match.Lineups, playersMap]);
+
+  const playerById = useMemo(() => {
+    const map = new Map<string, PlayerWithStats>();
+    for (const p of players) map.set(String(p.id), p);
+    return map;
+  }, [players]);
 
   const buildPlayersFromLineup = useCallback(
     (isStarting: boolean) => {
@@ -296,14 +285,21 @@ export const AdminMatchDetail = () => {
   const competition = useMemo(() => { return competitions.find((c) => c.id === match.competitionId) as Competition; }, [match.competitionId, competitions]);
 
   const timeline = useMemo(() => {
-    if (!match.events?.length) return null;
+    const events = match.events;
+    if (!events?.length) return null;
 
-    const sorted = [...match.events].sort((a, b) => a.minute - b.minute);
+    const firstHalf: MatchEvent[] = [];
+    const secondHalf: MatchEvent[] = [];
 
-    return {
-      firstHalf: sorted.filter((e) => e.minute <= 45),
-      secondHalf: sorted.filter((e) => e.minute > 45),
-    };
+    for (const e of events) {
+      if (e.minute <= 45) firstHalf.push(e);
+      else secondHalf.push(e);
+    }
+
+    firstHalf.sort((a, b) => a.minute - b.minute);
+    secondHalf.sort((a, b) => a.minute - b.minute);
+
+    return { firstHalf, secondHalf };
   }, [match.events]);
 
   return (
@@ -663,12 +659,10 @@ export const AdminMatchDetail = () => {
                       <Text style={adminStyles.lineupSectionTitle}>
                         Titulares
                       </Text>
-                      {sortedLineup
+                      {sortedLineup.reverse()
                         .filter((e: any) => e.isStarting)
                         .map((e: any) => {
-                          const player = players.find(
-                            (p) => String(p.id) === String(e.playerId),
-                          );
+                          const player = playerById.get(String(e.playerId));
                           if (!player) return null;
                           return (
                             <View
@@ -706,12 +700,10 @@ export const AdminMatchDetail = () => {
                       <Text style={adminStyles.lineupSectionTitle}>
                         Suplentes
                       </Text>
-                      {sortedLineup
+                      {sortedLineup.reverse()
                         .filter((e: any) => !e.isStarting)
                         .map((e: any) => {
-                          const player = players.find(
-                            (p) => String(p.id) === String(e.playerId),
-                          );
+                        const player = playerById.get(String(e.playerId));
                           if (!player) return null;
                           return (
                             <View

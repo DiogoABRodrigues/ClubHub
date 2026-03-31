@@ -22,33 +22,40 @@ export const MatchDetail = () => {
   const navigation = useNavigation();
   const { id } = route.params as { id: number };
 
-  const { getActivePlayers } = usePlayers();
-
   const { competitions, refreshCompetitions } = useCompetitions();
+  const { getActivePlayers, refreshPlayers } = usePlayers();
   const players = getActivePlayers();
-  const { refreshPlayers } = usePlayers();
+  const playersMap = useMemo(() => {
+  const map = new Map<string, any>();
+    for (const p of players) {
+      map.set(String(p.id), p);
+    }
+    return map;
+  }, [players]);
+
   const { matches, loading, refreshMatches } = useMatches();
   const { teams, loading: teamsLoading, refreshTeams } = useTeams();
 
   const match = matches.find((m) => m.id === id);
 
   const [refreshing, setRefreshing] = useState(false);
-  
+    
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
 
     try {
-      await refreshMatches();
-      await refreshCompetitions();
-      await refreshTeams();
-      await refreshPlayers();
-
+      await Promise.all([
+        refreshMatches(),
+        refreshCompetitions(),
+        refreshTeams(),
+        refreshPlayers(),
+      ]);
     } catch (e) {
       console.error(e);
     } finally {
       setRefreshing(false);
     }
-  }, []);
+  }, [refreshMatches, refreshCompetitions, refreshTeams, refreshPlayers]);
 
   const [activeTab, setActiveTab] = useState<"timeline" | "lineup">("timeline");
 
@@ -83,48 +90,32 @@ export const MatchDetail = () => {
   const awayTeamName =
     match.homeOrAway === "F" ? match.teamName : match.opponent;
 
-  const getTeamLogo = (teamName: string) => {
-    const normalized = teamName.trim().toLowerCase();
-    return teams.find((t) => t.name.trim().toLowerCase() === normalized)
-      ?.logoUrl;
-  };
+  const getTeamLogo = useCallback(
+    (teamName: string) => {
+      const normalized = teamName.trim().toLowerCase();
+      return teams.find((t) => t.name.trim().toLowerCase() === normalized)
+        ?.logoUrl;
+    },
+    [teams],
+  );
 
   const homeLogo = getTeamLogo(homeTeamName);
   const awayLogo = getTeamLogo(awayTeamName);
 
-  const location =
-    homeTeamName === teamConfig.name ? teamConfig.team_stadium : match.location;
+  const location = match.location;
 
   const existingLineup = match.Lineups;
 
   //ordernar por posição (Guarda-Redes, Defesas, Médios, Avançados)
-  const sortedLineup = existingLineup?.slice().sort((a, b) => {
-    const playerA = players.find((p) => String(p.id) === String(a.playerId));
-    const playerB = players.find((p) => String(p.id) === String(b.playerId));
-    const posA = playerA ? mapToMainPosition(playerA.stats?.position) : "N/A";
-    const posB = playerB ? mapToMainPosition(playerB.stats?.position) : "N/A";
-    const orderA =
-      posA === "Guarda Redes"
-        ? 1
-        : posA === "Defesa"
-          ? 2
-          : posA === "Médio"
-            ? 3
-            : posA === "Avançado"
-              ? 4
-              : 5;
-    const orderB =
-      posB === "Guarda Redes"
-        ? 1
-        : posB === "Defesa"
-          ? 2
-          : posB === "Médio"
-            ? 3
-            : posB === "Avançado"
-              ? 4
-              : 5;
-    return orderA - orderB;
-  });
+  const sortedLineup = useMemo(() => {
+    if (!match.Lineups) return [];
+
+    return [...match.Lineups].sort((a, b) => {
+      const aPos = playersMap.get(String(a.playerId))?.stats?.position ?? "";
+      const bPos = playersMap.get(String(b.playerId))?.stats?.position ?? "";
+      return aPos.localeCompare(bPos);
+    });
+  }, [match.Lineups, playersMap]);
 
   const isHomeGame = useMemo(
     () => match.homeOrAway === "C",
@@ -327,12 +318,10 @@ export const MatchDetail = () => {
                 <>
                   {/* Titulares */}
                   <Text style={styles.lineupSectionTitle}>Titulares</Text>
-                  {sortedLineup
+                  {sortedLineup.reverse()
                     .filter((e: any) => e.isStarting)
                     .map((e: any) => {
-                      const player = players.find(
-                        (p) => String(p.id) === String(e.playerId),
-                      );
+                      const player = playersMap.get(String(e.playerId));
                       if (!player) return null;
                       return (
                         <View key={String(e.playerId)} style={styles.lineupRow}>
@@ -364,12 +353,10 @@ export const MatchDetail = () => {
 
                   {/* Suplentes */}
                   <Text style={styles.lineupSectionTitle}>Suplentes</Text>
-                  {sortedLineup
+                  {sortedLineup.reverse()
                     .filter((e: any) => !e.isStarting)
                     .map((e: any) => {
-                      const player = players.find(
-                        (p) => String(p.id) === String(e.playerId),
-                      );
+                      const player = playersMap.get(String(e.playerId));
                       if (!player) return null;
                       return (
                         <View key={String(e.playerId)} style={styles.lineupRow}>

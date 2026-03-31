@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import {
   Modal,
   View,
@@ -18,18 +18,9 @@ import { COLORS } from "../../../../theme/colors";
 import { adminStyles } from "../AdminMatchDetail.styles";
 import { eventStyles } from "../../../MatchDetails/MatchDetail.styles";
 import { Player, PlayerWithStats } from "../../../../models/Player";
-import { MatchEvent, MatchEventType} from "../../../../models/MatchEvent";
+import { MatchEvent, MatchEventType } from "../../../../models/MatchEvent";
 
-interface Props {
-  visible: boolean;
-  onClose: () => void;
-  onSave: (event: MatchEvent) => Promise<void>;
-  startingPlayers: PlayerWithStats[];
-  substitutePlayers: PlayerWithStats[];
-  eventToEdit?: MatchEvent;
-}
-
-// ─── Constantes ───────────────────────────────────────────────────────────────
+/* ───────── EMPTY FORM ───────── */
 const EMPTY_FORM: MatchEvent = {
   matchId: -1,
   type: "goal",
@@ -40,13 +31,14 @@ const EMPTY_FORM: MatchEvent = {
   isOpponent: false,
 };
 
+/* ───────── EVENT TYPES ───────── */
 const EVENT_TYPES: { key: MatchEventType; label: string; icon: string }[] = [
   { key: "goal", label: "Golo", icon: "⚽" },
   { key: "red_card", label: "Vermelho", icon: "🟥" },
   { key: "substitution", label: "Substituição", icon: "🔄" },
 ];
 
-// ─── PlayerPicker ─────────────────────────────────────────────────────────────
+/* ───────── PLAYER PICKER (MEMO) ───────── */
 interface PlayerPickerProps {
   label: string;
   players: Player[];
@@ -55,73 +47,77 @@ interface PlayerPickerProps {
   excludePlayer?: number | null;
 }
 
-const PlayerPicker = ({
-  label,
-  players,
-  selected,
-  onSelect,
-  excludePlayer,
-}: PlayerPickerProps) => {
-  const [search, setSearch] = useState("");
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase();
-    return players.filter(
-      (p) =>
-        p.id !== excludePlayer && (!q || p.name.toLowerCase().includes(q)),
-    );
-  }, [players, search, excludePlayer]);
+const PlayerPicker = React.memo(
+  ({ label, players, selected, onSelect, excludePlayer }: PlayerPickerProps) => {
+    const [search, setSearch] = useState("");
 
-  return (
-    <View style={{ marginTop: 8 }}>
-      <Text style={adminStyles.fieldLabel}>{label}</Text>
-      {filtered.length > 0 ? (
-        <ScrollView
-          style={{
-            maxHeight: 200,
-            borderWidth: 1,
-            borderColor: COLORS.border,
-            borderRadius: 4,
-          }} // altura máxima da box da lista
-          nestedScrollEnabled // permite scroll dentro de scroll externo
-        >
-          {filtered.map((p) => {
-            const isSelected = selected === p.id;
-            return (
-              <TouchableOpacity
-                key={p.id}
-                style={[
-                  eventStyles.playerItem,
-                  isSelected && eventStyles.playerItemActive,
-                ]}
-                onPress={() => onSelect(isSelected ? null : p)}
-              >
-                <Text
+    const filtered = useMemo(() => {
+      const q = search.toLowerCase();
+      return players.filter(
+        (p) =>
+          p.id !== excludePlayer &&
+          (!q || p.name.toLowerCase().includes(q))
+      );
+    }, [players, search, excludePlayer]);
+
+    return (
+      <View style={{ marginTop: 8 }}>
+        <Text style={adminStyles.fieldLabel}>{label}</Text>
+
+        {filtered.length > 0 ? (
+          <ScrollView
+            style={{
+              maxHeight: 200,
+              borderWidth: 1,
+              borderColor: COLORS.border,
+              borderRadius: 4,
+            }}
+            nestedScrollEnabled
+            keyboardShouldPersistTaps="handled"
+          >
+            {filtered.map((p) => {
+              const isSelected = selected === p.id;
+
+              return (
+                <TouchableOpacity
+                  key={p.id}
                   style={[
-                    eventStyles.playerName,
-                    isSelected && eventStyles.playerNameActive,
+                    eventStyles.playerItem,
+                    isSelected && eventStyles.playerItemActive,
                   ]}
+                  onPress={() => onSelect(isSelected ? null : p)}
                 >
-                  {p.name}
-                </Text>
-                {isSelected && (
-                  <Ionicons
-                    name="checkmark-circle"
-                    size={18}
-                    color={COLORS.primary}
-                  />
-                )}
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      ) : (
-        <Text style={eventStyles.noResults}>Nenhum jogador encontrado</Text>
-      )}
-    </View>
-  );
-};
+                  <Text
+                    style={[
+                      eventStyles.playerName,
+                      isSelected && eventStyles.playerNameActive,
+                    ]}
+                  >
+                    {p.name}
+                  </Text>
 
-// ─── Componente Principal ─────────────────────────────────────────────────────
+                  {isSelected && (
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={18}
+                      color={COLORS.primary}
+                    />
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        ) : (
+          <Text style={eventStyles.noResults}>
+            Nenhum jogador encontrado
+          </Text>
+        )}
+      </View>
+    );
+  }
+);
+
+/* ───────── MAIN COMPONENT ───────── */
 export const AddEventModal = ({
   visible,
   onClose,
@@ -129,22 +125,51 @@ export const AddEventModal = ({
   startingPlayers,
   substitutePlayers,
   eventToEdit,
-}: Props) => {
+}: { visible: boolean; onClose: () => void; onSave: (event: MatchEvent) => Promise<void>; startingPlayers: Player[]; substitutePlayers: Player[]; eventToEdit?: MatchEvent }) => {
   const [form, setForm] = useState<MatchEvent>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
 
-  // Reset ao fechar
-  React.useEffect(() => {
-    if (!visible) setForm(EMPTY_FORM);
-  }, [visible]);
+  /* RESET CORRETO (CREATE vs EDIT SAFE) */
+  useEffect(() => {
+    if (!visible) return;
+
+    if (eventToEdit) {
+      setForm({
+        ...EMPTY_FORM,
+        ...eventToEdit,
+      });
+    } else {
+      setForm(EMPTY_FORM);
+    }
+  }, [visible, eventToEdit]);
 
   const isOpponent = !!form.isOpponent;
   const isSubstitution = form.type === "substitution";
-  // Golo e Vermelho suportam switch de adversário; substituição é sempre da equipa
-  const supportsOpponent = form.type === "goal" || form.type === "red_card";
+  const supportsOpponent =
+    form.type === "goal" || form.type === "red_card";
 
-  const handleSave = async () => {
-    if (!form.minute) {
+  /* ───────── PLAYERS MERGE ───────── */
+  const allPlayers = useMemo(() => {
+    const map = new Map<number, Player>();
+
+    startingPlayers.forEach((p) => map.set(p.id, p));
+    substitutePlayers.forEach((p) => map.set(p.id, p));
+
+    return Array.from(map.values()).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+  }, [startingPlayers, substitutePlayers]);
+
+  /* ───────── FIELD UPDATE SAFE ───────── */
+  const setField = useCallback(
+    <K extends keyof MatchEvent>(key: K, value: MatchEvent[K]) => {
+      setForm((prev) => ({ ...prev, [key]: value }));
+    },
+    []
+  );
+
+  const handleSave = useCallback(async () => {
+    if (!form.minute || form.minute < 1) {
       Alert.alert("Atenção", "O minuto é obrigatório.");
       return;
     }
@@ -152,7 +177,10 @@ export const AddEventModal = ({
     if (!isOpponent) {
       if (isSubstitution) {
         if (!form.playerInId || !form.playerOutId) {
-          Alert.alert("Atenção", "Seleciona o jogador que sai e o que entra.");
+          Alert.alert(
+            "Atenção",
+            "Seleciona o jogador que sai e o que entra."
+          );
           return;
         }
       } else {
@@ -163,8 +191,8 @@ export const AddEventModal = ({
       }
     }
 
-    setSaving(true);
     try {
+      setSaving(true);
       await onSave(form);
       setForm(EMPTY_FORM);
       onClose();
@@ -173,45 +201,37 @@ export const AddEventModal = ({
     } finally {
       setSaving(false);
     }
+  }, [form, onSave, onClose, isOpponent, isSubstitution]);
+
+  /* ───────── MINUTE SAFE PARSE ───────── */
+  const handleMinuteChange = (v: string) => {
+    const numeric = v.replace(/\D/g, "");
+
+    if (numeric === "") {
+      setField("minute", 0);
+      return;
+    }
+
+    let minute = Number(numeric);
+
+    if (Number.isNaN(minute)) minute = 0;
+    if (minute > 90) minute = 90;
+    if (minute < 1) minute = 1;
+
+    setField("minute", minute);
   };
 
-  //juntar starting + substitute, garantindo que não há duplicados (jogadores que estão em ambos aparecem só uma vez) e ordenados por nome
-  const allPlayers = useMemo(() => {
-    const map = new Map<number, Player>();
-    startingPlayers.forEach((p) => map.set(p.id, p));
-    substitutePlayers.forEach((p) => map.set(p.id, p));
-    return Array.from(map.values()).sort((a, b) =>
-      a.name.localeCompare(b.name),
-    );
-  }, [startingPlayers, substitutePlayers]);
+  const OpPlayer: Player = useMemo(
+    () => ({
+      id: -1,
+      externalId: -1,
+      name: "Adversário",
+      photoUrl: null,
+      age: null,
+    }),
+    []
+  );
 
-  const setField = <K extends keyof MatchEvent>(key: K, value: MatchEvent[K]) =>
-    setForm((prev) => ({ ...prev, [key]: value }));
-
-  const OpPlayer = {
-    id: -1,
-    externalId: -1,
-    name: "Adversário",
-    photoUrl: null,
-    age: null,
-  } as Player;
-
-  useEffect(() => {
-    if (eventToEdit) {
-      setForm({
-        id: eventToEdit.id,
-        matchId: eventToEdit.matchId,
-        type: eventToEdit.type,
-        minute: eventToEdit.minute,
-        playerId: eventToEdit.playerId,
-        playerOutId: eventToEdit.playerOutId,
-        playerInId: eventToEdit.playerInId,
-        isOpponent: eventToEdit.isOpponent,
-        isOwnGoal: eventToEdit.isOwnGoal,
-      });
-    }
-  }, [eventToEdit]);
-  
   return (
     <Modal
       visible={visible}
@@ -220,6 +240,7 @@ export const AddEventModal = ({
       onRequestClose={onClose}
     >
       <Pressable style={adminStyles.overlay} onPress={onClose} />
+
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={adminStyles.sheetWrapper}
@@ -227,19 +248,24 @@ export const AddEventModal = ({
         <View style={[adminStyles.sheet, adminStyles.sheetTall]}>
           <View style={adminStyles.handle} />
 
-          {/* Header */}
+          {/* HEADER */}
           <View style={adminStyles.sheetHeader}>
-            <Text style={adminStyles.sheetTitle}>Adicionar Evento</Text>
+            <Text style={adminStyles.sheetTitle}>
+              {eventToEdit ? "Editar Evento" : "Adicionar Evento"}
+            </Text>
+
             <TouchableOpacity onPress={onClose}>
               <Ionicons name="close" size={22} color={COLORS.textSecondary} />
             </TouchableOpacity>
           </View>
+
           <ScrollView
             contentContainerStyle={adminStyles.sheetContent}
             keyboardShouldPersistTaps="handled"
           >
-            {/* Tipo de evento */}
+            {/* TYPE */}
             <Text style={adminStyles.fieldLabel}>Tipo</Text>
+
             <View style={adminStyles.chipRow}>
               {EVENT_TYPES.map((et) => (
                 <TouchableOpacity
@@ -269,106 +295,70 @@ export const AddEventModal = ({
               ))}
             </View>
 
-            {/* Switch equipa adversária (só para golo e vermelho) */}
+            {/* OPONENT SWITCH */}
             {supportsOpponent && (
               <View style={adminStyles.switchRow}>
                 <View>
-                  <Text style={adminStyles.fieldLabel}>Equipa adversária</Text>
-                  <Text style={adminStyles.switchSubtext}>
-                    {isOpponent
-                      ? "Apenas regista o minuto"
-                      : "Seleciona o jogador da tua equipa"}
+                  <Text style={adminStyles.fieldLabel}>
+                    Equipa adversária
                   </Text>
                 </View>
+
                 <Switch
                   value={isOpponent}
                   onValueChange={(val) =>
                     setForm((prev) => ({
                       ...prev,
                       isOpponent: val,
-                      player: OpPlayer, // valor fictício para indicar que é adversário
                     }))
                   }
-                  trackColor={{
-                    false: COLORS.surface,
-                    true: COLORS.primary + "55",
-                  }}
-                  thumbColor={isOpponent ? COLORS.primary : COLORS.muted}
                 />
               </View>
             )}
 
-            {/* Minuto */}
+            {/* MINUTE */}
             <Text style={adminStyles.fieldLabel}>Minuto</Text>
+
             <TextInput
               style={adminStyles.input}
-              value={form.minute.toString()}
-              onChangeText={(v) => {
-                // Remove tudo que não seja dígito
-                const numeric = v.replace(/\D/g, "");
-
-                // Converte para número
-                let minute = Number(numeric);
-
-                // Limita entre 1 e 90 (ou vazio se apagar)
-                if (minute > 90) minute = 90;
-                if (minute < 1 && numeric !== "") minute = 1;
-
-                setField("minute", numeric === "" ? 0 : minute);
-              }}
-              placeholder="Ex: 45"
-              placeholderTextColor={COLORS.muted}
+              value={form.minute ? String(form.minute) : ""}
+              onChangeText={handleMinuteChange}
               keyboardType="number-pad"
             />
+
+            {/* AUTO GOAL */}
             {form.type === "goal" && !isOpponent && (
-            <View style={adminStyles.switchRow}>
-              <View>
+              <View style={adminStyles.switchRow}>
                 <Text style={adminStyles.fieldLabel}>Auto-golo</Text>
+
+                <Switch
+                  value={!!form.isOwnGoal}
+                  onValueChange={(val) => setField("isOwnGoal", val)}
+                />
               </View>
-              <Switch
-                value={!!form.isOwnGoal}
-                onValueChange={(val) => setField("isOwnGoal", val)}
-                trackColor={{
-                  false: COLORS.surface,
-                  true: COLORS.primary + "55",
-                }}
-                thumbColor={form.isOwnGoal ? COLORS.primary : COLORS.muted}
-              />
-            </View>
-          )}
-            {/* Seleção de jogador(es) */}
+            )}
+
+            {/* PLAYERS */}
             {!isOpponent &&
               (isSubstitution ? (
-                /* ── Substituição: jogador que sai + que entra ── */
                 <>
-                  <View style={adminStyles.substitutionDivider}>
-                    <View style={adminStyles.substitutionDividerLine} />
-                    <Text style={adminStyles.substitutionDividerText}>
-                      Substituição
-                    </Text>
-                    <View style={adminStyles.substitutionDividerLine} />
-                  </View>
-
                   <PlayerPicker
-                    label="🔴  Sai"
+                    label="🔴 Sai"
                     players={startingPlayers}
                     selected={form.playerOutId}
                     onSelect={(p) => setField("playerOutId", p?.id)}
                     excludePlayer={form.playerInId}
                   />
 
-                  <View style={{ height: 12 }} />
-
                   <PlayerPicker
-                    label="🟢  Entra"
+                    label="🟢 Entra"
                     players={substitutePlayers}
                     selected={form.playerInId}
                     onSelect={(p) => setField("playerInId", p?.id)}
                     excludePlayer={form.playerOutId}
                   />
                 </>
-              ) : form.isOwnGoal ? null :(
-                /* ── Golo / Vermelho: um jogador ── */
+              ) : form.isOwnGoal ? null : (
                 <PlayerPicker
                   label="Jogador"
                   players={allPlayers}
@@ -377,7 +367,7 @@ export const AddEventModal = ({
                 />
               ))}
 
-            {/* Botão guardar */}
+            {/* SAVE */}
             <TouchableOpacity
               style={[
                 adminStyles.saveBtn,
@@ -389,7 +379,9 @@ export const AddEventModal = ({
               {saving ? (
                 <ActivityIndicator size="small" color="#fff" />
               ) : (
-                <Text style={adminStyles.saveBtnText}>Adicionar Evento</Text>
+                <Text style={adminStyles.saveBtnText}>
+                  {eventToEdit ? "Guardar Alterações" : "Adicionar Evento"}
+                </Text>
               )}
             </TouchableOpacity>
           </ScrollView>
