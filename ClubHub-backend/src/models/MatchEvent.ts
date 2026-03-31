@@ -1,7 +1,6 @@
 // models/MatchEvent.ts
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
-import Match from "./Match";
 
 class MatchEvent extends Model {
   public id!: number;
@@ -14,6 +13,7 @@ class MatchEvent extends Model {
   public playerOutId?: number | null;
 
   public isOpponent!: boolean;
+  public isOwnGoal?: boolean;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -68,6 +68,10 @@ MatchEvent.init(
     },
 
     isOpponent: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    isOwnGoal: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },

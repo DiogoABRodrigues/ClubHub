@@ -11,7 +11,8 @@ import { Match } from "../models/Match";
 import { MatchService } from "../services/MatchService";
 import { LineupService } from "../services/LineupService";
 import { Lineup } from "../models/Lineup";
-import { EventForm } from "../utils/events";
+import { MatchEvent } from "../models/MatchEvent";
+import { MatchEventService } from "../services/MatchEventService";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -21,13 +22,15 @@ interface MatchesContextType {
   refreshMatches: () => Promise<void>;
 
   updateMatch: (id: number, updates: Partial<Match>) => Promise<void>;
+  updateLocalMatch: (id: number, updatedMatch: Match) => void;
+  deleteMatchEvent: (id: number, event: MatchEvent) => Promise<void>;
   saveMatch: (id: number, updates: Partial<Match>) => Promise<void>;
 
   startMatch: (id: number) => Promise<void>;
   pauseMatch: (id: number) => Promise<void>;
   finishMatch: (id: number) => Promise<void>;
 
-  addMatchEvent: (id: number, event: any) => Promise<void>;
+  addMatchEvent: (id: number, event: MatchEvent) => Promise<void>;
 
   saveLineup: (
     matchId: number,
@@ -42,12 +45,14 @@ const MatchesContext = createContext<MatchesContextType>({
   loading: true,
   refreshMatches: async () => {},
   updateMatch: async () => {},
+  updateLocalMatch: () => {},
   saveMatch: async () => {},
   startMatch: async () => {},
   pauseMatch: async () => {},
   finishMatch: async () => {},
   addMatchEvent: async () => {},
   saveLineup: async () => {},
+  deleteMatchEvent: async () => {},
 });
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
@@ -167,13 +172,15 @@ export const MatchesProvider = ({ children }: any) => {
   );
 
   const addMatchEvent = useCallback(
-    async (id: number, event: EventForm) => {
-      const match = matches.find((m) => String(m.id) === String(id));
-      console.log("A adicionar evento", event, "ao jogo", match);
+    async (id: number, event: MatchEvent) => {
+      const match = matches.find((m) => m.id === id);
       if (!match) return;
-      const updatedEvents = [...(match.events ?? []), event];
-      // @ts-ignore comment
-      await updateMatch(id, { events: updatedEvents });
+      const createdEvent = await MatchEventService.create(match.id, event);
+      
+      await updateLocalMatch(match.id, {
+          ...match,
+          events: [...(match.events ?? []), createdEvent],
+        });
 
       const houseGame = match.homeOrAway === "C";
 
@@ -195,6 +202,50 @@ export const MatchesProvider = ({ children }: any) => {
       }
     },
     [matches, updateMatch],
+  );
+
+  const deleteMatchEvent = useCallback(
+    async (id: number, event: MatchEvent) => {
+      if (!event.id) {
+        console.error("Evento sem ID não pode ser apagado");
+        return;
+      }
+      
+      const match = matches.find((m) => m.id === id);
+      if (!match) return;
+
+      const updatedEvents = (match.events || []).filter(
+        (e) => e.id !== event.id
+      );
+
+      await MatchEventService.delete(event.id);
+
+      await updateLocalMatch(match.id, {
+        ...match,
+        events: updatedEvents,
+      });
+
+      // Atualiza resultado se for golo
+      if (event.type === "goal") {
+        const houseGame = match.homeOrAway === "C";
+        let result = match.result || "0-0";
+        let [goalsFor, goalsAgainst] = result.split("-").map(Number);
+
+        const isForUs = !event.isOpponent;
+        if (isForUs && houseGame) {
+          goalsFor -= 1;
+        } else if (isForUs && !houseGame) {
+          goalsAgainst -= 1;
+        } else if (!isForUs && houseGame) {
+          goalsAgainst -= 1;
+        } else {
+          goalsFor -= 1;
+        }
+
+        await updateMatch(id, { result: `${goalsFor}-${goalsAgainst}` });
+      }
+    },
+    [matches, updateMatch]
   );
 
   const saveLineup = useCallback(
@@ -239,11 +290,13 @@ export const MatchesProvider = ({ children }: any) => {
         loading,
         refreshMatches: fetchMatches,
         updateMatch,
+        updateLocalMatch,
         saveMatch,
         startMatch,
         pauseMatch,
         finishMatch,
         addMatchEvent,
+        deleteMatchEvent,
         saveLineup,
       }}
     >

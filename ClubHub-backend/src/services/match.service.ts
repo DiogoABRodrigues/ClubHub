@@ -21,13 +21,13 @@ export default class MatchService {
               model: Player,
               attributes: ["id", "name", "photoUrl"],
             },
-             {
-              model: MatchEvent,
-              as: "events",
-              separate: true,
-              order: [["minute", "ASC"]],
-            },
           ],
+        },
+        {
+          model: MatchEvent,
+          as: "events",
+          separate: true,
+          order: [["minute", "ASC"]],
         },
       ],
     });
@@ -44,7 +44,25 @@ export default class MatchService {
   }
 
   async update(id: number, updates: Partial<any>) {
-    const match = await Match.findByPk(id);
+    const match = await Match.findByPk(id, {
+      include: [
+        {
+          model: Lineup,
+          include: [
+            {
+              model: Player,
+              attributes: ["id", "name", "photoUrl"],
+            },
+          ],
+        },
+        {
+          model: MatchEvent,
+          as: "events",
+          separate: true,
+          order: [["minute", "ASC"]],
+        },
+      ],
+    });
 
     if (!match) {
       throw new Error("Match not found");

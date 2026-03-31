@@ -17,6 +17,7 @@ import { ArrowUp, ArrowDown } from "lucide-react-native";
 import { usePlayers } from "../../contexts/PlayersContext";
 import { PlayerWithStats } from "../../models/Player";
 import { styles as globalStyles } from "./Stats.styles";
+import { isFieldPlayer } from "../../utils/playerPositionUtils";
 
 type SortField = "games" | "minutes" | "goals";
 type SortOrder = "asc" | "desc";
@@ -46,13 +47,7 @@ export function SquadStats() {
   }, []); // apenas na montagem
 
   // Filtra apenas jogadores, ignora staff
-  const statsPlayersOnly = useMemo(() => {
-    return players.filter(
-      (p) =>
-        p.stats.position.toLowerCase() !== "treinador" &&
-        p.stats.position.toLowerCase() !== "outros técnicos",
-    );
-  }, [players]);
+  const statsPlayersOnly = useMemo(() => { return players.filter(isFieldPlayer); }, [players]);
 
   const compareFn = useCallback(
     (a: PlayerWithStats, b: PlayerWithStats) => {

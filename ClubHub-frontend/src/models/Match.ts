@@ -1,4 +1,5 @@
 import { Lineup } from "./Lineup";
+import { MatchEvent } from "./MatchEvent";
 
 export type Match = {
   id: number;
@@ -17,7 +18,7 @@ export type Match = {
   createdAt: string;
   updatedAt: string;
   location?: string;
-  events?: JSON[];
+  events?: MatchEvent[];
   statusTime?: "1st" | "interval" | "2nd" | "extra" | "penalties";
   Lineups?: Lineup[];
 };

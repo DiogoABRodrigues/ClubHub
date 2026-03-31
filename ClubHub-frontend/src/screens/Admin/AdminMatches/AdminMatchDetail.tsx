@@ -11,7 +11,6 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import { LiveBadge } from "../../../components/LiveBadge";
 import {
   Ionicons,
-  MaterialCommunityIcons,
   FontAwesome5,
 } from "@expo/vector-icons";
 import { styles } from "../../MatchDetails/MatchDetail.styles";
@@ -26,24 +25,24 @@ import { DateTimePickerModal } from "./Components/DateTimePickerModal";
 import { AddLineupModal } from "./Components/AddLineupModal";
 import { AddEventModal } from "./Components/AddEventModal";
 import { usePlayers } from "../../../contexts/PlayersContext";
-import { mapToMainPosition } from "../../../utils/playerPositionUtils";
+import { mapToMainPosition, isFieldPlayer } from "../../../utils/playerPositionUtils";
 import { PlayerWithStats } from "../../../models/Player";
-import { createEventFromForm } from "../../../utils/events";
-import { EventForm } from "../../../utils/events";
 import { EventRow } from "../../../components/EventRow";
 import { useCompetitions } from "../../../contexts/CompetitionContext";
 import { Competition } from "../../../models/Competition";
+import { MatchEventService } from "../../../services/MatchEventService";
+import { MatchEvent } from "../../../models/MatchEvent";
 
 export const AdminMatchDetail = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { id } = route.params as { id: number };
-  const { matches, addMatchEvent, updateMatch, startMatch, finishMatch } =
+  const { matches, addMatchEvent, updateMatch, updateLocalMatch, deleteMatchEvent,startMatch, finishMatch } =
     useMatches();
   const { teams } = useTeams();
   const { getActivePlayers } = usePlayers();
 
-  const players = getActivePlayers();
+  const players = useMemo(() => getActivePlayers().filter(isFieldPlayer), [getActivePlayers]);
   const match = useMemo(() => matches.find((m) => m.id === id), [matches, id]);
 
   const { competitions } = useCompetitions();
@@ -71,16 +70,62 @@ export const AdminMatchDetail = () => {
     [teams],
   );
 
-  const handleSaveEvent = useCallback(
-    async (event: EventForm) => {
+  const handleSaveEvent = async (form: MatchEvent) => {
+    if (!match) return;
+
+    try {
+
+      if (editingEvent && editingEvent.id) {
+        // EDIT: chamar API de update do evento
+        const updatedEvent = await MatchEventService.update(editingEvent.id, form);
+        // Atualiza localmente no match
+        const updatedEvents = (match.events || []).map((e: MatchEvent) =>
+          e.id === editingEvent.id ? updatedEvent : e
+        );
+        await updateLocalMatch(match.id, {
+          ...match,
+          events: updatedEvents,
+        });
+        setEditingEvent(null);
+      } else {
+        // CREATE: adicionar na BD
+        await addMatchEvent(match.id, form);
+      }
+
+      setEditingEvent(null);
+      setShowEventModal(false);
+    } catch (err) {
+      console.error("Erro a guardar evento:", err);
+    }
+  };
+
+    const handleDeleteEvent = useCallback(
+    async (event: MatchEvent) => {
       if (!match) return;
-
-      const newEvent = createEventFromForm(event);
-
-      await addMatchEvent(match.id, newEvent);
+      Alert.alert(
+        "Apagar evento",
+        "Tens a certeza que queres apagar este evento?",
+        [
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: "Apagar",
+            style: "destructive",
+            onPress: async () => {
+              deleteMatchEvent(match.id, event);
+            },
+          },
+        ]
+      );
     },
-    [match, addMatchEvent],
+    [match, updateMatch]
   );
+  
+  const [editingEvent, setEditingEvent] = useState<MatchEvent | null>(null);
+
+  const handleEditEvent = (event: MatchEvent) => {
+    setEditingEvent(event);
+    setShowEventModal(true);
+  };
 
   const handleSaveDateTime = useCallback(
     async (date: string, time: string) => {
@@ -168,19 +213,18 @@ export const AdminMatchDetail = () => {
   });
 
   const startingPlayers = useMemo(() => {
-    if (!sortedLineup || sortedLineup.length === 0)
-      return players.slice().sort((a, b) => a.name.localeCompare(b.name));
-
+    if (!sortedLineup || sortedLineup.length === 0){
+      return players.slice().sort((a, b) => a.name.localeCompare(b.name));} 
     return sortedLineup
       .filter((l) => l.isStarting)
       .map((l) => players.find((p) => p.id === l.playerId))
       .filter((p): p is PlayerWithStats => p !== undefined)
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [sortedLineup, players]);
-
+  
   const substitutePlayers = useMemo(() => {
-    if (!sortedLineup || sortedLineup.length === 0) return [];
-
+    if (!sortedLineup || sortedLineup.length === 0){
+      return players.slice().sort((a, b) => a.name.localeCompare(b.name));} 
     return sortedLineup
       .filter((l) => !l.isStarting)
       .map((l) => players.find((p) => p.id === l.playerId))
@@ -232,11 +276,10 @@ export const AdminMatchDetail = () => {
                 <Text>Intervalo</Text>
               </View>
             )}
+          </View>
             <Text style={styles.competition}>
               {competition?.name || ""} {match.round ? `- ${match.round}` : ""}
             </Text>
-          </View>
-
           {/* Score */}
           <View style={styles.scoreCard}>
             <View style={styles.teamContainer}>
@@ -491,20 +534,11 @@ export const AdminMatchDetail = () => {
               {activeTab === "timeline" &&
                 (match.events && match.events.length > 0 ? (
                   (() => {
-                    // @ts-ignore comment
                     const sorted = [...match.events].sort(
-                      // @ts-ignore comment
                       (a, b) => a.minute - b.minute,
                     );
-                    // @ts-ignore comment
                     const firstHalf = sorted.filter((e) => e.minute <= 45);
-                    // @ts-ignore comment
                     const secondHalf = sorted.filter((e) => e.minute > 45);
-
-                    const scoreAt = (events: any[]) => {
-                      return "";
-                    };
-
                     return (
                       <>
                         {firstHalf.length > 0 && (
@@ -514,15 +548,15 @@ export const AdminMatchDetail = () => {
                                 1ª Parte
                               </Text>
                             </View>
-                            {firstHalf.map((event: any) => (
+                            {firstHalf.map((event: MatchEvent) => (
                               <EventRow
                                 key={event.id}
                                 event={event}
                                 isOurs={
-                                  isHomeGame
-                                    ? !event.isOpponent
-                                    : event.isOpponent
+                                  isHomeGame ? !event.isOpponent : event.isOpponent
                                 }
+                                onEdit={handleEditEvent}
+                                onDelete={() => handleDeleteEvent(event)}
                               />
                             ))}
                           </>
@@ -534,7 +568,7 @@ export const AdminMatchDetail = () => {
                                 2ª Parte
                               </Text>
                             </View>
-                            {secondHalf.map((event: any) => (
+                            {secondHalf.map((event: MatchEvent) => (
                               <EventRow
                                 key={event.id}
                                 event={event}
@@ -543,6 +577,8 @@ export const AdminMatchDetail = () => {
                                     ? !event.isOpponent
                                     : event.isOpponent
                                 }
+                                onEdit={handleEditEvent}
+                                onDelete={() => handleDeleteEvent(event)}
                               />
                             ))}
                           </>
@@ -671,10 +707,14 @@ export const AdminMatchDetail = () => {
 
       <AddEventModal
         visible={showEventModal}
-        onClose={() => setShowEventModal(false)}
+        onClose={() => {
+          setShowEventModal(false);
+          setEditingEvent(null);
+        }}
         onSave={handleSaveEvent}
         startingPlayers={startingPlayers}
         substitutePlayers={substitutePlayers}
+        eventToEdit={editingEvent || undefined}
       />
       <AddLineupModal
         visible={showLineupModal}

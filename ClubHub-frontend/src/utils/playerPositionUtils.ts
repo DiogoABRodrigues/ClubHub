@@ -1,3 +1,5 @@
+import { PlayerWithStats } from "../models/Player";
+
 export const POSITION_ORDER: Record<string, number> = {
   "Guarda Redes": 1,
   Defesa: 2,
@@ -21,3 +23,8 @@ export function mapToMainPosition(position: string): string {
 export function getPositionOrder(position: string): number {
   return POSITION_ORDER[mapToMainPosition(position)] ?? 99;
 }
+
+export const isFieldPlayer = (player: PlayerWithStats) => {
+  const pos = mapToMainPosition(player.stats?.position);
+  return ["Guarda Redes", "Defesa", "Médio", "Avançado"].includes(pos);
+};

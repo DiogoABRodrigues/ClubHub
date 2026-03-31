@@ -235,14 +235,11 @@ export const MatchDetail = () => {
               (() => {
                 
                 const sorted = [...match.events].sort(
-                  // @ts-ignore comment
                   (a, b) => a.minute - b.minute,
                 );
 
                 // agrupa por 1ª/2ª parte
-                // @ts-ignore comment
                 const firstHalf = sorted.filter((e) => e.minute <= 45);
-                // @ts-ignore comment
                 const secondHalf = sorted.filter((e) => e.minute > 45);
 
 

@@ -19,7 +19,7 @@ import { adminStyles } from "../AdminMatchDetail.styles";
 import { usePlayers } from "../../../../contexts/PlayersContext";
 import { Player } from "../../../../models/Player";
 import { useMatches } from "../../../../contexts/MatchesContext";
-import { mapToMainPosition } from "../../../../utils/playerPositionUtils";
+import { isFieldPlayer } from "../../../../utils/playerPositionUtils";
 import { Lineup } from "../../../../models/Lineup";
 
 interface Props {
@@ -126,12 +126,7 @@ export const AddLineupModal = ({
     );
   }, [visible, existingLineup]);
 
-  const eligiblePlayers = useMemo(() => {
-    const excluded = ["Treinador", "Outros Técnicos"];
-    return players.filter(
-      (p) => !excluded.includes(mapToMainPosition(p.stats?.position || "")),
-    );
-  }, [players]);
+  const eligiblePlayers = useMemo(() => { return players.filter(isFieldPlayer)}, [players]);
 
   const filteredPlayers = useMemo(() => {
     const q = search.toLowerCase();
