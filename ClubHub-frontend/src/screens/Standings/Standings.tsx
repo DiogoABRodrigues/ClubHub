@@ -1,100 +1,100 @@
-import React, { useMemo } from "react";
-import { ScrollView, View, Text, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
+import React, { useMemo, useCallback } from "react";
+import { View, Text, FlatList } from "react-native";
+import { useStandings } from "../../contexts/StandingsContext";
 import { LeagueTableRow } from "../../components/LeagueTableRow";
 import { styles } from "./Standings.styles";
-import { useStandings } from "../../contexts/StandingsContext";
+
+const GREEN_ZONE = 2;
+const RED_ZONE = 19;
 
 export const Standings: React.FC = () => {
-  const navigation = useNavigation();
   const { standings, loading } = useStandings();
 
-  // garante ordenação por posição
-  const sorted = useMemo(
-    () => standings.slice().sort((a, b) => a.position - b.position),
-    [standings]
-  );
+  const sorted = useMemo(() => {
+    const arr = standings ? [...standings] : [];
+    arr.sort((a, b) => a.position - b.position);
+    return arr;
+  }, [standings]);
+
+const renderItem = useCallback(
+  ({ item }: { item: any }) => (
+    <LeagueTableRow
+      standing={item}
+      green={GREEN_ZONE}
+      red={RED_ZONE}
+    />
+  ),
+  []
+);
+
+  const keyExtractor = useCallback((item: any) => item.id, []);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ textAlign: "center", marginTop: 50 }}>
+          A carregar classificação...
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <ScrollView contentContainerStyle={styles.content}>
-        {loading ? (
-          <Text style={{ textAlign: "center", marginTop: 50 }}>
-            A carregar classificação...
-          </Text>
-        ) : sorted.length > 0 ? (
-          <View style={styles.section}>
-            {/* Table */}
-            <View style={styles.table}>
-              <View style={styles.tableHeader}>
-                <Text style={[styles.tableCell, styles.col1]}>#</Text>
-                <Text style={[styles.tableCell, styles.col5]}>Equipa</Text>
-                <Text
-                  style={[styles.tableCell, styles.col2, styles.centerText]}
-                >
-                  J
-                </Text>
-                <Text
-                  style={[styles.tableCell, styles.col2, styles.centerText]}
-                >
-                  DG
-                </Text>
-                <Text style={[styles.tableCell, styles.col2, styles.rightText]}>
-                  PTS
-                </Text>
-              </View>
+      <FlatList
+        data={sorted}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        ListHeaderComponent={
+          <View>
+            {/* TABLE HEADER (UI igual ao teu original) */}
+            <View style={styles.tableHeader}>
+              <Text style={[styles.tableCell, styles.col1]}>#</Text>
+              <Text style={[styles.tableCell, styles.col5]}>Equipa</Text>
+              <Text style={[styles.tableCell, styles.col2, styles.centerText]}>
+                J
+              </Text>
+              <Text style={[styles.tableCell, styles.col2, styles.centerText]}>
+                DG
+              </Text>
+              <Text style={[styles.tableCell, styles.col2, styles.rightText]}>
+                PTS
+              </Text>
+            </View>
+          </View>
+        }
+        ListFooterComponent={
+          <View style={styles.legend}>
+            <Text style={styles.legendTitle}>Legenda</Text>
 
-              {sorted.map((standing) => (
-                <LeagueTableRow
-                  key={standing.id}
-                  standing={standing}
-                  green={2}
-                  red={19}
+            <View style={styles.legendItems}>
+              <View style={styles.legendItem}>
+                <View
+                  style={[styles.legendColor, { backgroundColor: "#47d406" }]}
                 />
-              ))}
-            </View>
+                <Text style={styles.legendText}>
+                  Campeão - Promoção à 1ª Divisão Sabseg
+                </Text>
+              </View>
 
-            {/* Legend */}
-            <View style={styles.legend}>
-              <Text style={styles.legendTitle}>Legenda</Text>
-              <View style={styles.legendItems}>
-                <View style={styles.legendItem}>
-                  <View
-                    style={[styles.legendColor, { backgroundColor: "#47d406" }]}
-                  />
-                  <Text style={styles.legendText}>
-                    Campeão - Promoção à 1ª Divisão Sabseg
-                  </Text>
-                </View>
-                <View style={styles.legendItem}>
-                  <View
-                    style={[styles.legendColor, { backgroundColor: "#0ee950" }]}
-                  />
-                  <Text style={styles.legendText}>
-                    Promoção à 1ª Divisão Sabseg
-                  </Text>
-                </View>
-                {/*
-                <View style={styles.legendItem}>
-                  <View style={[styles.legendColor, { backgroundColor: '#ef4444' }]} />
-                  <Text style={styles.legendText}>Zona de Descida</Text>
-                </View>*/}
+              <View style={styles.legendItem}>
+                <View
+                  style={[styles.legendColor, { backgroundColor: "#0ee950" }]}
+                />
+                <Text style={styles.legendText}>
+                  Promoção à 1ª Divisão Sabseg
+                </Text>
               </View>
             </View>
           </View>
-        ) : (
-          <View style={styles.noMatches}>
-            <View style={styles.logoCircle}>
-              <Text style={styles.logoEmoji}>🏆</Text>
-            </View>
-            <Text style={styles.noMatchesText}>
-              Não há classificação disponível
-            </Text>
-          </View>
-        )}
-      </ScrollView>
+        }
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        initialNumToRender={15}
+        maxToRenderPerBatch={15}
+        windowSize={5}
+        removeClippedSubviews
+      />
     </View>
   );
 };

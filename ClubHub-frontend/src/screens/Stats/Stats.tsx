@@ -54,7 +54,7 @@ export function SquadStats() {
 
   const statsSortedPlayers = useMemo(() => {
     const arr = [...statsPlayersOnly];
-
+    console.log("Sorting players by", statsPlayersOnly);
     arr.sort((a, b) => {
       let valA = 0;
       let valB = 0;
@@ -75,29 +75,6 @@ export function SquadStats() {
 
     return arr;
   }, [statsPlayersOnly, sortField, sortOrder]);
-
-  const compareFn = useCallback(
-    (a: PlayerWithStats, b: PlayerWithStats) => {
-      let valA = 0,
-        valB = 0;
-      switch (sortField) {
-        case "games":
-          valA = a.stats.gamesPlayed;
-          valB = b.stats.gamesPlayed;
-          break;
-        case "minutes":
-          valA = a.stats.minutesPlayed;
-          valB = b.stats.minutesPlayed;
-          break;
-        case "goals":
-          valA = a.stats.goals;
-          valB = b.stats.goals;
-          break;
-      }
-      return sortOrder === "desc" ? valB - valA : valA - valB;
-    },
-    [sortField, sortOrder],
-  );
 
   const handleSort = useCallback(
     (field: SortField) => {

@@ -1,5 +1,6 @@
-import React, { useMemo } from "react";
-import { View, Text, ScrollView, Image } from "react-native";
+import React, { useMemo, useCallback } from "react";
+import { View, Text, Image } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import { usePlayers } from "../../contexts/PlayersContext";
 import { PlayerWithStats } from "../../models/Player";
 import { styles as globalStyles } from "./Squad.styles";
@@ -7,6 +8,7 @@ import { getPositionOrder } from "../../utils/playerPositionUtils";
 
 const defaultPlayerImage = require("../../../assets/player.jpg");
 
+/* ---------------- POSITION MAP ---------------- */
 const mapToMainPosition = (position: string) => {
   const pos = position?.toLowerCase() || "";
   if (pos === "guarda redes") return "Guarda Redes";
@@ -18,26 +20,59 @@ const mapToMainPosition = (position: string) => {
   return "Médio";
 };
 
+/* ---------------- CARD MEMO ---------------- */
+const PlayerCard = React.memo(({ player }: { player: PlayerWithStats }) => {
+  return (
+    <View style={{ width: "48%", marginVertical: 4 }}>
+      <View style={globalStyles.card}>
+        <View style={globalStyles.playerPhotoWrapper}>
+          <Image
+            source={
+              player.photoUrl
+                ? { uri: player.photoUrl }
+                : defaultPlayerImage
+            }
+            style={globalStyles.statsPhoto}
+            resizeMode="contain"
+          />
+        </View>
+
+        <Text style={globalStyles.playerName} numberOfLines={1}>
+          {player.name}
+        </Text>
+
+        <View style={globalStyles.playerInfoRow}>
+          {player.age && <Text>{player.age} anos</Text>}
+        </View>
+      </View>
+    </View>
+  );
+});
+
+/* ---------------- SCREEN ---------------- */
 export function SquadScreen() {
   const { getActivePlayers } = usePlayers();
   const activePlayers = getActivePlayers();
 
+  /* SORT ONCE */
   const sortedPlayers = useMemo(() => {
     return [...activePlayers].sort((a, b) => {
       const posA = getPositionOrder(a.stats?.position || "");
       const posB = getPositionOrder(b.stats?.position || "");
+
       if (posA !== posB) return posA - posB;
-      return (a.stats.number || 0) - (b.stats.number || 0);
+      return (a.stats?.number || 0) - (b.stats?.number || 0);
     });
   }, [activePlayers]);
 
-  const groupedByPosition = useMemo(() => {
+  /* GROUP ONCE */
+  const grouped = useMemo(() => {
     const groups: Record<string, PlayerWithStats[]> = {};
 
-    for (const player of sortedPlayers) {
-      const pos = mapToMainPosition(player.stats?.position || "");
-      if (!groups[pos]) groups[pos] = [];
-      groups[pos].push(player);
+    for (const p of sortedPlayers) {
+      const key = mapToMainPosition(p.stats?.position || "");
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(p);
     }
 
     return Object.entries(groups).map(([position, players]) => ({
@@ -46,41 +81,45 @@ export function SquadScreen() {
     }));
   }, [sortedPlayers]);
 
-  return (
-    <ScrollView contentContainerStyle={globalStyles.squadList}>
-      {groupedByPosition.map((group) => (
-        <View key={group.position} style={{ marginBottom: 16 }}>
-          <View style={globalStyles.positionHeader}>
-            <Text style={globalStyles.positionHeaderText}>
-              {group.position}
-            </Text>
-          </View>
+  /* FLATTEN FOR VIRTUAL LIST */
+  const data = useMemo(() => {
+    const result: any[] = [];
 
-          <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
-            {group.players.map((player) => (
-              <View key={player.id} style={{ width: "48%", marginVertical: 4 }}>
-                <View style={globalStyles.card}>
-                  <View style={globalStyles.playerPhotoWrapper}>
-                    <Image
-                      source={player.photoUrl ? { uri: player.photoUrl } : defaultPlayerImage}
-                      style={globalStyles.statsPhoto}
-                      resizeMode="contain"
-                    />
-                  </View>
+    grouped.forEach((group) => {
+      result.push({ type: "header", position: group.position });
 
-                  <Text style={globalStyles.playerName} numberOfLines={1}>
-                    {player.name}
-                  </Text>
+      group.players.forEach((p) => {
+        result.push({ type: "player", player: p });
+      });
+    });
 
-                  <View style={globalStyles.playerInfoRow}>
-                    {player.age && <Text>{player.age} anos</Text>}
-                  </View>
-                </View>
-              </View>
-            ))}
-          </View>
+    return result;
+  }, [grouped]);
+
+  const renderItem = useCallback(({ item }: any) => {
+    if (item.type === "header") {
+      return (
+        <View style={globalStyles.positionHeader}>
+          <Text style={globalStyles.positionHeaderText}>
+            {item.position}
+          </Text>
         </View>
-      ))}
-    </ScrollView>
+      );
+    }
+
+    return <PlayerCard player={item.player} />;
+  }, []);
+
+  return (
+    <FlashList
+      data={data}
+      renderItem={renderItem}
+      keyExtractor={(item, index) =>
+        item.type === "header"
+          ? `h-${item.position}-${index}`
+          : item.player.id
+      }
+      contentContainerStyle={globalStyles.squadList}
+    />
   );
 }

@@ -1,163 +1,152 @@
 import React, { useCallback, useMemo } from "react";
-import { View, Text, ScrollView, Image, Switch, Alert } from "react-native";
+import { View, Text, Image, Switch, Alert } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import { usePlayers } from "../../../contexts/PlayersContext";
 import { PlayerWithStats } from "../../../models/Player";
-import { styles as globalStyles } from "../../Squad/Squad.styles";
-import {
-  mapToMainPosition,
-  getPositionOrder,
-} from "../../../utils/playerPositionUtils";
+import { styles } from "../../Squad/Squad.styles";
+import { mapToMainPosition, getPositionOrder } from "../../../utils/playerPositionUtils";
 
+const defaultPlayerImage = require("../../../../assets/player.jpg");
+
+/* ------------------ ROW MEMO ------------------ */
+const PlayerCard = React.memo(
+  ({
+    player,
+    onToggle,
+  }: {
+    player: PlayerWithStats;
+    onToggle: (p: PlayerWithStats) => void;
+  }) => {
+    return (
+      <View style={{ width: "48%", marginVertical: 6 }}>
+        <View style={[styles.card, !player.stillOnTeam && { opacity: 0.4 }]}>
+          <View style={styles.playerPhotoWrapper}>
+            <Image
+              source={
+                player.photoUrl
+                  ? { uri: player.photoUrl }
+                  : defaultPlayerImage
+              }
+              style={styles.statsPhoto}
+              resizeMode="contain"
+            />
+          </View>
+
+          {!player.stillOnTeam && (
+            <View style={{ position: "absolute", top: 6, right: 6 }}>
+              <Text style={{ color: "white", fontSize: 10 }}>INATIVO</Text>
+            </View>
+          )}
+
+          <Text style={styles.playerName}>{player.name}</Text>
+
+          <Switch
+            value={!!player.stillOnTeam}
+            onValueChange={() => onToggle(player)}
+          />
+        </View>
+      </View>
+    );
+  }
+);
+
+/* ------------------ SCREEN ------------------ */
 export function AdminSquadScreen() {
   const { players, updatePlayer } = usePlayers();
 
+  /* SORT ONCE */
   const sortedPlayers = useMemo(() => {
     return [...players].sort((a, b) => {
       const posA = getPositionOrder(a.stats?.position || "");
       const posB = getPositionOrder(b.stats?.position || "");
+
       if (posA !== posB) return posA - posB;
-      return (a.stats.number || 0) - (b.stats.number || 0);
+      return (a.stats?.number || 0) - (b.stats?.number || 0);
     });
   }, [players]);
 
-  const groupedByPosition = useMemo(() => {
-    const groups: { position: string; players: PlayerWithStats[] }[] = [];
-    let currentPos: string | null = null;
-    let currentGroup: PlayerWithStats[] = [];
+  /* GROUPING (stable reference) */
+  const groupedData = useMemo(() => {
+    const groups: Record<string, PlayerWithStats[]> = {};
 
-    for (const player of sortedPlayers) {
-      const pos = mapToMainPosition(player.stats?.position || "");
-
-      if (pos !== currentPos) {
-        if (currentGroup.length)
-          groups.push({ position: currentPos!, players: currentGroup });
-
-        currentPos = pos;
-        currentGroup = [];
-      }
-
-      currentGroup.push(player);
+    for (const p of sortedPlayers) {
+      const key = mapToMainPosition(p.stats?.position || "");
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(p);
     }
 
-    if (currentGroup.length)
-      groups.push({ position: currentPos!, players: currentGroup });
-
-    return groups;
+    return Object.entries(groups).map(([position, players]) => ({
+      position,
+      players,
+    }));
   }, [sortedPlayers]);
 
-  const handleToggleStillOnTeam = useCallback((player: PlayerWithStats) => {
-    const newValue = !player.stillOnTeam;
+  /* flatten for FlashList (NO UI CHANGE) */
+  const flashData = useMemo(() => {
+    const result: any[] = [];
 
-    Alert.alert(
-      "Alterar estado",
-      `${player.name} ${newValue ? "volta para a equipa" : "sai da equipa"}?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Confirmar",
-          onPress: () => {
-            updatePlayer(player.id, { stillOnTeam: newValue });
+    groupedData.forEach((group) => {
+      result.push({ type: "header", position: group.position });
+
+      group.players.forEach((player) => {
+        result.push({ type: "player", player });
+      });
+    });
+
+    return result;
+  }, [groupedData]);
+
+  /* stable toggle */
+  const handleToggle = useCallback(
+    (player: PlayerWithStats) => {
+      const newValue = !player.stillOnTeam;
+
+      Alert.alert(
+        "Alterar estado",
+        `${player.name} ${
+          newValue ? "volta para a equipa" : "sai da equipa"
+        }?`,
+        [
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: "Confirmar",
+            onPress: () =>
+              updatePlayer(player.id, { stillOnTeam: newValue }),
           },
-        },
-      ],
-    );
-  }, []);
+        ]
+      );
+    },
+    [updatePlayer]
+  );
 
-  const defaultPlayerImage = require("../../../../assets/player.jpg");
+  /* render item (FLASHLIST) */
+  const renderItem = useCallback(
+    ({ item }: any) => {
+      if (item.type === "header") {
+        return (
+          <Text style={styles.positionHeaderText}>
+            {item.position}
+          </Text>
+        );
+      }
+
+      return (
+        <PlayerCard player={item.player} onToggle={handleToggle} />
+      );
+    },
+    [handleToggle]
+  );
 
   return (
-    <ScrollView contentContainerStyle={globalStyles.squadList}>
-      {groupedByPosition.map((group) => (
-        <View key={group.position} style={{ marginBottom: 16 }}>
-          <View style={globalStyles.positionHeader}>
-            <Text style={globalStyles.positionHeaderText}>
-              {group.position}
-            </Text>
-          </View>
-
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              justifyContent: "space-between",
-            }}
-          >
-            {group.players.map((player) => (
-              <View key={player.id} style={{ width: "48%", marginVertical: 6 }}>
-                <View
-                  style={[
-                    globalStyles.card,
-                    !player.stillOnTeam && { opacity: 0.4 },
-                  ]}
-                >
-                  {/* FOTO */}
-                  <View style={globalStyles.playerPhotoWrapper}>
-                    <Image
-                      source={
-                        player.photoUrl
-                          ? { uri: player.photoUrl }
-                          : defaultPlayerImage
-                      }
-                      style={globalStyles.statsPhoto}
-                      resizeMode="contain"
-                    />
-                  </View>
-
-                  {/* BADGE INATIVO */}
-                  {!player.stillOnTeam && (
-                    <View
-                      style={{
-                        position: "absolute",
-                        top: 6,
-                        right: 6,
-                        backgroundColor: "#e74c3c",
-                        paddingHorizontal: 6,
-                        paddingVertical: 2,
-                        borderRadius: 4,
-                      }}
-                    >
-                      <Text style={{ color: "white", fontSize: 10 }}>
-                        INATIVO
-                      </Text>
-                    </View>
-                  )}
-
-                  {/* NOME */}
-                  <Text
-                    style={globalStyles.playerName}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {player.name}
-                  </Text>
-
-                  {/* IDADE */}
-                  <View style={globalStyles.playerInfoRow}>
-                    {player.age && <Text>{player.age} anos</Text>}
-                  </View>
-
-                  {/* SWITCH */}
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginTop: 6,
-                    }}
-                  >
-                    <Text style={{ fontSize: 12 }}>Na equipa</Text>
-
-                    <Switch
-                      value={!!player.stillOnTeam}
-                      onValueChange={() => handleToggleStillOnTeam(player)}
-                    />
-                  </View>
-                </View>
-              </View>
-            ))}
-          </View>
-        </View>
-      ))}
-    </ScrollView>
+    <FlashList
+      data={flashData}
+      renderItem={renderItem}
+      keyExtractor={(item, index) =>
+        item.type === "header"
+          ? `h-${item.position}-${index}`
+          : item.player.id
+      }
+      contentContainerStyle={styles.squadList}
+    />
   );
 }
