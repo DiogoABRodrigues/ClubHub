@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { styles } from "./Home.styles";
-import { useStatements } from "../../contexts/StatementContext";
+import { useStatements } from "../../hooks/useStatements";
 
 import { MatchCard } from "../../components/MatchCard";
 
@@ -9,12 +9,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../../theme/colors";
 
 import { useMatches } from "../../hooks/useMatches";
-import { useTeams } from "../../contexts/TeamsContext";
+import { useTeams } from "../../hooks/useTeams";
 import { Image } from "react-native";
 
-import { useNews } from "../../contexts/NewsContext";
+import { useNews } from "../../hooks/useNews";
 import { formatDatePT } from "../../utils/dateUtils";
-import { useCompetitions } from "../../contexts/CompetitionContext";
+import { useCompetitions } from "../../hooks/useCompetitions";
 
 import { RefreshControl } from "react-native";
 

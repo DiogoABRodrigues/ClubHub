@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./NewsDetail.styles";
 import { COLORS } from "../../theme/colors";
-import { useNews } from "../../contexts/NewsContext";
+import { useNews } from "../../hooks/useNews";
 import { formatDatePT } from "../../utils/dateUtils";
 
 export const NewsDetail = ({ route, navigation }: any) => {

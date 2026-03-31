@@ -2,26 +2,15 @@ import React, { useMemo, useCallback } from "react";
 import { View, Text, Image } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { usePlayers } from "../../hooks/usePlayers";
-import { PlayerWithStats } from "../../models/Player";
+import { Player } from "../../models/Player";
 import { styles as globalStyles } from "./Squad.styles";
 import { getPositionOrder } from "../../utils/playerPositionUtils";
+import { mapToMainPosition } from "../../utils/playerPositionUtils";
 
 const defaultPlayerImage = require("../../../assets/player.jpg");
 
-/* ---------------- POSITION MAP ---------------- */
-const mapToMainPosition = (position: string) => {
-  const pos = position?.toLowerCase() || "";
-  if (pos === "guarda redes") return "Guarda Redes";
-  if (["rb", "cb", "lb", "defesa"].includes(pos)) return "Defesa";
-  if (["cm", "cam", "médio"].includes(pos)) return "Médio";
-  if (["rw", "lw", "st", "avançado"].includes(pos)) return "Avançado";
-  if (pos === "treinador") return "Treinador";
-  if (pos === "outros técnicos") return "Outros Técnicos";
-  return "Médio";
-};
-
 /* ---------------- CARD MEMO ---------------- */
-const PlayerCard = React.memo(({ player }: { player: PlayerWithStats }) => {
+const PlayerCard = React.memo(({ player }: { player: Player }) => {
   return (
     <View style={{ width: "48%", marginVertical: 4 }}>
       <View style={globalStyles.card}>
@@ -56,21 +45,29 @@ export function SquadScreen() {
 
   /* SORT ONCE */
   const sortedPlayers = useMemo(() => {
-    return [...activePlayers].sort((a, b) => {
-      const posA = getPositionOrder(a.stats?.position || "");
-      const posB = getPositionOrder(b.stats?.position || "");
+  const sorted = [...activePlayers].sort((a, b) => {
+    const posA = getPositionOrder(a.Stats?.[0]?.position || "");
+    const posB = getPositionOrder(b.Stats?.[0]?.position || "");
 
-      if (posA !== posB) return posA - posB;
-      return (a.stats?.number || 0) - (b.stats?.number || 0);
-    });
-  }, [activePlayers]);
+    if (posA !== posB) return posA - posB;
+    return (a.Stats?.[0]?.number || 0) - (b.Stats?.[0]?.number || 0);
+  });
+
+  return sorted;
+}, [activePlayers]);
 
   /* GROUP ONCE */
   const grouped = useMemo(() => {
-    const groups: Record<string, PlayerWithStats[]> = {};
+
+for (const p of sortedPlayers) {
+  const raw = p.Stats?.[0]?.position || "";
+  const mapped = mapToMainPosition(raw);
+
+}
+    const groups: Record<string, Player[]> = {};
 
     for (const p of sortedPlayers) {
-      const key = mapToMainPosition(p.stats?.position || "");
+      const key = mapToMainPosition(p.Stats?.[0]?.position || "");
       if (!groups[key]) groups[key] = [];
       groups[key].push(p);
     }

@@ -17,7 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../../../../theme/colors";
 import { adminStyles } from "../AdminMatchDetail.styles";
 import { eventStyles } from "../../../MatchDetails/MatchDetail.styles";
-import { Player, PlayerWithStats } from "../../../../models/Player";
+import { Player } from "../../../../models/Player";
 import { MatchEvent, MatchEventType } from "../../../../models/MatchEvent";
 
 /* ───────── EMPTY FORM ───────── */

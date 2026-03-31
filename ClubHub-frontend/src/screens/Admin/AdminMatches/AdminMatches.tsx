@@ -10,8 +10,8 @@ import { styles } from "./AdminMatches.styles";
 import { MatchCard } from "../../../components/MatchCard";
 import { COLORS } from "../../../theme/colors";
 import { useMatches } from "../../../hooks/useMatches";
-import { useTeams } from "../../../contexts/TeamsContext";
-import { useCompetitions } from "../../../contexts/CompetitionContext";
+import { useTeams } from "../../../hooks/useTeams";
+import { useCompetitions } from "../../../hooks/useCompetitions";
 import Ionicons from "@expo/vector-icons/build/Ionicons";
 
 export const AdminMatches: React.FC = ({ navigation }: any) => {

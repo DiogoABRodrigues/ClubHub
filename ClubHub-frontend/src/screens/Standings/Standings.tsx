@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback } from "react";
 import { View, Text, FlatList } from "react-native";
-import { useStandings } from "../../contexts/StandingsContext";
+import { useStandings } from "../../hooks/useStandings";
 import { LeagueTableRow } from "../../components/LeagueTableRow";
 import { styles } from "./Standings.styles";
 

@@ -13,7 +13,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { adminStyles } from "../screens/Admin/AdminMatches/AdminMatchDetail.styles";
 import { COLORS } from "../theme/colors";
-import { useStatements } from "../contexts/StatementContext";
+import { useStatements } from "../hooks/useStatements";
 import { DateTimePickerModal } from "../screens/Admin/AdminMatches/Components/DateTimePickerModal";
 
 interface Props {
@@ -67,10 +67,13 @@ export const StatementModal = ({ visible, onClose }: Props) => {
 
     try {
       if (activeStatement) {
-        await updateStatement(activeStatement.id, {
-          title,
-          message: content,
-          dateToExpire,
+        await updateStatement({
+          id: activeStatement.id,
+          updates: {
+            title,
+            message: content,
+            dateToExpire,
+          },
         });
       } else {
         await createStatement({
@@ -96,7 +99,12 @@ export const StatementModal = ({ visible, onClose }: Props) => {
           text: "Eliminar",
           style: "destructive",
           onPress: async () => {
-            await deleteStatement(activeStatement.id, { dateToExpire: new Date(Date.now() - 1) });
+            await deleteStatement({
+              id: activeStatement.id,
+              updates: {
+                dateToExpire: new Date(Date.now() - 1),
+              },
+            });
             onClose();
           },
         },

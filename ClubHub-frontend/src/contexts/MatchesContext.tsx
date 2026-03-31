@@ -61,10 +61,6 @@ export const MatchesProvider = ({ children }: any) => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Tick a cada 30s para re-render quando há jogo live (atualiza o minuto)
-  const [, setTick] = useState(0);
-  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
   // ─── Fetch ──────────────────────────────────────────────────────────────────
 
   const fetchMatches = useCallback(async () => {
@@ -87,24 +83,6 @@ export const MatchesProvider = ({ children }: any) => {
   }, [fetchMatches]);
 
   // ─── Timer local (só ativo quando há jogo live) ──────────────────────────────
-
-  useEffect(() => {
-    const hasLive = matches.some((m) => m.status === "live");
-
-    if (hasLive && !tickRef.current) {
-      tickRef.current = setInterval(() => setTick((t) => t + 1), 30_000);
-    } else if (!hasLive && tickRef.current) {
-      clearInterval(tickRef.current);
-      tickRef.current = null;
-    }
-
-    return () => {
-      if (tickRef.current) {
-        clearInterval(tickRef.current);
-        tickRef.current = null;
-      }
-    };
-  }, [matches]);
 
   const updateLocalMatch = useCallback((id: number, updatedMatch: Match) => {
     setMatches((prev) =>

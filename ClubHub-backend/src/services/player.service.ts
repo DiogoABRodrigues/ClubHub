@@ -1,5 +1,6 @@
 import Player from "../models/Player";
 import Squad from "../models/Squad";
+import Stats from "../models/Stats";
 
 export default class PlayerService {
   async getAll() {
@@ -9,18 +10,29 @@ export default class PlayerService {
   async getBySeasonId(seasonId: number) {
     const squad = await Squad.findAll({ where: { seasonId } });
     const externalIds = squad.map((s) => s.playerExternalId);
-    return Player.findAll({ where: { externalId: externalIds } });
+    return Player.findAll({ where: { externalId: externalIds }, include: [
+        {
+          model: Stats,
+          where: { seasonId },
+          required: false,
+        },
+      ] });
   }
 
   async getByCurrentSeasonId() {
     const squad = await Squad.findAll({ order: [["seasonId", "DESC"]] });
     if (!squad.length) return [];
-
+    const seasonId = squad[0].seasonId;
     const externalIds = squad.map((s) => s.playerExternalId);
 
     const players = await Player.findAll({
-      where: { externalId: externalIds },
-    });
+      where: { externalId: externalIds }, include: [
+        {
+          model: Stats,
+          where: { seasonId },
+          required: false,
+        },
+      ] });
     return players;
   }
 

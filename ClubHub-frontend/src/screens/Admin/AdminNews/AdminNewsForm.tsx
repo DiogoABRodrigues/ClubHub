@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../../../theme/colors";
-import { useNews } from "../../../contexts/NewsContext";
+import { useNews } from "../../../hooks/useNews";
 import * as ImagePicker from "expo-image-picker";
 import { styles } from "./AdminNewsForm.styles";
 
@@ -91,11 +91,18 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
         // Para edição, verifica se a imagem foi alterada
         const imageUri =
           form.image !== existingNews?.image ? form.image : undefined;
-        await updateNews(editId, form, imageUri);
+        await updateNews({
+          id: editId,
+          news: form,
+          imageUri,
+        });
       } else {
         // Para criação
         const imageUri = form.image || undefined;
-        await createNews(form, imageUri);
+        await createNews({
+          news: form,
+          imageUri,
+        });
       }
       navigation.goBack();
     } catch (e) {

@@ -6,7 +6,7 @@ import { styles } from "./Season.styles";
 import { SquadScreen } from "../Squad/Squad";
 import { Standings } from "../Standings/Standings";
 import { SquadStats } from "../Stats/Stats";
-import { useSeasons } from "../../contexts/SeasonContext";
+import { useSeasons } from "../../hooks/useSeasons";
 
 type SeasonTab = "standings" | "squad" | "stats";
 

@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import { View, Text, Image, Switch, Alert } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { usePlayers } from "../../../hooks/usePlayers";
-import { PlayerWithStats } from "../../../models/Player";
+import { Player } from "../../../models/Player";
 import { styles } from "../../Squad/Squad.styles";
 import { mapToMainPosition, getPositionOrder } from "../../../utils/playerPositionUtils";
 
@@ -14,8 +14,8 @@ const PlayerCard = React.memo(
     player,
     onToggle,
   }: {
-    player: PlayerWithStats;
-    onToggle: (p: PlayerWithStats) => void;
+    player: Player;
+    onToggle: (p: Player) => void;
   }) => {
     return (
       <View style={{ width: "48%", marginVertical: 6 }}>
@@ -57,20 +57,20 @@ export function AdminSquadScreen() {
   /* SORT ONCE */
   const sortedPlayers = useMemo(() => {
     return [...players].sort((a, b) => {
-      const posA = getPositionOrder(a.stats?.position || "");
-      const posB = getPositionOrder(b.stats?.position || "");
+      const posA = getPositionOrder(a.Stats?.[0]?.position || "");
+      const posB = getPositionOrder(b.Stats?.[0]?.position || "");
 
       if (posA !== posB) return posA - posB;
-      return (a.stats?.number || 0) - (b.stats?.number || 0);
+      return (a.Stats?.[0]?.number || 0) - (b.Stats?.[0]?.number || 0);
     });
   }, [players]);
 
   /* GROUPING (stable reference) */
   const groupedData = useMemo(() => {
-    const groups: Record<string, PlayerWithStats[]> = {};
+    const groups: Record<string, Player[]> = {};
 
     for (const p of sortedPlayers) {
-      const key = mapToMainPosition(p.stats?.position || "");
+      const key = mapToMainPosition(p.Stats?.[0]?.position || "");
       if (!groups[key]) groups[key] = [];
       groups[key].push(p);
     }
@@ -98,7 +98,7 @@ export function AdminSquadScreen() {
 
   /* stable toggle */
   const handleToggle = useCallback(
-    (player: PlayerWithStats) => {
+    (player: Player) => {
       const newValue = !player.stillOnTeam;
 
       Alert.alert(

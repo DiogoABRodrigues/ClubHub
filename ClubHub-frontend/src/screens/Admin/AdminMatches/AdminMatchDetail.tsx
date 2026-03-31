@@ -16,7 +16,7 @@ import {
 } from "@expo/vector-icons";
 import { styles } from "../../MatchDetails/MatchDetail.styles";
 import { useMatches } from "../../../hooks/useMatches";
-import { useTeams } from "../../../contexts/TeamsContext";
+import { useTeams } from "../../../hooks/useTeams";
 import { formatDateWithWeekdayPT } from "../../../utils/dateUtils";
 import { teamConfig } from "../../../config/teamConfig";
 import { adminStyles } from "./AdminMatchDetail.styles";
@@ -27,9 +27,9 @@ import { AddLineupModal } from "./Components/AddLineupModal";
 import { AddEventModal } from "./Components/AddEventModal";
 import { usePlayers } from "../../../hooks/usePlayers";
 import { isFieldPlayer } from "../../../utils/playerPositionUtils";
-import { PlayerWithStats } from "../../../models/Player";
+import { Player } from "../../../models/Player";
 import { EventRow } from "../../../components/EventRow";
-import { useCompetitions } from "../../../contexts/CompetitionContext";
+import { useCompetitions } from "../../../hooks/useCompetitions";
 import { Competition } from "../../../models/Competition";
 import { MatchEventService } from "../../../services/MatchEventService";
 import { MatchEvent } from "../../../models/MatchEvent";
@@ -38,7 +38,7 @@ export const AdminMatchDetail = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { id } = route.params as { id: number };
-  const { matches, refreshMatches, addMatchEvent, updateMatch, updateLocalMatch, deleteMatchEvent,startMatch, finishMatch } =
+  const { matches, refreshMatches, addMatchEvent, updateMatch, deleteMatchEvent,startMatch, finishMatch } =
     useMatches();
   const { teams, refreshTeams } = useTeams();
   const { getActivePlayers, refreshPlayers } = usePlayers();
@@ -48,7 +48,7 @@ export const AdminMatchDetail = () => {
   }, [getActivePlayers, refreshPlayers]);
 
   const playersMap = useMemo(() => {
-    const map = new Map<string, PlayerWithStats>();
+    const map = new Map<string, Player>();
     for (const p of players) {
       map.set(String(p.id), p);
     }
@@ -123,10 +123,7 @@ export const AdminMatchDetail = () => {
         const updatedEvents = (match.events || []).map((e: MatchEvent) =>
           e.id === editingEvent.id ? updatedEvent : e
         );
-        await updateLocalMatch(match.id, {
-          ...match,
-          events: updatedEvents,
-        });
+
         setEditingEvent(null);
       } else {
         // CREATE: adicionar na BD
@@ -169,11 +166,17 @@ export const AdminMatchDetail = () => {
   }, []);
 
   const handleSaveDateTime = useCallback(async (date: string, time: string) => {
-    await updateMatch(match.id, { date, time });
+    await updateMatch({
+      id: match.id,
+      data: { date, time }
+    });
   }, [match.id, updateMatch]);
 
   const handleSaveLocation = useCallback(async (location: string) => {
-    await updateMatch(match.id, { location });
+   updateMatch({
+      id: match.id,
+      data: { location }
+    })
   }, [match.id, updateMatch]);
 
   const handleFinishMatch = useCallback(() => {
@@ -220,14 +223,14 @@ export const AdminMatchDetail = () => {
     if (!match.Lineups) return [];
 
     return [...match.Lineups].sort((a, b) => {
-      const aPos = playersMap.get(String(a.playerId))?.stats?.position ?? "";
-      const bPos = playersMap.get(String(b.playerId))?.stats?.position ?? "";
+      const aPos = playersMap.get(String(a.playerId))?.Stats?.position ?? "";
+      const bPos = playersMap.get(String(b.playerId))?.Stats?.position ?? "";
       return aPos.localeCompare(bPos);
     });
   }, [match.Lineups, playersMap]);
 
   const playerById = useMemo(() => {
-    const map = new Map<string, PlayerWithStats>();
+    const map = new Map<string, Player>();
     for (const p of players) map.set(String(p.id), p);
     return map;
   }, [players]);
@@ -238,7 +241,7 @@ export const AdminMatchDetail = () => {
         return [...players].sort((a, b) => a.name.localeCompare(b.name));
       }
 
-      const result: PlayerWithStats[] = [];
+      const result: Player[] = [];
 
       for (const l of sortedLineup) {
         if (l.isStarting !== isStarting) continue;
@@ -417,11 +420,14 @@ export const AdminMatchDetail = () => {
             <View style={adminStyles.adminActions}>
               <TouchableOpacity
                 style={[adminStyles.adminBtn, adminStyles.adminBtn]}
-                onPress={() =>
-                  updateMatch(match.id, {
-                    result: "0-0",
-                    status: "live",
-                    statusTime: "1st",
+                onPress={async () =>
+                  await updateMatch({
+                    id: match.id,
+                    data: {
+                      result: "0-0",
+                      status: "live",
+                      statusTime: "1st",
+                    },
                   })
                 }
               >
@@ -472,9 +478,12 @@ export const AdminMatchDetail = () => {
               {match.statusTime === "1st" && (
                 <TouchableOpacity
                   style={adminStyles.adminBtn}
-                  onPress={() =>
-                    updateMatch(match.id, { statusTime: "interval" })
-                  }
+                  onPress={async () => {
+                    await updateMatch({
+                      id: match.id,
+                      data: { statusTime: "interval" }
+                    });
+                  }}
                 >
                   <Ionicons
                     name="pause-circle-outline"
@@ -495,7 +504,12 @@ export const AdminMatchDetail = () => {
               {match.statusTime === "interval" && (
                 <TouchableOpacity
                   style={[adminStyles.adminBtn]}
-                  onPress={() => updateMatch(match.id, { statusTime: "2nd" })}
+                  onPress={async () => {
+                    await updateMatch({
+                      id: match.id,
+                      data: { statusTime: "2nd" }
+                    });
+                  }}
                 >
                   <Ionicons
                     name="play-circle-outline"
@@ -690,7 +704,7 @@ export const AdminMatchDetail = () => {
                                 {player.name}
                               </Text>
                               <Text style={adminStyles.lineupPosition}>
-                                {player.stats?.position}
+                                {player.Stats?.position}
                               </Text>
                             </View>
                           );
@@ -731,7 +745,7 @@ export const AdminMatchDetail = () => {
                                 {player.name}
                               </Text>
                               <Text style={adminStyles.lineupPosition}>
-                                {player.stats?.position}
+                                {player.Stats?.position}
                               </Text>
                             </View>
                           );

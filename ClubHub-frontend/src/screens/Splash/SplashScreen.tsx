@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Animated, Text } from "react-native";
 import { useMatches } from "../../hooks/useMatches";
-import { useTeams } from "../../contexts/TeamsContext";
-import { useStandings } from "../../contexts/StandingsContext";
-import { useNews } from "../../contexts/NewsContext";
+import { useTeams } from "../../hooks/useTeams";
+import { useStandings } from "../../hooks/useStandings";
+import { useNews } from "../../hooks/useNews";
 
 import { styles } from "./Splash.styles";
 

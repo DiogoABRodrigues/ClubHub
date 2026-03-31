@@ -11,9 +11,9 @@ router.post("/scrape/allInfo", async (req, res) => {
   try {
     const matches = await scrapeTeamMatches();
     const standings = await scrapeStandings();
-    const stats = await scrapeTeamStats();
     const players = await scrapeTeamPlayers();
     const teams = await scrapeAllTeams();
+    const stats = await scrapeTeamStats();
     res.json({
       success: true,
       message: "Scraper executado com sucesso",

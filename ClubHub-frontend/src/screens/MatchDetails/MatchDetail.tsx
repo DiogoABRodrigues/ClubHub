@@ -6,14 +6,12 @@ import { COLORS } from "../../theme/colors";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { styles } from "./MatchDetail.styles";
 import { useMatches } from "../../hooks/useMatches";
-import { useTeams } from "../../contexts/TeamsContext";
+import { useTeams } from "../../hooks/useTeams";
 import { formatDateWithWeekdayPT } from "../../utils/dateUtils";
-import { teamConfig } from "../../config/teamConfig";
 import { usePlayers } from "../../hooks/usePlayers";
-import { mapToMainPosition } from "../../utils/playerPositionUtils";
 import { EventRow } from "../../components/EventRow";
 import { Competition } from "../../models/Competition";
-import { useCompetitions } from "../../contexts/CompetitionContext";
+import { useCompetitions } from "../../hooks/useCompetitions";
 
 import { RefreshControl } from "react-native";
 

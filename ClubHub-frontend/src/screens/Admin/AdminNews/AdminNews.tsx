@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert } from "react-native";
 import { Plus, Edit, Trash2 } from "lucide-react-native";
 
-import { useNews } from "../../../contexts/NewsContext";
+import { useNews } from "../../../hooks/useNews";
 import { COLORS } from "../../../theme/colors";
 import { NewsCard } from "../../../components/NewsCard";
 import { styles } from "./AdminNews.styles";

@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./News.styles";
 import { NewsCard } from "../../components/NewsCard";
 import { COLORS } from "../../theme/colors";
-import { useNews } from "../../contexts/NewsContext";
+import { useNews } from "../../hooks/useNews";
 
 export const News = ({ navigation }: any) => {
   const { news, loading } = useNews();

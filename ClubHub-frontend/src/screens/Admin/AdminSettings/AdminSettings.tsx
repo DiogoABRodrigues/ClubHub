@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./AdminSettings.styles";
 import { COLORS } from "../../../theme/colors";
 import { ScrapperService } from "../../../services/ScrapperService";
-import { useStatements } from "../../../contexts/StatementContext";
+import { useStatements } from "../../../hooks/useStatements";
 import { StatementModal } from "../../../components/StatementModal";
 
 export const AdminSettings = ({ navigation }: any) => {

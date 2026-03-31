@@ -7,8 +7,5 @@ export type Player = {
   photoUrl?: string | null;
   age: number | null;
   stillOnTeam?: boolean;
+  Stats?: Stats[];
 };
-
-export interface PlayerWithStats extends Player {
-  stats: Stats;
-}

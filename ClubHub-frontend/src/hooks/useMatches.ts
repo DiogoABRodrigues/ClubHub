@@ -28,8 +28,8 @@ export const useMatches = () => {
   // UPDATE MATCH
   // ─────────────────────────────
   const updateMatch = useMutation({
-    mutationFn: ({ id, updates }: any) =>
-      MatchService.update(id, updates),
+    mutationFn: ({ id, data }: { id: number; data: Partial<Match> }) =>
+      MatchService.update(id, data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["matches"] });
@@ -54,7 +54,7 @@ export const useMatches = () => {
 
     await updateMatch.mutateAsync({
       id,
-      updates: {
+      data: {
         status: "live",
         date: new Date().toISOString(),
       },
@@ -67,7 +67,7 @@ export const useMatches = () => {
   const pauseMatch = async (id: number) => {
     await updateMatch.mutateAsync({
       id,
-      updates: { status: "halftime" },
+      data: { status: "halftime" },
     });
   };
 
@@ -77,7 +77,7 @@ export const useMatches = () => {
   const finishMatch = async (id: number) => {
     await updateMatch.mutateAsync({
       id,
-      updates: { status: "finished" },
+      data: { status: "finished" },
     });
   };
 
@@ -115,7 +115,7 @@ export const useMatches = () => {
 
       await updateMatch.mutateAsync({
         id,
-        updates: { result: `${goalsFor}-${goalsAgainst}` },
+        data: { result: `${goalsFor}-${goalsAgainst}` },
       });
     }
   };
@@ -156,7 +156,7 @@ export const useMatches = () => {
 
       await updateMatch.mutateAsync({
         id,
-        updates: { result: `${goalsFor}-${goalsAgainst}` },
+        data: { result: `${goalsFor}-${goalsAgainst}` },
       });
     }
   };

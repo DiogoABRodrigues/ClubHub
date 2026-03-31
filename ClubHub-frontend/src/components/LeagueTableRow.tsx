@@ -11,7 +11,7 @@ import {
 import { styles } from "./styles/LeagueTableRow.styles";
 import { COLORS } from "../theme/colors";
 import { Standing } from "../models/Standing";
-import { useTeams } from "../contexts/TeamsContext";
+import { useTeams } from "../hooks/useTeams";
 import { teamConfig } from "../config/teamConfig";
 import { useEffect } from "react";
 

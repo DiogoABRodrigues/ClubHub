@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { ArrowUp, ArrowDown } from "lucide-react-native";
 import { usePlayers } from "../../hooks/usePlayers";
-import { PlayerWithStats } from "../../models/Player";
+import { Player } from "../../models/Player";
 import { styles as globalStyles } from "./Stats.styles";
 import { isFieldPlayer } from "../../utils/playerPositionUtils";
 
@@ -54,20 +54,19 @@ export function SquadStats() {
 
   const statsSortedPlayers = useMemo(() => {
     const arr = [...statsPlayersOnly];
-    console.log("Sorting players by", statsPlayersOnly);
     arr.sort((a, b) => {
       let valA = 0;
       let valB = 0;
 
       if (sortField === "games") {
-        valA = a.stats.gamesPlayed;
-        valB = b.stats.gamesPlayed;
+        valA = a.Stats?.[0]?.gamesPlayed || 0;
+        valB = b.Stats?.[0]?.gamesPlayed || 0;
       } else if (sortField === "minutes") {
-        valA = a.stats.minutesPlayed;
-        valB = b.stats.minutesPlayed;
+        valA = a.Stats?.[0]?.minutesPlayed || 0;
+        valB = b.Stats?.[0]?.minutesPlayed || 0;
       } else {
-        valA = a.stats.goals;
-        valB = b.stats.goals;
+        valA = a.Stats?.[0]?.goals || 0;
+        valB = b.Stats?.[0]?.goals || 0;
       }
 
       return sortOrder === "desc" ? valB - valA : valA - valB;
@@ -131,7 +130,7 @@ export function SquadStats() {
     [handleSort, sortField, sortOrder],
   );
 
-  const renderItem = useCallback(({ item }: { item: PlayerWithStats }) => {
+  const renderItem = useCallback(({ item }: { item: Player }) => {
     const defaultPlayerImage = require("../../../assets/player.jpg");
 
     return (
@@ -144,9 +143,9 @@ export function SquadStats() {
           />
           <Text style={globalStyles.playerName}>{item.name}</Text>
         </View>
-        <Text style={globalStyles.statsText}>{item.stats.gamesPlayed}</Text>
-        <Text style={globalStyles.statsText}>{item.stats.minutesPlayed}</Text>
-        <Text style={globalStyles.statsText}>{item.stats.goals}</Text>
+        <Text style={globalStyles.statsText}>{item.Stats?.[0]?.gamesPlayed}</Text>
+        <Text style={globalStyles.statsText}>{item.Stats?.[0]?.minutesPlayed}</Text>
+        <Text style={globalStyles.statsText}>{item.Stats?.[0]?.goals}</Text>
       </View>
     );
   }, []);
