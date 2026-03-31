@@ -1,11 +1,9 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { View, Text, TouchableOpacity } from "react-native";
 import { styles } from "./AdminDashboard.styles";
+
 import { AdminNewsStack } from "../../../navigation/AdminNewsStack";
 import { AdminMatchesStack } from "../../../navigation/AdminMatchsStack ";
-import { AdminNotifications } from "../AdminNotifications/AdminNotifications";
-import { useNavigation } from "@react-navigation/native";
 import { AdminSquadScreen } from "../AdminSquad/SquadAdmin";
 
 type AdminTab = "matches" | "news" | "notifications";
@@ -15,25 +13,28 @@ interface Tab {
   label: string;
 }
 
-interface TabButtonProps {
-  label: string;
-  active: boolean;
-  onPress: () => void;
-}
-
-const TabButton = React.memo(({ label, active, onPress }: TabButtonProps) => (
-  <TouchableOpacity
-    style={[styles.tab, active && styles.tabActive]}
-    onPress={onPress}
-  >
-    <Text style={[styles.tabText, active && styles.tabTextActive]}>
-      {label}
-    </Text>
-  </TouchableOpacity>
-));
+const TabButton = React.memo(
+  ({
+    label,
+    active,
+    onPress,
+  }: {
+    label: string;
+    active: boolean;
+    onPress: () => void;
+  }) => (
+    <TouchableOpacity
+      style={[styles.tab, active && styles.tabActive]}
+      onPress={onPress}
+    >
+      <Text style={[styles.tabText, active && styles.tabTextActive]}>
+        {label}
+      </Text>
+    </TouchableOpacity>
+  ),
+);
 
 export function AdminDashboard() {
-  const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState<AdminTab>("matches");
 
   const tabs: Tab[] = useMemo(
@@ -57,18 +58,17 @@ export function AdminDashboard() {
         return <AdminNewsStack />;
       case "notifications":
         return <AdminSquadScreen />;
+      default:
+        return null;
     }
-  }, [activeTab, navigation]);
+  }, [activeTab]);
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Painel Admin</Text>
-        <View style={styles.placeholder} />
       </View>
 
-      {/* Tabs */}
       <View style={styles.tabsContainer}>
         {tabs.map((tab) => (
           <TabButton
@@ -80,7 +80,6 @@ export function AdminDashboard() {
         ))}
       </View>
 
-      {/* Content — sem ScrollView aqui pois cada ecrã gere o seu próprio scroll */}
       <View style={styles.content}>{renderContent}</View>
     </View>
   );

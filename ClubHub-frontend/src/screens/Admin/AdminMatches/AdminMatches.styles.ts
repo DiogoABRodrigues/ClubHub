@@ -10,11 +10,17 @@ export const styles = StyleSheet.create({
   // ── Header ────────────────────────────────────────────────
   header: {
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.xl + 16,
+    paddingTop: SPACING.xl + 16, // mais espaço no topo
     paddingBottom: SPACING.sm,
     backgroundColor: COLORS.surface,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
+  },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.sm,
+    marginBottom: SPACING.sm,
   },
   headerTop: {
     flexDirection: "row",
@@ -29,8 +35,6 @@ export const styles = StyleSheet.create({
     fontSize: FONT_SIZE.lg,
     fontWeight: "600",
     color: COLORS.textPrimary,
-    flex: 1,
-    marginLeft: SPACING.sm,
   },
   addButton: {
     flexDirection: "row",
@@ -159,4 +163,16 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: FONT_SIZE.sm,
   },
+  sectionHeader: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 8,
+          },
+  sectionTitle: {
+            fontWeight: "600",
+            fontSize: 16,
+          },
+  seeAllText: {
+            color: COLORS.primary,
+          },
 });

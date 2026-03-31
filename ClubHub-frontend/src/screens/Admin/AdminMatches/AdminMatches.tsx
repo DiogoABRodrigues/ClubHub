@@ -13,6 +13,7 @@ import { COLORS } from "../../../theme/colors";
 import { useMatches } from "../../../contexts/MatchesContext";
 import { useTeams } from "../../../contexts/TeamsContext";
 import { useCompetitions } from "../../../contexts/CompetitionContext";
+import Ionicons from "@expo/vector-icons/build/Ionicons";
 
 export const AdminMatches: React.FC = ({ navigation }: any) => {
   const { matches, loading, refreshMatches } = useMatches();
@@ -24,6 +25,23 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
   const [showAllFinished, setShowAllFinished] = useState(false);
 
   const [refreshing, setRefreshing] = useState(false);
+
+  const competitionsMap = useMemo(() => {
+    const map = new Map<number, any>();
+    competitions.forEach((c) => map.set(c.id, c));
+    return map;
+    
+  }, [competitions]);
+
+  const teamsMap = useMemo(() => {
+    const map = new Map<string, string>();
+
+    teams.forEach((t) => {
+      map.set(t.name.trim().toLowerCase(), t.logoUrl?.trim() || "");
+    });
+
+    return map;
+  }, [teams]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -42,13 +60,9 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
 
   const getTeamLogo = useCallback(
     (teamName: string) => {
-      const normalized = teamName.trim().toLowerCase();
-      const team = teams.find(
-        (t) => t.name.trim().toLowerCase() === normalized,
-      );
-      return team?.logoUrl;
+      return teamsMap.get(teamName.trim().toLowerCase()) || "";
     },
-    [teams],
+    [teamsMap],
   );
 
   const getHomeTeam = useCallback(
@@ -65,53 +79,53 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
 
   // ── Filtragem eficiente ───────────────────────────────
   const filteredMatches = useMemo(() => {
-    const query = searchQuery.toLowerCase();
-    return matches
-      .map((match) => ({
-        ...match,
-        homeTeamLower: getHomeTeam(match).toLowerCase(),
-        awayTeamLower: getAwayTeam(match).toLowerCase(),
-      }))
-      .filter(
-        (match) =>
-          query === "" ||
-          match.homeTeamLower.includes(query) ||
-          match.awayTeamLower.includes(query),
-      );
+    const query = searchQuery.trim().toLowerCase();
+
+    if (!query) return matches;
+
+    return matches.filter((m) => {
+      const home = getHomeTeam(m).toLowerCase();
+      const away = getAwayTeam(m).toLowerCase();
+
+      return home.includes(query) || away.includes(query);
+    });
   }, [matches, searchQuery, getHomeTeam, getAwayTeam]);
 
-  // ── Matches por status ───────────────────────────────
-  const liveMatches = useMemo(
-    () => filteredMatches.filter((m) => m.status === "live"),
-    [filteredMatches],
-  );
-  const upcomingMatches = useMemo(
-    () => filteredMatches.filter((m) => m.status === "upcoming").toReversed(),
-    [filteredMatches],
-  );
-  const finishedMatches = useMemo(
-    () => filteredMatches.filter((m) => m.status === "finished"),
-    [filteredMatches],
-  );
+  const { liveMatches, upcomingMatches, finishedMatches } = useMemo(() => {
+  const live: any[] = [];
+  const upcoming: any[] = [];
+  const finished: any[] = [];
+
+  for (const m of filteredMatches) {
+    if (m.status === "live") live.push(m);
+    else if (m.status === "upcoming") upcoming.push(m);
+    else if (m.status === "finished") finished.push(m);
+  }
+
+  return {
+    liveMatches: live,
+    upcomingMatches: upcoming.toReversed(),
+    finishedMatches: finished,
+  };
+}, [filteredMatches]);
 
   const renderItem = useCallback(
-    ({ item }: { item: any }) => (
+    ({ item }: any) => (
       <View style={styles.matchWrapper}>
         <MatchCard
           match={item}
-          homeLogo={getTeamLogo(getHomeTeam(item)) || ""}
-          awayLogo={getTeamLogo(getAwayTeam(item)) || ""}
+          homeLogo={getTeamLogo(getHomeTeam(item))}
+          awayLogo={getTeamLogo(getAwayTeam(item))}
+          competition={competitionsMap.get(item.competitionId)}
           onPress={() =>
             navigation.navigate("AdminMatchDetail", { id: item.id })
           }
-          competition={competitions.find((c) => c.id === item.competitionId)}
         />
       </View>
     ),
-    [navigation, getTeamLogo, getHomeTeam, getAwayTeam],
+    [navigation, getTeamLogo, getHomeTeam, getAwayTeam, competitionsMap],
   );
 
-  // ── Função para renderizar cada secção ─────────────
   const renderMatchesSection = (
     title: string,
     matchesArray: any[],
@@ -119,33 +133,37 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
     toggleShowAll: () => void,
   ) => {
     const displayMatches = showAll ? matchesArray : matchesArray.slice(0, 3);
+
     return (
       <View style={{ marginBottom: 20 }}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginBottom: 8,
-          }}
-        >
-          <Text style={{ fontWeight: "600", fontSize: 16 }}>{title}</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>{title}</Text>
+
           {matchesArray.length > 3 && (
             <TouchableOpacity onPress={toggleShowAll}>
-              <Text style={{ color: COLORS.primary }}>
+              <Text style={styles.seeAllText}>
                 {showAll ? "Ver menos" : "Ver todos"}
               </Text>
             </TouchableOpacity>
           )}
         </View>
-        <FlatList
-          data={displayMatches}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          scrollEnabled={false} // Para cada secção não ter scroll próprio
-        />
+
+        {displayMatches.map((item) => (
+          <View key={item.id} style={styles.matchWrapper}>
+            <MatchCard
+              match={item}
+              homeLogo={getTeamLogo(getHomeTeam(item))}
+              awayLogo={getTeamLogo(getAwayTeam(item))}
+              competition={competitionsMap.get(item.competitionId)}
+              onPress={() =>
+                navigation.navigate("AdminMatchDetail", { id: item.id })
+              }
+            />
+          </View>
+        ))}
       </View>
     );
-  };  
+  };
 
   return (
     <View style={styles.container}>
@@ -156,66 +174,68 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
             <Text style={{ fontSize: 32 }}>⚽</Text>
           </View>
           <Text style={styles.emptyText}>Nenhum jogo encontrado</Text>
-          <TouchableOpacity
-            style={styles.createButton}
-            onPress={() => navigation.navigate("AdminAddMatch")}
-          >
-            <Text style={styles.createButtonText}>Criar primeiro jogo</Text>
-          </TouchableOpacity>
         </View>
       ) : (
         <FlatList
-          data={[{ key: "live" }, { key: "upcoming" }, { key: "finished" }]}
+          data={[
+            { key: "live" },
+            { key: "upcoming" },
+            { key: "finished" },
+          ]}
           keyExtractor={(item) => item.key}
-          refreshControl={
-                  <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                    colors={[COLORS.primary]}
-                    tintColor={COLORS.primary}
-                  />
-                }
           ListHeaderComponent={
-            <>
-              {/* Botão Adicionar no topo do scroll */}
-              <TouchableOpacity
-                style={styles.addButton}
-                onPress={() => navigation.navigate("AdminAddMatch")}
-              >
-                <Plus width={16} height={16} color="#fff" />
-                <Text style={styles.addButtonText}>Adicionar</Text>
-              </TouchableOpacity>
-            </>
+                  <View style={styles.header}>
+                    <View style={styles.headerLeft}>
+                      <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <Ionicons
+                          name="arrow-back"
+                          size={24}
+                          color={COLORS.textSecondary}
+                        />
+                      </TouchableOpacity>
+                      <Text style={styles.headerTitle}>Jogos e Resultados</Text>
+                    </View>
+                  </View>
           }
           renderItem={({ item }) => {
-            if (item.key === "live" && liveMatches.length > 0) {
+            if (item.key === "live" && liveMatches.length) {
               return renderMatchesSection(
                 "A Decorrer",
                 liveMatches,
                 showAllLive,
-                () => setShowAllLive(!showAllLive),
+                () => setShowAllLive((v) => !v),
               );
             }
-            if (item.key === "upcoming" && upcomingMatches.length > 0) {
+
+            if (item.key === "upcoming" && upcomingMatches.length) {
               return renderMatchesSection(
                 "Próximos Jogos",
                 upcomingMatches,
                 showAllUpcoming,
-                () => setShowAllUpcoming(!showAllUpcoming),
+                () => setShowAllUpcoming((v) => !v),
               );
             }
-            if (item.key === "finished" && finishedMatches.length > 0) {
+
+            if (item.key === "finished" && finishedMatches.length) {
               return renderMatchesSection(
                 "Últimos Resultados",
                 finishedMatches,
                 showAllFinished,
-                () => setShowAllFinished(!showAllFinished),
+                () => setShowAllFinished((v) => !v),
               );
             }
+
             return null;
           }}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
-          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[COLORS.primary]}
+              tintColor={COLORS.primary}
+            />
+          }
         />
       )}
     </View>

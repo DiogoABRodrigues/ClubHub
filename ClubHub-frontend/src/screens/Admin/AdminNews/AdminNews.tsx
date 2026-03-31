@@ -1,26 +1,20 @@
-import React, { useState, useMemo, useCallback } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
+import React, { useCallback } from "react";
+import { View, Text, FlatList, TouchableOpacity, Alert } from "react-native";
 import { Plus, Edit, Trash2 } from "lucide-react-native";
-import { styles } from "./AdminNews.styles";
-import { NewsCard } from "../../../components/NewsCard";
-import { COLORS } from "../../../theme/colors";
+
 import { useNews } from "../../../contexts/NewsContext";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { AdminNewsStackParamList } from "../../../navigation/AdminNewsStack";
-import { Platform } from "react-native";
+import { COLORS } from "../../../theme/colors";
+import { NewsCard } from "../../../components/NewsCard";
+import { styles } from "./AdminNews.styles";
 
-// Tipagem correta das props
-type Props = NativeStackScreenProps<AdminNewsStackParamList, "AdminNews">;
-
-export const AdminNews: React.FC<Props> = ({ navigation }) => {
+export const AdminNews = ({ navigation }: { navigation: any }) => {
   const { news, loading, deleteNews } = useNews();
 
   const handleDelete = useCallback(
     (id: number, title: string) => {
-      // 📱 Mobile: usa Alert
       Alert.alert(
-        "Eliminar notícia?",
-        `Tens a certeza que queres eliminar "${title}"? Esta ação não pode ser desfeita.`,
+        "Eliminar notícia",
+        `Eliminar "${title}"?`,
         [
           { text: "Cancelar", style: "cancel" },
           {
@@ -29,10 +23,8 @@ export const AdminNews: React.FC<Props> = ({ navigation }) => {
             onPress: async () => {
               try {
                 await deleteNews(id);
-                console.log("Notícia eliminada com sucesso");
-              } catch (err) {
-                console.error("Não foi possível eliminar a notícia.", err);
-                Alert.alert("Erro", "Não foi possível eliminar a notícia.");
+              } catch (e) {
+                Alert.alert("Erro", "Não foi possível eliminar.");
               }
             },
           },
@@ -42,63 +34,70 @@ export const AdminNews: React.FC<Props> = ({ navigation }) => {
     [deleteNews],
   );
 
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text>A carregar...</Text>
+      </View>
+    );
+  }
+
+  if (!news.length) {
+    return (
+      <View style={styles.container}>
+        <Text>Nenhuma notícia</Text>
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate("AdminNewsForm")}
+        >
+          <Text>Criar primeira notícia</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => navigation.navigate("AdminNewsForm" as never)}
-        >
-          <Plus width={16} height={16} color="#fff" />
-          <Text style={styles.addButtonText}>Adicionar</Text>
-        </TouchableOpacity>
-        {loading ? (
-          <Text style={styles.loadingText}>A carregar notícias...</Text>
-        ) : news.length > 0 ? (
-          <View style={styles.newsList}>
-            {news.map((item) => (
-              <View key={item.id} style={styles.newsWrapper}>
-                <NewsCard
-                  news={item}
-                  onPress={() =>
-                    navigation.navigate("AdminNewsForm", { id: item.id })
-                  }
-                />
-                <View style={styles.newsActions}>
-                  <TouchableOpacity
-                    style={styles.editButton}
-                    onPress={() =>
-                      navigation.navigate("AdminNewsForm", { id: item.id })
-                    }
-                  >
-                    <Edit width={16} height={16} color={COLORS.primary} />
-                  </TouchableOpacity>
+      <FlatList
+        data={news}
+        keyExtractor={(item) => String(item.id)}
+        contentContainerStyle={styles.content}
+        ListHeaderComponent={
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => navigation.navigate("AdminNewsForm")}
+          >
+            <Plus width={16} height={16} color="#fff" />
+            <Text style={styles.addButtonText}>Adicionar</Text>
+          </TouchableOpacity>
+        }
+        renderItem={({ item }) => (
+          <View style={styles.newsWrapper}>
+            <NewsCard
+              news={item}
+              onPress={() =>
+                navigation.navigate("AdminNewsForm", { id: item.id })
+              }
+            />
 
-                  <TouchableOpacity
-                    style={styles.deleteButton}
-                    onPress={() => handleDelete(item.id, item.title)}
-                  >
-                    <Trash2 width={16} height={16} color="#ef4444" />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ))}
-          </View>
-        ) : (
-          <View style={styles.emptyState}>
-            <View style={styles.emptyIcon}>
-              <Text style={{ fontSize: 32 }}>📰</Text>
+            <View style={styles.newsActions}>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("AdminNewsForm", { id: item.id })
+                }
+              >
+                <Edit width={16} height={16} color={COLORS.primary} />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => handleDelete(item.id, item.title)}
+              >
+                <Trash2 width={16} height={16} color="red" />
+              </TouchableOpacity>
             </View>
-            <Text style={styles.emptyText}>Nenhum artigo encontrado</Text>
-            <TouchableOpacity
-              style={styles.createButton}
-              onPress={() => navigation.navigate("AdminNewsForm" as never)}
-            >
-              <Text style={styles.createButtonText}>Criar primeiro artigo</Text>
-            </TouchableOpacity>
           </View>
         )}
-      </ScrollView>
+      />
     </View>
   );
 };

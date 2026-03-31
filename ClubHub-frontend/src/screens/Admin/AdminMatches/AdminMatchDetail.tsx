@@ -41,11 +41,21 @@ export const AdminMatchDetail = () => {
   const { matches, refreshMatches, addMatchEvent, updateMatch, updateLocalMatch, deleteMatchEvent,startMatch, finishMatch } =
     useMatches();
   const { teams, refreshTeams } = useTeams();
-  const { getActivePlayers } = usePlayers();
-  const { refreshPlayers } = usePlayers();
+  const { getActivePlayers, refreshPlayers } = usePlayers();
 
   const players = useMemo(() => getActivePlayers().filter(isFieldPlayer), [getActivePlayers]);
-  const match = useMemo(() => matches.find((m) => m.id === id), [matches, id]);
+  const match = useMemo(
+    () => matches.find((m) => m.id === id),
+    [matches, id],
+  );
+
+  if (!match) {
+    return (
+      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+        <Text>Jogo não encontrado</Text>
+      </View>
+    );
+  };
 
   const { competitions, refreshCompetitions } = useCompetitions();
 
@@ -71,7 +81,7 @@ export const AdminMatchDetail = () => {
     } finally {
       setRefreshing(false);
     }
-  }, []);
+  }, [refreshMatches, refreshCompetitions, refreshTeams, refreshPlayers]);
 
   const tabs = useMemo(
     () => [
@@ -137,7 +147,7 @@ export const AdminMatchDetail = () => {
         ]
       );
     },
-    [match, updateMatch]
+    [match, deleteMatchEvent]
   );
   
   const [editingEvent, setEditingEvent] = useState<MatchEvent | null>(null);
@@ -149,18 +159,24 @@ export const AdminMatchDetail = () => {
 
   const handleSaveDateTime = useCallback(
     async (date: string, time: string) => {
-      if (!match) return;
-      await updateMatch(match.id, { date, time });
+      try {
+        await updateMatch(match.id, { date, time });
+      } catch (e) {
+        console.error("Erro update date:", e);
+      }
     },
-    [match, updateMatch],
+    [match.id, updateMatch],
   );
 
   const handleSaveLocation = useCallback(
     async (location: string) => {
-      if (!match) return;
-      await updateMatch(match.id, { location });
+      try {
+        await updateMatch(match.id, { location });
+      } catch (e) {
+        console.error("Erro update location:", e);
+      }
     },
-    [match, updateMatch],
+    [match.id, updateMatch],
   );
 
   const handleFinishMatch = useCallback(() => {
@@ -202,55 +218,60 @@ export const AdminMatchDetail = () => {
 
   // Formação existente para pré-selecionar no modal
   const existingLineup = match.Lineups;
+    const playersMap = useMemo(() => {
+    const map = new Map<string, PlayerWithStats>();
+
+    players.forEach((p) => {
+      map.set(String(p.id), p);
+    });
+
+    return map;
+  }, [players]);
 
   //ordernar por posição (Guarda-Redes, Defesas, Médios, Avançados)
-  const sortedLineup = existingLineup?.slice().sort((a, b) => {
-    const playerA = players.find((p) => String(p.id) === String(a.playerId));
-    const playerB = players.find((p) => String(p.id) === String(b.playerId));
-    const posA = playerA ? mapToMainPosition(playerA.stats?.position) : "N/A";
-    const posB = playerB ? mapToMainPosition(playerB.stats?.position) : "N/A";
-    const orderA =
-      posA === "Guarda Redes"
-        ? 1
-        : posA === "Defesa"
-          ? 2
-          : posA === "Médio"
-            ? 3
-            : posA === "Avançado"
-              ? 4
-              : 5;
-    const orderB =
-      posB === "Guarda Redes"
-        ? 1
-        : posB === "Defesa"
-          ? 2
-          : posB === "Médio"
-            ? 3
-            : posB === "Avançado"
-              ? 4
-              : 5;
-    return orderA - orderB;
-  });
+  const sortedLineup = useMemo(() => {
+    if (!match.Lineups) return [];
 
-  const startingPlayers = useMemo(() => {
-    if (!sortedLineup || sortedLineup.length === 0){
-      return players.slice().sort((a, b) => a.name.localeCompare(b.name));} 
-    return sortedLineup
-      .filter((l) => l.isStarting)
-      .map((l) => players.find((p) => p.id === l.playerId))
-      .filter((p): p is PlayerWithStats => p !== undefined)
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [sortedLineup, players]);
-  
-  const substitutePlayers = useMemo(() => {
-    if (!sortedLineup || sortedLineup.length === 0){
-      return players.slice().sort((a, b) => a.name.localeCompare(b.name));} 
-    return sortedLineup
-      .filter((l) => !l.isStarting)
-      .map((l) => players.find((p) => p.id === l.playerId))
-      .filter((p): p is PlayerWithStats => p !== undefined)
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [sortedLineup, players]);
+    return [...match.Lineups].sort((a, b) => {
+      const aP = playersMap.get(String(a.playerId));
+      const bP = playersMap.get(String(b.playerId));
+
+      const aPos = aP?.stats?.position ?? "";
+      const bPos = bP?.stats?.position ?? "";
+
+      return aPos.localeCompare(bPos);
+    });
+  }, [match.Lineups, playersMap]);
+
+  const buildPlayersFromLineup = useCallback(
+    (isStarting: boolean) => {
+      if (!sortedLineup || sortedLineup.length === 0) {
+        return [...players].sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      const result: PlayerWithStats[] = [];
+
+      for (const l of sortedLineup) {
+        if (l.isStarting !== isStarting) continue;
+
+        const player = playersMap.get(String(l.playerId));
+        if (player) result.push(player);
+      }
+
+      return result.sort((a, b) => a.name.localeCompare(b.name));
+    },
+    [sortedLineup, playersMap, players],
+  );
+
+  const startingPlayers = useMemo(
+    () => buildPlayersFromLineup(true),
+    [buildPlayersFromLineup],
+  );
+
+  const substitutePlayers = useMemo(
+    () => buildPlayersFromLineup(false),
+    [buildPlayersFromLineup],
+  );
 
   const isLive = match.status === "live";
   const isHalftime = match.status === "halftime";
@@ -273,6 +294,17 @@ export const AdminMatchDetail = () => {
   );
 
   const competition = useMemo(() => { return competitions.find((c) => c.id === match.competitionId) as Competition; }, [match.competitionId, competitions]);
+
+  const timeline = useMemo(() => {
+    if (!match.events?.length) return null;
+
+    const sorted = [...match.events].sort((a, b) => a.minute - b.minute);
+
+    return {
+      firstHalf: sorted.filter((e) => e.minute <= 45),
+      secondHalf: sorted.filter((e) => e.minute > 45),
+    };
+  }, [match.events]);
 
   return (
     <>
@@ -564,11 +596,8 @@ export const AdminMatchDetail = () => {
               {activeTab === "timeline" &&
                 (match.events && match.events.length > 0 ? (
                   (() => {
-                    const sorted = [...match.events].sort(
-                      (a, b) => a.minute - b.minute,
-                    );
-                    const firstHalf = sorted.filter((e) => e.minute <= 45);
-                    const secondHalf = sorted.filter((e) => e.minute > 45);
+                    const firstHalf = timeline?.firstHalf || [];
+                    const secondHalf = timeline?.secondHalf || [];
                     return (
                       <>
                         {firstHalf.length > 0 && (
