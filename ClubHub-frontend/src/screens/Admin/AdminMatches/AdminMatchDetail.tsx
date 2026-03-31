@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  RefreshControl,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { LiveBadge } from "../../../components/LiveBadge";
@@ -37,21 +38,40 @@ export const AdminMatchDetail = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { id } = route.params as { id: number };
-  const { matches, addMatchEvent, updateMatch, updateLocalMatch, deleteMatchEvent,startMatch, finishMatch } =
+  const { matches, refreshMatches, addMatchEvent, updateMatch, updateLocalMatch, deleteMatchEvent,startMatch, finishMatch } =
     useMatches();
-  const { teams } = useTeams();
+  const { teams, refreshTeams } = useTeams();
   const { getActivePlayers } = usePlayers();
+  const { refreshPlayers } = usePlayers();
 
   const players = useMemo(() => getActivePlayers().filter(isFieldPlayer), [getActivePlayers]);
   const match = useMemo(() => matches.find((m) => m.id === id), [matches, id]);
 
-  const { competitions } = useCompetitions();
+  const { competitions, refreshCompetitions } = useCompetitions();
 
   const [activeTab, setActiveTab] = useState<"timeline" | "lineup">("timeline");
   const [showEventModal, setShowEventModal] = useState(false);
   const [showLineupModal, setShowLineupModal] = useState(false);
   const [showDateModal, setShowDateModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+
+    try {
+      await refreshMatches();
+      await refreshCompetitions();
+      await refreshTeams();
+      await refreshPlayers();
+
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
 
   const tabs = useMemo(
     () => [
@@ -256,7 +276,17 @@ export const AdminMatchDetail = () => {
 
   return (
     <>
-      <ScrollView style={styles.container}>
+      <ScrollView 
+      style={styles.container}
+      refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[COLORS.primary]}
+                tintColor={COLORS.primary}
+              />
+            }
+      >
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}

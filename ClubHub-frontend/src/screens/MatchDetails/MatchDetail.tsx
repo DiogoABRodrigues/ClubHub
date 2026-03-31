@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { LiveBadge } from "../../components/LiveBadge";
@@ -15,6 +15,8 @@ import { EventRow } from "../../components/EventRow";
 import { Competition } from "../../models/Competition";
 import { useCompetitions } from "../../contexts/CompetitionContext";
 
+import { RefreshControl } from "react-native";
+
 export const MatchDetail = () => {
   const route = useRoute();
   const navigation = useNavigation();
@@ -22,12 +24,31 @@ export const MatchDetail = () => {
 
   const { getActivePlayers } = usePlayers();
 
-  const { competitions } = useCompetitions();
+  const { competitions, refreshCompetitions } = useCompetitions();
   const players = getActivePlayers();
-  const { matches, loading } = useMatches();
-  const { teams, loading: teamsLoading } = useTeams();
+  const { refreshPlayers } = usePlayers();
+  const { matches, loading, refreshMatches } = useMatches();
+  const { teams, loading: teamsLoading, refreshTeams } = useTeams();
 
   const match = matches.find((m) => m.id === id);
+
+  const [refreshing, setRefreshing] = useState(false);
+  
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+
+    try {
+      await refreshMatches();
+      await refreshCompetitions();
+      await refreshTeams();
+      await refreshPlayers();
+
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
 
   const [activeTab, setActiveTab] = useState<"timeline" | "lineup">("timeline");
 
@@ -113,7 +134,17 @@ export const MatchDetail = () => {
   const competition = useMemo(() => { return competitions.find((c) => c.id === match.competitionId) as Competition; }, [match.competitionId, competitions]);
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView 
+    style={styles.container}
+    refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[COLORS.primary]}
+              tintColor={COLORS.primary}
+            />
+          }
+          >
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity

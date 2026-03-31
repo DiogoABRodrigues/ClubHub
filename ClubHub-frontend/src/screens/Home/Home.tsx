@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { styles } from "./Home.styles";
 import { useStatements } from "../../contexts/StatementContext";
@@ -16,16 +16,35 @@ import { useNews } from "../../contexts/NewsContext";
 import { formatDatePT } from "../../utils/dateUtils";
 import { useCompetitions } from "../../contexts/CompetitionContext";
 
+import { RefreshControl } from "react-native";
+
 export const Home = ({ navigation }: any) => {
-  const { news } = useNews();
+  const { news, refreshNews } = useNews();
 
   const recentNews = news.slice(0, 3);
 
   const { statements } = useStatements();
   const activeStatement = statements?.[0];
-  const { matches, loading } = useMatches();
-  const { competitions } = useCompetitions();
-  
+  const { matches, loading, refreshMatches } = useMatches();
+  const { competitions, refreshCompetitions } = useCompetitions();
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+
+    try {
+      await refreshMatches();
+      await refreshCompetitions();
+      await refreshNews();
+
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
   const liveMatches = useMemo(
     () => matches.filter((m) => m.status === "live"),
     [matches],
@@ -71,7 +90,17 @@ export const Home = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView 
+      contentContainerStyle={styles.content}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={[COLORS.primary]}
+          tintColor={COLORS.primary}
+        />
+      }
+      >
         {/* HEADER */}
         <View style={styles.header}>
           <View>

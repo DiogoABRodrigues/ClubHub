@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   FlatList,
+  RefreshControl,
 } from "react-native";
 import { Plus } from "lucide-react-native";
 import { styles } from "./AdminMatches.styles";
@@ -14,13 +15,30 @@ import { useTeams } from "../../../contexts/TeamsContext";
 import { useCompetitions } from "../../../contexts/CompetitionContext";
 
 export const AdminMatches: React.FC = ({ navigation }: any) => {
-  const { matches, loading } = useMatches();
-  const { teams } = useTeams();
-  const { competitions } = useCompetitions();
+  const { matches, loading, refreshMatches } = useMatches();
+  const { teams, refreshTeams } = useTeams();
+  const { competitions, refreshCompetitions } = useCompetitions();
   const [searchQuery, setSearchQuery] = useState("");
   const [showAllLive, setShowAllLive] = useState(false);
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [showAllFinished, setShowAllFinished] = useState(false);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+
+    try {
+      await refreshMatches();
+      await refreshCompetitions();
+      await refreshTeams();
+
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
 
   const getTeamLogo = useCallback(
     (teamName: string) => {
@@ -132,9 +150,7 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
       {/* Lista de secções */}
-      {loading ? (
-        <Text style={styles.loadingText}>A carregar jogos...</Text>
-      ) : filteredMatches.length === 0 ? (
+      {filteredMatches.length === 0 ? (
         <View style={styles.emptyState}>
           <View style={styles.emptyIcon}>
             <Text style={{ fontSize: 32 }}>⚽</Text>
@@ -151,6 +167,14 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
         <FlatList
           data={[{ key: "live" }, { key: "upcoming" }, { key: "finished" }]}
           keyExtractor={(item) => item.key}
+          refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    colors={[COLORS.primary]}
+                    tintColor={COLORS.primary}
+                  />
+                }
           ListHeaderComponent={
             <>
               {/* Botão Adicionar no topo do scroll */}

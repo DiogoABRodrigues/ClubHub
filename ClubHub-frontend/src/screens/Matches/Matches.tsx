@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./Matches.styles";
 import { MatchCard } from "../../components/MatchCard";
@@ -33,7 +33,7 @@ const MatchesSection: React.FC<MatchesSectionProps> = ({
     () => (showAll ? matches : matches.slice(0, 3)),
     [matches, showAll],
   );
-
+  
   const { competitions } = useCompetitions();
   return (
     <View style={styles.section}>
@@ -62,8 +62,9 @@ const MatchesSection: React.FC<MatchesSectionProps> = ({
 };
 
 export const Matches = ({ navigation }: any) => {
-  const { matches, loading } = useMatches();
-  const { teams } = useTeams();
+  const { matches, loading, refreshMatches } = useMatches();
+  const { teams, refreshTeams } = useTeams();
+  const { competitions, refreshCompetitions } = useCompetitions();
 
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [showAllFinished, setShowAllFinished] = useState(false);
@@ -80,6 +81,23 @@ export const Matches = ({ navigation }: any) => {
     () => matches.filter((m) => m.status === "finished"),
     [matches],
   );
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+
+    try {
+      await refreshMatches();
+      await refreshCompetitions();
+      await refreshTeams();
+
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
 
   const getTeamLogo = useCallback(
     (teamName: string) => {
@@ -119,12 +137,17 @@ export const Matches = ({ navigation }: any) => {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        {loading ? (
-          <Text style={{ textAlign: "center", marginTop: 50 }}>
-            A carregar jogos...
-          </Text>
-        ) : (
+      <ScrollView 
+      contentContainerStyle={styles.content}
+      refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[COLORS.primary]}
+                tintColor={COLORS.primary}
+              />
+            }
+        >
           <>
             {liveMatches.length > 0 && (
               <MatchesSection
@@ -173,7 +196,6 @@ export const Matches = ({ navigation }: any) => {
               </View>
             )}
           </>
-        )}
       </ScrollView>
     </View>
   );
