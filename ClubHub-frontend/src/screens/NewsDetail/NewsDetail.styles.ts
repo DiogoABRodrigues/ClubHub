@@ -5,7 +5,13 @@ import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("window").width;
 
 export const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+  // ── Layout base ──────────────────────────────────────────────────────────
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+
+  // ── Header ───────────────────────────────────────────────────────────────
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -17,102 +23,184 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
-  headerLeft: { flexDirection: "row", alignItems: "center", gap: SPACING.sm },
+
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.sm,
+  },
+
   headerTitle: {
     fontSize: FONT_SIZE.lg,
-    fontWeight: "600",
+    fontWeight: "700",
     color: COLORS.textPrimary,
+    letterSpacing: -0.3,
   },
 
-  content: { paddingHorizontal: SPACING.md },
-
+  // ── Imagem de destaque (full-bleed) ───────────────────────────────────────
   featuredImage: {
-    width: screenWidth, // ocupa toda a tela
-    height: 250,
+    width: screenWidth,
+    height: 240,
     borderRadius: 0,
     marginBottom: SPACING.md,
-    marginHorizontal: -SPACING.md, // cancela o padding do ScrollView
+    marginHorizontal: -SPACING.md,
     resizeMode: "cover",
   },
+
   placeholderImage: {
     width: screenWidth,
-    height: 250,
+    height: 240,
     borderRadius: 0,
-    backgroundColor: COLORS.primary + "20",
+    backgroundColor: COLORS.primaryLight,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: SPACING.md,
     marginHorizontal: -SPACING.md,
   },
-  logoEmoji: { fontSize: FONT_SIZE.xl },
 
-  categoryBadgeContainer: { marginBottom: SPACING.sm },
-  categoryBadge: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs,
-    borderRadius: RADIUS.lg,
-    color: COLORS.background,
-    fontWeight: "600",
-    alignSelf: "flex-start",
+  logoEmoji: {
+    fontSize: FONT_SIZE.xl,
   },
 
-  newsTitle: {
-    fontSize: FONT_SIZE.xl,
-    fontWeight: "700",
+  // ── Conteúdo do artigo ────────────────────────────────────────────────────
+  content: {
+    paddingHorizontal: SPACING.md,
+    paddingBottom: SPACING.xl,
+  },
+
+  // ── Badge de categoria ────────────────────────────────────────────────────
+  categoryBadgeContainer: {
     marginBottom: SPACING.sm,
   },
 
-  metaRow: { flexDirection: "row", gap: SPACING.lg, marginBottom: SPACING.sm },
-  metaItem: { flexDirection: "row", alignItems: "center", gap: SPACING.xs },
-  metaText: { color: COLORS.textSecondary, fontSize: FONT_SIZE.sm },
+  categoryBadge: {
+    paddingHorizontal: SPACING.sm + 2,
+    paddingVertical: SPACING.xs,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.primary,
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: FONT_SIZE.xs,
+    alignSelf: "flex-start",
+    overflow: "hidden",
+  },
 
+  // ── Título e meta ─────────────────────────────────────────────────────────
+  newsTitle: {
+    fontSize: FONT_SIZE.xl,
+    fontWeight: "700",
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.sm,
+    lineHeight: 30,
+    letterSpacing: -0.4,
+  },
+
+  metaRow: {
+    flexDirection: "row",
+    gap: SPACING.md,
+    marginBottom: SPACING.md,
+  },
+
+  metaItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.xs,
+  },
+
+  metaText: {
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZE.sm,
+  },
+
+  // ── Corpo do artigo ───────────────────────────────────────────────────────
   excerpt: {
     fontSize: FONT_SIZE.md,
     color: COLORS.textSecondary,
     marginBottom: SPACING.md,
+    lineHeight: 24,
+    fontWeight: "500",
   },
+
   contentText: {
     fontSize: FONT_SIZE.sm,
     color: COLORS.textPrimary,
-    lineHeight: 20,
+    lineHeight: 22,
   },
 
-  relatedContainer: { marginTop: SPACING.lg },
+  // ── Artigos relacionados ──────────────────────────────────────────────────
+  relatedContainer: {
+    marginTop: SPACING.xl,
+    paddingTop: SPACING.lg,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+
   relatedTitle: {
     fontSize: FONT_SIZE.md,
-    fontWeight: "600",
-    marginBottom: SPACING.sm,
+    fontWeight: "700",
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.md,
+    letterSpacing: -0.2,
   },
+
   relatedCard: {
     flexDirection: "row",
     backgroundColor: COLORS.surface,
     borderRadius: RADIUS.lg,
-    padding: SPACING.sm,
+    padding: SPACING.sm + 2,
     marginBottom: SPACING.sm,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    gap: SPACING.sm,
   },
+
   relatedImage: {
-    width: 48,
-    height: 48,
+    width: 52,
+    height: 52,
     borderRadius: RADIUS.md,
-    backgroundColor: COLORS.primary + "10",
+    backgroundColor: COLORS.primaryLight,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: SPACING.sm,
+    overflow: "hidden",
+    flexShrink: 0,
   },
-  relatedTextContainer: { flex: 1, minWidth: 0 },
+
+  relatedTextContainer: {
+    flex: 1,
+    minWidth: 0,
+  },
+
   relatedNewsTitle: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
+    color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
+    lineHeight: 18,
   },
-  relatedDate: { fontSize: FONT_SIZE.xs, color: COLORS.textSecondary },
 
-  noNewsContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  noNewsText: { fontSize: FONT_SIZE.md, color: COLORS.textSecondary },
+  relatedDate: {
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.textMuted,
+  },
+
+  // ── Empty / erro ──────────────────────────────────────────────────────────
+  noNewsContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: SPACING.sm,
+  },
+
+  noNewsText: {
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textSecondary,
+  },
+
   backLink: {
     fontSize: FONT_SIZE.sm,
     color: COLORS.primary,
-    marginTop: SPACING.sm,
+    fontWeight: "600",
+    marginTop: SPACING.xs,
   },
 });

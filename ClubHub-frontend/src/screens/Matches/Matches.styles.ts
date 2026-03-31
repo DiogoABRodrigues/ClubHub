@@ -1,17 +1,25 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
+import { COLORS, SPACING, FONT_SIZE, RADIUS } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
+  // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
 
-  header: {
+  content: {
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.xl + 16, // mais espaço no topo
-    paddingBottom: SPACING.sm,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.xl,
+  },
+
+  // ── Header ───────────────────────────────────────────────────────────────
+  header: {
     backgroundColor: COLORS.surface,
+    paddingTop: SPACING.xl + 8,       // espaço para status bar
+    paddingBottom: SPACING.sm,
+    paddingHorizontal: SPACING.md,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
@@ -20,87 +28,19 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: SPACING.sm,
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.xs,
   },
 
   headerTitle: {
     fontSize: FONT_SIZE.lg,
-    fontWeight: "600",
+    fontWeight: "700",
     color: COLORS.textPrimary,
+    letterSpacing: -0.3,
   },
 
-  categoryContainer: {
-    flexDirection: "row",
-  },
-
-  categoryButton: {
-    paddingVertical: SPACING.xs,
-    paddingHorizontal: SPACING.md,
-    borderRadius: RADIUS.lg,
-    backgroundColor: COLORS.secondary,
-  },
-
-  categoryButtonActive: {
-    backgroundColor: COLORS.primary,
-  },
-
-  categoryText: {
-    color: COLORS.textSecondary,
-    fontWeight: "500",
-    fontSize: FONT_SIZE.sm,
-  },
-
-  categoryTextActive: {
-    color: COLORS.background, // assume que primaryForeground é branco
-  },
-
-  content: {
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.sm,
-  },
-
+  // ── Secções ───────────────────────────────────────────────────────────────
   section: {
     marginBottom: SPACING.lg,
-  },
-
-  sectionTitle: {
-    fontSize: FONT_SIZE.md,
-    fontWeight: "600",
-    marginBottom: SPACING.sm,
-    color: COLORS.textPrimary,
-  },
-
-  noMatches: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: SPACING.lg,
-  },
-
-  logoCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: COLORS.muted,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: SPACING.sm,
-  },
-
-  logoEmoji: {
-    fontSize: FONT_SIZE.xl,
-  },
-
-  noMatchesText: {
-    color: COLORS.textSecondary,
-    fontSize: FONT_SIZE.sm,
-    textAlign: "center",
-  },
-
-  showMore: {
-    textAlign: "center",
-    marginTop: 10,
-    color: COLORS.textPrimary,
-    fontWeight: "600",
   },
 
   sectionHeader: {
@@ -110,9 +50,80 @@ export const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
 
-  showMoreInline: {
+  sectionTitle: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: "700",
     color: COLORS.textPrimary,
+  },
+
+  showMoreInline: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: "600",
+    color: COLORS.primary,
+  },
+
+  showMore: {
+    textAlign: "center",
+    marginTop: 10,
+    color: COLORS.primary,
     fontWeight: "600",
     fontSize: FONT_SIZE.sm,
+  },
+
+  // ── Empty state ───────────────────────────────────────────────────────────
+  noMatches: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: SPACING.xl,
+  },
+
+  noMatchesText: {
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZE.sm,
+    textAlign: "center",
+  },
+
+  // ── Utilitários (mantidos por compat.) ────────────────────────────────────
+  logoCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.primaryLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  logoEmoji: {
+    fontSize: FONT_SIZE.xl,
+  },
+
+  // ── Category filters (se usares no futuro) ───────────────────────────────
+  categoryContainer: {
+    flexDirection: "row",
+    gap: SPACING.xs,
+  },
+
+  categoryButton: {
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.surfaceLight,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+
+  categoryButtonActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+
+  categoryText: {
+    color: COLORS.textSecondary,
+    fontWeight: "600",
+    fontSize: FONT_SIZE.sm,
+  },
+
+  categoryTextActive: {
+    color: "#FFFFFF",
   },
 });

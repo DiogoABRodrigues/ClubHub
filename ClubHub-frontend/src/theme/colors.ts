@@ -1,55 +1,63 @@
+// ─────────────────────────────────────────────
+//  theme/colors.ts  —  Paleta atualizada
+// ─────────────────────────────────────────────
+
 export const COLORS = {
-  primary: "#dbb229", // azul principal (tipo futebol)
-  secondary: "#1E90FF", // azul claro
-  background: "#FFFFFF",
-  surface: "#F5F5F5",
+  // ── Identidade principal ──────────────────
+  primary:       "#426bdb", // Royal Blue — botões, ações, tabs ativas
+  primaryDark:   "#4660b4", // Deep Blue  — header do MatchDetail
+  primaryLight:  "#DBEAFE", // Blue Tint  — fundos de seleção / hover / badges
 
-  textPrimary: "#111111",
-  textSecondary: "#666666",
+  // ── Superfícies ───────────────────────────
+  background:    "#F8F9FA", // Off-white  — fundo geral das screens
+  surface:       "#FFFFFF", // Branco     — cards, modais
+  surfaceLight:  "#F1F5F9", // Cinza suave — header Home, fundos alt
 
-  successLight: "#dff5e18e", // fundo das equipas em promoção
-  errorLight: "#f8d7dab4", // fundo das equipas em descida
+  // ── Texto ─────────────────────────────────
+  textPrimary:   "#0F172A", // Slate 900  — texto principal
+  textSecondary: "#414244", // Gray 500   — texto secundário / labels
+  textMuted:     "#9CA3AF", // Gray 400   — hints, placeholders, minutagem
 
-  border: "#E0E0E0",
-  success: "#4CAF50",
-  error: "#F44336",
-  warning: "#FFC107",
+  // ── Bordas ────────────────────────────────
+  border:        "#E2E6EA", // Bordas e divisórias
+  muted:         "#E2E6EA", // alias (manter compatibilidade)
 
-  // Base
-  primaryLight: "#1e8fff0e", // azul claro com transparência
-  surfaceLight: "#F9F9F9",
-  muted: "#E0E0E0",
+  // ── Status semânticos ─────────────────────
+  success:       "#16A34A", // Verde      — golos, vitória, promoção
+  successLight:  "#DCFCE7", // Verde claro — fundo linhas de promoção
+  error:         "#DC2626", // Vermelho   — descida, derrota, erro
+  errorLight:    "#FEE2E2", // Verm. claro — fundo linhas de descida
+  warning:       "#EAB308", // Âmbar      — cartões amarelos
+  warningLight:  "#FEF3C7", // Âmbar claro — fundo avisos
+  destructive:   "#DC2626", // alias error (manter compatibilidade)
 
-  // Textos
-  textMuted: "#999999",
+  // ── Charts / Extras ───────────────────────
+  chart2:        "#16A34A", // Verde (golos / positivo)
+  chart3:        "#EAB308", // Âmbar (cartões)
 
-  // Status
-  destructive: "#F44336",
-
-  // Charts / Extras
-  chart2: "#4CAF50", // verde (gols/positivo)
-  chart3: "#FFC107", // amarelo (cartões)
+  // ── Accent secundário (uso pontual) ───────
+  secondary:     "#3B82F6", // Azul médio — ícones de secção
 };
 
 export const SPACING = {
-  xs: 4,
-  sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
+  xs:  4,
+  sm:  8,
+  md:  16,
+  lg:  24,
+  xl:  32,
 };
 
 export const RADIUS = {
-  sm: 4,
-  md: 8,
-  lg: 12,
-  xl: 16,
+  sm:  4,
+  md:  8,
+  lg:  12,
+  xl:  16,
 };
 
 export const FONT_SIZE = {
-  xs: 12,
-  sm: 14,
-  md: 16,
-  lg: 18,
-  xl: 24,
+  xs:  12,
+  sm:  14,
+  md:  16,
+  lg:  18,
+  xl:  24,
 };

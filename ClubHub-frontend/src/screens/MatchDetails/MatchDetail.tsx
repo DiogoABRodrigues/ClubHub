@@ -220,6 +220,11 @@ export const MatchDetail = () => {
         {/* Match Info */}
         <View style={styles.matchInfo}>
           <View style={styles.infoItem}>
+                        <Ionicons
+              name="calendar-outline"
+              size={16}
+              color={COLORS.primaryLight}
+            />
             <Text style={styles.infoText}>
               {formatDateWithWeekdayPT(match.date)} • {match.time}
             </Text>
@@ -228,7 +233,7 @@ export const MatchDetail = () => {
             <Ionicons
               name="location-outline"
               size={16}
-              color={COLORS.textSecondary}
+              color={COLORS.primaryLight}
             />
             <Text style={styles.infoText}>{location}</Text>
           </View>
@@ -357,6 +362,7 @@ export const MatchDetail = () => {
                             {player.Stats?.[0]?.position}
                           </Text>
                         </View>
+                        
                       );
                     })}
 

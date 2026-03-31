@@ -43,7 +43,7 @@ const MatchesSection = React.memo(({
     return map;
   }, [competitions]);
 
-  const isAdmin = true; 
+  const isAdmin = false; 
   const navigateToMatchDetail = useCallback((matchId: string) => {
     if (isAdmin) {
       navigation.navigate("AdminMatchDetail", { id: matchId });

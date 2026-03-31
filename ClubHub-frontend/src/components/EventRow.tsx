@@ -35,6 +35,7 @@ export const EventRow = ({ event, isOurs, onEdit, onDelete }: Props) => {
   const player = players.find((p) => p.id === event.playerId);
   const playerOut = players.find((p) => p.id === event.playerOutId);
   const playerIn = players.find((p) => p.id === event.playerInId);
+
   const eventWithNames = {
     ...event,
     player: event.isOwnGoal ? "Auto-golo" : player ? player.name : "Golo Adversário",
@@ -43,7 +44,7 @@ export const EventRow = ({ event, isOurs, onEdit, onDelete }: Props) => {
   };
   const minute = event.minute > 90 ? `90'+` : `${event.minute}'`;
   //const isAdmin = useAuth().user?.isAdmin;
-  const isAdmin = true;
+  const isAdmin = false;
   
   if (isOurs) {
     return (

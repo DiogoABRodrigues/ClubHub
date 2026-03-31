@@ -1,21 +1,23 @@
 import { StyleSheet } from "react-native";
-import { COLORS } from "../../theme/colors";
+import { COLORS, SPACING, FONT_SIZE, RADIUS } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
+  // ── Card base ─────────────────────────────────────────────────────────────
   card: {
     backgroundColor: COLORS.surface,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.sm + 4,
+    marginBottom: SPACING.sm,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
 
+  // ── Header do card (data / status) ───────────────────────────────────────
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 12,
     alignItems: "center",
+    marginBottom: 10,
   },
 
   headerLeft: {
@@ -24,31 +26,48 @@ export const styles = StyleSheet.create({
     gap: 6,
   },
 
+  headerInfo: {
+    flexDirection: "column",
+    gap: 2,
+  },
+
   date: {
-    fontSize: 12,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    fontWeight: "500",
+  },
+
+  competition: {
+    fontSize: 11,
     color: COLORS.textSecondary,
   },
 
+  // ── Badges de estado ──────────────────────────────────────────────────────
   upcoming: {
-    fontSize: 12,
-    color: COLORS.secondary,
-    backgroundColor: "#E3F2FD",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
+    fontSize: 11,
+    fontWeight: "700",
+    color: COLORS.primaryDark,
+    backgroundColor: COLORS.primaryLight,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: RADIUS.xl,
+    overflow: "hidden",
   },
 
   finished: {
-    fontSize: 12,
+    fontSize: 11,
+    fontWeight: "600",
     color: COLORS.textSecondary,
-    backgroundColor: "#EEE",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
+    backgroundColor: COLORS.surfaceLight,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: RADIUS.xl,
+    overflow: "hidden",
   },
 
+  // ── Equipas ───────────────────────────────────────────────────────────────
   teams: {
-    gap: 10,
+    gap: 8,
   },
 
   teamRow: {
@@ -75,51 +94,53 @@ export const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#EEE",
+    backgroundColor: COLORS.surfaceLight,
     justifyContent: "center",
     alignItems: "center",
   },
 
   teamName: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: "600",
     color: COLORS.textPrimary,
     flex: 1,
   },
 
+  // ── Score ─────────────────────────────────────────────────────────────────
   score: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: "800",
     color: COLORS.textPrimary,
+    letterSpacing: -0.5,
+    minWidth: 28,
+    textAlign: "center",
   },
 
+  // ── Footer (local / categoria) ────────────────────────────────────────────
   footer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 12,
-    borderTopWidth: 1,
+    marginTop: 10,
+    borderTopWidth: 0.5,
     borderColor: COLORS.border,
     paddingTop: 8,
-    gap: 6,
+    gap: 4,
   },
 
   venue: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    flex: 1,
   },
 
   category: {
-    marginLeft: "auto",
     fontSize: 11,
-    backgroundColor: "#EEE",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  headerInfo: {
-  flexDirection: "column",
-  gap: 2,
-},
-  competition: {
-    fontSize: 11,
+    fontWeight: "600",
     color: COLORS.textSecondary,
+    backgroundColor: COLORS.surfaceLight,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: RADIUS.xl,
+    overflow: "hidden",
   },
 });

@@ -2,11 +2,13 @@ import { StyleSheet } from "react-native";
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
+  // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
 
+  // ── Header ───────────────────────────────────────────────────────────────
   header: {
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.xl + 16,
@@ -25,38 +27,46 @@ export const styles = StyleSheet.create({
 
   headerTitle: {
     fontSize: FONT_SIZE.lg,
-    fontWeight: "600",
+    fontWeight: "700",
     color: COLORS.textPrimary,
+    letterSpacing: -0.3,
   },
 
+  // ── Filtros de categoria ──────────────────────────────────────────────────
   categoryContainer: {
     flexDirection: "row",
+    gap: SPACING.xs,
   },
 
   categoryButton: {
     paddingVertical: SPACING.xs,
     paddingHorizontal: SPACING.md,
-    borderRadius: RADIUS.lg,
-    backgroundColor: COLORS.secondary,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.surfaceLight,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
   categoryButtonActive: {
     backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
   },
 
   categoryText: {
     color: COLORS.textSecondary,
-    fontWeight: "500",
+    fontWeight: "600",
     fontSize: FONT_SIZE.sm,
   },
 
   categoryTextActive: {
-    color: COLORS.background,
+    color: "#FFFFFF",
   },
 
+  // ── Lista ─────────────────────────────────────────────────────────────────
   content: {
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.sm,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.xl,
   },
 
   newsList: {
@@ -64,20 +74,21 @@ export const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
 
+  // ── Empty state ───────────────────────────────────────────────────────────
   noNews: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: SPACING.lg,
+    paddingVertical: SPACING.xl,
+    gap: SPACING.sm,
   },
 
   logoCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: COLORS.muted,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: COLORS.primaryLight,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: SPACING.sm,
   },
 
   logoEmoji: {

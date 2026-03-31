@@ -31,8 +31,8 @@ const ICON_MAP: Record<string, string> = {
 };
 
 export const AppNavigator = () => {
-  const isAdmin = true;
-  const [adminMode, setAdminMode] = useState(true);
+  const isAdmin = false;
+  const [adminMode, setAdminMode] = useState(false);
 
   return (
     <NavigationContainer>

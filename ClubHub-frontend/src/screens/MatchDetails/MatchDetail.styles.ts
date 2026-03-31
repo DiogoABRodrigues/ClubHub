@@ -1,216 +1,117 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, FONT_SIZE, RADIUS } from "../../theme/colors"; // ou ajusta para o teu constants
+import { COLORS, SPACING, FONT_SIZE, RADIUS } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
+  // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
+
   mutedText: {
     color: COLORS.textSecondary,
     fontSize: FONT_SIZE.sm,
+    marginTop: SPACING.sm,
   },
+
   primaryText: {
     color: COLORS.primary,
     fontSize: FONT_SIZE.md,
   },
+
+  // ── Header  (fundo azul escuro — dá identidade ao ecrã) ──────────────────
   header: {
-    backgroundColor: COLORS.surfaceLight,
-    paddingTop: SPACING.lg,
+    backgroundColor: COLORS.primaryDark,   // #1E40AF
+    paddingTop: SPACING.xl + 8,
     paddingBottom: SPACING.lg,
     paddingHorizontal: SPACING.md,
-    borderBottomLeftRadius: RADIUS.xl,
-    borderBottomRightRadius: RADIUS.xl,
   },
+
   backButton: {
     position: "absolute",
     left: SPACING.md,
-    top: SPACING.lg,
+    top: SPACING.xl + 8,
     padding: 8,
+    zIndex: 1,
   },
+
   title: {
     textAlign: "center",
-    fontSize: FONT_SIZE.lg,
+    fontSize: FONT_SIZE.md,
     fontWeight: "600",
-    marginBottom: SPACING.md,
+    color: "#FFFFFF",
+    marginBottom: SPACING.xs,
   },
+
+  // ── Status badges ─────────────────────────────────────────────────────────
   statusContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
     gap: SPACING.sm,
   },
+
   upcomingBadge: {
     backgroundColor: COLORS.primaryLight,
     paddingHorizontal: SPACING.sm,
-    paddingVertical: 4,
-    borderRadius: RADIUS.md,
+    paddingVertical: 3,
+    borderRadius: RADIUS.xl,
   },
+
   fulltimeBadge: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: "rgba(255,255,255,0.18)",
     paddingHorizontal: SPACING.sm,
-    paddingVertical: 4,
-    borderRadius: RADIUS.md,
+    paddingVertical: 3,
+    borderRadius: RADIUS.xl,
   },
+
   badgeText: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textPrimary,
+    color: "#FFFFFF",
+    fontWeight: "600",
   },
+
+  competition: {
+    fontSize: FONT_SIZE.xs,
+    color: "rgba(255,255,255,0.6)",
+    textAlign: "center",
+    marginBottom: SPACING.md,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+  },
+
+  // ── Score card ───────────────────────────────────────────────────────────
   scoreCard: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: COLORS.surface,
-    padding: SPACING.md,
-    borderRadius: RADIUS.xl,
     marginBottom: SPACING.md,
   },
+
   teamContainer: {
     flex: 1,
     alignItems: "center",
+    gap: SPACING.xs + 2,
   },
+
   teamCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: COLORS.primaryLight,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "rgba(255,255,255,0.15)",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: SPACING.sm,
   },
+
   teamEmoji: {
     fontSize: 28,
   },
+
   teamName: {
     fontSize: FONT_SIZE.sm,
-    fontWeight: "500",
-  },
-  scoreContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginHorizontal: SPACING.md,
-  },
-  scoreText: {
-    fontSize: 40,
-    fontWeight: "700",
-    color: COLORS.textPrimary,
-  },
-  colon: {
-    fontSize: 24,
-    color: COLORS.textSecondary,
-    marginHorizontal: 8,
-  },
-  matchInfo: {
-    justifyContent: "space-around",
-    marginTop: SPACING.md,
-  },
-  infoItem: {
-    flexDirection: "row",
-    alignItems: "baseline",
-    gap: 4,
-  },
-  infoText: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
-    marginBottom: SPACING.sm,
-  },
-
-  // Tabs
-  tabsContainer: {
-    marginHorizontal: SPACING.md,
-  },
-  tabsList: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: SPACING.md,
-  },
-  tabTrigger: {
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.md,
-  },
-  activeTab: {
-    borderBottomWidth: 2,
-    borderBottomColor: COLORS.primary,
-  },
-  tabText: {
-    fontSize: FONT_SIZE.md,
-    fontWeight: "500",
-    color: COLORS.textSecondary,
-  },
-  tabContent: {
-    gap: SPACING.md,
-  },
-
-  // Timeline Events
-  eventCard: {
-    flexDirection: "row",
-    backgroundColor: COLORS.surface,
-    padding: SPACING.md,
-    borderRadius: RADIUS.lg,
-    marginBottom: SPACING.sm,
-  },
-  eventMinute: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: COLORS.primaryLight,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: SPACING.sm,
-  },
-  eventInfo: {
-    flex: 1,
-  },
-  eventTypeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    marginBottom: 2,
-  },
-  eventTypeText: {
-    fontSize: FONT_SIZE.sm,
-    textTransform: "capitalize",
-  },
-  eventDescription: {
-    fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
-    marginTop: 2,
-  },
-  statsCard: {
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.lg,
-    padding: SPACING.md,
-    gap: SPACING.md,
-  },
-  statsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  statsValue: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: "500",
-  },
-  statsLabel: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
-  },
-  possessionBar: {
-    flexDirection: "row",
-    height: 8,
-    borderRadius: 4,
-    overflow: "hidden",
-    backgroundColor: COLORS.surfaceLight,
-    marginTop: 4,
-    marginBottom: SPACING.sm,
-  },
-  possessionHome: {
-    backgroundColor: COLORS.primary,
-    height: "100%",
-  },
-  possessionAway: {
-    backgroundColor: COLORS.textSecondary,
-    height: "100%",
+    fontWeight: "600",
+    color: "#FFFFFF",
+    textAlign: "center",
   },
 
   teamLogo: {
@@ -219,96 +120,135 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  lineupSectionTitle: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: COLORS.textSecondary,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    marginTop: 16,
-    marginBottom: 8,
-    paddingHorizontal: 4,
-  },
-  lineupRow: {
+
+  // ── Score numbers ─────────────────────────────────────────────────────────
+  scoreContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 8,
+    marginHorizontal: SPACING.sm,
+    gap: 2,
+  },
+
+  scoreText: {
+    fontSize: 44,
+    fontWeight: "800",
+    color: "#FFFFFF",
+    letterSpacing: -2,
+  },
+
+  colon: {
+    fontSize: 28,
+    color: "rgba(255,255,255,0.4)",
+    marginHorizontal: 4,
+  },
+
+  // ── Match info row ────────────────────────────────────────────────────────
+  matchInfo: {
+    justifyContent: "center",
+    gap: SPACING.lg * 0.25,
+  },
+
+  infoItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+
+  infoText: {
+    fontSize: FONT_SIZE.xs,
+    color: "rgba(255,255,255,0.65)",
+  },
+
+  // ── Tabs ─────────────────────────────────────────────────────────────────
+  tabsContainer: {
+    marginHorizontal: 0,
+  },
+
+  tabsList: {
+    flexDirection: "row",
+    backgroundColor: COLORS.surface,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
-    gap: 10,
   },
-  lineupPhoto: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-  },
-  lineupAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: COLORS.surface,
-    justifyContent: "center",
+
+  tabTrigger: {
+    flex: 1,
+    paddingVertical: SPACING.sm + 2,
     alignItems: "center",
+    borderBottomWidth: 2,
+    borderBottomColor: "transparent",
   },
-  lineupAvatarText: {
-    fontSize: 12,
+
+  activeTab: {
+    borderBottomColor: COLORS.primary,
+  },
+
+  tabText: {
+    fontSize: FONT_SIZE.sm,
     fontWeight: "600",
     color: COLORS.textSecondary,
   },
-  lineupName: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: "500",
-    color: COLORS.textPrimary,
+
+  tabContent: {
+    paddingBottom: SPACING.xl,
   },
-  lineupPosition: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-  },
-  // Timeline Events
+
+  // ── Timeline ──────────────────────────────────────────────────────────────
   halfHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    backgroundColor: COLORS.surface,
-    marginBottom: 2,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLORS.surfaceLight,
   },
+
   halfHeaderText: {
     fontSize: 11,
-    fontWeight: "500",
-    color: COLORS.textSecondary,
+    fontWeight: "700",
+    color: COLORS.textMuted,
     textTransform: "uppercase",
-    letterSpacing: 0.4,
+    letterSpacing: 0.6,
   },
+
   halfHeaderScore: {
     fontSize: 11,
     fontWeight: "600",
     color: COLORS.textSecondary,
   },
+
   eventRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    minHeight: 36,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: 8,
+    minHeight: 40,
     borderBottomWidth: 0.5,
     borderBottomColor: COLORS.border,
     gap: 6,
+    backgroundColor: COLORS.surface,
   },
+
+  eventMinuteText: {
+    fontSize: 12,
+    color: COLORS.textMuted,
+    width: 26,
+  },
+
   eventMinuteTextRight: {
     fontSize: 12,
-    color: COLORS.textSecondary,
+    color: COLORS.textMuted,
     width: 26,
     textAlign: "right",
   },
+
   eventSide: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
   },
+
   eventSideRight: {
     flex: 1,
     flexDirection: "row",
@@ -316,59 +256,172 @@ export const styles = StyleSheet.create({
     justifyContent: "flex-end",
     gap: 5,
   },
+
   eventPlayer: {
     fontSize: 13,
-    fontWeight: "500",
+    fontWeight: "600",
     color: COLORS.textPrimary,
   },
+
   eventAssist: {
     fontSize: 12,
     color: COLORS.textSecondary,
   },
+
   eventScore: {
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: "700",
     color: COLORS.success,
   },
+
   eventIconText: {
     fontSize: 14,
     width: 20,
     textAlign: "center",
   },
+
   cardIcon: {
     width: 10,
     height: 14,
     borderRadius: 2,
   },
+
+  lineupSection: {
+    width: "100%",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    marginTop: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.surfaceLight,
+  },
+
+  // ── Formação ──────────────────────────────────────────────────────────────
+  lineupSectionTitle: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: COLORS.textMuted,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLORS.surfaceLight,
+  },
+
+  lineupRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: SPACING.md,
+    paddingVertical: 10,
+    borderBottomWidth: 0.5,
+    borderBottomColor: COLORS.border,
+    gap: 10,
+    backgroundColor: COLORS.surface,
+  },
+
+  lineupPhoto: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+  },
+
+  lineupAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: COLORS.primaryLight,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  lineupAvatarText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: COLORS.primaryDark,
+  },
+
+  lineupName: {
+    flex: 1,
+    fontSize: FONT_SIZE.sm,
+    fontWeight: "600",
+    color: COLORS.textPrimary,
+  },
+
+  lineupPosition: {
+    fontSize: 12,
+    color: COLORS.textMuted,
+  },
+
+  // ── Stats ─────────────────────────────────────────────────────────────────
+  statsCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.md,
+    gap: SPACING.md,
+  },
+
+  statsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  statsValue: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: "600",
+    color: COLORS.textPrimary,
+  },
+
+  statsLabel: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textSecondary,
+  },
+
+  possessionBar: {
+    flexDirection: "row",
+    height: 6,
+    borderRadius: 3,
+    overflow: "hidden",
+    backgroundColor: COLORS.surfaceLight,
+    marginTop: 4,
+    marginBottom: SPACING.sm,
+  },
+
+  possessionHome: {
+    backgroundColor: COLORS.primary,
+    height: "100%",
+  },
+
+  possessionAway: {
+    backgroundColor: COLORS.border,
+    height: "100%",
+  },
+
+  // ── Empty state ───────────────────────────────────────────────────────────
   emptyState: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 48,
-  },
-  competition: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
-    marginBottom: SPACING.sm,
-    textAlign: "center",
+    paddingVertical: 56,
+    gap: SPACING.sm,
   },
 });
 
+// ─── Picker de jogadores ────────────────────────────────────────────────────
 export const pickerStyles = {
   progressRow: {
     flexDirection: "row" as const,
     alignItems: "center" as const,
-    paddingHorizontal: 20,
+    paddingHorizontal: SPACING.md,
     paddingVertical: 10,
-    gap: 8,
+    gap: SPACING.sm,
   },
   step: {
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.surfaceLight,
   },
   stepActive: {
-    backgroundColor: COLORS.primary + "20",
+    backgroundColor: COLORS.primaryLight,
   },
   stepText: {
     fontSize: 13,
@@ -378,73 +431,76 @@ export const pickerStyles = {
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.border,
   },
 };
 
-// ─── Estilos do picker de jogadores ──────────────────────────────────────────
 export const eventStyles = {
   searchRow: {
     flexDirection: "row" as const,
     alignItems: "center" as const,
-    backgroundColor: COLORS.surface,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    gap: 8,
-    marginBottom: 8,
+    backgroundColor: COLORS.surfaceLight,
+    borderRadius: RADIUS.lg,
+    paddingHorizontal: SPACING.sm + 4,
+    paddingVertical: SPACING.sm,
+    gap: SPACING.sm,
+    marginBottom: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   searchInput: {
     flex: 1,
-    fontSize: 14,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textPrimary,
     padding: 0,
   },
   playerList: {
-    borderRadius: 10,
+    borderRadius: RADIUS.lg,
     overflow: "hidden" as const,
     backgroundColor: COLORS.surface,
     maxHeight: 220,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   playerItem: {
     flexDirection: "row" as const,
     alignItems: "center" as const,
-    paddingHorizontal: 14,
+    paddingHorizontal: SPACING.md,
     paddingVertical: 11,
     gap: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.background,
+    borderBottomWidth: 0.5,
+    borderBottomColor: COLORS.border,
   },
   playerItemActive: {
-    backgroundColor: COLORS.primary + "12",
+    backgroundColor: COLORS.primaryLight,
   },
   playerAvatar: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: COLORS.primary + "22",
+    backgroundColor: COLORS.primaryLight,
     alignItems: "center" as const,
     justifyContent: "center" as const,
   },
   playerAvatarText: {
     fontSize: 11,
     fontWeight: "700" as const,
-    color: COLORS.primary,
+    color: COLORS.primaryDark,
   },
   playerName: {
     flex: 1,
-    fontSize: 14,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textPrimary,
     fontWeight: "500" as const,
   },
   playerNameActive: {
     color: COLORS.primary,
-    fontWeight: "600" as const,
+    fontWeight: "700" as const,
   },
   noResults: {
     textAlign: "center" as const,
-    padding: 16,
-    color: COLORS.muted,
+    padding: SPACING.md,
+    color: COLORS.textMuted,
     fontSize: 13,
   },
   selectedBadge: {
@@ -454,13 +510,13 @@ export const eventStyles = {
     marginTop: 6,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    backgroundColor: COLORS.primary + "12",
-    borderRadius: 8,
+    backgroundColor: COLORS.primaryLight,
+    borderRadius: RADIUS.md,
     alignSelf: "flex-start" as const,
   },
   selectedBadgeText: {
     fontSize: 13,
-    color: COLORS.primary,
-    fontWeight: "600" as const,
+    color: COLORS.primaryDark,
+    fontWeight: "700" as const,
   },
 };
