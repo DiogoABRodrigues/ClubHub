@@ -21,12 +21,22 @@ import { RefreshControl } from "react-native";
 export const Home = ({ navigation }: any) => {
   const { news, refreshNews } = useNews();
 
-  const recentNews = news.slice(0, 3);
+  const recentNews = useMemo(() => {
+    return news.slice(0, 3);
+  }, [news]);
 
   const { statements } = useStatements();
   const activeStatement = statements?.[0];
   const { matches, loading, refreshMatches } = useMatches();
   const { competitions, refreshCompetitions } = useCompetitions();
+
+  const competitionsMap = useMemo(() => {
+    const map = new Map();
+    for (const c of competitions) {
+      map.set(c.id, c);
+    }
+    return map;
+  }, [competitions]);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -34,16 +44,15 @@ export const Home = ({ navigation }: any) => {
     setRefreshing(true);
 
     try {
-      await refreshMatches();
-      await refreshCompetitions();
-      await refreshNews();
-
-    } catch (e) {
-      console.error(e);
+      await Promise.all([
+        refreshMatches(),
+        refreshCompetitions(),
+        refreshNews(),
+      ]);
     } finally {
       setRefreshing(false);
     }
-  }, []);
+  }, [refreshMatches, refreshCompetitions, refreshNews]);
 
   const liveMatches = useMemo(
     () => matches.filter((m) => m.status === "live"),
@@ -52,34 +61,34 @@ export const Home = ({ navigation }: any) => {
 
   const { teams } = useTeams();
 
+  const teamsMap = useMemo(() => {
+    const map = new Map<string, string>();
+
+    for (const t of teams) {
+      map.set(t.name.trim().toLowerCase(), t.logoUrl || "");
+    }
+
+    return map;
+  }, [teams]);
+
   // próximo jogo (primeiro upcoming)
-  const nextMatch = useMemo(
-    () => matches.filter((m) => m.status === "upcoming").toReversed()[0],
-    [matches],
-  );
+  const nextMatch = useMemo(() => {
+    return matches.filter((m) => m.status === "upcoming").toReversed()[0];
+  }, [matches]);
 
-  // último jogo (mais recente finished)
-  const recentMatch = useMemo(
-    () => matches.filter((m) => m.status === "finished")[0],
-    [matches],
-  );
-
-  const getTeamLogo = useCallback(
-    (teamName: string) => {
-      const normalized = teamName.trim().toLowerCase();
-      const team = teams.find(
-        (t) => t.name.trim().toLowerCase() === normalized,
-      );
-      return team?.logoUrl;
-    },
-    [teams],
-  );
+  const recentMatch = useMemo(() => {
+    return matches.filter((m) => m.status === "finished")[0];
+  }, [matches]);
+    const getTeamLogo = useCallback((teamName: string) => {
+      return teamsMap.get(teamName.trim().toLowerCase());
+    }, [teamsMap]);
 
   const getHomeTeam = useCallback(
     (match: any) =>
       match.homeOrAway === "C" ? match.teamName : match.opponent,
     [],
   );
+
   const getAwayTeam = useCallback(
     (match: any) =>
       match.homeOrAway === "F" ? match.teamName : match.opponent,
@@ -143,7 +152,7 @@ export const Home = ({ navigation }: any) => {
                 onPress={() =>
                   navigation.navigate("MatchDetail", { id: match.id })
                 }
-                competition={competitions.find((c) => c.id === match.competitionId)}
+                competition={competitionsMap.get(match.competitionId)}
               />
             ))}
           </View>
