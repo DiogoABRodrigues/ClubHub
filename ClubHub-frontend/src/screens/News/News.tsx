@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./News.styles";
@@ -10,7 +10,24 @@ export const News = ({ navigation }: any) => {
   const { news, loading } = useNews();
 
   // Memoiza a lista de notícias
-  const newsList = useMemo(() => news, [news]);
+  const newsList = news;
+
+  const goToNewsDetail = useCallback(
+    (id: number) => {
+      navigation.navigate("NewsDetail", { id });
+    },
+    [navigation],
+  );
+
+  const renderedNews = useMemo(() => {
+    return newsList.map((item) => (
+      <NewsCard
+        key={item.id}
+        news={item}
+        onPress={() => goToNewsDetail(item.id)}
+      />
+    ));
+  }, [newsList, goToNewsDetail]);
 
   return (
     <View style={styles.container}>
@@ -36,15 +53,7 @@ export const News = ({ navigation }: any) => {
           </Text>
         ) : newsList.length > 0 ? (
           <View style={styles.newsList}>
-            {newsList.map((item) => (
-              <NewsCard
-                key={item.id}
-                news={item}
-                onPress={() =>
-                  navigation.navigate("NewsDetail", { id: item.id })
-                }
-              />
-            ))}
+            {renderedNews}
           </View>
         ) : (
           <View style={styles.noNews}>

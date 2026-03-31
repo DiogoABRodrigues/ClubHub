@@ -12,8 +12,8 @@ export const Standings: React.FC = () => {
 
   // garante ordenação por posição
   const sorted = useMemo(
-    () => [...standings].sort((a, b) => a.position - b.position),
-    [standings],
+    () => standings.slice().sort((a, b) => a.position - b.position),
+    [standings]
   );
 
   return (

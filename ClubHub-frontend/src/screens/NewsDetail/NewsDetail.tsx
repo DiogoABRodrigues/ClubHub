@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./NewsDetail.styles";
@@ -10,12 +10,38 @@ export const NewsDetail = ({ route, navigation }: any) => {
   const { id } = route.params;
   const { news } = useNews();
 
+  const newsMap = useMemo(() => {
+    const map = new Map();
+    for (const n of news) {
+      map.set(n.id, n);
+    }
+    return map;
+  }, [news]);
+
   // Memoize para evitar recalcular a cada render
-  const newsFound = useMemo(() => news.find((n) => n.id === id), [news, id]);
-  const relatedNews = useMemo(
-    () => news.filter((n) => n.id !== id).slice(0, 3),
-    [news, id],
-  );
+  const newsFound = useMemo(() => {
+    return newsMap.get(id);
+  }, [newsMap, id]);
+
+  const relatedNews = useMemo(() => {
+  const result = [];
+
+  for (const n of news) {
+    if (n.id !== id) {
+      result.push(n);
+      if (result.length === 3) break;
+    }
+  }
+
+  return result;
+}, [news, id]);
+
+const goToNewsDetail = useCallback(
+  (newsId: string) => {
+    navigation.navigate("NewsDetail", { id: newsId });
+  },
+  [navigation],
+);
 
   if (!newsFound) {
     return (
@@ -29,28 +55,14 @@ export const NewsDetail = ({ route, navigation }: any) => {
       </View>
     );
   }
-
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case "Team":
-        return COLORS.primary;
-      case "Transfers":
-        return COLORS.chart2;
-      case "Events":
-        return COLORS.chart3;
-      default:
-        return COLORS.muted;
-    }
-  };
-
-  const formatDate = (dateStr: string) => formatDatePT(dateStr);
+  const formatDate = formatDatePT;
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => goToNewsDetail(newsFound.id)}>
             <Ionicons
               name="arrow-back"
               size={24}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Switch } from "../../components/Switch";
@@ -21,43 +21,79 @@ export const NotificationSettings = ({ navigation }: any) => {
   const [deviceId, setDeviceId] = useState<string | null>(null);
   const [pushToken, setPushToken] = useState<string | null>(null);
 
-  // 2️⃣ Carregar preferências do AsyncStorage
-  useEffect(() => {
-    const loadPreferences = async () => {
-      try {
-        const stored = await AsyncStorage.getItem("notificationPrefs");
-        if (stored) setPreferences(JSON.parse(stored));
-      } catch (e) {
-        console.log("Erro a carregar preferências", e);
-      }
-    };
-    loadPreferences();
+  const loadPreferences = useCallback(async () => {
+    try {
+      const stored = await AsyncStorage.getItem("notificationPrefs");
+      if (stored) setPreferences(JSON.parse(stored));
+    } catch (e) {
+      console.log("Erro a carregar preferências", e);
+    }
   }, []);
 
+  useEffect(() => {
+    loadPreferences();
+  }, [loadPreferences]);
+
   // 3️⃣ Guardar preferências local + enviar para backend
-  const savePreferences = async (newPrefs: typeof preferences) => {
-    setPreferences(newPrefs);
-    await AsyncStorage.setItem("notificationPrefs", JSON.stringify(newPrefs));
+  const savePreferences = useCallback(
+    async (newPrefs: typeof preferences) => {
+      setPreferences(newPrefs);
+      await AsyncStorage.setItem(
+        "notificationPrefs",
+        JSON.stringify(newPrefs),
+      );
 
-    if (deviceId && pushToken) {
-      try {
-        await fetch(BACKEND_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ deviceId, pushToken, preferences: newPrefs }),
-        });
-      } catch (e) {
-        console.log("Erro a enviar preferências para o backend", e);
+      if (deviceId && pushToken) {
+        try {
+          await fetch(BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              deviceId,
+              pushToken,
+              preferences: newPrefs,
+            }),
+          });
+        } catch (e) {
+          console.log("Erro a enviar preferências para o backend", e);
+        }
       }
-    }
-  };
+    },
+    [deviceId, pushToken],
+  );
 
-  const togglePreference = (key: keyof typeof preferences) => {
-    const newPrefs = { ...preferences, [key]: !preferences[key] };
-    savePreferences(newPrefs);
-  };
+  const togglePreference = useCallback(
+    (key: keyof typeof preferences) => {
+      setPreferences((prev) => {
+        const newPrefs = { ...prev, [key]: !prev[key] };
 
-  const notificationTypes = [
+        AsyncStorage.setItem(
+          "notificationPrefs",
+          JSON.stringify(newPrefs),
+        );
+
+        if (deviceId && pushToken) {
+          fetch(BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              deviceId,
+              pushToken,
+              preferences: newPrefs,
+            }),
+          }).catch((e) =>
+            console.log("Erro backend prefs", e),
+          );
+        }
+
+        return newPrefs;
+      });
+    },
+    [deviceId, pushToken],
+  );
+
+  const notificationTypes = useMemo(
+  () => [
     {
       key: "matchStart" as const,
       icon: "trophy-outline",
@@ -86,8 +122,9 @@ export const NotificationSettings = ({ navigation }: any) => {
       description: "Mantém-te atualizado com as últimas notícias do clube",
       color: COLORS.chart3,
     },
-  ];
-
+  ],
+  [],
+);
   return (
     <View style={styles.container}>
       {/* Header */}

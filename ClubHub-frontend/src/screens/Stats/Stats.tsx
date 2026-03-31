@@ -47,7 +47,34 @@ export function SquadStats() {
   }, []); // apenas na montagem
 
   // Filtra apenas jogadores, ignora staff
-  const statsPlayersOnly = useMemo(() => { return players.filter(isFieldPlayer); }, [players]);
+  const statsPlayersOnly = useMemo(
+    () => players.filter(isFieldPlayer),
+    [players]
+  );
+
+  const statsSortedPlayers = useMemo(() => {
+    const arr = [...statsPlayersOnly];
+
+    arr.sort((a, b) => {
+      let valA = 0;
+      let valB = 0;
+
+      if (sortField === "games") {
+        valA = a.stats.gamesPlayed;
+        valB = b.stats.gamesPlayed;
+      } else if (sortField === "minutes") {
+        valA = a.stats.minutesPlayed;
+        valB = b.stats.minutesPlayed;
+      } else {
+        valA = a.stats.goals;
+        valB = b.stats.goals;
+      }
+
+      return sortOrder === "desc" ? valB - valA : valA - valB;
+    });
+
+    return arr;
+  }, [statsPlayersOnly, sortField, sortOrder]);
 
   const compareFn = useCallback(
     (a: PlayerWithStats, b: PlayerWithStats) => {
@@ -70,11 +97,6 @@ export function SquadStats() {
       return sortOrder === "desc" ? valB - valA : valA - valB;
     },
     [sortField, sortOrder],
-  );
-
-  const statsSortedPlayers = useMemo(
-    () => [...statsPlayersOnly].sort(compareFn),
-    [statsPlayersOnly, compareFn],
   );
 
   const handleSort = useCallback(
