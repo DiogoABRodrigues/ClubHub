@@ -12,6 +12,7 @@ import { usePlayers } from "../../hooks/usePlayers";
 import { EventRow } from "../../components/EventRow";
 import { Competition } from "../../models/Competition";
 import { useCompetitions } from "../../hooks/useCompetitions";
+import { getPositionOrder } from "../../utils/playerPositionUtils";
 
 import { RefreshControl } from "react-native";
 
@@ -24,9 +25,9 @@ export const MatchDetail = () => {
   const { getActivePlayers, refreshPlayers } = usePlayers();
   const players = getActivePlayers();
   const playersMap = useMemo(() => {
-  const map = new Map<string, any>();
+  const map = new Map<number, any>();
     for (const p of players) {
-      map.set(String(p.id), p);
+      map.set(p.id, p);
     }
     return map;
   }, [players]);
@@ -102,16 +103,26 @@ export const MatchDetail = () => {
 
   const location = match.location;
 
-  const existingLineup = match.Lineups;
-
   //ordernar por posição (Guarda-Redes, Defesas, Médios, Avançados)
   const sortedLineup = useMemo(() => {
     if (!match.Lineups) return [];
 
     return [...match.Lineups].sort((a, b) => {
-      const aPos = playersMap.get(String(a.playerId))?.stats?.position ?? "";
-      const bPos = playersMap.get(String(b.playerId))?.stats?.position ?? "";
-      return aPos.localeCompare(bPos);
+      const aPos =
+        playersMap.get(a.playerId)?.Stats?.[0]?.position || "";
+      const bPos =
+        playersMap.get(b.playerId)?.Stats?.[0]?.position || "";
+
+      const orderA = getPositionOrder(aPos);
+      const orderB = getPositionOrder(bPos);
+
+      if (orderA !== orderB) return orderA - orderB;
+
+      // opcional: desempate (ex: nome)
+      const aName = playersMap.get(a.playerId)?.name || "";
+      const bName = playersMap.get(b.playerId)?.name || "";
+
+      return aName.localeCompare(bName);
     });
   }, [match.Lineups, playersMap]);
 
@@ -316,13 +327,13 @@ export const MatchDetail = () => {
                 <>
                   {/* Titulares */}
                   <Text style={styles.lineupSectionTitle}>Titulares</Text>
-                  {sortedLineup.reverse()
+                  {sortedLineup
                     .filter((e: any) => e.isStarting)
                     .map((e: any) => {
-                      const player = playersMap.get(String(e.playerId));
+                      const player = playersMap.get(e.playerId);
                       if (!player) return null;
                       return (
-                        <View key={String(e.playerId)} style={styles.lineupRow}>
+                        <View key={e.playerId} style={styles.lineupRow}>
                           {player.photoUrl ? (
                             <Image
                               source={{ uri: player.photoUrl }}
@@ -351,13 +362,13 @@ export const MatchDetail = () => {
 
                   {/* Suplentes */}
                   <Text style={styles.lineupSectionTitle}>Suplentes</Text>
-                  {sortedLineup.reverse()
+                  {sortedLineup
                     .filter((e: any) => !e.isStarting)
                     .map((e: any) => {
-                      const player = playersMap.get(String(e.playerId));
+                      const player = playersMap.get(e.playerId);
                       if (!player) return null;
                       return (
-                        <View key={String(e.playerId)} style={styles.lineupRow}>
+                        <View key={e.playerId} style={styles.lineupRow}>
                           {player.photoUrl ? (
                             <Image
                               source={{ uri: player.photoUrl }}

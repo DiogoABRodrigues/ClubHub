@@ -18,7 +18,6 @@ import { styles } from "../../MatchDetails/MatchDetail.styles";
 import { useMatches } from "../../../hooks/useMatches";
 import { useTeams } from "../../../hooks/useTeams";
 import { formatDateWithWeekdayPT } from "../../../utils/dateUtils";
-import { teamConfig } from "../../../config/teamConfig";
 import { adminStyles } from "./AdminMatchDetail.styles";
 import { COLORS } from "../../../theme/colors";
 import { LocationModal } from "./Components/LocationModal";
@@ -33,6 +32,7 @@ import { useCompetitions } from "../../../hooks/useCompetitions";
 import { Competition } from "../../../models/Competition";
 import { MatchEventService } from "../../../services/MatchEventService";
 import { MatchEvent } from "../../../models/MatchEvent";
+import { getPositionOrder } from "../../../utils/playerPositionUtils";
 
 export const AdminMatchDetail = () => {
   const route = useRoute();
@@ -48,9 +48,9 @@ export const AdminMatchDetail = () => {
   }, [getActivePlayers, refreshPlayers]);
 
   const playersMap = useMemo(() => {
-    const map = new Map<string, Player>();
+    const map = new Map<number, Player>();
     for (const p of players) {
-      map.set(String(p.id), p);
+      map.set(p.id, p);
     }
     return map;
   }, [players]);
@@ -217,21 +217,33 @@ export const AdminMatchDetail = () => {
 
   // Formação existente para pré-selecionar no modal
   const existingLineup = match.Lineups;
-
+  
   //ordernar por posição (Guarda-Redes, Defesas, Médios, Avançados)
   const sortedLineup = useMemo(() => {
     if (!match.Lineups) return [];
 
     return [...match.Lineups].sort((a, b) => {
-      const aPos = playersMap.get(String(a.playerId))?.Stats?.[0]?.position ?? "";
-      const bPos = playersMap.get(String(b.playerId))?.Stats?.[0]?.position ?? "";
-      return aPos.localeCompare(bPos);
+      const aPos =
+        playersMap.get(a.playerId)?.Stats?.[0]?.position || "";
+      const bPos =
+        playersMap.get(b.playerId)?.Stats?.[0]?.position || "";
+
+      const orderA = getPositionOrder(aPos);
+      const orderB = getPositionOrder(bPos);
+
+      if (orderA !== orderB) return orderA - orderB;
+
+      // opcional: desempate (ex: nome)
+      const aName = playersMap.get(a.playerId)?.name || "";
+      const bName = playersMap.get(b.playerId)?.name || "";
+
+      return aName.localeCompare(bName);
     });
   }, [match.Lineups, playersMap]);
 
   const playerById = useMemo(() => {
-    const map = new Map<string, Player>();
-    for (const p of players) map.set(String(p.id), p);
+    const map = new Map<number, Player>();
+    for (const p of players) map.set(p.id, p);
     return map;
   }, [players]);
 
@@ -246,7 +258,7 @@ export const AdminMatchDetail = () => {
       for (const l of sortedLineup) {
         if (l.isStarting !== isStarting) continue;
 
-        const player = playersMap.get(String(l.playerId));
+        const player = playersMap.get(l.playerId);
         if (player) result.push(player);
       }
 
@@ -673,14 +685,14 @@ export const AdminMatchDetail = () => {
                       <Text style={adminStyles.lineupSectionTitle}>
                         Titulares
                       </Text>
-                      {sortedLineup.reverse()
+                      {sortedLineup
                         .filter((e: any) => e.isStarting)
                         .map((e: any) => {
-                          const player = playerById.get(String(e.playerId));
+                          const player = playerById.get(e.playerId);
                           if (!player) return null;
                           return (
                             <View
-                              key={String(e.playerId)}
+                              key={e.playerId}
                               style={adminStyles.lineupRow}
                             >
                               {player.photoUrl ? (
@@ -714,14 +726,14 @@ export const AdminMatchDetail = () => {
                       <Text style={adminStyles.lineupSectionTitle}>
                         Suplentes
                       </Text>
-                      {sortedLineup.reverse()
+                      {sortedLineup
                         .filter((e: any) => !e.isStarting)
                         .map((e: any) => {
-                        const player = playerById.get(String(e.playerId));
+                        const player = playerById.get(e.playerId);
                           if (!player) return null;
                           return (
                             <View
-                              key={String(e.playerId)}
+                              key={e.playerId}
                               style={adminStyles.lineupRow}
                             >
                               {player.photoUrl ? (
