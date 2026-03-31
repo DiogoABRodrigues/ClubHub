@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
-import NotificationService from "../services/notification.service";
+import StatementService from "../services/statement.service";
 
-class NotificationController {
+class StatementController {
   async create(req: Request, res: Response) {
     try {
-      const notification = await NotificationService.createNotification(
+      const statement = await StatementService.createStatement(
         req.body,
       );
-      res.status(201).json(notification);
+      res.status(201).json(statement);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }
@@ -16,24 +16,24 @@ class NotificationController {
   async update(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const notification = await NotificationService.updateNotification(
+      const statement = await StatementService.updateStatement(
         Number(id),
         req.body,
       );
-      res.status(200).json(notification);
+      res.status(200).json(statement);
     } catch (error: any) {
       res.status(404).json({ error: error.message });
     }
   }
 
-  async getAll(req: Request, res: Response) {
+  async getActiveStatements(req: Request, res: Response) {
     try {
-      const notifications = await NotificationService.getAllNotifications();
-      res.status(200).json(notifications);
+      const statements = await StatementService.getActiveStatements();
+      res.status(200).json(statements);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
   }
 }
 
-export default new NotificationController();
+export default new StatementController();

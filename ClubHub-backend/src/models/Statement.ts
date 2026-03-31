@@ -2,16 +2,14 @@ import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
 import Admin from "./Admin";
 
-class Notification extends Model {
+class Statement extends Model {
   declare id: number;
   declare title: string;
   declare message: string;
-  declare automatic: boolean;
-  declare hourToSend: Date;
-  declare dayToSend: Date;
+  declare dateToExpire: Date;
 }
 
-Notification.init(
+Statement.init(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     title: { type: DataTypes.STRING, allowNull: false },
@@ -21,8 +19,7 @@ Notification.init(
       allowNull: false,
       defaultValue: false,
     },
-    hourToSend: { type: DataTypes.DATE, allowNull: true },
-    dayToSend: { type: DataTypes.DATE, allowNull: true },
+    dateToExpire: { type: DataTypes.DATE, allowNull: true },
     recipientRoleId: {
       type: DataTypes.INTEGER,
       references: { model: "roles", key: "id" },
@@ -36,13 +33,13 @@ Notification.init(
   },
   {
     sequelize,
-    modelName: "Notification",
-    tableName: "notifications",
+    modelName: "Statement",
+    tableName: "statements",
     timestamps: true,
   },
 );
 
-Notification.belongsTo(Admin, { foreignKey: "authorId" });
-Admin.hasMany(Notification, { foreignKey: "authorId" });
+Statement.belongsTo(Admin, { foreignKey: "authorId" });
+Admin.hasMany(Statement, { foreignKey: "authorId" });
 
-export default Notification;
+export default Statement;

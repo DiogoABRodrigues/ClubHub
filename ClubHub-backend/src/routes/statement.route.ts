@@ -1,5 +1,5 @@
 import { Router } from "express";
-import NotificationController from "../controllers/notification.controller";
+import StatementController from "../controllers/statement.controller";
 import { authMiddleware, authorizeRoles } from "../middlewares/authMiddleware";
 
 const router = Router();
@@ -8,14 +8,14 @@ router.post(
   "/",
   authMiddleware,
   authorizeRoles("admin"),
-  NotificationController.create,
+  StatementController.create,
 );
 router.put(
   "/:id",
   authMiddleware,
   authorizeRoles("admin"),
-  NotificationController.update,
+  StatementController.update,
 );
-router.get("/", NotificationController.getAll);
+router.get("/", StatementController.getActiveStatements);
 
 export default router;

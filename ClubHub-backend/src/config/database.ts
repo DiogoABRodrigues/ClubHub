@@ -22,4 +22,4 @@ require("../models/Goal");
 require("../models/Role");
 require("../models/Admin");
 require("../models/News");
-require("../models/Notification");
+require("../models/Statement");
