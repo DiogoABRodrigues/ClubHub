@@ -6,7 +6,6 @@ import {
   FlatList,
   RefreshControl,
 } from "react-native";
-import { Plus } from "lucide-react-native";
 import { styles } from "./AdminMatches.styles";
 import { MatchCard } from "../../../components/MatchCard";
 import { COLORS } from "../../../theme/colors";

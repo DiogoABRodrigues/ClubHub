@@ -1,8 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AdminMatchDetail } from "../screens/Admin/AdminMatches/AdminMatchDetail";
-import { AdminMatches } from "../screens/Admin/AdminMatches/AdminMatches";
-import { AdminMatchEditModal } from "../components/AdminMatchEditModal";
+import { Matches } from "../screens/Matches/Matches";
 
 export type AdminMatchesStackParamList = {
   AdminMatches: undefined;
@@ -18,7 +17,7 @@ export const AdminMatchesStack = () => (
       animation: "none",
     }}
   >
-    <Stack.Screen name="AdminMatches" component={AdminMatches} />
+    <Stack.Screen name="AdminMatches" component={Matches} />
     <Stack.Screen name="AdminMatchDetail" component={AdminMatchDetail} />
   </Stack.Navigator>
 );

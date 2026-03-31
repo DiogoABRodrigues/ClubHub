@@ -19,7 +19,7 @@ interface MatchesSectionProps {
   getAwayTeam: (match: any) => string;
 }
 
-const MatchesSection: React.FC<MatchesSectionProps> = ({
+const MatchesSection = React.memo(({
   title,
   matches,
   showAll,
@@ -28,13 +28,30 @@ const MatchesSection: React.FC<MatchesSectionProps> = ({
   navigation,
   getHomeTeam,
   getAwayTeam,
-}) => {
-  const limitedMatches = useMemo(
-    () => (showAll ? matches : matches.slice(0, 3)),
-    [matches, showAll],
-  );
+}: MatchesSectionProps) => {
+  const limitedMatches = useMemo(() => {
+    return showAll ? matches : matches.slice(0, 3);
+  }, [matches, showAll]);
   
   const { competitions } = useCompetitions();
+
+    const competitionsMap = useMemo(() => {
+    const map = new Map();
+    for (const c of competitions) {
+      map.set(c.id, c);
+    }
+    return map;
+  }, [competitions]);
+
+  const isAdmin = true; 
+  const navigateToMatchDetail = useCallback((matchId: string) => {
+    if (isAdmin) {
+      navigation.navigate("AdminMatchDetail", { id: matchId });
+    } else {
+      navigation.navigate("MatchDetail", { id: matchId });
+    }
+  }, [navigation, isAdmin]);
+  
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
@@ -53,18 +70,25 @@ const MatchesSection: React.FC<MatchesSectionProps> = ({
           match={match}
           homeLogo={getTeamLogo(getHomeTeam(match)) || ""}
           awayLogo={getTeamLogo(getAwayTeam(match)) || ""}
-          onPress={() => navigation.navigate("MatchDetail", { id: match.id })}
-          competition={competitions.find((c) => c.id === match.competitionId)}
+          onPress={() => navigateToMatchDetail(match.id)}
+          competition={competitionsMap.get(match.competitionId)}
         />
       ))}
     </View>
   );
-};
+});
 
 export const Matches = ({ navigation }: any) => {
   const { matches, loading, refreshMatches } = useMatches();
   const { teams, refreshTeams } = useTeams();
-  const { competitions, refreshCompetitions } = useCompetitions();
+  const teamsMap = useMemo(() => {
+    const map = new Map();
+    for (const t of teams) {
+      map.set(t.name.trim().toLowerCase(), t.logoUrl);
+    }
+    return map;
+  }, [teams]);
+  const { refreshCompetitions } = useCompetitions();
 
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [showAllFinished, setShowAllFinished] = useState(false);
@@ -88,33 +112,26 @@ export const Matches = ({ navigation }: any) => {
     setRefreshing(true);
 
     try {
-      await refreshMatches();
-      await refreshCompetitions();
-      await refreshTeams();
-
-    } catch (e) {
-      console.error(e);
+      await Promise.all([
+        refreshMatches(),
+        refreshCompetitions(),
+        refreshTeams(),
+      ]);
     } finally {
       setRefreshing(false);
     }
-  }, []);
+  }, [refreshMatches, refreshCompetitions, refreshTeams]);
 
-  const getTeamLogo = useCallback(
-    (teamName: string) => {
-      const normalized = teamName.trim().toLowerCase();
-      const team = teams.find(
-        (t) => t.name.trim().toLowerCase() === normalized,
-      );
-      return team?.logoUrl;
-    },
-    [teams],
-  );
+  const getTeamLogo = useCallback((teamName: string) => {
+    return teamsMap.get(teamName.trim().toLowerCase());
+  }, [teamsMap]);
 
   const getHomeTeam = useCallback(
     (match: any) =>
       match.homeOrAway === "C" ? match.teamName : match.opponent,
     [],
   );
+
   const getAwayTeam = useCallback(
     (match: any) =>
       match.homeOrAway === "F" ? match.teamName : match.opponent,
