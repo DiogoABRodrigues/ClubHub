@@ -1,5 +1,6 @@
 import Lineup from "../models/Lineup";
 import Match from "../models/Match";
+import MatchEvent from "../models/MatchEvent";
 import Player from "../models/Player";
 import Stats from "../models/Stats";
 import SeasonService from "./season.service";
@@ -19,6 +20,12 @@ export default class MatchService {
             {
               model: Player,
               attributes: ["id", "name", "photoUrl"],
+            },
+             {
+              model: MatchEvent,
+              as: "events",
+              separate: true,
+              order: [["minute", "ASC"]],
             },
           ],
         },

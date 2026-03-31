@@ -12,6 +12,7 @@ import squadRoutes from "./routes/squad.routes";
 import newsRoutes from "./routes/news.routes";
 import path from "path";
 import scraperRoutes from "./routes/scraperRoutes";
+import matchEventRoutes from "./routes/matchEvent.routes";
 
 const app = express();
 
@@ -42,5 +43,6 @@ app.use("/api/squads", squadRoutes);
 app.use("/api/news", newsRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/api", scraperRoutes);
+app.use("/api/match-events", matchEventRoutes);
 
 export default app;

@@ -3,6 +3,7 @@ import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
 import Competition from "./Competition";
 import Lineup from "./Lineup";
+import MatchEvent from "./MatchEvent";
 
 class Match extends Model {
   public id!: number;
@@ -17,7 +18,6 @@ class Match extends Model {
   public round!: string;
   public outcome!: "V" | "E" | "D" | null;
   public status!: "upcoming" | "live" | "finished";
-  public events?: any[];
   public location?: string;
   public statusTime!: "1st" | "interval" | "2nd" | "extra" | "penalties";
   public readonly createdAt!: Date;
@@ -87,10 +87,6 @@ Match.init(
       allowNull: false,
       defaultValue: "upcoming",
     },
-    events: {
-      type: DataTypes.JSON,
-      allowNull: true,
-    },
     location: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -127,5 +123,14 @@ Match.belongsTo(Competition, {
 
 Match.hasMany(Lineup, { foreignKey: "matchId", as: "lineups" });
 Lineup.belongsTo(Match, { foreignKey: "matchId" });
+
+Match.hasMany(MatchEvent, {
+  foreignKey: "matchId",
+  as: "events",
+});
+
+MatchEvent.belongsTo(Match, {
+  foreignKey: "matchId",
+});
 
 export default Match;
