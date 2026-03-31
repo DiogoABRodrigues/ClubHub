@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./Matches.styles";
 import { MatchCard } from "../../components/MatchCard";
 import { COLORS } from "../../theme/colors";
-import { useMatches } from "../../contexts/MatchesContext";
+import { useMatches } from "../../hooks/useMatches";
 import { useTeams } from "../../contexts/TeamsContext";
 import { useCompetitions } from "../../contexts/CompetitionContext";
 

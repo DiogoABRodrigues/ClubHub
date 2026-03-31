@@ -9,7 +9,7 @@ import {
 import { styles } from "./AdminMatches.styles";
 import { MatchCard } from "../../../components/MatchCard";
 import { COLORS } from "../../../theme/colors";
-import { useMatches } from "../../../contexts/MatchesContext";
+import { useMatches } from "../../../hooks/useMatches";
 import { useTeams } from "../../../contexts/TeamsContext";
 import { useCompetitions } from "../../../contexts/CompetitionContext";
 import Ionicons from "@expo/vector-icons/build/Ionicons";

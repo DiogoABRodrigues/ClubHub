@@ -17,7 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../../../../theme/colors";
 import { adminStyles } from "../AdminMatchDetail.styles";
 import { usePlayers } from "../../../../hooks/usePlayers";
-import { useMatches } from "../../../../contexts/MatchesContext";
+import { useMatches } from "../../../../hooks/useMatches";
 import { isFieldPlayer } from "../../../../utils/playerPositionUtils";
 
 interface Props {

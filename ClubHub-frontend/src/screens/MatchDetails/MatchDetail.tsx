@@ -5,7 +5,7 @@ import { LiveBadge } from "../../components/LiveBadge";
 import { COLORS } from "../../theme/colors";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { styles } from "./MatchDetail.styles";
-import { useMatches } from "../../contexts/MatchesContext";
+import { useMatches } from "../../hooks/useMatches";
 import { useTeams } from "../../contexts/TeamsContext";
 import { formatDateWithWeekdayPT } from "../../utils/dateUtils";
 import { teamConfig } from "../../config/teamConfig";

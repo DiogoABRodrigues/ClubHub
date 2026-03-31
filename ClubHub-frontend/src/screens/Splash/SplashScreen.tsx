@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Animated, Text } from "react-native";
-import { useMatches } from "../../contexts/MatchesContext";
+import { useMatches } from "../../hooks/useMatches";
 import { useTeams } from "../../contexts/TeamsContext";
 import { useStandings } from "../../contexts/StandingsContext";
 import { useNews } from "../../contexts/NewsContext";
