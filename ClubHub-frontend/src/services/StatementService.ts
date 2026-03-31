@@ -13,8 +13,12 @@ export const StatementService = {
     return data;
   },
 
-  getActive: async (): Promise<Statement[]> => {
+  getActive: async (): Promise<Statement> => {
     const { data } = await api.get("/statements/");
     return data;
+  },
+
+  delete: async (id: number): Promise<void> => {
+    await api.delete(`/statements/${id}`);
   }
 };

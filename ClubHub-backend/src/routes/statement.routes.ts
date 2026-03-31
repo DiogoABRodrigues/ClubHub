@@ -6,16 +6,17 @@ const router = Router();
 
 router.post(
   "/",
-  authMiddleware,
-  authorizeRoles("admin"),
   StatementController.create,
 );
 router.put(
   "/:id",
-  authMiddleware,
-  authorizeRoles("admin"),
   StatementController.update,
 );
 router.get("/", StatementController.getActiveStatements);
+
+router.delete(
+  "/:id",
+  StatementController.deleteStatement,
+); 
 
 export default router;

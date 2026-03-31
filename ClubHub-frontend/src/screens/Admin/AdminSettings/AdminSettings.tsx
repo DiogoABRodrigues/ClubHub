@@ -4,10 +4,17 @@ import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./AdminSettings.styles";
 import { COLORS } from "../../../theme/colors";
 import { ScrapperService } from "../../../services/ScrapperService";
+import { useStatements } from "../../../contexts/StatementContext";
+import { StatementModal } from "../../../components/StatementModal";
 
 export const AdminSettings = ({ navigation }: any) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateDone, setUpdateDone] = useState(false);
+
+  const [statementModalVisible, setStatementModalVisible] = useState(false);
+
+  const { statements } = useStatements();
+  const activeStatement = statements?.[0];
 
   const handleUpdateAll = async () => {
     setIsUpdating(true);
@@ -123,8 +130,35 @@ export const AdminSettings = ({ navigation }: any) => {
             </TouchableOpacity>
           </View>
         </View>
+        <View style={styles.card}>
+        <View style={styles.cardIconRow}>
+          <View style={styles.iconCircle}>
+            <Ionicons name="megaphone-outline" size={22} color={COLORS.primary} />
+          </View>
+
+          <View style={styles.cardTextBlock}>
+            <Text style={styles.cardTitle}>Comunicado</Text>
+            <Text style={styles.cardDescription}>
+              Criar ou editar o comunicado oficial do clube.
+            </Text>
+          </View>
+        </View>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => setStatementModalVisible(true)}
+        >
+          <Text style={styles.actionButtonText}>
+            {activeStatement ? "Editar Comunicado" : "Criar Comunicado"}
+          </Text>
+        </TouchableOpacity>
+      </View>
       </ScrollView>
+      <StatementModal
+        visible={statementModalVisible}
+        onClose={() => setStatementModalVisible(false)}
+      />
     </View>
+    
   );
 };
 

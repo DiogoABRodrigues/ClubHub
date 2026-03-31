@@ -26,17 +26,3 @@ export const removePreference = async (
   });
 };
 
-export const getPreferencesForEvent = async (
-  teamId: string,
-  matchId: string | null,
-  eventType: string,
-) => {
-  return NotificationPreference.findAll({
-    where: {
-      teamId,
-      matchId,
-      events: { [NotificationPreference.sequelize.Op.contains]: [eventType] },
-    },
-    include: ["Device"],
-  });
-};

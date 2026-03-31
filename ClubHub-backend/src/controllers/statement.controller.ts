@@ -28,12 +28,21 @@ class StatementController {
 
   async getActiveStatements(req: Request, res: Response) {
     try {
-      const statements = await StatementService.getActiveStatements();
-      res.status(200).json(statements);
+      const statement = await StatementService.getActiveStatement();
+      res.status(200).json(statement);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
   }
-}
 
+  async deleteStatement(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      await StatementService.deleteStatement(Number(id));
+      res.status(204).send();
+    } catch (error: any) {
+      res.status(404).json({ error: error.message });
+    }
+  }
+}
 export default new StatementController();

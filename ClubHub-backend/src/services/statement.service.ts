@@ -3,7 +3,7 @@ import Statement from "../models/Statement";
 import { Op } from "sequelize";
 
 class StatementService {
-  async createStatement(data: Partial<Statement>) {
+async createStatement(data: Partial<Statement>) {
     const now = new Date();
 
     // Expirar todos os statements ativos
@@ -19,10 +19,14 @@ class StatementService {
       }
     );
 
-    // Criar novo statement
-    const statement = await Statement.create(data);
-
-    return statement;
+    try {
+      const statement = await Statement.create(data);
+      console.log("CREATE Statement - sucesso:", statement.toJSON());
+      return statement;
+    } catch (error: any) {
+      console.error("CREATE Statement - erro:", error.message);
+      throw error;
+    }
   }
 
   async updateStatement(id: number, data: Partial<Statement>) {
@@ -35,9 +39,9 @@ class StatementService {
     return await Statement.findByPk(id);
   }
 
-  async getActiveStatements() {
+  async getActiveStatement() {
     const now = new Date();
-    return await Statement.findAll({
+    return await Statement.findOne({
       where: {
         [Op.or]: [
           { dateToExpire: { [Op.gt]: now } },
@@ -45,6 +49,12 @@ class StatementService {
         ],
       },
     });
+  }
+
+  async deleteStatement(id: number) {
+    const statement = await Statement.findByPk(id);
+    if (!statement) throw new Error("Statement not found");
+    await statement.destroy();
   }
 }
 
