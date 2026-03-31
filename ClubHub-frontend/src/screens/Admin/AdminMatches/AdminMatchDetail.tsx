@@ -223,8 +223,8 @@ export const AdminMatchDetail = () => {
     if (!match.Lineups) return [];
 
     return [...match.Lineups].sort((a, b) => {
-      const aPos = playersMap.get(String(a.playerId))?.Stats?.position ?? "";
-      const bPos = playersMap.get(String(b.playerId))?.Stats?.position ?? "";
+      const aPos = playersMap.get(String(a.playerId))?.Stats?.[0]?.position ?? "";
+      const bPos = playersMap.get(String(b.playerId))?.Stats?.[0]?.position ?? "";
       return aPos.localeCompare(bPos);
     });
   }, [match.Lineups, playersMap]);
@@ -704,7 +704,7 @@ export const AdminMatchDetail = () => {
                                 {player.name}
                               </Text>
                               <Text style={adminStyles.lineupPosition}>
-                                {player.Stats?.position}
+                                {player.Stats?.[0]?.position}
                               </Text>
                             </View>
                           );
@@ -745,7 +745,7 @@ export const AdminMatchDetail = () => {
                                 {player.name}
                               </Text>
                               <Text style={adminStyles.lineupPosition}>
-                                {player.Stats?.position}
+                                {player.Stats?.[0]?.position}
                               </Text>
                             </View>
                           );

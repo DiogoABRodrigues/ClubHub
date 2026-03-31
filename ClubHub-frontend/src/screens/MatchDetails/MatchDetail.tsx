@@ -343,7 +343,7 @@ export const MatchDetail = () => {
                           )}
                           <Text style={styles.lineupName}>{player.name}</Text>
                           <Text style={styles.lineupPosition}>
-                            {player.stats?.position}
+                            {player.Stats?.[0]?.position}
                           </Text>
                         </View>
                       );
@@ -378,7 +378,7 @@ export const MatchDetail = () => {
                           )}
                           <Text style={styles.lineupName}>{player.name}</Text>
                           <Text style={styles.lineupPosition}>
-                            {player.stats?.position}
+                            {player.Stats?.[0]?.position}
                           </Text>
                         </View>
                       );
