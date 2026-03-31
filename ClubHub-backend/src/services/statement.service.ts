@@ -4,6 +4,22 @@ import { Op } from "sequelize";
 
 class StatementService {
   async createStatement(data: Partial<Statement>) {
+    const now = new Date();
+
+    // Expirar todos os statements ativos
+    await Statement.update(
+      { dateToExpire: now },
+      {
+        where: {
+          [Op.or]: [
+            { dateToExpire: { [Op.gt]: now } },
+            { dateToExpire: null },
+          ],
+        },
+      }
+    );
+
+    // Criar novo statement
     const statement = await Statement.create(data);
 
     return statement;
