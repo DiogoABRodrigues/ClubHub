@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback } from "react";
 import { View, Text, Image } from "react-native";
 import { FlashList } from "@shopify/flash-list";
-import { usePlayers } from "../../contexts/PlayersContext";
+import { usePlayers } from "../../hooks/usePlayers";
 import { PlayerWithStats } from "../../models/Player";
 import { styles as globalStyles } from "./Squad.styles";
 import { getPositionOrder } from "../../utils/playerPositionUtils";

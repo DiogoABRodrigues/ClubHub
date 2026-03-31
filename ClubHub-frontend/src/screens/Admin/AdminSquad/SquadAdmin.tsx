@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { View, Text, Image, Switch, Alert } from "react-native";
 import { FlashList } from "@shopify/flash-list";
-import { usePlayers } from "../../../contexts/PlayersContext";
+import { usePlayers } from "../../../hooks/usePlayers";
 import { PlayerWithStats } from "../../../models/Player";
 import { styles } from "../../Squad/Squad.styles";
 import { mapToMainPosition, getPositionOrder } from "../../../utils/playerPositionUtils";
@@ -111,7 +111,7 @@ export function AdminSquadScreen() {
           {
             text: "Confirmar",
             onPress: () =>
-              updatePlayer(player.id, { stillOnTeam: newValue }),
+              updatePlayer({ id: player.id, data: { stillOnTeam: newValue } }),
           },
         ]
       );

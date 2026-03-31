@@ -14,19 +14,21 @@ import { StatementsProvider } from "./src/contexts/StatementContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StyleSheet } from "react-native";
 import { AuthProvider } from "./src/contexts/AuthContext";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./src/lib/queryClient";
 
 export default function App() {
   const [splashDone, setSplashDone] = useState(false);
 
   return (
     <GestureHandlerRootView style={styles.container}>
+      <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <MatchesProvider>
           <TeamsProvider>
             <NewsProvider>
               <StandingsProvider>
                 <StatsProvider>
-                  <PlayersProvider>
                     <SeasonsProvider>
                       <CompetitionsProvider>
                         <StatementsProvider>
@@ -38,13 +40,13 @@ export default function App() {
                         </StatementsProvider>
                       </CompetitionsProvider>
                     </SeasonsProvider>
-                  </PlayersProvider>
                 </StatsProvider>
               </StandingsProvider>
             </NewsProvider>
           </TeamsProvider>
         </MatchesProvider>
       </AuthProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }

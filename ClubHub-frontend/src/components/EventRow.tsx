@@ -3,9 +3,8 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { styles } from "./styles/EventRow.syles";
 import { COLORS } from "../theme/colors";
 import Ionicons from "@expo/vector-icons/build/Ionicons";
-import { usePlayers } from "../contexts/PlayersContext";
+import { usePlayers } from "../hooks/usePlayers";
 import { MatchEvent } from "../models/MatchEvent";
-import { useAuth } from "../contexts/AuthContext";
 
 interface Props {
   event: MatchEvent;

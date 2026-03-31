@@ -9,7 +9,7 @@ import { useMatches } from "../../contexts/MatchesContext";
 import { useTeams } from "../../contexts/TeamsContext";
 import { formatDateWithWeekdayPT } from "../../utils/dateUtils";
 import { teamConfig } from "../../config/teamConfig";
-import { usePlayers } from "../../contexts/PlayersContext";
+import { usePlayers } from "../../hooks/usePlayers";
 import { mapToMainPosition } from "../../utils/playerPositionUtils";
 import { EventRow } from "../../components/EventRow";
 import { Competition } from "../../models/Competition";

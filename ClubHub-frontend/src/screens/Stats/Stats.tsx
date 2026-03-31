@@ -14,7 +14,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { ArrowUp, ArrowDown } from "lucide-react-native";
-import { usePlayers } from "../../contexts/PlayersContext";
+import { usePlayers } from "../../hooks/usePlayers";
 import { PlayerWithStats } from "../../models/Player";
 import { styles as globalStyles } from "./Stats.styles";
 import { isFieldPlayer } from "../../utils/playerPositionUtils";
