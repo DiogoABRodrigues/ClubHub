@@ -14,28 +14,11 @@ export const styles = StyleSheet.create({
     paddingBottom: SPACING.xl,
   },
 
-  // ── Header ───────────────────────────────────────────────────────────────
-  header: {
-    backgroundColor: COLORS.surface,
-    paddingTop: SPACING.xl + 8,       // espaço para status bar
-    paddingBottom: SPACING.sm,
-    paddingHorizontal: SPACING.md,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-
   headerLeft: {
     flexDirection: "row",
     alignItems: "center",
     gap: SPACING.sm,
     marginBottom: SPACING.xs,
-  },
-
-  headerTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: "700",
-    color: COLORS.textPrimary,
-    letterSpacing: -0.3,
   },
 
   // ── Secções ───────────────────────────────────────────────────────────────
@@ -125,5 +108,84 @@ export const styles = StyleSheet.create({
 
   categoryTextActive: {
     color: "#FFFFFF",
+  },
+  header: {
+    backgroundColor: COLORS.surface,
+    paddingTop: SPACING.xl + 8,       // espaço para status bar
+    paddingBottom: SPACING.md,
+    paddingHorizontal: SPACING.md,
+  },
+  headerTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 16,
+    marginBottom: 12,
+  },
+  backBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.surfaceLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerTitle: {
+    fontSize: 17,
+    fontWeight: "700",
+    color: COLORS.textPrimary,
+    letterSpacing: -0.3,
+  },
+  tabsRow: {
+    flexDirection: "row",
+    gap: 6,
+    paddingHorizontal: 16,
+  },
+  tab: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    backgroundColor: COLORS.surfaceLight,
+  },
+  tabActive: {
+    backgroundColor: COLORS.primary,
+  },
+  tabText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: COLORS.textSecondary,
+  },
+  tabTextActive: {
+    color: "#fff",
+  },
+  tabLiveDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: COLORS.destructive,
+  },
+  livePill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: COLORS.destructive,
+    borderRadius: 20,
+    paddingVertical: 3,
+    paddingHorizontal: 9,
+    alignSelf: "flex-start",
+  },
+  liveDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: "#fff",
+  },
+  livePillText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#fff",
   },
 });

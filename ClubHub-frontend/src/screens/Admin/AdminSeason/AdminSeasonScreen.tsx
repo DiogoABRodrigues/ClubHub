@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Trophy, Users, BarChart3, ArrowLeft } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
-import { styles } from "./Season.styles";
+import { styles } from "./AdminSeason.styles";
 import { AdminSquadScreen } from "../AdminSquad/SquadAdmin";
 import { Standings } from "../../Standings/Standings";
 import { SquadStats } from "../../Stats/Stats";

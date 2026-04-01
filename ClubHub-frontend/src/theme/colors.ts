@@ -4,22 +4,22 @@
 
 export const COLORS = {
   // ── Identidade principal ──────────────────
-  primary:       "#426bdb", // Royal Blue — botões, ações, tabs ativas
-  primaryDark:   "#4660b4", // Deep Blue  — header do MatchDetail
-  primaryLight:  "#DBEAFE", // Blue Tint  — fundos de seleção / hover / badges
+  primary:       "#800000", // Royal Blue — botões, ações, tabs ativas
+  primaryDark:   "#000000", // Deep Blue  — header do MatchDetail
+  primaryLight:  "#e4d54e", // Blue Tint  — fundos de seleção / hover / badges
 
   // ── Superfícies ───────────────────────────
-  background:    "#F8F9FA", // Off-white  — fundo geral das screens
-  surface:       "#FFFFFF", // Branco     — cards, modais
+  background:    "#FFFFFFE6", // Off-white  — fundo geral das screens
+  surface:       "#800000c2", // Branco     — cards, modais
   surfaceLight:  "#F1F5F9", // Cinza suave — header Home, fundos alt
 
   // ── Texto ─────────────────────────────────
-  textPrimary:   "#0F172A", // Slate 900  — texto principal
-  textSecondary: "#414244", // Gray 500   — texto secundário / labels
-  textMuted:     "#9CA3AF", // Gray 400   — hints, placeholders, minutagem
+  textPrimary:   "#ffffffe6", // Slate 900  — texto principal
+  textSecondary: "#0c0c0ce6", // Gray 500   — texto secundário / labels
+  textMuted:     "#e6e2e2e6", // Gray 400   — hints, placeholders, minutagem
 
   // ── Bordas ────────────────────────────────
-  border:        "#E2E6EA", // Bordas e divisórias
+  border:        "#f7d7ca87", // Bordas e divisórias
   muted:         "#E2E6EA", // alias (manter compatibilidade)
 
   // ── Status semânticos ─────────────────────
@@ -29,14 +29,14 @@ export const COLORS = {
   errorLight:    "#FEE2E2", // Verm. claro — fundo linhas de descida
   warning:       "#EAB308", // Âmbar      — cartões amarelos
   warningLight:  "#FEF3C7", // Âmbar claro — fundo avisos
-  destructive:   "#DC2626", // alias error (manter compatibilidade)
+  destructive:   "#fd0101", // alias error (manter compatibilidade)
 
   // ── Charts / Extras ───────────────────────
   chart2:        "#16A34A", // Verde (golos / positivo)
   chart3:        "#EAB308", // Âmbar (cartões)
 
   // ── Accent secundário (uso pontual) ───────
-  secondary:     "#3B82F6", // Azul médio — ícones de secção
+  secondary:     "#800000", // Azul médio — ícones de secção
 };
 
 export const SPACING = {

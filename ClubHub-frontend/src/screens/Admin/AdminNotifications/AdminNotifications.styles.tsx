@@ -2,12 +2,13 @@ import { StyleSheet } from "react-native";
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../../theme/colors";
 
 export const styles = StyleSheet.create({
+  // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
 
-  // ── Header ────────────────────────────────────────────────
+  // ── Header ───────────────────────────────────────────────────────────────
   header: {
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.xl + 16,
@@ -16,210 +17,270 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
+
   headerLeft: {
     flexDirection: "row",
     alignItems: "center",
     gap: SPACING.sm,
     marginBottom: SPACING.sm,
   },
+
   headerTitle: {
     fontSize: FONT_SIZE.lg,
-    fontWeight: "600",
+    fontWeight: "700",
     color: COLORS.textPrimary,
+    letterSpacing: -0.3,
   },
 
-  // ── Scroll content ────────────────────────────────────────
+  // ── Scroll content ────────────────────────────────────────────────────────
   content: {
-    paddingBottom: SPACING.lg,
+    paddingBottom: SPACING.xl,
   },
 
-  // ── Tabs ──────────────────────────────────────────────────
+  // ── Tabs segmented control ────────────────────────────────────────────────
   tabList: {
     flexDirection: "row",
     marginHorizontal: SPACING.md,
     marginTop: SPACING.md,
     marginBottom: SPACING.sm,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.surfaceLight,
     borderRadius: RADIUS.md,
-    padding: 4,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: 3,
   },
+
   tabButton: {
     flex: 1,
-    paddingVertical: SPACING.xs,
+    paddingVertical: SPACING.xs + 2,
     alignItems: "center",
     borderRadius: RADIUS.sm,
   },
+
   tabButtonActive: {
     backgroundColor: COLORS.surface,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
+
   tabText: {
     color: COLORS.textSecondary,
     fontSize: FONT_SIZE.sm,
     fontWeight: "500",
   },
+
   tabTextActive: {
     color: COLORS.textPrimary,
-    fontWeight: "600",
+    fontWeight: "700",
   },
 
-  // ── Tab content ───────────────────────────────────────────
+  // ── Tab content ───────────────────────────────────────────────────────────
   tabContent: {
     paddingHorizontal: SPACING.md,
     paddingBottom: SPACING.md,
   },
+
   sectionTitle: {
-    fontSize: FONT_SIZE.md,
-    fontWeight: "600",
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.sm,
+    fontSize: FONT_SIZE.sm,
+    fontWeight: "700",
+    color: COLORS.textMuted,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    marginBottom: SPACING.md,
+    marginTop: SPACING.xs,
   },
+
   label: {
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
     fontSize: FONT_SIZE.sm,
-    marginBottom: 4,
+    fontWeight: "600",
+    marginBottom: SPACING.xs,
   },
+
   input: {
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.surfaceLight,
     borderRadius: RADIUS.md,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm + 2,
     color: COLORS.textPrimary,
     fontSize: FONT_SIZE.sm,
     marginBottom: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
+
   inputMultiline: {
     height: 80,
     textAlignVertical: "top",
+    paddingTop: SPACING.sm,
   },
 
-  // ── Preview ───────────────────────────────────────────────
+  // ── Preview da notificação ────────────────────────────────────────────────
   preview: {
     marginBottom: SPACING.md,
   },
+
   previewLabel: {
-    color: COLORS.textSecondary,
+    color: COLORS.textMuted,
     fontSize: FONT_SIZE.xs,
-    marginBottom: 4,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: SPACING.xs,
   },
+
   previewCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.secondary,
-    borderRadius: RADIUS.md,
-    padding: SPACING.sm,
-  },
-  previewIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
     backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    gap: SPACING.sm,
+  },
+
+  previewIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.primaryLight,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: SPACING.sm,
+    flexShrink: 0,
   },
+
   previewTitle: {
     color: COLORS.textPrimary,
-    fontWeight: "600",
+    fontWeight: "700",
     fontSize: FONT_SIZE.sm,
+    marginBottom: 2,
   },
+
   previewMessage: {
     color: COLORS.textSecondary,
     fontSize: FONT_SIZE.xs,
+    lineHeight: 17,
   },
 
-  // ── Send button ───────────────────────────────────────────
+  // ── Botão enviar ──────────────────────────────────────────────────────────
   sendButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: COLORS.primary,
-    paddingVertical: SPACING.sm,
-    borderRadius: RADIUS.md,
-    gap: SPACING.xs,
+    paddingVertical: SPACING.md,
+    borderRadius: RADIUS.lg,
+    gap: SPACING.xs + 2,
   },
+
   sendButtonDisabled: {
     opacity: 0.5,
   },
+
   sendButtonText: {
-    color: "#fff",
-    fontWeight: "600",
+    color: "#FFFFFF",
+    fontWeight: "700",
     fontSize: FONT_SIZE.sm,
   },
 
-  // ── Auto items ────────────────────────────────────────────
+  // ── Items automáticos ─────────────────────────────────────────────────────
   autoItem: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: COLORS.secondary,
-    padding: SPACING.sm,
-    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.surface,
+    padding: SPACING.md,
+    borderRadius: RADIUS.lg,
     marginBottom: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
+
   autoItemLeft: {
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
+    gap: SPACING.sm,
   },
+
   autoIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: COLORS.surface,
+    width: 38,
+    height: 38,
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.primaryLight,
     alignItems: "center",
     justifyContent: "center",
+    flexShrink: 0,
   },
+
   autoItemText: {
-    marginLeft: SPACING.sm,
     flex: 1,
+    gap: 2,
   },
+
   autoTitle: {
     color: COLORS.textPrimary,
     fontWeight: "600",
     fontSize: FONT_SIZE.sm,
   },
+
   autoDesc: {
     color: COLORS.textSecondary,
     fontSize: FONT_SIZE.xs,
+    lineHeight: 17,
   },
 
-  // ── History ───────────────────────────────────────────────
+  // ── Histórico ─────────────────────────────────────────────────────────────
   historySection: {
     paddingHorizontal: SPACING.md,
     marginTop: SPACING.md,
   },
+
   historyItem: {
-    backgroundColor: COLORS.secondary,
-    borderRadius: RADIUS.md,
-    padding: SPACING.sm,
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.md,
     marginBottom: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    gap: SPACING.xs,
   },
+
   historyHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 4,
+    alignItems: "flex-start",
+    gap: SPACING.sm,
   },
+
   historyTitle: {
     color: COLORS.textPrimary,
-    fontWeight: "600",
+    fontWeight: "700",
     fontSize: FONT_SIZE.sm,
+    flex: 1,
   },
+
   historyTimestamp: {
-    color: COLORS.textSecondary,
+    color: COLORS.textMuted,
     fontSize: FONT_SIZE.xs,
+    flexShrink: 0,
   },
+
   historyMessage: {
     color: COLORS.textSecondary,
     fontSize: FONT_SIZE.xs,
-    marginBottom: 4,
+    lineHeight: 17,
   },
+
   historyFooter: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: SPACING.xs,
   },
+
   historyRecipients: {
-    color: COLORS.textSecondary,
+    color: COLORS.textMuted,
     fontSize: FONT_SIZE.xs,
   },
 });

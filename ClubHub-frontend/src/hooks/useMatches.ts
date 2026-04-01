@@ -74,10 +74,10 @@ export const useMatches = () => {
   // ─────────────────────────────
   // FINISH MATCH
   // ─────────────────────────────
-  const finishMatch = async (id: number) => {
+  const finishMatch = async (id: number, outcome: "V" | "D" | "E") => {
     await updateMatch.mutateAsync({
       id,
-      data: { status: "finished" },
+      data: { status: "finished", outcome },
     });
   };
 

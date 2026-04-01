@@ -2,145 +2,190 @@ import { StyleSheet } from "react-native";
 import { COLORS, SPACING, FONT_SIZE, RADIUS } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
-  // ── Card base ─────────────────────────────────────────────────────────────
-  card: {
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.lg,
-    padding: SPACING.sm + 4,
-    marginBottom: SPACING.sm,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-
-  // ── Header do card (data / status) ───────────────────────────────────────
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  // ── Shared logo ───────────────────────────────────────────────────────────
+  logo: {
+    width: 40,
+    height: 40,
+    overflow: "hidden",
     alignItems: "center",
-    marginBottom: 10,
+    justifyContent: "center",
+  },
+  logoDark: {
+    backgroundColor: "rgba(255,255,255,0.12)",
+  },
+  logoLight: {
+  },
+  logoEmoji: {
+    fontSize: 18,
   },
 
-  headerLeft: {
+  // ── Shared layout ─────────────────────────────────────────────────────────
+  cardTop: {
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  cardBody: {
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  teamCol: {
+    flex: 1,
     alignItems: "center",
     gap: 6,
   },
-
-  headerInfo: {
-    flexDirection: "column",
-    gap: 2,
+  cardFooter: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
   },
 
-  date: {
-    fontSize: 11,
-    color: COLORS.textMuted,
+  // ── LIVE card ─────────────────────────────────────────────────────────────
+  liveCard: {
+    backgroundColor: COLORS.primary,
+    borderRadius: RADIUS.lg,
+    padding: 16,
+    marginBottom: SPACING.sm,
+    overflow: "hidden",
+  },
+  // decorative background circle
+  liveDecor: {
+    position: "absolute",
+    top: -30,
+    right: -30,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+  },
+  liveComp: {
+    fontSize: 10,
+    color: COLORS.textPrimary,
+    letterSpacing: 0.4,
     fontWeight: "500",
+    flex: 1,
+    marginRight: 8,
+    marginBottom: SPACING.xs,
   },
-
-  competition: {
-    fontSize: 11,
-    color: COLORS.textSecondary,
-  },
-
-  // ── Badges de estado ──────────────────────────────────────────────────────
-  upcoming: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: COLORS.primaryDark,
-    backgroundColor: COLORS.primaryLight,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: RADIUS.xl,
-    overflow: "hidden",
-  },
-
-  finished: {
+  liveTeamName: {
     fontSize: 11,
     fontWeight: "600",
-    color: COLORS.textSecondary,
-    backgroundColor: COLORS.surfaceLight,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: RADIUS.xl,
-    overflow: "hidden",
-  },
-
-  // ── Equipas ───────────────────────────────────────────────────────────────
-  teams: {
-    gap: 8,
-  },
-
-  teamRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-
-  teamInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    flex: 1,
-  },
-
-  teamLogo: {
-    width: 32,
-    height: 32,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  teamLogoAlt: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: COLORS.surfaceLight,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  teamName: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: "600",
-    color: COLORS.textPrimary,
-    flex: 1,
-  },
-
-  // ── Score ─────────────────────────────────────────────────────────────────
-  score: {
-    fontSize: 20,
-    fontWeight: "800",
-    color: COLORS.textPrimary,
-    letterSpacing: -0.5,
-    minWidth: 28,
+    color: "rgba(255,255,255,0.9)",
     textAlign: "center",
   },
-
-  // ── Footer (local / categoria) ────────────────────────────────────────────
-  footer: {
-    flexDirection: "row",
+  liveScoreCol: {
     alignItems: "center",
-    marginTop: 10,
-    borderTopWidth: 0.5,
-    borderColor: COLORS.border,
-    paddingTop: 8,
-    gap: 4,
+    paddingHorizontal: 12,
   },
-
-  venue: {
+  liveScoreText: {
+    fontSize: 36,
+    fontWeight: "800",
+    color: "#fff",
+    letterSpacing: -2,
+    lineHeight: 40,
+  },
+  liveScoreSub: {
     fontSize: 11,
-    color: COLORS.textMuted,
+    color: "rgba(255,255,255,0.5)",
+    marginTop: 4,
+  },
+  liveFooterText: {
+    fontSize: 11,
+    color: COLORS.textPrimary,
     flex: 1,
   },
 
-  category: {
+  // ── Base card (upcoming + finished) ──────────────────────────────────────
+  baseCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: 14,
+    marginBottom: SPACING.sm,
+  },
+  baseComp: {
+    fontSize: 10,
+    color: COLORS.textPrimary,
+    letterSpacing: 0.4,
+    fontWeight: "500",
+    flex: 1,
+    marginRight: 8,
+    marginBottom: SPACING.xs,
+  },
+  baseTeamName: {
     fontSize: 11,
     fontWeight: "600",
-    color: COLORS.textSecondary,
-    backgroundColor: COLORS.surfaceLight,
-    paddingHorizontal: 8,
+    color: COLORS.textPrimary,
+    textAlign: "center",
+  },
+  baseFooterText: {
+    fontSize: 11,
+    color: COLORS.textPrimary,
+    flex: 1,
+  },
+
+  // ── Upcoming ──────────────────────────────────────────────────────────────
+  upBadge: {
+    backgroundColor: COLORS.primaryLight,
+    borderRadius: 20,
+    paddingHorizontal: 9,
     paddingVertical: 3,
-    borderRadius: RADIUS.xl,
-    overflow: "hidden",
+  },
+  upBadgeText: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: COLORS.primaryDark,
+  },
+  upCenterCol: {
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 10,
+  },
+  vsText: {
+    fontSize: 20,
+    fontWeight: "800",
+    color: COLORS.border,
+    letterSpacing: -1,
+  },
+  upTime: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: COLORS.textPrimary,
+    letterSpacing: -0.3,
+  },
+
+  // ── Finished ──────────────────────────────────────────────────────────────
+  finBadge: {
+    backgroundColor: COLORS.surfaceLight,
+    borderRadius: 20,
+    paddingHorizontal: 9,
+    paddingVertical: 3,
+  },
+  finBadgeText: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: COLORS.textPrimary,
+  },
+  finCenterCol: {
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 10,
+  },
+  finScoreText: {
+    fontSize: 30,
+    fontWeight: "800",
+    color: COLORS.textPrimary,
+    letterSpacing: -1.5,
+    lineHeight: 34,
+  },
+  finResultText: {
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 0.4,
   },
 });

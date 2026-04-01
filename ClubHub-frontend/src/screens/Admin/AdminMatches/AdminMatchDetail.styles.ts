@@ -1,38 +1,42 @@
 import { StyleSheet, Platform } from "react-native";
 import { COLORS, FONT_SIZE, RADIUS, SPACING } from "../../../theme/colors";
 import { Dimensions } from "react-native";
+
 const { height } = Dimensions.get("window");
 
 export const adminStyles = StyleSheet.create({
-  // Botões admin no header
+  // ── Botões de controlo no header ──────────────────────────────────────────
   adminActions: {
     flexDirection: "row",
-    gap: 10,
-    marginTop: 14,
-    paddingHorizontal: 4,
+    gap: SPACING.sm,
+    marginTop: SPACING.md,
+    paddingHorizontal: SPACING.xs,
   },
+
   adminBtn: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 6,
-    paddingVertical: 10,
-    borderRadius: 10,
+    gap: SPACING.xs + 2,
+    paddingVertical: SPACING.sm + 2,
+    borderRadius: RADIUS.md,
     borderWidth: 1.5,
     borderColor: COLORS.primary,
-    backgroundColor: COLORS.primary + "10",
-  },
-  adminBtnText: {
-    color: COLORS.primary,
-    fontWeight: "600",
-    fontSize: 14,
+    backgroundColor: COLORS.primaryLight,
   },
 
-  // Bottom sheet shared
+  adminBtnText: {
+    color: COLORS.primary,
+    fontWeight: "700",
+    fontSize: FONT_SIZE.sm,
+  },
+
+  // ── Bottom sheet — base ───────────────────────────────────────────────────
   overlay: {
     flex: 1,
   },
+
   sheetWrapper: {
     backgroundColor: "transparent",
     position: "absolute",
@@ -40,141 +44,188 @@ export const adminStyles = StyleSheet.create({
     left: 0,
     right: 0,
   },
+
   sheet: {
-    backgroundColor: COLORS.background,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingBottom: Platform.OS === "ios" ? 34 : 20,
+    backgroundColor: COLORS.surface,
+    borderTopLeftRadius: RADIUS.xl,
+    borderTopRightRadius: RADIUS.xl,
+    paddingBottom: Platform.OS === "ios" ? 34 : SPACING.lg,
     maxHeight: "88%",
     flexDirection: "column",
   },
+
   handle: {
-    width: 40,
+    width: 36,
     height: 4,
     borderRadius: 2,
-    backgroundColor: COLORS.muted,
+    backgroundColor: COLORS.border,
     alignSelf: "center",
-    marginTop: 10,
-    marginBottom: 4,
-    opacity: 0.4,
+    marginTop: SPACING.sm,
+    marginBottom: SPACING.xs,
   },
+
   sheetHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm + 2,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.surface,
+    borderBottomColor: COLORS.border,
   },
+
   sheetTitle: {
-    fontSize: 17,
+    fontSize: FONT_SIZE.md,
     fontWeight: "700",
     color: COLORS.textPrimary,
   },
-  sheetContent: {
-    padding: 20,
-    gap: 12,
-    paddingBottom: 8,
+
+  sheetSubtitle: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textSecondary,
+    marginTop: 2,
   },
 
-  // Chips
+  sheetContent: {
+    padding: SPACING.lg,
+    gap: SPACING.sm,
+    paddingBottom: SPACING.sm,
+  },
+
+  sheetTall: {
+    height: height * 0.75,
+  },
+
+  // ── Chips de seleção ──────────────────────────────────────────────────────
   chipRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
-    marginBottom: 4,
+    gap: SPACING.sm,
+    marginBottom: SPACING.xs,
   },
+
   chip: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 20,
-    backgroundColor: COLORS.surface,
+    gap: SPACING.xs,
+    paddingHorizontal: SPACING.sm + 4,
+    paddingVertical: SPACING.xs + 3,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.surfaceLight,
     borderWidth: 1,
     borderColor: "transparent",
   },
+
   chipWide: {
     flex: 1,
     justifyContent: "center",
   },
+
   chipActive: {
-    backgroundColor: COLORS.primary + "18",
+    backgroundColor: COLORS.primaryLight,
     borderColor: COLORS.primary,
   },
+
   chipEmoji: {
-    fontSize: 14,
+    fontSize: FONT_SIZE.sm,
   },
+
   chipText: {
-    fontSize: 13,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
     fontWeight: "500",
   },
+
   chipTextActive: {
     color: COLORS.primary,
-    fontWeight: "600",
-  },
-
-  // Fields
-  fieldLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: COLORS.textSecondary,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
-    color: COLORS.textPrimary,
-  },
-  textArea: {
-    minHeight: 70,
-    paddingTop: 12,
-    textAlignVertical: "top",
-  },
-  textAreaLarge: {
-    minHeight: 140,
-    paddingTop: 12,
-    textAlignVertical: "top",
-  },
-
-  // Save button
-  saveBtn: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 8,
-  },
-  saveBtnDisabled: {
-    opacity: 0.6,
-  },
-  saveBtnText: {
-    color: "#fff",
-    fontSize: 15,
     fontWeight: "700",
   },
 
+  // ── Fields / inputs ───────────────────────────────────────────────────────
+  fieldLabel: {
+    fontSize: FONT_SIZE.xs,
+    fontWeight: "700",
+    color: COLORS.textMuted,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: SPACING.sm,
+  },
+
+  input: {
+    backgroundColor: COLORS.surfaceLight,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm + 2,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textPrimary,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+
+  textArea: {
+    minHeight: 70,
+    paddingTop: SPACING.sm,
+    textAlignVertical: "top",
+  },
+
+  textAreaLarge: {
+    minHeight: 140,
+    paddingTop: SPACING.sm,
+    textAlignVertical: "top",
+  },
+
+  // ── Botão guardar ─────────────────────────────────────────────────────────
+  saveBtn: {
+    backgroundColor: COLORS.primary,
+    borderRadius: RADIUS.lg,
+    paddingVertical: SPACING.md,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: SPACING.sm,
+  },
+
+  saveBtnDisabled: {
+    opacity: 0.55,
+  },
+
+  saveBtnText: {
+    color: "#FFFFFF",
+    fontSize: FONT_SIZE.md,
+    fontWeight: "700",
+  },
+
+  saveBtnSecondary: {
+    backgroundColor: "transparent",
+    borderWidth: 1.5,
+    borderColor: COLORS.primary,
+    marginTop: SPACING.sm,
+  },
+
+  saveBtnSecondaryText: {
+    color: COLORS.primary,
+    fontSize: FONT_SIZE.md,
+    fontWeight: "700",
+  },
+
+  saveBtnFlex: {
+    flex: 1,
+  },
+
+  // ── Modal ─────────────────────────────────────────────────────────────────
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "flex-end",
   },
+
   modalContent: {
     backgroundColor: COLORS.surface,
-    borderTopLeftRadius: RADIUS.lg,
-    borderTopRightRadius: RADIUS.lg,
+    borderTopLeftRadius: RADIUS.xl,
+    borderTopRightRadius: RADIUS.xl,
     paddingTop: SPACING.md,
     paddingBottom: SPACING.xl,
   },
+
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -184,253 +235,272 @@ export const adminStyles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
+
   modalTitle: {
     fontSize: FONT_SIZE.md,
-    fontWeight: "600",
+    fontWeight: "700",
     color: COLORS.textPrimary,
   },
+
   modalCancelText: {
     fontSize: FONT_SIZE.md,
     color: COLORS.primary,
-    fontWeight: "500",
+    fontWeight: "600",
   },
+
   modalBackText: {
     fontSize: FONT_SIZE.md,
     color: COLORS.primary,
-    fontWeight: "500",
+    fontWeight: "600",
   },
+
   dateTimePicker: {
     width: "100%",
     backgroundColor: COLORS.surface,
   },
-  sheetSubtitle: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
-    marginTop: 2,
-  },
-  sheetTall: {
-    height: height * 0.75,
-  },
-  // Indicador de fase
+
+  // ── Indicador de fase (stepper) ───────────────────────────────────────────
   phaseIndicator: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    gap: 8,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
+    gap: SPACING.sm,
   },
+
   phaseStep: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: COLORS.surface,
-  },
-  phaseStepActive: {
-    backgroundColor: COLORS.primary + "18",
+    paddingHorizontal: SPACING.sm + 4,
+    paddingVertical: SPACING.xs + 2,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.surfaceLight,
     borderWidth: 1,
+    borderColor: "transparent",
+  },
+
+  phaseStepActive: {
+    backgroundColor: COLORS.primaryLight,
     borderColor: COLORS.primary,
   },
+
   phaseStepText: {
-    fontSize: 13,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
     fontWeight: "500",
   },
+
   phaseStepTextActive: {
     color: COLORS.primary,
-    fontWeight: "600",
+    fontWeight: "700",
   },
+
   phaseDivider: {
     flex: 1,
     height: 1,
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.border,
   },
 
-  // Search
+  // ── Search ────────────────────────────────────────────────────────────────
   searchRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    marginHorizontal: 20,
-    marginBottom: 10,
-    backgroundColor: COLORS.surface,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 14,
-    color: COLORS.textPrimary,
+    gap: SPACING.sm,
+    marginTop: SPACING.md,
+    marginHorizontal: SPACING.lg,
+    marginBottom: SPACING.sm,
+    backgroundColor: COLORS.surfaceLight,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACING.sm + 4,
+    paddingVertical: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
-  // Grid de jogadores
+  searchInput: {
+    flex: 1,
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textPrimary,
+    padding: 0,
+  },
+
+  // ── Grid de jogadores ─────────────────────────────────────────────────────
   playerGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    padding: 16,
-    gap: 10,
-    paddingBottom: 30,
+    padding: SPACING.md,
+    gap: SPACING.sm,
+    paddingBottom: SPACING.xl,
   },
+
   playerCard: {
     width: "22%",
     alignItems: "center",
-    padding: 8,
-    borderRadius: 12,
-    backgroundColor: COLORS.surface,
+    padding: SPACING.sm,
+    borderRadius: RADIUS.lg,
+    backgroundColor: COLORS.surfaceLight,
+    borderWidth: 1,
+    borderColor: "transparent",
     position: "relative",
   },
+
   playerCardSelected: {
-    backgroundColor: COLORS.primary + "14",
-    borderWidth: 1.5,
+    backgroundColor: COLORS.primaryLight,
     borderColor: COLORS.primary,
   },
+
   playerCardPhoto: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    marginBottom: 6,
+    marginBottom: SPACING.xs,
   },
+
   playerCardAvatar: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: COLORS.primary + "22",
+    backgroundColor: COLORS.primaryLight,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 6,
+    marginBottom: SPACING.xs,
   },
+
   playerCardAvatarText: {
-    fontSize: 16,
+    fontSize: FONT_SIZE.md,
     fontWeight: "700",
-    color: COLORS.primary,
+    color: COLORS.primaryDark,
   },
+
   playerCardName: {
     fontSize: 11,
     color: COLORS.textSecondary,
     textAlign: "center",
     marginTop: 2,
   },
+
   playerCardNameSelected: {
     color: COLORS.primary,
-    fontWeight: "600",
+    fontWeight: "700",
   },
+
   playerCardCheck: {
     position: "absolute",
     top: 4,
     right: 4,
   },
+
   emptyText: {
-    color: COLORS.muted,
-    fontSize: 14,
+    color: COLORS.textMuted,
+    fontSize: FONT_SIZE.sm,
     textAlign: "center",
     marginTop: 40,
     width: "100%",
   },
 
-  // Footer
+  // ── Footer do sheet ───────────────────────────────────────────────────────
   sheetFooter: {
-    paddingHorizontal: 20,
-    paddingTop: 8,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.surface,
+    borderTopColor: COLORS.border,
   },
+
   footerRow: {
     flexDirection: "row",
-    gap: 10,
+    gap: SPACING.sm,
   },
-  saveBtnSecondary: {
-    backgroundColor: "transparent",
-    borderWidth: 1.5,
-    borderColor: COLORS.primary,
-    marginTop: 8,
-  },
-  saveBtnSecondaryText: {
-    color: COLORS.primary,
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  saveBtnFlex: {
-    flex: 1,
-  },
+
+  // ── Formação (lineup) ─────────────────────────────────────────────────────
   lineupSectionTitle: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: COLORS.textSecondary,
+    fontSize: FONT_SIZE.xs,
+    fontWeight: "700",
+    color: COLORS.textMuted,
     textTransform: "uppercase",
-    letterSpacing: 0.5,
-    marginTop: 16,
-    marginBottom: 8,
-    paddingHorizontal: 4,
+    letterSpacing: 0.6,
+    marginTop: SPACING.md,
+    marginBottom: SPACING.sm,
+    paddingHorizontal: SPACING.xs,
   },
+
   lineupRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 8,
-    borderBottomWidth: 1,
+    paddingVertical: SPACING.sm,
+    borderBottomWidth: 0.5,
     borderBottomColor: COLORS.border,
-    gap: 10,
+    gap: SPACING.sm,
+    backgroundColor: COLORS.surface,
   },
+
   lineupPhoto: {
     width: 36,
     height: 36,
     borderRadius: 18,
   },
+
   lineupAvatar: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.primaryLight,
     justifyContent: "center",
     alignItems: "center",
   },
+
   lineupAvatarText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: COLORS.textSecondary,
+    fontSize: FONT_SIZE.xs,
+    fontWeight: "700",
+    color: COLORS.primaryDark,
   },
+
   lineupName: {
     flex: 1,
-    fontSize: 14,
-    fontWeight: "500",
+    fontSize: FONT_SIZE.sm,
+    fontWeight: "600",
     color: COLORS.textPrimary,
   },
+
   lineupPosition: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.textMuted,
   },
+
+  // ── Switch row ────────────────────────────────────────────────────────────
   switchRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: COLORS.surface,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    backgroundColor: COLORS.surfaceLight,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm + 2,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
   switchSubtext: {
-    fontSize: 12,
-    color: COLORS.muted,
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.textMuted,
     marginTop: 2,
   },
 
+  // ── Substituição ─────────────────────────────────────────────────────────
   substitutionDivider: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    marginVertical: 4,
+    gap: SPACING.sm,
+    marginVertical: SPACING.xs,
   },
 
   substitutionDividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.border,
   },
 
   substitutionDividerText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: COLORS.textSecondary,
+    fontSize: FONT_SIZE.xs,
+    fontWeight: "700",
+    color: COLORS.textMuted,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },

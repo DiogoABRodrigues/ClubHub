@@ -4,8 +4,6 @@ import {
   Text,
   TouchableOpacity,
   LayoutAnimation,
-  Platform,
-  UIManager,
   Image,
 } from "react-native";
 import { styles } from "./styles/LeagueTableRow.styles";
@@ -13,7 +11,6 @@ import { COLORS } from "../theme/colors";
 import { Standing } from "../models/Standing";
 import { useTeams } from "../hooks/useTeams";
 import { teamConfig } from "../config/teamConfig";
-import { useEffect } from "react";
 
 interface Props {
   standing: Standing;

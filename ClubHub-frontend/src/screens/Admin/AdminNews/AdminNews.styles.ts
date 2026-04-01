@@ -2,164 +2,124 @@ import { StyleSheet } from "react-native";
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../../theme/colors";
 
 export const styles = StyleSheet.create({
+  // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
 
-  // ── Header ────────────────────────────────────────────────
+  // ── Header — espelha o AdminMatches ──────────────────────────────────────
   header: {
-    paddingHorizontal: SPACING.md,
+    backgroundColor: COLORS.surface,
     paddingTop: SPACING.xl + 16,
     paddingBottom: SPACING.sm,
-    backgroundColor: COLORS.surface,
+    paddingHorizontal: SPACING.md,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
-  headerTop: {
+
+  headerLeft: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: SPACING.sm,
+    gap: SPACING.sm,
+    marginBottom: SPACING.xs,
   },
-  backButton: {
-    padding: 4,
-  },
+
   headerTitle: {
     fontSize: FONT_SIZE.lg,
-    fontWeight: "600",
+    fontWeight: "700",
     color: COLORS.textPrimary,
-    flex: 1,
-    marginLeft: SPACING.sm,
+    letterSpacing: -0.3,
   },
+
+  // ── Botão adicionar ───────────────────────────────────────────────────────
   addButton: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center", // centraliza ícone + texto
+    justifyContent: "center",
     backgroundColor: COLORS.primary,
     paddingHorizontal: SPACING.md,
-    paddingVertical: 6, // altura mais compacta
+    paddingVertical: SPACING.sm,
     borderRadius: RADIUS.md,
-    gap: 6, // espaço entre ícone e texto
-    alignSelf: "center", // mantém na esquerda do container
-    marginBottom: SPACING.sm,
+    gap: SPACING.xs + 2,
+    alignSelf: "flex-start",
+    marginBottom: SPACING.md,
   },
+
   addButtonText: {
-    color: "#fff",
-    fontWeight: "600",
+    color: "#FFFFFF",
+    fontWeight: "700",
     fontSize: FONT_SIZE.sm,
   },
 
-  // ── Search ────────────────────────────────────────────────
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.secondary,
-    borderRadius: RADIUS.md,
-    paddingHorizontal: SPACING.sm,
-    marginBottom: SPACING.sm,
-    height: 40,
-  },
-  searchIcon: {
-    marginRight: SPACING.xs,
-  },
-  searchInput: {
-    flex: 1,
-    color: COLORS.textPrimary,
-    fontSize: FONT_SIZE.sm,
-  },
-
-  // ── Category filter ───────────────────────────────────────
-  categoryScroll: {
-    marginBottom: SPACING.xs,
-  },
-  categoryButton: {
-    paddingVertical: SPACING.xs,
-    paddingHorizontal: SPACING.md,
-    borderRadius: RADIUS.lg,
-    backgroundColor: COLORS.secondary,
-    marginRight: SPACING.xs,
-  },
-  categoryButtonActive: {
-    backgroundColor: COLORS.primary,
-  },
-  categoryText: {
-    color: COLORS.textSecondary,
-    fontWeight: "500",
-    fontSize: FONT_SIZE.sm,
-  },
-  categoryTextActive: {
-    color: COLORS.background,
-    fontWeight: "600",
-  },
-
-  // ── Content ───────────────────────────────────────────────
+  // ── Conteúdo ──────────────────────────────────────────────────────────────
   content: {
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.sm,
-    paddingBottom: SPACING.lg,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.xl,
   },
+
+  // ── Wrapper de card com ações ─────────────────────────────────────────────
+  newsWrapper: {
+    marginBottom: SPACING.sm,
+    position: "relative",
+  },
+
+  newsActions: {
+    position: "absolute",
+    top: SPACING.sm,
+    right: SPACING.sm,
+    flexDirection: "row",
+    gap: SPACING.sm,
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs + 2,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+
+  // ── Empty state ───────────────────────────────────────────────────────────
+  emptyState: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: SPACING.sm,
+    paddingVertical: SPACING.xl,
+  },
+
+  emptyIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: COLORS.primaryLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  emptyText: {
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZE.sm,
+  },
+
+  createButton: {
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.md,
+  },
+
+  createButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: FONT_SIZE.sm,
+  },
+
+  // ── Loading ───────────────────────────────────────────────────────────────
   loadingText: {
     textAlign: "center",
     marginTop: 50,
     color: COLORS.textSecondary,
-  },
-  newsList: {
-    flexDirection: "column",
-    gap: SPACING.sm,
-  },
-
-  // ── News row ──────────────────────────────────────────────
-  newsWrapper: {
-    position: "relative",
-  },
-  newsActions: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    flexDirection: "row",
-    gap: 8,
-    backgroundColor: "rgba(255,255,255,0.85)", // leve fundo
-    padding: 4,
-    borderRadius: RADIUS.sm,
-  },
-  editButton: {
-    padding: 6,
-    borderRadius: RADIUS.sm,
-  },
-  deleteButton: {
-    padding: 6,
-    borderRadius: RADIUS.sm,
-  },
-
-  // ── Empty state ───────────────────────────────────────────
-  emptyState: {
-    alignItems: "center",
-    paddingVertical: 40,
-  },
-  emptyIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: COLORS.secondary,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: SPACING.md,
-  },
-  emptyText: {
-    color: COLORS.textSecondary,
-    fontSize: FONT_SIZE.sm,
-    marginBottom: SPACING.sm,
-  },
-  createButton: {
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.xs,
-    borderRadius: RADIUS.md,
-  },
-  createButtonText: {
-    color: "#fff",
-    fontWeight: "600",
     fontSize: FONT_SIZE.sm,
   },
 });

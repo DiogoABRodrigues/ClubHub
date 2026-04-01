@@ -2,67 +2,146 @@ import { StyleSheet } from "react-native";
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
+  // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
 
-  // Header — igual ao Matches
-  header: {
+  content: {
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.xl + 16,
-    paddingBottom: SPACING.sm,
-    backgroundColor: COLORS.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    paddingTop: SPACING.sm,
+    paddingBottom: SPACING.xl,
   },
 
-  headerLeft: {
+  // ── Header da tabela ──────────────────────────────────────────────────────
+  tableHeader: {
     flexDirection: "row",
-    alignItems: "center",
-    gap: SPACING.sm,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
+  },
+
+  tableCell: {
+    fontSize: FONT_SIZE.xs,
+    fontWeight: "700",
+    color: COLORS.textMuted,
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
+  },
+
+  // ── Colunas (proporções) ──────────────────────────────────────────────────
+  col1: { flex: 1 },
+  col5: { flex: 5 },
+  col2: { flex: 2 },
+  centerText: { textAlign: "center" },
+  rightText: { textAlign: "right" },
+
+  // ── Texto de apoio ────────────────────────────────────────────────────────
+  statsText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textSecondary,
+    marginVertical: SPACING.sm,
+  },
+
+  // ── Legenda ───────────────────────────────────────────────────────────────
+  legend: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.md,
+    marginTop: SPACING.md,
+    backgroundColor: COLORS.surface,
+  },
+
+  legendTitle: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: "700",
+    color: COLORS.textPrimary,
     marginBottom: SPACING.sm,
   },
 
-  headerTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: "600",
-    color: COLORS.textPrimary,
+  legendItems: {
+    gap: SPACING.sm,
   },
 
-  // Category pills
+  legendItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.sm,
+  },
+
+  legendColor: {
+    width: 12,
+    height: 12,
+    borderRadius: RADIUS.sm,
+  },
+
+  legendText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textSecondary,
+    flex: 1,
+  },
+
+  // ── Empty / loading ───────────────────────────────────────────────────────
+  noMatches: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: SPACING.xl,
+    gap: SPACING.sm,
+  },
+
+  logoCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: COLORS.primaryLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  logoEmoji: {
+    fontSize: FONT_SIZE.xl,
+  },
+
+  noMatchesText: {
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZE.sm,
+    textAlign: "center",
+  },
+
+  // ── Category pills (se usares filtros) ───────────────────────────────────
   categoryContainer: {
     flexDirection: "row",
     gap: SPACING.xs,
+    marginBottom: SPACING.sm,
   },
 
   categoryButton: {
     paddingVertical: SPACING.xs,
     paddingHorizontal: SPACING.md,
-    borderRadius: RADIUS.lg,
-    backgroundColor: COLORS.secondary,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.surfaceLight,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
   categoryButtonActive: {
     backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
   },
 
   categoryText: {
     color: COLORS.textSecondary,
-    fontWeight: "500",
+    fontWeight: "600",
     fontSize: FONT_SIZE.sm,
   },
 
   categoryTextActive: {
-    color: COLORS.background,
+    color: "#FFFFFF",
   },
 
-  // Content
-  content: {
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.sm,
-  },
-
+  // ── Secções ───────────────────────────────────────────────────────────────
   section: {
     marginBottom: SPACING.lg,
   },
@@ -76,106 +155,17 @@ export const styles = StyleSheet.create({
 
   sectionTitle: {
     fontSize: FONT_SIZE.md,
-    fontWeight: "600",
+    fontWeight: "700",
     color: COLORS.textPrimary,
   },
 
-  // Table
+  // ── Tabela completa (wrapper) ──────────────────────────────────────────────
   table: {
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: RADIUS.lg,
     overflow: "hidden",
-    marginBottom: SPACING.sm * 2,
-  },
-
-  tableHeader: {
-    flexDirection: "row",
+    marginBottom: SPACING.md,
     backgroundColor: COLORS.surface,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: SPACING.xs,
-  },
-
-  tableCell: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
-    fontWeight: "500",
-  },
-
-  col1: { flex: 1 },
-  col5: { flex: 5 },
-  col2: { flex: 2 },
-  centerText: { textAlign: "center" },
-  rightText: { textAlign: "right" },
-
-  // Stats
-  statsText: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
-    marginTop: SPACING.sm,
-    marginBottom: SPACING.sm,
-  },
-
-  // Legend
-  legend: {
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-  },
-
-  legendTitle: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: "600",
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.xs,
-  },
-
-  legendItems: {
-    gap: SPACING.xs,
-  },
-
-  legendItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: SPACING.xs,
-  },
-
-  legendColor: {
-    width: 12,
-    height: 12,
-    borderRadius: 3,
-  },
-
-  legendText: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
-  },
-
-  // Empty state — igual ao Matches
-  noMatches: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: SPACING.lg,
-  },
-
-  logoCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: COLORS.muted,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: SPACING.sm,
-  },
-
-  logoEmoji: {
-    fontSize: FONT_SIZE.xl,
-  },
-
-  noMatchesText: {
-    color: COLORS.textSecondary,
-    fontSize: FONT_SIZE.sm,
-    textAlign: "center",
   },
 });

@@ -1,185 +1,212 @@
 import { StyleSheet } from "react-native";
-import { COLORS } from "../../../theme/colors";
+import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../../theme/colors";
 
 export const styles = StyleSheet.create({
+  // ── Layout base ──────────────────────────────────────────────────────────
   root: {
     flex: 1,
     backgroundColor: COLORS.background,
   },
 
-  // Header
+  // ── Header ───────────────────────────────────────────────────────────────
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.xl + 16,
+    paddingBottom: SPACING.sm,
+    backgroundColor: COLORS.surface,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.surface,
-    backgroundColor: COLORS.background,
+    borderBottomColor: COLORS.border,
   },
+
   headerBtn: {
-    padding: 4,
+    padding: SPACING.xs,
   },
+
   headerTitle: {
-    fontSize: 17,
-    fontWeight: "600",
+    fontSize: FONT_SIZE.md,
+    fontWeight: "700",
     color: COLORS.textPrimary,
   },
+
+  // ── Botão guardar no header ───────────────────────────────────────────────
   saveBtn: {
     backgroundColor: COLORS.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.md,
     minWidth: 80,
     alignItems: "center",
   },
+
   saveBtnDisabled: {
-    opacity: 0.6,
+    opacity: 0.55,
   },
+
   saveBtnText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 14,
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: FONT_SIZE.sm,
   },
 
-  // Content
+  // ── Conteúdo ──────────────────────────────────────────────────────────────
   content: {
-    padding: 16,
-    gap: 20,
-    paddingBottom: 40,
+    padding: SPACING.md,
+    gap: SPACING.lg,
+    paddingBottom: SPACING.xl + SPACING.lg,
   },
 
-  // Image
+  // ── Imagem ────────────────────────────────────────────────────────────────
   imageSection: {
-    borderRadius: 12,
+    borderRadius: RADIUS.lg,
     overflow: "hidden",
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.surfaceLight,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
+
   imagePreview: {
     width: "100%",
     height: 200,
   },
+
   imagePlaceholder: {
     height: 160,
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
-  },
-  imagePlaceholderText: {
-    fontSize: 13,
-    color: COLORS.muted,
+    gap: SPACING.sm,
   },
 
-  // Category chips
+  imagePlaceholderText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textMuted,
+  },
+
+  imagePickerBtn: {
+    backgroundColor: COLORS.primary,
+    paddingVertical: SPACING.sm + 2,
+    paddingHorizontal: SPACING.md,
+    borderRadius: RADIUS.md,
+    alignItems: "center",
+    marginTop: SPACING.sm,
+  },
+
+  // ── Chips de categoria ────────────────────────────────────────────────────
   categoryRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
-    marginTop: 4,
+    gap: SPACING.sm,
+    marginTop: SPACING.xs,
   },
+
   categoryChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: COLORS.surface,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs + 2,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.surfaceLight,
     borderWidth: 1,
-    borderColor: COLORS.surface,
+    borderColor: COLORS.border,
   },
+
   categoryChipActive: {
-    backgroundColor: COLORS.primary + "18",
+    backgroundColor: COLORS.primaryLight,
     borderColor: COLORS.primary,
   },
+
   categoryChipText: {
-    fontSize: 13,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
     fontWeight: "500",
   },
+
   categoryChipTextActive: {
     color: COLORS.primary,
-    fontWeight: "600",
+    fontWeight: "700",
   },
 
-  // Field
+  // ── Field ─────────────────────────────────────────────────────────────────
   field: {
-    gap: 6,
+    gap: SPACING.xs,
   },
+
   fieldLabelRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: SPACING.xs,
   },
+
   fieldLabel: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: COLORS.textSecondary,
+    fontSize: FONT_SIZE.xs,
+    fontWeight: "700",
+    color: COLORS.textMuted,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
+
   fieldOptional: {
     fontSize: 11,
-    color: COLORS.muted,
+    color: COLORS.textMuted,
     fontStyle: "italic",
   },
+
   fieldError: {
-    fontSize: 12,
-    color: "#ef4444",
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.error,
     marginTop: 2,
   },
 
-  // Input
+  // ── Input ─────────────────────────────────────────────────────────────────
   input: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
+    backgroundColor: COLORS.surfaceLight,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm + 2,
+    fontSize: FONT_SIZE.md,
     color: COLORS.textPrimary,
     borderWidth: 1,
-    borderColor: "transparent",
+    borderColor: COLORS.border,
   },
+
   inputError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.error,
   },
+
   textArea: {
     minHeight: 80,
-    paddingTop: 12,
+    paddingTop: SPACING.sm,
     textAlignVertical: "top",
   },
+
   textAreaLarge: {
     minHeight: 200,
-    paddingTop: 12,
+    paddingTop: SPACING.sm,
     textAlignVertical: "top",
   },
+
   charCount: {
     fontSize: 11,
-    color: COLORS.muted,
+    color: COLORS.textMuted,
     alignSelf: "flex-end",
     marginTop: 2,
   },
 
-  // Bottom save button
+  // ── Botão guardar (rodapé) ────────────────────────────────────────────────
   bottomSaveBtn: {
     backgroundColor: COLORS.primary,
-    borderRadius: 12,
-    paddingVertical: 14,
+    borderRadius: RADIUS.lg,
+    paddingVertical: SPACING.md,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
-    marginTop: 8,
+    gap: SPACING.sm,
+    marginTop: SPACING.xs,
   },
+
   bottomSaveBtnText: {
-    color: "#fff",
-    fontSize: 16,
+    color: "#FFFFFF",
+    fontSize: FONT_SIZE.md,
     fontWeight: "700",
-  },
-  imagePickerBtn: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    alignItems: "center",
-    marginTop: 8,
   },
 });

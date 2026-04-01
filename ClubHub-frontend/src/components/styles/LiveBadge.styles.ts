@@ -9,19 +9,19 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
-    backgroundColor: "rgba(244, 67, 54, 0.15)", // error com opacity
+    backgroundColor: "rgba(244, 67, 54, 0.24)", // error com opacity
   },
 
   dot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: COLORS.error,
+    backgroundColor: COLORS.destructive,
   },
 
   text: {
     fontSize: 10,
-    color: COLORS.error,
+    color: COLORS.destructive,
     fontWeight: "600",
   },
 });

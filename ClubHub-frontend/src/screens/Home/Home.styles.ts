@@ -13,23 +13,21 @@ export const styles = StyleSheet.create({
   },
 
   // ── Header ───────────────────────────────────────────────────────────────
+  // O header agora tem só padding — o layout interno (eyebrow + logo)
+  // é feito com localStyles em Home.tsx para não poluir este ficheiro.
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
     backgroundColor: COLORS.surface,
     paddingTop: SPACING.xl + 8,       // espaço para status bar
     paddingBottom: SPACING.md,
     paddingHorizontal: SPACING.md,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
   },
 
   title: {
     fontSize: FONT_SIZE.xl,
-    fontWeight: "700",
+    fontWeight: "800",
     color: COLORS.textPrimary,
-    letterSpacing: -0.4,
+    letterSpacing: -0.8,
+    lineHeight: FONT_SIZE.xl * 1.1,
   },
 
   logoCircle: {
@@ -90,7 +88,7 @@ export const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "700",
-    color: COLORS.textPrimary,
+    color: COLORS.secondary,
     letterSpacing: 0.1,
   },
 
@@ -129,7 +127,7 @@ export const styles = StyleSheet.create({
 
   newsExcerpt: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
+    color: COLORS.textPrimary,
     lineHeight: 17,
   },
 
@@ -148,5 +146,45 @@ export const styles = StyleSheet.create({
   primaryText: {
     color: COLORS.primary,
     fontSize: FONT_SIZE.md,
+  },
+  headerInner: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+  },
+  eyebrow: {
+    fontSize: 10,
+    fontWeight: "600",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    color: COLORS.textPrimary,
+    marginBottom: 2,
+  },
+  livePill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: COLORS.destructive,
+    borderRadius: 20,
+    paddingVertical: 3,
+    paddingHorizontal: 9,
+    alignSelf: "flex-start",
+  },
+  liveDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: "#fff",
+  },
+  livePillText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#fff",
+  },
+  separator: {
+    height: 1,
+    backgroundColor: COLORS.border,
+    marginHorizontal: 16,
+    marginBottom: 4,
   },
 });

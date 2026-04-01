@@ -1,28 +1,31 @@
 import { StyleSheet } from "react-native";
-import { COLORS } from "../../theme/colors";
+import { COLORS, SPACING, FONT_SIZE, RADIUS } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
+  // ── Linha principal ───────────────────────────────────────────────────────
   row: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
+    paddingVertical: SPACING.sm + 2,
+    paddingHorizontal: SPACING.sm + 2,
+    borderBottomWidth: 0.5,
     borderBottomColor: COLORS.border,
   },
 
-  centerColumn: {
-    flex: 2,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
   userRow: {
-    backgroundColor: COLORS.primary + "10", // leve highlight
+    backgroundColor: COLORS.primaryLight,
   },
 
+  // ── Colunas ───────────────────────────────────────────────────────────────
   position: {
     width: "10%",
+  },
+
+  teamRow: {
+    flex: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.sm,
   },
 
   team: {
@@ -42,53 +45,67 @@ export const styles = StyleSheet.create({
     gap: 4,
   },
 
+  centerColumn: {
+    flex: 2,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
   points: {
     width: "20%",
     alignItems: "flex-end",
   },
 
+  // ── Logo ──────────────────────────────────────────────────────────────────
+  teamLogo: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+  },
+
+  // ── Tipografia ────────────────────────────────────────────────────────────
   text: {
-    fontSize: 14,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textPrimary,
   },
 
   mutedText: {
-    fontSize: 14,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
   },
 
   bold: {
-    fontWeight: "600",
+    fontWeight: "700",
   },
 
+  // ── Linha expandida (estatísticas detalhadas) ─────────────────────────────
   expandedStats: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: "#f2f2f2",
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLORS.surfaceLight,
+    borderBottomWidth: 0.5,
+    borderBottomColor: COLORS.border,
   },
+
   statRow: {
     flexDirection: "row",
-    justifyContent: "flex-start",
-    marginBottom: 4,
-  },
-  statLabel: {
-    marginRight: 7,
-    color: COLORS.textSecondary,
-  },
-  statValue: {
-    marginRight: 12,
-    color: COLORS.textPrimary,
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: SPACING.xs,
   },
 
-  teamRow: {
-    flex: 5,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
+  statLabel: {
+    fontSize: FONT_SIZE.xs,
+    fontWeight: "700",
+    color: COLORS.textMuted,
+    textTransform: "uppercase",
+    letterSpacing: 0.3,
   },
-  teamLogo: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+
+  statValue: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: "600",
+    color: COLORS.textPrimary,
+    marginRight: SPACING.sm,
   },
 });

@@ -44,7 +44,7 @@ export const EventRow = ({ event, isOurs, onEdit, onDelete }: Props) => {
   };
   const minute = event.minute > 90 ? `90'+` : `${event.minute}'`;
   //const isAdmin = useAuth().user?.isAdmin;
-  const isAdmin = false;
+  const isAdmin = true;
   
   if (isOurs) {
     return (

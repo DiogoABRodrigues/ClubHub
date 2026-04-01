@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
+import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../../theme/colors";
 
 export const styles = StyleSheet.create({
   // ── Layout base ──────────────────────────────────────────────────────────
@@ -33,12 +33,11 @@ export const styles = StyleSheet.create({
     letterSpacing: -0.3,
   },
 
-  // espaçador direito para centrar o título
   placeholder: {
     width: 32,
   },
 
-  // ── Tabs de navegação ─────────────────────────────────────────────────────
+  // ── Tabs ─────────────────────────────────────────────────────────────────
   tabsContainer: {
     flexDirection: "row",
     paddingHorizontal: SPACING.md,
@@ -74,7 +73,7 @@ export const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  // ── Conteúdo ──────────────────────────────────────────────────────────────
+  // ── Conteúdo ─────────────────────────────────────────────────────────────
   content: {
     flex: 1,
   },

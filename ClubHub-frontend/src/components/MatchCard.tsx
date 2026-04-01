@@ -17,123 +17,180 @@ interface MatchCardProps {
   competition?: Competition;
 }
 
+// ─── Logo helper ─────────────────────────────────────────────────────────────
+
+const TeamLogo = ({ uri, variant }: { uri: string; variant: "dark" | "light" }) => {
+  const logoStyle = variant === "dark" ? styles.logoDark : styles.logoLight;
+  return uri ? (
+    <Image source={{ uri }} style={[styles.logo, logoStyle]} resizeMode="contain" />
+  ) : (
+    <View style={[styles.logo, logoStyle]}>
+      <Text style={styles.logoEmoji}>⚽</Text>
+    </View>
+  );
+};
+
+// ─── Result helper ────────────────────────────────────────────────────────────
+
+function getResult(match: Match): { label: string; color: string } | null {
+  if (!match.result) return null;
+  const parts = match.result.split("-");
+  if (parts.length < 2) return null;
+  if (match.outcome === "V") return { label: "VITÓRIA", color: COLORS.success };
+  if (match.outcome === "D") return { label: "DERROTA", color: COLORS.destructive};
+  return { label: "EMPATE", color: COLORS.textMuted };
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
 export const MatchCard = React.memo(
   ({ match, homeLogo, awayLogo, onPress, competition }: MatchCardProps) => {
-    const formattedDate = useMemo(
-      () => `${formatDateWithWeekdayPT(match.date)} • ${match.time}`,
-      [match.date, match.time],
-    );
-
-    const [homeScore, awayScore] = useMemo(() => {
-      if (!match.result) return ["-", "-"];
-      return match.result.split("-");
-    }, [match.result]);
-
     const homeTeam = match.homeOrAway === "C" ? match.teamName : match.opponent;
     const awayTeam = match.homeOrAway === "F" ? match.teamName : match.opponent;
 
-    const location = useMemo(() => { return match.location }, [match.location]);
+    const [homeScore, awayScore] = useMemo(() => {
+      if (!match.result) return [null, null];
+      const parts = match.result.split("-");
+      return parts.length >= 2 ? [parts[0], parts[1]] : [null, null];
+    }, [match.result]);
+
+    const formattedDate = useMemo(
+      () => `${formatDateWithWeekdayPT(match.date)} · ${match.time}`,
+      [match.date, match.time],
+    );
+
+    const compLabel = useMemo(() => {
+      if (!competition?.name) return "";
+      return match.round ? `${competition.name} · ${match.round}` : competition.name;
+    }, [competition, match.round]);
+
+    const location = match.location;
 
     const copyLocation = useCallback(async () => {
       await Clipboard.setStringAsync(location || "Localização não disponível");
       Alert.alert("Localização copiada!", location);
     }, [location]);
 
-    return (
-      <TouchableOpacity style={styles.card} onPress={onPress}>
-        {/* HEADER */}
-        <View style={styles.header}>
-<View style={styles.headerInfo}>
-  <Text style={styles.date}>{formattedDate}</Text>
-  <Text style={styles.competition}>
-    {competition?.name || ""} {match.round ? `- ${match.round}` : ""}
-  </Text>
-</View>
-          {match.status === "live" && (
+    const result = useMemo(() => getResult(match), [match]);
+
+    // ── LIVE ─────────────────────────────────────────────────────────────────
+    if (match.status === "live") {
+      return (
+        <TouchableOpacity style={styles.liveCard} onPress={onPress} activeOpacity={0.88}>
+          <View style={styles.liveDecor} pointerEvents="none" />
+
+          <View style={styles.cardTop}>
+            <Text style={styles.liveComp} numberOfLines={1}>{compLabel}</Text>
             <LiveBadge interval={match.statusTime === "interval"} />
-          )}
-          {match.status === "upcoming" && (
-            <Text style={styles.upcoming}>Agendado</Text>
-          )}
-          {match.status === "finished" && (
-            <Text style={styles.finished}>Terminado</Text>
-          )}
-        </View>
-
-        {/* TEAMS */}
-        <View style={styles.teams}>
-          <View style={styles.teamRow}>
-            <View style={styles.teamInfo}>
-              <View style={styles.teamLogo}>
-                {homeLogo ? (
-                  <Image
-                    source={{ uri: homeLogo }}
-                    style={{ width: 24, height: 24 }}
-                  />
-                ) : (
-                  <Text>🏆</Text>
-                )}
-              </View>
-              <Text style={styles.teamName}>{homeTeam}</Text>
-            </View>
-            <Text
-              style={[
-                styles.score,
-                match.status === "live" && { color: COLORS.secondary },
-              ]}
-            >
-              {homeScore}
-            </Text>
           </View>
 
-          <View style={styles.teamRow}>
-            <View style={styles.teamInfo}>
-              <View style={styles.teamLogo}>
-                {awayLogo ? (
-                  <Image
-                    source={{ uri: awayLogo }}
-                    style={{ width: 24, height: 24 }}
-                  />
-                ) : (
-                  <Text>🏆</Text>
-                )}
-              </View>
-              <Text style={styles.teamName}>{awayTeam}</Text>
+          <View style={styles.cardBody}>
+            <View style={styles.teamCol}>
+              <TeamLogo uri={homeLogo} variant="light" />
+              <Text style={styles.liveTeamName} numberOfLines={2}>{homeTeam}</Text>
             </View>
-            <Text
-              style={[
-                styles.score,
-                match.status === "live" && { color: COLORS.secondary },
-              ]}
-            >
-              {awayScore}
-            </Text>
+
+            <View style={styles.liveScoreCol}>
+              <Text style={styles.liveScoreText}>
+                {homeScore ?? "–"}–{awayScore ?? "–"}
+              </Text>
+            </View>
+
+            <View style={styles.teamCol}>
+              <TeamLogo uri={awayLogo} variant="light" />
+              <Text style={styles.liveTeamName} numberOfLines={2}>{awayTeam}</Text>
+            </View>
           </View>
-        </View>
 
-        {/* FOOTER */}
-        <View style={styles.footer}>
-          <Ionicons
-            name="location-outline"
-            size={14}
-            color={COLORS.textSecondary}
-          />
-
-          {location && (
-            <>
-              <Text style={styles.venue}>{location}</Text>
-              <TouchableOpacity
-                onPress={copyLocation}
-                style={{ marginLeft: 8 }}
-              >
-                <Ionicons
-                  name="copy-outline"
-                  size={16}
-                  color={COLORS.secondary}
-                />
+          {location ? (
+            <View style={styles.cardFooter}>
+              <Ionicons name="location-outline" size={11} color={COLORS.textPrimary} />
+              <Text style={styles.liveFooterText} numberOfLines={1}>{location}</Text>
+              <TouchableOpacity onPress={copyLocation} style={{ marginLeft: 6 }}>
+                <Ionicons name="copy-outline" size={13} color={COLORS.textPrimary} />
               </TouchableOpacity>
-            </>
-          )}
+            </View>
+          ) : null}
+        </TouchableOpacity>
+      );
+    }
+
+    // ── UPCOMING ──────────────────────────────────────────────────────────────
+    if (match.status === "upcoming") {
+      return (
+        <TouchableOpacity style={styles.baseCard} onPress={onPress} activeOpacity={0.85}>
+          <View style={styles.cardTop}>
+            <Text style={styles.baseComp} numberOfLines={1}>{compLabel}</Text>
+            <View style={styles.upBadge}>
+              <Text style={styles.upBadgeText}>{formattedDate}</Text>
+            </View>
+          </View>
+
+          <View style={styles.cardBody}>
+            <View style={styles.teamCol}>
+              <TeamLogo uri={homeLogo} variant="light" />
+              <Text style={styles.baseTeamName} numberOfLines={2}>{homeTeam}</Text>
+            </View>
+
+            <View style={styles.upCenterCol}>
+              <Text style={styles.vsText}>VS</Text>
+              {match.time ? <Text style={styles.upTime}>{match.time}</Text> : null}
+            </View>
+
+            <View style={styles.teamCol}>
+              <TeamLogo uri={awayLogo} variant="light" />
+              <Text style={styles.baseTeamName} numberOfLines={2}>{awayTeam}</Text>
+            </View>
+          </View>
+
+          {location ? (
+            <View style={styles.cardFooter}>
+              <Ionicons name="location-outline" size={11} color={COLORS.textMuted} />
+              <Text style={styles.baseFooterText} numberOfLines={1}>{location}</Text>
+              <TouchableOpacity onPress={copyLocation} style={{ marginLeft: 6 }}>
+                <Ionicons name="copy-outline" size={13} color={COLORS.textPrimary} />
+              </TouchableOpacity>
+            </View>
+          ) : null}
+        </TouchableOpacity>
+      );
+    }
+
+    // ── FINISHED ──────────────────────────────────────────────────────────────
+    return (
+      <TouchableOpacity style={styles.baseCard} onPress={onPress} activeOpacity={0.85}>
+        <View style={styles.cardTop}>
+          <Text style={styles.baseComp} numberOfLines={1}>{compLabel}</Text>
+        </View>
+
+        <View style={styles.cardBody}>
+          <View style={styles.teamCol}>
+            <TeamLogo uri={homeLogo} variant="light" />
+            <Text style={styles.baseTeamName} numberOfLines={2}>{homeTeam}</Text>
+          </View>
+
+          <View style={styles.finCenterCol}>
+            <Text style={styles.finScoreText}>
+              {homeScore ?? "–"}–{awayScore ?? "–"}
+            </Text>
+            {result ? (
+              <Text style={[styles.finResultText, { color: result.color }]}>
+                {result.label}
+              </Text>
+            ) : null}
+          </View>
+
+          <View style={styles.teamCol}>
+            <TeamLogo uri={awayLogo} variant="light" />
+            <Text style={styles.baseTeamName} numberOfLines={2}>{awayTeam}</Text>
+          </View>
+        </View>
+
+        <View style={styles.cardFooter}>
+          <Ionicons name="calendar-outline" size={11} color={COLORS.textMuted} />
+          <Text style={styles.baseFooterText} numberOfLines={1}>
+            {formattedDate}
+          </Text>
         </View>
       </TouchableOpacity>
     );

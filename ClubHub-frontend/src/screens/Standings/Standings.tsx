@@ -49,8 +49,6 @@ const renderItem = useCallback(
           <View>
             {/* TABLE HEADER (UI igual ao teu original) */}
             <View style={styles.tableHeader}>
-              <Text style={[styles.tableCell, styles.col1]}>#</Text>
-              <Text style={[styles.tableCell, styles.col5]}>Equipa</Text>
               <Text style={[styles.tableCell, styles.col2, styles.centerText]}>
                 J
               </Text>
