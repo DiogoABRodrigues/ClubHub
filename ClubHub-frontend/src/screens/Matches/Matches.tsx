@@ -1,11 +1,10 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
   RefreshControl,
-  StyleSheet,
+  FlatList,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./Matches.styles";
@@ -15,16 +14,14 @@ import { useMatches } from "../../hooks/useMatches";
 import { useTeams } from "../../hooks/useTeams";
 import { useCompetitions } from "../../hooks/useCompetitions";
 
-// ── Tipos de tab ──────────────────────────────────────────────────────────────
-type TabKey = "all" | "live" | "upcoming";
+type TabKey = "all" | "live" | "upcoming" | "finished";
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: "all", label: "Todos" },
-  { key: "live", label: "Em direto" },
   { key: "upcoming", label: "Próximos" },
+  { key: "finished", label: "Terminados" },
 ];
 
-// ── MatchesSection ────────────────────────────────────────────────────────────
 interface MatchesSectionProps {
   title: string;
   isLive?: boolean;
@@ -49,10 +46,7 @@ const MatchesSection = React.memo(
     getHomeTeam,
     getAwayTeam,
   }: MatchesSectionProps) => {
-    const limitedMatches = useMemo(
-      () => (showAll ? matches : matches.slice(0, 3)),
-      [matches, showAll],
-    );
+    const limitedMatches = showAll ? matches : matches.slice(0, 3);
 
     const { competitions } = useCompetitions();
     const competitionsMap = useMemo(() => {
@@ -61,22 +55,13 @@ const MatchesSection = React.memo(
       return map;
     }, [competitions]);
 
-    const isAdmin = true;
-    const navigateToMatchDetail = useCallback(
-      (matchId: string) => {
-        if (isAdmin) {
-          navigation.navigate("AdminMatchDetail", { id: matchId });
-        } else {
-          navigation.navigate("MatchDetail", { id: matchId });
-        }
-      },
-      [navigation, isAdmin],
-    );
+    const navigateToMatchDetail = (matchId: string) => {
+      navigation.navigate("AdminMatchDetail", { id: matchId });
+    };
 
     return (
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          {/* Título: pill vermelha para live, ícone + texto para as restantes */}
           {isLive ? (
             <View style={styles.livePill}>
               <View style={styles.liveDot} />
@@ -110,10 +95,10 @@ const MatchesSection = React.memo(
   },
 );
 
-// ── Matches screen ────────────────────────────────────────────────────────────
 export const Matches = ({ navigation }: any) => {
-  const { matches, loading, refreshMatches } = useMatches();
+  const { matches, refreshMatches } = useMatches();
   const { teams, refreshTeams } = useTeams();
+  const { refreshCompetitions } = useCompetitions();
 
   const teamsMap = useMemo(() => {
     const map = new Map();
@@ -121,12 +106,18 @@ export const Matches = ({ navigation }: any) => {
     return map;
   }, [teams]);
 
-  const { refreshCompetitions } = useCompetitions();
-
   const [activeTab, setActiveTab] = useState<TabKey>("all");
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [showAllFinished, setShowAllFinished] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  // ✅ Reset automático ao mudar tab
+  useEffect(() => {
+    if (activeTab === "all") {
+      setShowAllUpcoming(false);
+      setShowAllFinished(false);
+    } 
+  }, [activeTab]);
 
   const liveMatches = useMemo(
     () => matches.filter((m) => m.status === "live"),
@@ -141,15 +132,18 @@ export const Matches = ({ navigation }: any) => {
     [matches],
   );
 
-  // O que mostrar depende da tab activa
   const showLive = activeTab === "all" || activeTab === "live";
   const showUpcoming = activeTab === "all" || activeTab === "upcoming";
-  const showFinished = activeTab === "all";
+  const showFinished = activeTab === "all" || activeTab === "finished";
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await Promise.all([refreshMatches(), refreshCompetitions(), refreshTeams()]);
+      await Promise.all([
+        refreshMatches(),
+        refreshCompetitions(),
+        refreshTeams(),
+      ]);
     } finally {
       setRefreshing(false);
     }
@@ -177,24 +171,96 @@ export const Matches = ({ navigation }: any) => {
     (activeTab === "live" && liveMatches.length === 0) ||
     (activeTab === "upcoming" && upcomingMatches.length === 0);
 
+  const renderContent = () => (
+    <View style={styles.content}>
+      {/*}
+      <View style={styles.tabsRow}>
+        {TABS.map((tab) => (
+          <TouchableOpacity
+            key={tab.key}
+            style={[
+              styles.tab,
+              activeTab === tab.key && styles.tabActive,
+            ]}
+            onPress={() => setActiveTab(tab.key)}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === tab.key && styles.tabTextActive,
+              ]}
+            >
+              {tab.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>{*/}
+
+      {showLive && liveMatches.length > 0 && (
+        <MatchesSection
+          title="Em direto"
+          isLive
+          matches={liveMatches}
+          showAll={true}
+          toggleShowAll={() => {}}
+          getTeamLogo={getTeamLogo}
+          navigation={navigation}
+          getHomeTeam={getHomeTeam}
+          getAwayTeam={getAwayTeam}
+        />
+      )}
+
+      {showUpcoming && upcomingMatches.length > 0 && (
+        <MatchesSection
+          title="Próximos jogos"
+          matches={upcomingMatches}
+          showAll={showAllUpcoming}
+          toggleShowAll={() => setShowAllUpcoming(!showAllUpcoming)}
+          getTeamLogo={getTeamLogo}
+          navigation={navigation}
+          getHomeTeam={getHomeTeam}
+          getAwayTeam={getAwayTeam}
+        />
+      )}
+
+      {showFinished && finishedMatches.length > 0 && (
+        <MatchesSection
+          title="Últimos Resultados"
+          matches={finishedMatches}
+          showAll={showAllFinished}
+          toggleShowAll={() => setShowAllFinished(!showAllFinished)}
+          getTeamLogo={getTeamLogo}
+          navigation={navigation}
+          getHomeTeam={getHomeTeam}
+          getAwayTeam={getAwayTeam}
+        />
+      )}
+
+      {isEmpty && (
+        <View style={styles.noMatches}>
+          <Text style={styles.noMatchesText}>
+            Não foram encontrados jogos
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerTop}>
-          <TouchableOpacity
-            style={styles.backBtn}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="arrow-back" size={20} color={COLORS.textSecondary} />
-          </TouchableOpacity>
+          <View>
+          <Text style={styles.eyebrow}></Text>
           <Text style={styles.headerTitle}>Jogos e Resultados</Text>
+          </View>
         </View>
-
-        {/* Tabs de filtro */}
-        
       </View>
-      <ScrollView
-        contentContainerStyle={styles.content}
+
+      <FlatList
+        data={[{ key: "content" }]}
+        renderItem={renderContent}
+        keyExtractor={(item) => item.key}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -203,80 +269,7 @@ export const Matches = ({ navigation }: any) => {
             tintColor={COLORS.primary}
           />
         }
-      >
-        <View style={styles.tabsRow}>
-        {TABS.map((tab) => (
-            <TouchableOpacity
-              key={tab.key}
-              style={[
-                styles.tab,
-                activeTab === tab.key && styles.tabActive,
-              ]}
-              onPress={() => setActiveTab(tab.key)}
-              activeOpacity={0.7}
-            >
-              {tab.key === "live" && (
-                <View style={styles.tabLiveDot} />
-              )}
-              <Text
-                style={[
-                  styles.tabText,
-                  activeTab === tab.key && styles.tabTextActive,
-                ]}
-              >
-                {tab.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        {showLive && liveMatches.length > 0 && (
-          <MatchesSection
-            title="Em direto"
-            isLive
-            matches={liveMatches}
-            showAll={true}
-            toggleShowAll={() => {}}
-            getTeamLogo={getTeamLogo}
-            navigation={navigation}
-            getHomeTeam={getHomeTeam}
-            getAwayTeam={getAwayTeam}
-          />
-        )}
-
-        {showUpcoming && upcomingMatches.length > 0 && (
-          <MatchesSection
-            title="Próximos jogos"
-            matches={upcomingMatches}
-            showAll={showAllUpcoming}
-            toggleShowAll={() => setShowAllUpcoming(!showAllUpcoming)}
-            getTeamLogo={getTeamLogo}
-            navigation={navigation}
-            getHomeTeam={getHomeTeam}
-            getAwayTeam={getAwayTeam}
-          />
-        )}
-
-        {showFinished && finishedMatches.length > 0 && (
-          <MatchesSection
-            title="Últimos Resultados"
-            matches={finishedMatches}
-            showAll={showAllFinished}
-            toggleShowAll={() => setShowAllFinished(!showAllFinished)}
-            getTeamLogo={getTeamLogo}
-            navigation={navigation}
-            getHomeTeam={getHomeTeam}
-            getAwayTeam={getAwayTeam}
-          />
-        )}
-
-        {isEmpty && (
-          <View style={styles.noMatches}>
-            <Text style={styles.noMatchesText}>
-              Não foram encontrados jogos
-            </Text>
-          </View>
-        )}
-      </ScrollView>
+      />
     </View>
   );
 };

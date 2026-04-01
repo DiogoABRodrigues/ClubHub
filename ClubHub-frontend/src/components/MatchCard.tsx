@@ -143,15 +143,13 @@ export const MatchCard = React.memo(
             </View>
           </View>
 
-          {location ? (
             <View style={styles.cardFooter}>
               <Ionicons name="location-outline" size={11} color={COLORS.textMuted} />
-              <Text style={styles.baseFooterText} numberOfLines={1}>{location}</Text>
+              <Text style={styles.baseFooterText} numberOfLines={1}>{location ? location : "Localização não disponível"}</Text>
               <TouchableOpacity onPress={copyLocation} style={{ marginLeft: 6 }}>
                 <Ionicons name="copy-outline" size={13} color={COLORS.textPrimary} />
               </TouchableOpacity>
             </View>
-          ) : null}
         </TouchableOpacity>
       );
     }

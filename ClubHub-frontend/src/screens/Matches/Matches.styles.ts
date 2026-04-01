@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
 
   content: {
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.md,
+    paddingTop: SPACING.lg,
     paddingBottom: SPACING.xl,
   },
 
@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "700",
-    color: COLORS.textPrimary,
+    color: COLORS.primary,
   },
 
   showMoreInline: {
@@ -117,10 +117,8 @@ export const styles = StyleSheet.create({
   },
   headerTop: {
     flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 16,
-    marginBottom: 12,
+    alignItems: "flex-end",
+    justifyContent: "space-between",
   },
   backBtn: {
     width: 32,
@@ -130,16 +128,26 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  headerTitle: {
-    fontSize: 17,
-    fontWeight: "700",
+  eyebrow: {
+    fontSize: 10,
+    fontWeight: "600",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
     color: COLORS.textPrimary,
-    letterSpacing: -0.3,
+    marginBottom: 2,
   },
+  headerTitle: {
+    fontSize: FONT_SIZE.xl,
+    fontWeight: "800",
+    color: COLORS.textPrimary,
+    letterSpacing: -0.8,
+    lineHeight: FONT_SIZE.xl * 1.1,
+    },
   tabsRow: {
     flexDirection: "row",
+    alignItems: "center",
     gap: 6,
-    paddingHorizontal: 16,
+    paddingBottom: SPACING.sm,
   },
   tab: {
     flexDirection: "row",

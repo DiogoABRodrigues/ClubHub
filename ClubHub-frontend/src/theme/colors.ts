@@ -10,7 +10,7 @@ export const COLORS = {
 
   // ── Superfícies ───────────────────────────
   background:    "#FFFFFFE6", // Off-white  — fundo geral das screens
-  surface:       "#800000c2", // Branco     — cards, modais
+  surface:       "#800000", // Branco     — cards, modais
   surfaceLight:  "#F1F5F9", // Cinza suave — header Home, fundos alt
 
   // ── Texto ─────────────────────────────────
