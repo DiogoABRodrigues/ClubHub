@@ -99,28 +99,28 @@ export const NotificationSettings = ({ navigation }: any) => {
       icon: "trophy-outline",
       title: "Início do Jogo",
       description: "Recebe notificações quando um jogo está prestes a começar",
-      color: COLORS.chart3,
+      color: COLORS.textPrimary,
     },
     {
       key: "goals" as const,
       icon: "football-outline",
       title: "Golos",
       description: "Recebe alertas instantâneos quando há um golo",
-      color: COLORS.chart3,
+      color: COLORS.textPrimary,
     },
     {
       key: "finalResult" as const,
       icon: "checkmark-done-outline",
       title: "Resultado Final",
       description: "Recebe notificação quando um jogo termina",
-      color: COLORS.chart3,
+      color: COLORS.textPrimary,
     },
     {
       key: "newsAlerts" as const,
       icon: "newspaper-outline",
       title: "Alertas de Notícias",
       description: "Mantém-te atualizado com as últimas notícias do clube",
-      color: COLORS.chart3,
+      color: COLORS.textPrimary,
     },
   ],
   [],
@@ -129,15 +129,11 @@ export const NotificationSettings = ({ navigation }: any) => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons
-              name="arrow-back"
-              size={24}
-              color={COLORS.textSecondary}
-            />
-          </TouchableOpacity>
+        <View style={styles.headerTop}>
+          <View>
+          <Text style={styles.eyebrow}> </Text>
           <Text style={styles.headerTitle}>Definições</Text>
+          </View>
         </View>
       </View>
 
@@ -148,7 +144,7 @@ export const NotificationSettings = ({ navigation }: any) => {
             <View key={key} style={styles.toggleCard}>
               <View style={styles.toggleLeft}>
                 <View
-                  style={[styles.iconCircle, { backgroundColor: color + "20" }]}
+                  style={[styles.iconCircle]}
                 >
                   <Ionicons name={icon as any} size={20} color={color} />
                 </View>

@@ -6,7 +6,8 @@ export const COLORS = {
   // ── Identidade principal ──────────────────
   primary:       "#800000", // Royal Blue — botões, ações, tabs ativas
   primaryDark:   "#000000", // Deep Blue  — header do MatchDetail
-  primaryLight:  "#e4d54e", // Blue Tint  — fundos de seleção / hover / badges
+  primaryLight:  "#e4d54e",
+  secondaryLight: "#8000004b", // Blue Tint  — fundos de seleção / hover / badges
 
   // ── Superfícies ───────────────────────────
   background:    "#FFFFFFE6", // Off-white  — fundo geral das screens

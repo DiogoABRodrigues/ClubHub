@@ -11,7 +11,6 @@ export const styles = StyleSheet.create({
   content: {
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.lg,
-    paddingBottom: SPACING.xl,
   },
 
   headerLeft: {

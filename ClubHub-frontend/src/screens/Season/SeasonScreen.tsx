@@ -7,6 +7,7 @@ import { SquadScreen } from "../Squad/Squad";
 import { Standings } from "../Standings/Standings";
 import { SquadStats } from "../Stats/Stats";
 import { useSeasons } from "../../hooks/useSeasons";
+import { COLORS } from "../../theme/colors";
 
 type SeasonTab = "standings" | "squad" | "stats";
 
@@ -22,8 +23,8 @@ const TABS: Tab[] = [
   { key: "stats", label: "Estatísticas", icon: BarChart3 },
 ];
 
+// SeasonScreen.tsx
 export function SeasonScreen() {
-  const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState<SeasonTab>("standings");
   const { seasons } = useSeasons();
 
@@ -38,24 +39,16 @@ export function SeasonScreen() {
     setActiveTab(tab);
   }, []);
 
-  const renderContent = () => {
-    if (activeTab === "standings") return <Standings />;
-    if (activeTab === "squad") return <SquadScreen />;
-    return <SquadStats />;
-  };
-
+  // Renderizar os componentes condicionalmente sem usar função
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={navigation.goBack}
-        >
-          <ArrowLeft width={24} height={24} color="#000" />
-        </TouchableOpacity>
-
-        <Text style={styles.title}>Época {currentSeason?.year}</Text>
-        <View style={styles.placeholder} />
+        <View style={styles.headerTop}>
+          <View>
+            <Text style={styles.eyebrow}> </Text>
+            <Text style={styles.headerTitle}>Época {currentSeason?.year}</Text>
+          </View>
+        </View>
       </View>
 
       <View style={styles.tabsContainer}>
@@ -70,7 +63,10 @@ export function SeasonScreen() {
         ))}
       </View>
 
-      {renderContent()}
+      {/* Renderização condicional direta */}
+      {activeTab === "standings" && <Standings />}
+      {activeTab === "squad" && <SquadScreen />}
+      {activeTab === "stats" && <SquadStats />}
     </View>
   );
 }
@@ -81,7 +77,7 @@ const TabButton = React.memo(
       style={[styles.tab, active && styles.tabActive]}
       onPress={onPress}
     >
-      <Icon width={20} height={20} color={active ? "#3b82f6" : "#666"} />
+      <Icon width={20} height={20} color={active ? COLORS.primary : COLORS.primaryDark} />
       <Text style={[styles.tabText, active && styles.tabTextActive]}>
         {label}
       </Text>

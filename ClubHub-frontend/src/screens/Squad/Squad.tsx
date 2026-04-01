@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useEffect } from "react";
 import { View, Text, Image } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { usePlayers } from "../../hooks/usePlayers";
@@ -6,40 +6,49 @@ import { Player } from "../../models/Player";
 import { styles as globalStyles } from "./Squad.styles";
 import { getPositionOrder } from "../../utils/playerPositionUtils";
 import { mapToMainPosition } from "../../utils/playerPositionUtils";
-
+import { COLORS } from "../../theme/colors";
 const defaultPlayerImage = require("../../../assets/player.jpg");
+
+const chunkArray = (arr: Player[], size: number) => {
+  const chunks: Player[][] = [];
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size));
+  }
+  return chunks;
+};
 
 /* ---------------- CARD MEMO ---------------- */
 const PlayerCard = React.memo(({ player }: { player: Player }) => {
   return (
-    <View style={{ width: "48%", marginVertical: 4 }}>
-      <View style={globalStyles.card}>
-        <View style={globalStyles.playerPhotoWrapper}>
-          <Image
-            source={
-              player.photoUrl
-                ? { uri: player.photoUrl }
-                : defaultPlayerImage
-            }
-            style={globalStyles.statsPhoto}
-            resizeMode="contain"
-          />
-        </View>
+    <View style={globalStyles.playerCard}>
+      <Image
+        source={
+          player.photoUrl
+            ? { uri: player.photoUrl }
+            : defaultPlayerImage
+        }
+        style={globalStyles.playerImage}
+        resizeMode="contain"
+      />
 
-        <Text style={globalStyles.playerName} numberOfLines={1}>
-          {player.name}
+      <Text style={globalStyles.playerName} numberOfLines={1}>
+        {player.name}
+      </Text>
+
+      {!!player.age && (
+        <Text style={globalStyles.playerAge}>
+          {player.age} anos
         </Text>
-
-        <View style={globalStyles.playerInfoRow}>
-          {player.age && <Text>{player.age} anos</Text>}
-        </View>
-      </View>
+      )}
     </View>
   );
 });
 
 /* ---------------- SCREEN ---------------- */
-export function SquadScreen() {
+export const SquadScreen = React.memo(function SquadScreen() {
+  useEffect(() => {
+  console.log("MOUNT");
+}, []);
   const { getActivePlayers } = usePlayers();
   const activePlayers = getActivePlayers();
 
@@ -59,11 +68,6 @@ export function SquadScreen() {
   /* GROUP ONCE */
   const grouped = useMemo(() => {
 
-for (const p of sortedPlayers) {
-  const raw = p.Stats?.[0]?.position || "";
-  const mapped = mapToMainPosition(raw);
-
-}
     const groups: Record<string, Player[]> = {};
 
     for (const p of sortedPlayers) {
@@ -85,8 +89,10 @@ for (const p of sortedPlayers) {
     grouped.forEach((group) => {
       result.push({ type: "header", position: group.position });
 
-      group.players.forEach((p) => {
-        result.push({ type: "player", player: p });
+      const rows = chunkArray(group.players, 3);
+
+      rows.forEach((row) => {
+        result.push({ type: "row", players: row });
       });
     });
 
@@ -104,19 +110,31 @@ for (const p of sortedPlayers) {
       );
     }
 
-    return <PlayerCard player={item.player} />;
+    return (
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        {item.players.map((p: Player) => (
+          <PlayerCard key={p.id} player={p} />
+        ))}
+      </View>
+    );
   }, []);
 
   return (
     <FlashList
       data={data}
       renderItem={renderItem}
-      keyExtractor={(item, index) =>
-        item.type === "header"
-          ? `h-${item.position}-${index}`
-          : item.player.id
-      }
+      keyExtractor={(item, index) => {
+        if (item.type === "header") {
+          return `h-${item.position}-${index}`;
+        }
+
+        if (item.type === "row") {
+          return `r-${item.players.map((p: Player) => p.id).join("-")}`;
+        }
+
+        return `unknown-${index}`;
+      }}
       contentContainerStyle={globalStyles.squadList}
     />
   );
-}
+});

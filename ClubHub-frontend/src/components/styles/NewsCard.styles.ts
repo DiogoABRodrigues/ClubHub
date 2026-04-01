@@ -58,20 +58,20 @@ export const styles = StyleSheet.create({
 
   dateText: {
     fontSize: 12,
-    color: COLORS.textSecondary,
+    color: COLORS.textMuted,
     marginLeft: 2,
   },
 
   title: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "600",
     marginBottom: 4,
     color: COLORS.textPrimary,
   },
 
   excerpt: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
+    fontSize: 14,
+    color: COLORS.textPrimary,
     marginBottom: 6,
   },
 
@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
 
   authorText: {
     fontSize: 10,
-    color: COLORS.textSecondary,
+    color: COLORS.textMuted,
     marginLeft: 2,
   },
 });

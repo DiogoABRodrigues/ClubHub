@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useEffect } from "react";
 import { View, Text, FlatList } from "react-native";
 import { useStandings } from "../../hooks/useStandings";
 import { LeagueTableRow } from "../../components/LeagueTableRow";
@@ -7,7 +7,18 @@ import { styles } from "./Standings.styles";
 const GREEN_ZONE = 2;
 const RED_ZONE = 19;
 
-export const Standings: React.FC = () => {
+const COLS = {
+  position: 1,
+  team: 5,
+  played: 1,
+  goalDiff: 1,
+  points: 1,
+};
+
+export const Standings = React.memo(function Standings() {
+      useEffect(() => {
+      console.log("MOUNT Standings");
+    }, []);
   const { standings, loading } = useStandings();
 
   const sorted = useMemo(() => {
@@ -16,16 +27,16 @@ export const Standings: React.FC = () => {
     return arr;
   }, [standings]);
 
-const renderItem = useCallback(
-  ({ item }: { item: any }) => (
-    <LeagueTableRow
-      standing={item}
-      green={GREEN_ZONE}
-      red={RED_ZONE}
-    />
-  ),
-  []
-);
+  const renderItem = useCallback(
+    ({ item }: { item: any }) => (
+      <LeagueTableRow
+        standing={item}
+        green={GREEN_ZONE}
+        red={RED_ZONE}
+      />
+    ),
+    []
+  );
 
   const keyExtractor = useCallback((item: any) => item.id, []);
 
@@ -47,17 +58,32 @@ const renderItem = useCallback(
         renderItem={renderItem}
         ListHeaderComponent={
           <View>
-            {/* TABLE HEADER (UI igual ao teu original) */}
+            {/* TABLE HEADER */}
             <View style={styles.tableHeader}>
-              <Text style={[styles.tableCell, styles.col2, styles.centerText]}>
-                J
-              </Text>
-              <Text style={[styles.tableCell, styles.col2, styles.centerText]}>
-                DG
-              </Text>
-              <Text style={[styles.tableCell, styles.col2, styles.rightText]}>
-                PTS
-              </Text>
+              {/* Position */}
+              <View style={[styles.headerCell, { flex: COLS.position }]}>
+                <Text style={styles.headerText}></Text>
+              </View>
+
+              {/* Team */}
+              <View style={[styles.headerCell, { flex: COLS.team }]}>
+                <Text style={styles.headerText}></Text>
+              </View>
+
+              {/* Played */}
+              <View style={[styles.headerCell, { flex: COLS.played, alignItems: "center" }]}>
+                <Text style={styles.headerText}>J</Text>
+              </View>
+
+              {/* Goal Diff */}
+              <View style={[styles.headerCell, { flex: COLS.goalDiff, alignItems: "center" }]}>
+                <Text style={styles.headerText}>DG</Text>
+              </View>
+
+              {/* Points */}
+              <View style={[styles.headerCell, { flex: COLS.points, alignItems: "flex-end" }]}>
+                <Text style={styles.headerText}>PTS</Text>
+              </View>
             </View>
           </View>
         }
@@ -95,4 +121,4 @@ const renderItem = useCallback(
       />
     </View>
   );
-};
+});

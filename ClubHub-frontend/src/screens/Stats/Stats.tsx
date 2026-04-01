@@ -33,7 +33,10 @@ const SortIcon = React.memo(
   },
 );
 
-export function SquadStats() {
+export const SquadStats = React.memo(function SquadStats() {
+    useEffect(() => {
+    console.log("MOUNT SquadStats");
+  }, []);
   const { players } = usePlayers();
   const [sortField, setSortField] = useState<SortField>("goals");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
@@ -96,7 +99,7 @@ export function SquadStats() {
           style={[
             globalStyles.statsText,
             globalStyles.statsHeaderText,
-            localStyles.flex2,
+            globalStyles.flex2,
           ]}
         >
           Jogador
@@ -168,8 +171,5 @@ export function SquadStats() {
       })}
     />
   );
-}
-
-const localStyles = StyleSheet.create({
-  flex2: { flex: 2 },
 });
+

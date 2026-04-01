@@ -10,26 +10,39 @@ export const styles = StyleSheet.create({
 
   // ── Header ───────────────────────────────────────────────────────────────
   header: {
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.xl + 16,
-    paddingBottom: SPACING.sm,
     backgroundColor: COLORS.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    paddingTop: SPACING.xl + 8,       // espaço para status bar
+    paddingBottom: SPACING.md,
+    paddingHorizontal: SPACING.md,
+  },
+
+  content: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.xl,
   },
 
   headerLeft: {
     flexDirection: "row",
-    alignItems: "center",
-    gap: SPACING.sm,
-    marginBottom: SPACING.sm,
+    alignItems: "flex-end",
+    justifyContent: "space-between",
   },
 
   headerTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: "700",
+    fontSize: FONT_SIZE.xl,
+    fontWeight: "800",
     color: COLORS.textPrimary,
-    letterSpacing: -0.3,
+    letterSpacing: -0.8,
+    lineHeight: FONT_SIZE.xl * 1.1,
+    },
+
+    eyebrow: {
+    fontSize: 10,
+    fontWeight: "600",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    color: COLORS.textPrimary,
+    marginBottom: 2,
   },
 
   // ── Filtros de categoria ──────────────────────────────────────────────────
@@ -60,13 +73,6 @@ export const styles = StyleSheet.create({
 
   categoryTextActive: {
     color: "#FFFFFF",
-  },
-
-  // ── Lista ─────────────────────────────────────────────────────────────────
-  content: {
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.md,
-    paddingBottom: SPACING.xl,
   },
 
   newsList: {

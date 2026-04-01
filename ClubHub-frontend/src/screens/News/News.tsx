@@ -34,14 +34,10 @@ export const News = ({ navigation }: any) => {
       {/* HEADER */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons
-              name="arrow-back"
-              size={24}
-              color={COLORS.textSecondary}
-            />
-          </TouchableOpacity>
+          <View>
+          <Text style={styles.eyebrow}> </Text>
           <Text style={styles.headerTitle}>Notícias</Text>
+          </View>
         </View>
       </View>
 

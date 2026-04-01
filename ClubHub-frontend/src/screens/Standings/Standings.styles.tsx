@@ -17,25 +17,24 @@ export const styles = StyleSheet.create({
   // ── Header da tabela ──────────────────────────────────────────────────────
   tableHeader: {
     flexDirection: "row",
-    paddingVertical: 8,
+    paddingVertical: SPACING.sm + 2,
+    paddingHorizontal: SPACING.sm + 2,
     borderBottomWidth: 1,
-    borderColor: "#ccc",
+    borderBottomColor: COLORS.border,
+    marginBottom: SPACING.xs,
   },
 
-  tableCell: {
+  headerCell: {
+    // Flex será aplicado dinamicamente
+  },
+
+  headerText: {
     fontSize: FONT_SIZE.xs,
-    fontWeight: "700",
-    color: COLORS.textMuted,
+    fontWeight: "600",
+    color: COLORS.textSecondary,
     textTransform: "uppercase",
-    letterSpacing: 0.4,
+    letterSpacing: 0.5,
   },
-
-  // ── Colunas (proporções) ──────────────────────────────────────────────────
-  col1: { flex: 1 },
-  col5: { flex: 5 },
-  col2: { flex: 2 },
-  centerText: { textAlign: "center" },
-  rightText: { textAlign: "right" },
 
   // ── Texto de apoio ────────────────────────────────────────────────────────
   statsText: {
@@ -46,18 +45,16 @@ export const styles = StyleSheet.create({
 
   // ── Legenda ───────────────────────────────────────────────────────────────
   legend: {
-    borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     marginTop: SPACING.md,
-    backgroundColor: COLORS.surface,
   },
 
   legendTitle: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "700",
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
     marginBottom: SPACING.sm,
   },
 

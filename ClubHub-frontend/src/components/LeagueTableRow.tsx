@@ -19,6 +19,14 @@ interface Props {
   red: number; // número de posições vermelhas (descida)
 }
 
+const COLS = {
+  position: 1,
+  team: 5,
+  played: 1,
+  goalDiff: 1,
+  points: 1,
+};
+
 export const LeagueTableRow = React.memo(
   ({ standing, isUserTeam = false, green, red }: Props) => {
     const { teams } = useTeams();
@@ -45,7 +53,7 @@ export const LeagueTableRow = React.memo(
     const isAppTeam = normalizedName === appTeamName;
 
     const rowBackgroundColor = useMemo(() => {
-      if (isAppTeam) return COLORS.primaryLight;
+      if (isAppTeam) return COLORS.secondaryLight;
       if (standing.position <= green) return COLORS.successLight;
       if (standing.position >= red) return COLORS.errorLight;
       return COLORS.background;
@@ -61,14 +69,14 @@ export const LeagueTableRow = React.memo(
           ]}
         >
           {/* POSITION */}
-          <View style={styles.position}>
+          <View style={[styles.cell, { flex: COLS.position }]}>
             <Text style={[styles.text, { color: COLORS.textSecondary }]}>
               {standing.position}
             </Text>
           </View>
 
           {/* TEAM NAME + LOGO */}
-          <View style={styles.teamRow}>
+          <View style={[styles.teamRow, { flex: COLS.team }]}>
             {teamLogo && (
               <Image
                 source={{ uri: teamLogo }}
@@ -85,12 +93,12 @@ export const LeagueTableRow = React.memo(
           </View>
 
           {/* PLAYED */}
-          <View style={styles.center}>
+          <View style={[styles.cell, { flex: COLS.played, alignItems: "center" }]}>
             <Text style={styles.mutedText}>{standing.played}</Text>
           </View>
 
           {/* GOAL DIFFERENCE */}
-          <View style={styles.centerRow}>
+          <View style={[styles.cell, { flex: COLS.goalDiff, alignItems: "center" }]}>
             <Text style={styles.text}>
               {standing.goalDiff > 0 ? "+" : ""}
               {standing.goalDiff}
@@ -98,7 +106,7 @@ export const LeagueTableRow = React.memo(
           </View>
 
           {/* POINTS */}
-          <View style={styles.points}>
+          <View style={[styles.cell, { flex: COLS.points, alignItems: "flex-end" }]}>
             <Text
               style={[styles.text, isUserTeam && { color: COLORS.primary }]}
             >

@@ -119,11 +119,18 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-
-  playerPhotoWrapper: {
-    position: "relative",
-    marginBottom: SPACING.xs,
+  cardWrapper: {
+    flex: 1,
+    margin: SPACING.xs,
+    maxWidth: "48%",
   },
+
+playerPhotoWrapper: {
+  position: "relative",
+  marginBottom: SPACING.xs,
+  width: "100%",
+  alignItems: "center",
+},
 
   playerPhoto: {
     width: "100%",
@@ -133,10 +140,10 @@ export const styles = StyleSheet.create({
   },
 
   statsPhoto: {
-    width: 50,
-    height: 50,
-    borderRadius: RADIUS.sm,
-  },
+    width: "100%",
+  aspectRatio: 1,
+  borderRadius: RADIUS.sm,
+},
 
   // ── Badge com número ──────────────────────────────────────────────────────
   numberBadge: {
@@ -169,6 +176,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+   
   },
 
   position: {
@@ -193,7 +201,7 @@ export const styles = StyleSheet.create({
   positionHeaderText: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "700",
-    color: COLORS.textMuted,
+    color: COLORS.textSecondary,
     textTransform: "uppercase",
     letterSpacing: 0.6,
   },
@@ -271,4 +279,22 @@ export const styles = StyleSheet.create({
     width: "90%",
     height: "70%",
   },
+  playerCard: {
+  width: "32%",
+  marginBottom: SPACING.md,
+  alignItems: "center",
+},
+
+playerImage: {
+  width: "75%",
+  aspectRatio: 1,   // 👈 garante todas iguais
+  borderRadius: 12, // ou 0 se quiseres totalmente “clean”
+  backgroundColor: COLORS.surfaceLight,
+},
+
+playerAge: {
+  fontSize: FONT_SIZE.xs,
+  color: COLORS.textSecondary,
+  marginTop: 2,
+},
 });

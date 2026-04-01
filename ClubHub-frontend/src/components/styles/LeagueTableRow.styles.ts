@@ -16,44 +16,15 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.primaryLight,
   },
 
-  // ── Colunas ───────────────────────────────────────────────────────────────
-  position: {
-    width: "10%",
+  // ── Células ───────────────────────────────────────────────────────────────
+  cell: {
+    // Flex será aplicado dinamicamente
   },
 
   teamRow: {
-    flex: 5,
     flexDirection: "row",
     alignItems: "center",
     gap: SPACING.sm,
-  },
-
-  team: {
-    width: "40%",
-  },
-
-  center: {
-    width: "15%",
-    alignItems: "center",
-  },
-
-  centerRow: {
-    width: "15%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 4,
-  },
-
-  centerColumn: {
-    flex: 2,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  points: {
-    width: "20%",
-    alignItems: "flex-end",
   },
 
   // ── Logo ──────────────────────────────────────────────────────────────────
@@ -66,7 +37,7 @@ export const styles = StyleSheet.create({
   // ── Tipografia ────────────────────────────────────────────────────────────
   text: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
   },
 
   mutedText: {
@@ -96,16 +67,16 @@ export const styles = StyleSheet.create({
 
   statLabel: {
     fontSize: FONT_SIZE.xs,
-    fontWeight: "700",
-    color: COLORS.textMuted,
+    fontWeight: "400",
+    color: COLORS.textSecondary,
     textTransform: "uppercase",
     letterSpacing: 0.3,
   },
 
   statValue: {
     fontSize: FONT_SIZE.sm,
-    fontWeight: "600",
-    color: COLORS.textPrimary,
+    fontWeight: "500",
+    color: COLORS.textSecondary,
     marginRight: SPACING.sm,
   },
 });

@@ -54,7 +54,7 @@ export const Switch: React.FC<SwitchProps> = React.memo(
             width: trackWidth,
             height: trackHeight,
             borderRadius: trackHeight / 2,
-            backgroundColor: value ? COLORS.primary : COLORS.muted,
+            backgroundColor: value ? COLORS.warning : COLORS.muted,
             opacity: disabled ? 0.5 : 1,
           },
         ]}

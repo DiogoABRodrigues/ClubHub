@@ -96,6 +96,9 @@ const MatchesSection = React.memo(
 );
 
 export const Matches = ({ navigation }: any) => {
+      useEffect(() => {
+      console.log("MOUNT matchs");
+    }, []);
   const { matches, refreshMatches } = useMatches();
   const { teams, refreshTeams } = useTeams();
   const { refreshCompetitions } = useCompetitions();
@@ -251,7 +254,7 @@ export const Matches = ({ navigation }: any) => {
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View>
-          <Text style={styles.eyebrow}></Text>
+          <Text style={styles.eyebrow}> </Text>
           <Text style={styles.headerTitle}>Jogos e Resultados</Text>
           </View>
         </View>

@@ -10,28 +10,41 @@ export const styles = StyleSheet.create({
 
   // ── Header ───────────────────────────────────────────────────────────────
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.xl + 16,
-    paddingBottom: SPACING.sm,
     backgroundColor: COLORS.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    paddingTop: SPACING.xl + 8,       // espaço para status bar
+    paddingBottom: SPACING.md,
+    paddingHorizontal: SPACING.md,
+  },
+
+    eyebrow: {
+    fontSize: 10,
+    fontWeight: "600",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    color: COLORS.textPrimary,
+    marginBottom: 2,
   },
 
   headerLeft: {
     flexDirection: "row",
     alignItems: "center",
     gap: SPACING.sm,
+    marginBottom: SPACING.xs,
+  },
+
+    headerTop: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
   },
 
   headerTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: "700",
+    fontSize: FONT_SIZE.xl,
+    fontWeight: "800",
     color: COLORS.textPrimary,
-    letterSpacing: -0.3,
-  },
+    letterSpacing: -0.8,
+    lineHeight: FONT_SIZE.xl * 1.1,
+    },
 
   // ── Conteúdo ──────────────────────────────────────────────────────────────
   content: {
@@ -104,13 +117,14 @@ export const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.textPrimary,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: COLORS.primaryLight,  // fallback; pode ser sobrescrito inline
   },
 
   toggleTitle: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.md,
     fontWeight: "600",
     color: COLORS.textPrimary,
     marginBottom: 2,
@@ -118,7 +132,7 @@ export const styles = StyleSheet.create({
 
   toggleDescription: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
+    color: COLORS.textPrimary,
     lineHeight: 17,
     paddingRight: SPACING.md,
   },
