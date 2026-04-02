@@ -4,16 +4,31 @@ import {
   updateMatchEvent,
   deleteMatchEvent,
 } from "../controllers/matchEvent.controller";
+import { authMiddleware } from "../middlewares/authMiddleware";
+import { authorizeRoles } from "../middlewares/authorizeRoles";
 
 const router = Router();
 
-// criar evento
-router.post("/:matchId/events", createMatchEvent);
+// ADMIN ONLY
+router.post(
+  "/:matchId/events",
+  authMiddleware,
+  authorizeRoles("admin"),
+  createMatchEvent
+);
 
-// editar evento
-router.put("/events/:id", updateMatchEvent);
+router.put(
+  "/events/:id",
+  authMiddleware,
+  authorizeRoles("admin"),
+  updateMatchEvent
+);
 
-// apagar evento
-router.delete("/events/:id", deleteMatchEvent);
+router.delete(
+  "/events/:id",
+  authMiddleware,
+  authorizeRoles("admin"),
+  deleteMatchEvent
+);
 
 export default router;
