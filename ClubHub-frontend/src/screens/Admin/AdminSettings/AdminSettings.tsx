@@ -6,11 +6,12 @@ import { COLORS } from "../../../theme/colors";
 import { ScrapperService } from "../../../services/ScrapperService";
 import { useStatements } from "../../../hooks/useStatements";
 import { StatementModal } from "../../../components/StatementModal";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export const AdminSettings = ({ navigation }: any) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateDone, setUpdateDone] = useState(false);
-
+  const { logout, setAdminMode } = useAuth();
   const [statementModalVisible, setStatementModalVisible] = useState(false);
 
   const { statements } = useStatements();
@@ -148,6 +149,43 @@ export const AdminSettings = ({ navigation }: any) => {
             </Text>
           </TouchableOpacity>
         </View>
+        <View style={[styles.card, { marginTop: 20 }]}>
+        <View style={styles.cardIconRow}>
+          <View style={styles.iconCircle}>
+            <Ionicons
+              name="log-out-outline"
+              size={22}
+              color={COLORS.textPrimary}
+            />
+          </View>
+
+          <View style={styles.cardTextBlock}>
+            <Text style={styles.cardTitle}>Logout</Text>
+            <Text style={styles.cardDescription}>
+              Terminar sessão na conta atual.
+            </Text>
+          </View>
+        </View>
+
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={async () => {
+            try {
+              await logout();
+              setAdminMode(false); // 🔥 ISTO É O QUE FALTA
+
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "Início" }],
+              });
+            } catch (e) {
+              console.log("Erro logout", e);
+            }
+          }}
+        >
+          <Text style={styles.actionButtonText}>Sair</Text>
+        </TouchableOpacity>
+      </View>
       </ScrollView>
       <StatementModal
         visible={statementModalVisible}

@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { View, Text, ScrollView, TouchableOpacity, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Switch } from "../../components/Switch";
 import { styles } from "./NotificationSettings.styles";
@@ -21,12 +21,28 @@ export const NotificationSettings = ({ navigation }: any) => {
     gameDayAlerts: true,
   });
 
-  const { loginAsAdmin } = useAuth();
+  const { loginAsAdmin, setAdminMode } = useAuth();
 
 const [userName, setUserName] = useState("");
 const [password, setPassword] = useState("");
   const [deviceId, setDeviceId] = useState<string | null>(null);
   const [pushToken, setPushToken] = useState<string | null>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [tapCount, setTapCount] = useState(0);
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
+  const handleTitleTap = useCallback(() => {
+    setTapCount((prev) => {
+      const next = prev + 1;
+      if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+      if (next >= 5) {
+        setShowLoginModal(true);
+        return 0;
+      }
+      tapTimerRef.current = setTimeout(() => setTapCount(0), 1500);
+      return next;
+    });
+  }, []);
 
   const loadPreferences = useCallback(async () => {
     try {
@@ -140,7 +156,9 @@ const [password, setPassword] = useState("");
         <View style={styles.headerTop}>
           <View>
             <Text style={styles.eyebrow}> </Text>
-            <Text style={styles.headerTitle}>Definições</Text>
+            <TouchableOpacity onPress={handleTitleTap} activeOpacity={1}>
+              <Text style={styles.headerTitle}>Definições</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -168,54 +186,49 @@ const [password, setPassword] = useState("");
         </View>
       </ScrollView>
       <View style={{ marginBottom: 15 }}>
-  <TextInput
-    placeholder="Username"
-    value={userName}
-    onChangeText={setUserName}
-    autoCapitalize="none"
-    style={{
-      backgroundColor: "#fff",
-      padding: 12,
-      borderRadius: 10,
-      marginBottom: 10,
-    }}
-  />
+  </View>
+  <Modal visible={showLoginModal} transparent>
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalCard}>
+      <Text style={styles.modalTitle}>Acesso Admin</Text>
 
-  <TextInput
-    placeholder="Password"
-    value={password}
-    onChangeText={setPassword}
-    secureTextEntry
-    style={{
-      backgroundColor: "#fff",
-      padding: 12,
-      borderRadius: 10,
-    }}
-  />
-</View>
-      <View style={{ marginTop: 30, paddingHorizontal: 20 }}>
+      <TextInput
+        placeholder="Username"
+        value={userName}
+        onChangeText={setUserName}
+        autoCapitalize="none"
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        style={styles.input}
+      />
+
       <TouchableOpacity
-        style={{
-          backgroundColor: "#111",
-          paddingVertical: 14,
-          borderRadius: 12,
-          alignItems: "center",
-        }}
+        style={styles.loginBtn}
         onPress={async () => {
-  try {
-    const data = await loginRequest(userName, password);
-    await loginAsAdmin(data.accessToken, data.refreshToken);
-    navigation.navigate("Home");
-  } catch (e) {
-    console.log("login error", e);
-  }
-}}
+          try {
+            const data = await loginRequest(userName, password);
+            await loginAsAdmin(data.accessToken, data.refreshToken);
+            setShowLoginModal(false);
+            setAdminMode(true);
+          } catch (e) {
+            console.log("login error", e);
+          }
+        }}
       >
-        <Text style={{ color: "#fff", fontWeight: "600" }}>
-          Login
-        </Text>
+        <Text style={styles.loginBtnText}>Entrar</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => setShowLoginModal(false)}>
+        <Text style={styles.cancelText}>Cancelar</Text>
       </TouchableOpacity>
     </View>
+  </View>
+</Modal>
     </View>
   );
 };

@@ -179,4 +179,39 @@ export const styles = StyleSheet.create({
     fontSize: FONT_SIZE.md,
     letterSpacing: 0.2,
   },
+  modalOverlay: {
+  flex: 1,
+  backgroundColor: "rgba(0,0,0,0.5)",
+  justifyContent: "flex-end",
+},
+modalCard: {
+  backgroundColor: "#fff",
+  borderTopLeftRadius: 20,
+  borderTopRightRadius: 20,
+  padding: 24,
+  gap: 12,
+},
+modalTitle: {
+  fontSize: 18,
+  fontWeight: "700",
+  marginBottom: 8,
+},
+input: {
+  backgroundColor: "#f2f2f2",
+  padding: 12,
+  borderRadius: 10,
+},
+loginBtn: {
+  backgroundColor: "#111",
+  paddingVertical: 14,
+  borderRadius: 12,
+  alignItems: "center",
+  marginTop: 4,
+},
+loginBtnText: { color: "#fff", fontWeight: "600" },
+cancelText: {
+  textAlign: "center",
+  color: "#888",
+  paddingVertical: 8,
+},
 });
