@@ -1,6 +1,7 @@
 import Lineup from "../models/Lineup";
 import Match from "../models/Match";
-
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
 export default class LineupService {
   async getAll(matchId?: number) {
     const whereClause = matchId ? { matchId } : undefined;

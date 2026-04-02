@@ -1,21 +1,23 @@
 -- Features --
-OPÇÃO DE COMUNICADO EM HOME na parte das admin notifications
-
-apagar/editar evento
-
-historico de epocas
 
 notifications
 
+ssockets!!!
+
+ver render das cenas da season!!!!!
 
  -- Performance --
-nos context usar lista objects com ids para melhor performance
-
-juntar player e stats no backend ao fazer get estilo match e lineup
-sockets!!!
 
 PROTEGER ROTAS!!!
 
+ -- NEXT --
+ botão desligar notifcations no adminsettings
+ side swipe
+ colapsar header nos match details
+ historico de epocas
+ votar em MVP
+ escaloes
+ tabelas para cada escalao match_u18
 
 -- Comandos --
 npx prettier --write .
@@ -23,3 +25,4 @@ npx prettier --write .
 npx expo-doctor
 
 npx expo install --check
+

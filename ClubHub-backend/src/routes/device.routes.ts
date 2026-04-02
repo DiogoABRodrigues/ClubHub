@@ -1,15 +1,12 @@
 import { Router } from "express";
-import * as deviceController from "../controllers/device.controller";
-import { authorizeRoles } from "../middlewares/authorizeRoles";
-import { authMiddleware } from "../middlewares/authMiddleware";
+import deviceController from "../controllers/device.controller";
 
 const router = Router();
 
-router.post(
-  "/register",
-  authMiddleware,
-  authorizeRoles("admin"),
-  deviceController.registerDevice,
-);
+// registar / atualizar device
+router.post("/", deviceController.register);
+
+// atualizar preferências
+router.patch("/:id", deviceController.updatePreferences);
 
 export default router;

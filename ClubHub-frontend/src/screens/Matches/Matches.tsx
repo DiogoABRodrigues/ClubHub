@@ -6,7 +6,6 @@ import {
   RefreshControl,
   FlatList,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./Matches.styles";
 import { MatchCard } from "../../components/MatchCard";
 import { COLORS } from "../../theme/colors";

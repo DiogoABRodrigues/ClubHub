@@ -2,6 +2,8 @@ import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
 import Team from "../models/Team";
 import { teamConfig } from "../config/teamConfig";
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
 
 export interface ScrapedTeam {
   name: string;
@@ -128,5 +130,6 @@ export async function saveAllTeams(teams: ScrapedTeam[]) {
       logoUrl: team.logoUrl,
     });
   }
+  await cache.del("teams:all");
   console.log(`✅ ${teams.length} equipas guardadas/atualizadas na BD`);
 }

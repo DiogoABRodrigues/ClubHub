@@ -2,8 +2,11 @@ import Lineup from "../models/Lineup";
 import Match from "../models/Match";
 import MatchEvent from "../models/MatchEvent";
 import Player from "../models/Player";
-import Stats from "../models/Stats";
 import SeasonService from "./season.service";
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
+import Season from "../models/Season";
+import socketService from "./socket.service";
 
 export default class MatchService {
   async getAll() {
@@ -11,17 +14,19 @@ export default class MatchService {
   }
 
   async getBySeasonId(seasonId: number) {
-    return Match.findAll({
+    const key = CacheKeys.matches.bySeason(seasonId);
+
+    const cached = await cache.get(key);
+    if (cached){
+      return cached;
+    } 
+
+    const matches = await Match.findAll({
       where: { seasonId },
       include: [
         {
           model: Lineup,
-          include: [
-            {
-              model: Player,
-              attributes: ["id", "name", "photoUrl"],
-            },
-          ],
+          include: [{ model: Player, attributes: ["id", "name", "photoUrl"] }],
         },
         {
           model: MatchEvent,
@@ -31,10 +36,14 @@ export default class MatchService {
         },
       ],
     });
+
+    await cache.set(key, matches);
+
+    return matches;
   }
 
   async getByCurrentSeasonId() {
-    const season = await new SeasonService().getCurrentSeason();
+    const season = (await new SeasonService().getCurrentSeason()) as Season;
     if (!season) return [];
     return this.getBySeasonId(season.id);
   }
@@ -69,7 +78,9 @@ export default class MatchService {
     }
 
     await match.update(updates);
-
+    await cache.del(CacheKeys.matches.bySeason(match.seasonId as number));
+    await cache.del(CacheKeys.standings.bySeason(match.seasonId as number));
+    socketService.emitMatchUpdate(match);
     return match;
   }
 

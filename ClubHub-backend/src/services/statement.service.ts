@@ -1,7 +1,8 @@
 // backend/services/statement.service.ts
 import Statement from "../models/Statement";
 import { Op } from "sequelize";
-
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
 class StatementService {
 async createStatement(data: Partial<Statement>) {
     const now = new Date();

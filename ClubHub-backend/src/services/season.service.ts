@@ -1,3 +1,5 @@
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
 import Season from "../models/Season";
 
 export default class SeasonService {
@@ -10,6 +12,15 @@ export default class SeasonService {
   }
 
   async getCurrentSeason() {
-    return Season.findOne({ order: [["id", "DESC"]] });
+    const key = CacheKeys.season.current;
+
+    const cached = await cache.get(key);
+    if (cached) return cached;
+
+    const season = await Season.findOne({ order: [["id", "DESC"]] });
+
+    await cache.set(key, season, 60 * 60 * 24);
+
+    return season;
   }
 }

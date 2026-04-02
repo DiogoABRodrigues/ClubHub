@@ -1,8 +1,12 @@
 import News from "../models/News";
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
 
 class NewsService {
   async create(data: any) {
-    return await News.create(data);
+    const news = await News.create(data);
+    await cache.del(CacheKeys.news.last10);
+    return news;
   }
 
   async getAll() {
@@ -12,10 +16,19 @@ class NewsService {
   }
 
   async getLast10() {
-    return await News.findAll({
+    const key = CacheKeys.news.last10;
+
+    const cached = await cache.get(key);
+    if (cached) return cached;
+
+    const news = await News.findAll({
       order: [["publishedAt", "DESC"]],
       limit: 10,
     });
+
+    await cache.set(key, news, 60 * 5); // 5 min
+
+    return news;
   }
 
   async getById(id: number) {

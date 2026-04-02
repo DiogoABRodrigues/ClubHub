@@ -3,6 +3,8 @@ import * as cheerio from "cheerio";
 import Stats from "../models/Stats";
 import Season from "../models/Season";
 import { teamConfig } from "../config/teamConfig";
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
 
 async function getOrCreateSeason() {
   const [season] = await Season.findOrCreate({
@@ -96,6 +98,6 @@ export async function scrapeTeamStats() {
       position: s.position,
     });
   }
-
+  await cache.del("stats:current");
   return stats;
 }

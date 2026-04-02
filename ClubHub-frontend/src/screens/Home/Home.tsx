@@ -1,10 +1,9 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
 } from "react-native";
 import { styles } from "./Home.styles";
 import { useStatements } from "../../hooks/useStatements";
@@ -23,7 +22,6 @@ import { formatDatePT } from "../../utils/dateUtils";
 import { useCompetitions } from "../../hooks/useCompetitions";
 
 import { RefreshControl } from "react-native";
-
 export const Home = ({ navigation }: any) => {
   const { news, refreshNews } = useNews();
 

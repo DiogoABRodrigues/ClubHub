@@ -4,6 +4,8 @@ import { teamConfig } from "../config/teamConfig";
 import Match from "../models/Match";
 import Competition from "../models/Competition";
 import Season from "../models/Season";
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
 
 export interface ScrapedMatch {
   date: string;
@@ -99,6 +101,9 @@ export async function saveMatches(
       status: match.result ? "finished" : "upcoming",
       location,
     });
+    await cache.del("matches:current");
+    await cache.del("season:current");
+    await cache.del("competitions:current");
   }
   console.log(
     `✅ ${scrapedMatches.length} jogos guardados/atualizados para a equipa ${teamName}`,

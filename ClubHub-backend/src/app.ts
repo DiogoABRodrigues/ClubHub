@@ -14,6 +14,7 @@ import statementRoutes from "./routes/statement.routes";
 import path from "path";
 import scraperRoutes from "./routes/scraperRoutes";
 import matchEventRoutes from "./routes/matchEvent.routes";
+import deviceRoutes from "./routes/device.routes";
 
 const app = express();
 
@@ -46,5 +47,6 @@ app.use("/api/statements", statementRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/api", scraperRoutes);
 app.use("/api/match-events", matchEventRoutes);
+app.use("/api/device", deviceRoutes);
 
 export default app;
