@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { TouchableOpacity } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -10,9 +10,7 @@ import { MatchesStack } from "./MatchesStack";
 import { NewsStack } from "./NewsStack";
 import { SeasonScreen } from "../screens/Season/SeasonScreen";
 import { NotificationSettings } from "../screens/NotificationSettings/NotificationSettings";
-import { AdminDashboard } from "../screens/Admin/AdminDashboard/AdminDashboard";
 import { AdminNewsStack } from "../navigation/AdminNewsStack";
-import { AdminSeasonScreen } from "../screens/Admin/AdminSeason/AdminSeasonScreen";
 import { AdminSettings } from "../screens/Admin/AdminSettings/AdminSettings";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -60,7 +58,7 @@ export const AppNavigator = () => {
         />
         <Tab.Screen
           name="Época"
-          component={adminMode ? AdminSeasonScreen : SeasonScreen}
+          component={SeasonScreen}
         />
         <Tab.Screen
           name="Notícias"
@@ -75,7 +73,7 @@ export const AppNavigator = () => {
         {isAdmin && (
           <Tab.Screen
             name="Admin"
-            component={AdminDashboard}
+            component={() => null}
             options={{
               tabBarIcon: ({ size }) => (
                 <Ionicons

@@ -7,6 +7,8 @@ import { Standings } from "../Standings/Standings";
 import { SquadStats } from "../Stats/Stats";
 import { useSeasons } from "../../hooks/useSeasons";
 import { COLORS } from "../../theme/colors";
+import { useAuth } from "../../contexts/AuthContext";
+import { AdminSquadScreen } from "../Admin/AdminSquad/SquadAdmin";
 
 type SeasonTab = "standings" | "squad" | "stats";
 
@@ -24,6 +26,7 @@ const TABS: Tab[] = [
 
 // SeasonScreen.tsx
 export function SeasonScreen() {
+  const { adminMode } = useAuth();
   const [activeTab, setActiveTab] = useState<SeasonTab>("standings");
   const { seasons } = useSeasons();
 
@@ -64,7 +67,7 @@ export function SeasonScreen() {
 
       {/* Renderização condicional direta */}
       {activeTab === "standings" && <Standings />}
-      {activeTab === "squad" && <SquadScreen />}
+      {activeTab === "squad" && (adminMode ? <AdminSquadScreen /> : <SquadScreen />)}
       {activeTab === "stats" && <SquadStats />}
     </View>
   );
