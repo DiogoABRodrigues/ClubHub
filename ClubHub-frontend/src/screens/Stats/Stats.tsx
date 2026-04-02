@@ -34,7 +34,7 @@ const SortIcon = React.memo(
 );
 
 export const SquadStats = React.memo(function SquadStats() {
-    useEffect(() => {
+  useEffect(() => {
     console.log("MOUNT SquadStats");
   }, []);
   const { players } = usePlayers();
@@ -52,7 +52,7 @@ export const SquadStats = React.memo(function SquadStats() {
   // Filtra apenas jogadores, ignora staff
   const statsPlayersOnly = useMemo(
     () => players.filter(isFieldPlayer),
-    [players]
+    [players],
   );
 
   const statsSortedPlayers = useMemo(() => {
@@ -146,8 +146,12 @@ export const SquadStats = React.memo(function SquadStats() {
           />
           <Text style={globalStyles.playerName}>{item.name}</Text>
         </View>
-        <Text style={globalStyles.statsText}>{item.Stats?.[0]?.gamesPlayed}</Text>
-        <Text style={globalStyles.statsText}>{item.Stats?.[0]?.minutesPlayed}</Text>
+        <Text style={globalStyles.statsText}>
+          {item.Stats?.[0]?.gamesPlayed}
+        </Text>
+        <Text style={globalStyles.statsText}>
+          {item.Stats?.[0]?.minutesPlayed}
+        </Text>
         <Text style={globalStyles.statsText}>{item.Stats?.[0]?.goals}</Text>
       </View>
     );
@@ -172,4 +176,3 @@ export const SquadStats = React.memo(function SquadStats() {
     />
   );
 });
-

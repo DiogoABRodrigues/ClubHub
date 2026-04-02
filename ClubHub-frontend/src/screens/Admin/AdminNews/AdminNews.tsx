@@ -12,24 +12,20 @@ export const AdminNews = ({ navigation }: { navigation: any }) => {
 
   const handleDelete = useCallback(
     (id: number, title: string) => {
-      Alert.alert(
-        "Eliminar notícia",
-        `Eliminar "${title}"?`,
-        [
-          { text: "Cancelar", style: "cancel" },
-          {
-            text: "Eliminar",
-            style: "destructive",
-            onPress: async () => {
-              try {
-                await deleteNews(id);
-              } catch (e) {
-                Alert.alert("Erro", "Não foi possível eliminar.");
-              }
-            },
+      Alert.alert("Eliminar notícia", `Eliminar "${title}"?`, [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Eliminar",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteNews(id);
+            } catch (e) {
+              Alert.alert("Erro", "Não foi possível eliminar.");
+            }
           },
-        ],
-      );
+        },
+      ]);
     },
     [deleteNews],
   );
@@ -47,9 +43,7 @@ export const AdminNews = ({ navigation }: { navigation: any }) => {
       <View style={styles.container}>
         <Text>Nenhuma notícia</Text>
 
-        <TouchableOpacity
-          onPress={() => navigation.navigate("AdminNewsForm")}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate("AdminNewsForm")}>
           <Text>Criar primeira notícia</Text>
         </TouchableOpacity>
       </View>
@@ -58,6 +52,15 @@ export const AdminNews = ({ navigation }: { navigation: any }) => {
 
   return (
     <View style={styles.container}>
+      {/* HEADER */}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <View>
+            <Text style={styles.eyebrow}> </Text>
+            <Text style={styles.headerTitle}>Notícias</Text>
+          </View>
+        </View>
+      </View>
       <FlatList
         data={news}
         keyExtractor={(item) => String(item.id)}

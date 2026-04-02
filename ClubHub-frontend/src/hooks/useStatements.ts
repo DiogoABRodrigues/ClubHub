@@ -26,8 +26,13 @@ export const useStatements = () => {
   });
 
   const updateStatement = useMutation({
-    mutationFn: ({ id, updates }: { id: number; updates: Partial<Statement> }) =>
-      StatementService.update(id, updates),
+    mutationFn: ({
+      id,
+      updates,
+    }: {
+      id: number;
+      updates: Partial<Statement>;
+    }) => StatementService.update(id, updates),
 
     onSuccess: (updated) => {
       queryClient.setQueryData(["statements"], [updated]);

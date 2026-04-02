@@ -47,7 +47,7 @@ const MatchesSection = React.memo(
     getAwayTeam,
   }: MatchesSectionProps) => {
     const limitedMatches = showAll ? matches : matches.slice(0, 3);
-
+    const isAdmin = true; // useAuth().user?.isAdmin;
     const { competitions } = useCompetitions();
     const competitionsMap = useMemo(() => {
       const map = new Map();
@@ -56,7 +56,9 @@ const MatchesSection = React.memo(
     }, [competitions]);
 
     const navigateToMatchDetail = (matchId: string) => {
-      navigation.navigate("AdminMatchDetail", { id: matchId });
+      navigation.navigate(isAdmin ? "AdminMatchDetail" : "MatchDetail", {
+        id: matchId,
+      });
     };
 
     return (
@@ -96,9 +98,9 @@ const MatchesSection = React.memo(
 );
 
 export const Matches = ({ navigation }: any) => {
-      useEffect(() => {
-      console.log("MOUNT matchs");
-    }, []);
+  useEffect(() => {
+    console.log("MOUNT matchs");
+  }, []);
   const { matches, refreshMatches } = useMatches();
   const { teams, refreshTeams } = useTeams();
   const { refreshCompetitions } = useCompetitions();
@@ -119,7 +121,7 @@ export const Matches = ({ navigation }: any) => {
     if (activeTab === "all") {
       setShowAllUpcoming(false);
       setShowAllFinished(false);
-    } 
+    }
   }, [activeTab]);
 
   const liveMatches = useMemo(
@@ -241,9 +243,7 @@ export const Matches = ({ navigation }: any) => {
 
       {isEmpty && (
         <View style={styles.noMatches}>
-          <Text style={styles.noMatchesText}>
-            Não foram encontrados jogos
-          </Text>
+          <Text style={styles.noMatchesText}>Não foram encontrados jogos</Text>
         </View>
       )}
     </View>
@@ -254,8 +254,8 @@ export const Matches = ({ navigation }: any) => {
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View>
-          <Text style={styles.eyebrow}> </Text>
-          <Text style={styles.headerTitle}>Jogos e Resultados</Text>
+            <Text style={styles.eyebrow}> </Text>
+            <Text style={styles.headerTitle}>Jogos e Resultados</Text>
           </View>
         </View>
       </View>

@@ -154,11 +154,11 @@ export const MatchesProvider = ({ children }: any) => {
       const match = matches.find((m) => m.id === id);
       if (!match) return;
       const createdEvent = await MatchEventService.create(match.id, event);
-      
+
       await updateLocalMatch(match.id, {
-          ...match,
-          events: [...(match.events ?? []), createdEvent],
-        });
+        ...match,
+        events: [...(match.events ?? []), createdEvent],
+      });
 
       const houseGame = match.homeOrAway === "C";
 
@@ -188,12 +188,12 @@ export const MatchesProvider = ({ children }: any) => {
         console.error("Evento sem ID não pode ser apagado");
         return;
       }
-      
+
       const match = matches.find((m) => m.id === id);
       if (!match) return;
 
       const updatedEvents = (match.events || []).filter(
-        (e) => e.id !== event.id
+        (e) => e.id !== event.id,
       );
 
       await MatchEventService.delete(event.id);
@@ -223,7 +223,7 @@ export const MatchesProvider = ({ children }: any) => {
         await updateMatch(id, { result: `${goalsFor}-${goalsAgainst}` });
       }
     },
-    [matches, updateMatch]
+    [matches, updateMatch],
   );
 
   const saveLineup = useCallback(

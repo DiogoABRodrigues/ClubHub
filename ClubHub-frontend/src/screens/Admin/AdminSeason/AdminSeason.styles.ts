@@ -11,19 +11,53 @@ export const styles = StyleSheet.create({
   // ── Header ───────────────────────────────────────────────────────────────
   header: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.xl + 16,
-    paddingBottom: SPACING.md,
+    paddingBottom: SPACING.sm,
     backgroundColor: COLORS.surface,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
 
+  titleContainer: {
+    justifyContent: "center",
+    marginBottom: 0, // 🔥 remove qualquer offset vertical
+  },
+
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.sm,
+    marginBottom: SPACING.xs,
+  },
+
+  eyebrow: {
+    fontSize: 10,
+    fontWeight: "600",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    color: COLORS.textPrimary,
+    marginBottom: 2,
+  },
+  headerTop: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+  },
+  headerTitle: {
+    fontSize: FONT_SIZE.xl,
+    fontWeight: "800",
+    color: COLORS.textPrimary,
+    letterSpacing: -0.8,
+    lineHeight: FONT_SIZE.xl * 1.1,
+  },
+
   backButton: {
-    padding: SPACING.xs,
-    borderRadius: RADIUS.md,
+    padding: 6,
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   title: {
@@ -33,16 +67,17 @@ export const styles = StyleSheet.create({
     letterSpacing: -0.3,
   },
 
+  // espaçador direito para centrar o título
   placeholder: {
     width: 32,
   },
 
-  // ── Tabs ─────────────────────────────────────────────────────────────────
+  // ── Tabs de navegação ─────────────────────────────────────────────────────
   tabsContainer: {
     flexDirection: "row",
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.background,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
     gap: SPACING.xs,
@@ -59,7 +94,8 @@ export const styles = StyleSheet.create({
   },
 
   tabActive: {
-    backgroundColor: COLORS.primaryLight,
+    borderColor: COLORS.primary,
+    borderWidth: 1,
   },
 
   tabText: {
@@ -73,7 +109,7 @@ export const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  // ── Conteúdo ─────────────────────────────────────────────────────────────
+  // ── Conteúdo ──────────────────────────────────────────────────────────────
   content: {
     flex: 1,
   },

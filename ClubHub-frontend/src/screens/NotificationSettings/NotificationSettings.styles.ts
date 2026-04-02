@@ -11,12 +11,12 @@ export const styles = StyleSheet.create({
   // ── Header ───────────────────────────────────────────────────────────────
   header: {
     backgroundColor: COLORS.surface,
-    paddingTop: SPACING.xl + 8,       // espaço para status bar
+    paddingTop: SPACING.xl + 8, // espaço para status bar
     paddingBottom: SPACING.md,
     paddingHorizontal: SPACING.md,
   },
 
-    eyebrow: {
+  eyebrow: {
     fontSize: 10,
     fontWeight: "600",
     letterSpacing: 0.8,
@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
 
-    headerTop: {
+  headerTop: {
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "space-between",
@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     letterSpacing: -0.8,
     lineHeight: FONT_SIZE.xl * 1.1,
-    },
+  },
 
   // ── Conteúdo ──────────────────────────────────────────────────────────────
   content: {

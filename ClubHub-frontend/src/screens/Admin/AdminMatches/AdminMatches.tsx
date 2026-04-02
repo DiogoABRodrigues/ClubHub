@@ -29,7 +29,6 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
     const map = new Map<number, any>();
     competitions.forEach((c) => map.set(c.id, c));
     return map;
-    
   }, [competitions]);
 
   const teamsMap = useMemo(() => {
@@ -49,7 +48,6 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
       await refreshMatches();
       await refreshCompetitions();
       await refreshTeams();
-
     } catch (e) {
       console.error(e);
     } finally {
@@ -91,22 +89,22 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
   }, [matches, searchQuery, getHomeTeam, getAwayTeam]);
 
   const { liveMatches, upcomingMatches, finishedMatches } = useMemo(() => {
-  const live: any[] = [];
-  const upcoming: any[] = [];
-  const finished: any[] = [];
+    const live: any[] = [];
+    const upcoming: any[] = [];
+    const finished: any[] = [];
 
-  for (const m of filteredMatches) {
-    if (m.status === "live") live.push(m);
-    else if (m.status === "upcoming") upcoming.push(m);
-    else if (m.status === "finished") finished.push(m);
-  }
+    for (const m of filteredMatches) {
+      if (m.status === "live") live.push(m);
+      else if (m.status === "upcoming") upcoming.push(m);
+      else if (m.status === "finished") finished.push(m);
+    }
 
-  return {
-    liveMatches: live,
-    upcomingMatches: upcoming.toReversed(),
-    finishedMatches: finished,
-  };
-}, [filteredMatches]);
+    return {
+      liveMatches: live,
+      upcomingMatches: upcoming.toReversed(),
+      finishedMatches: finished,
+    };
+  }, [filteredMatches]);
 
   const renderItem = useCallback(
     ({ item }: any) => (
@@ -176,25 +174,21 @@ export const AdminMatches: React.FC = ({ navigation }: any) => {
         </View>
       ) : (
         <FlatList
-          data={[
-            { key: "live" },
-            { key: "upcoming" },
-            { key: "finished" },
-          ]}
+          data={[{ key: "live" }, { key: "upcoming" }, { key: "finished" }]}
           keyExtractor={(item) => item.key}
           ListHeaderComponent={
-                  <View style={styles.header}>
-                    <View style={styles.headerLeft}>
-                      <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Ionicons
-                          name="arrow-back"
-                          size={24}
-                          color={COLORS.textSecondary}
-                        />
-                      </TouchableOpacity>
-                      <Text style={styles.headerTitle}>Jogos e Resultados</Text>
-                    </View>
-                  </View>
+            <View style={styles.header}>
+              <View style={styles.headerLeft}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <Ionicons
+                    name="arrow-back"
+                    size={24}
+                    color={COLORS.textSecondary}
+                  />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Jogos e Resultados</Text>
+              </View>
+            </View>
           }
           renderItem={({ item }) => {
             if (item.key === "live" && liveMatches.length) {

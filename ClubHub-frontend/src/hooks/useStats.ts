@@ -12,7 +12,6 @@ export const useStats = () => {
   return {
     stats: statsQuery.data ?? [],
     loading: statsQuery.isLoading,
-    refreshStats: () =>
-      queryClient.invalidateQueries({ queryKey: ["stats"] }),
+    refreshStats: () => queryClient.invalidateQueries({ queryKey: ["stats"] }),
   };
 };

@@ -67,10 +67,7 @@ export const DateTimePickerModal = ({
       const final = new Date(value);
       final.setHours(date.getHours(), date.getMinutes());
 
-      await onSave(
-        final.toISOString().slice(0, 10),
-        formatTime(final)
-      );
+      await onSave(final.toISOString().slice(0, 10), formatTime(final));
     } catch {
       Alert.alert("Erro", "Falha ao guardar data");
     } finally {

@@ -110,7 +110,7 @@ export const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: COLORS.surface,
-    paddingTop: SPACING.xl + 8,       // espaço para status bar
+    paddingTop: SPACING.xl + 8, // espaço para status bar
     paddingBottom: SPACING.md,
     paddingHorizontal: SPACING.md,
   },
@@ -141,7 +141,7 @@ export const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     letterSpacing: -0.8,
     lineHeight: FONT_SIZE.xl * 1.1,
-    },
+  },
   tabsRow: {
     flexDirection: "row",
     alignItems: "center",

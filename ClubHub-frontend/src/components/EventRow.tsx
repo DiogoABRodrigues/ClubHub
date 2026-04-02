@@ -38,36 +38,42 @@ export const EventRow = ({ event, isOurs, onEdit, onDelete }: Props) => {
 
   const eventWithNames = {
     ...event,
-    player: event.isOwnGoal ? "Auto-golo" : player ? player.name : "Golo Adversário",
+    player: event.isOwnGoal
+      ? "Auto-golo"
+      : player
+        ? player.name
+        : "Golo Adversário",
     playerOut: playerOut ? playerOut.name : "Jogador Desconecido",
     playerIn: playerIn ? playerIn.name : "Jogador Desconecido",
   };
   const minute = event.minute > 90 ? `90'+` : `${event.minute}'`;
-  //const isAdmin = useAuth().user?.isAdmin;
   const isAdmin = true;
-  
+
   if (isOurs) {
     return (
       <View style={styles.eventRow}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-        {isAdmin && (
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TouchableOpacity onPress={() => onEdit?.(event)}>
-              <Ionicons name="create-outline" size={18} color={COLORS.primary} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => onDelete?.(event)}
-              style={{ marginLeft: 10 }}
-            >
-              <Ionicons name="trash-outline" size={18} color={COLORS.error} />
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
+          {isAdmin && (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <TouchableOpacity onPress={() => onEdit?.(event)}>
+                <Ionicons
+                  name="create-outline"
+                  size={18}
+                  color={COLORS.primary}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => onDelete?.(event)} style={{}}>
+                <Ionicons name="trash-outline" size={18} color={COLORS.error} />
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
         <Text style={styles.eventIconText}>{minute}</Text>
         {icon && <Text style={styles.eventIconText}>{icon}</Text>}
         {isCard && <CardIcon type={event.type} />}
-        {!isSub && <Text style={styles.eventPlayer}>{eventWithNames.player}</Text>}
+        {!isSub && (
+          <Text style={styles.eventPlayer}>{eventWithNames.player}</Text>
+        )}
         {isSub && eventWithNames.playerOut && eventWithNames.playerIn && (
           <View>
             <Text style={styles.eventPlayer}>{eventWithNames.playerIn}</Text>
@@ -87,26 +93,28 @@ export const EventRow = ({ event, isOurs, onEdit, onDelete }: Props) => {
           <Text style={styles.eventAssist}>{eventWithNames.playerOut}</Text>
         </View>
       )}
-      {!isSub && <Text style={styles.eventPlayer}>{eventWithNames.player}</Text>}
+      {!isSub && (
+        <Text style={styles.eventPlayer}>{eventWithNames.player}</Text>
+      )}
       {icon && <Text style={styles.eventIconText}>{icon}</Text>}
       {isCard && <CardIcon type={event.type} />}
-      <Text style={styles.eventMinuteTextRight}>{minute}</Text>
+      <Text style={styles.eventIconText}>{minute}</Text>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         {isAdmin && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity onPress={() => onEdit?.(event)}>
-              <Ionicons name="create-outline" size={18} color={COLORS.primary} />
+              <Ionicons
+                name="create-outline"
+                size={18}
+                color={COLORS.primary}
+              />
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => onDelete?.(event)}
-              style={{ marginLeft: 10 }}
-            >
+            <TouchableOpacity onPress={() => onDelete?.(event)} style={{}}>
               <Ionicons name="trash-outline" size={18} color={COLORS.error} />
             </TouchableOpacity>
           </View>
         )}
       </View>
     </View>
-    
   );
 };

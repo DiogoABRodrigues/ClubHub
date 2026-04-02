@@ -17,13 +17,8 @@ export const usePlayers = () => {
   // UPDATE PLAYER
   // ─────────────────────────────────────────────
   const updatePlayerMutation = useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: number;
-      data: Partial<Player>;
-    }) => PlayerService.updatePlayer(id, data),
+    mutationFn: ({ id, data }: { id: number; data: Partial<Player> }) =>
+      PlayerService.updatePlayer(id, data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["players"] });
@@ -34,9 +29,7 @@ export const usePlayers = () => {
   // ACTIVE PLAYERS (DERIVED STATE)
   // ─────────────────────────────────────────────
   const getActivePlayers = (): Player[] => {
-    return (
-      playersQuery.data?.filter((p) => p.stillOnTeam === true) ?? []
-    );
+    return playersQuery.data?.filter((p) => p.stillOnTeam === true) ?? [];
   };
 
   // ─────────────────────────────────────────────

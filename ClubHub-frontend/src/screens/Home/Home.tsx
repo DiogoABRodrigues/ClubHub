@@ -1,5 +1,11 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 import { styles } from "./Home.styles";
 import { useStatements } from "../../hooks/useStatements";
 
@@ -76,9 +82,12 @@ export const Home = ({ navigation }: any) => {
     return matches.filter((m) => m.status === "finished")[0];
   }, [matches]);
 
-  const getTeamLogo = useCallback((teamName: string) => {
-    return teamsMap.get(teamName.trim().toLowerCase());
-  }, [teamsMap]);
+  const getTeamLogo = useCallback(
+    (teamName: string) => {
+      return teamsMap.get(teamName.trim().toLowerCase());
+    },
+    [teamsMap],
+  );
 
   const getHomeTeam = useCallback(
     (match: any) =>
@@ -93,6 +102,14 @@ export const Home = ({ navigation }: any) => {
   );
 
   const appTeamLogo = require("../../../assets/icon.png");
+
+  const isAdmin = true;
+
+  const navigateToMatchDetail = (matchId: number) => {
+    navigation.navigate(isAdmin ? "AdminMatchDetail" : "MatchDetail", {
+      id: matchId,
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -127,10 +144,16 @@ export const Home = ({ navigation }: any) => {
         {activeStatement && (
           <View style={styles.statementBanner}>
             <View style={styles.statementIconRow}>
-              <Ionicons name="megaphone-outline" size={16} color={COLORS.primary} />
+              <Ionicons
+                name="megaphone-outline"
+                size={16}
+                color={COLORS.primary}
+              />
               <Text style={styles.statementTitle}>{activeStatement.title}</Text>
             </View>
-            <Text style={styles.statementMessage}>{activeStatement.message}</Text>
+            <Text style={styles.statementMessage}>
+              {activeStatement.message}
+            </Text>
           </View>
         )}
 
@@ -151,9 +174,7 @@ export const Home = ({ navigation }: any) => {
                   match={match}
                   homeLogo={getTeamLogo(getHomeTeam(match)) || ""}
                   awayLogo={getTeamLogo(getAwayTeam(match)) || ""}
-                  onPress={() =>
-                    navigation.navigate("MatchDetail", { id: match.id })
-                  }
+                  onPress={() => navigateToMatchDetail(match.id)}
                   competition={competitionsMap.get(match.competitionId)}
                 />
               ))}
@@ -166,17 +187,21 @@ export const Home = ({ navigation }: any) => {
           <>
             <View style={styles.section}>
               <View style={styles.sectionTitleRow}>
-                <Ionicons name="calendar-outline" size={16} color={COLORS.secondary} />
+                <Ionicons
+                  name="calendar-outline"
+                  size={16}
+                  color={COLORS.secondary}
+                />
                 <Text style={styles.sectionTitle}>Próximo Jogo</Text>
               </View>
               <MatchCard
                 match={nextMatch}
                 homeLogo={getTeamLogo(getHomeTeam(nextMatch)) || ""}
                 awayLogo={getTeamLogo(getAwayTeam(nextMatch)) || ""}
-                onPress={() =>
-                  navigation.navigate("MatchDetail", { id: nextMatch.id })
-                }
-                competition={competitions.find((c) => c.id === nextMatch.competitionId)}
+                onPress={() => navigateToMatchDetail(nextMatch.id)}
+                competition={competitions.find(
+                  (c) => c.id === nextMatch.competitionId,
+                )}
               />
             </View>
           </>
@@ -187,7 +212,11 @@ export const Home = ({ navigation }: any) => {
           <>
             <View style={styles.section}>
               <View style={styles.sectionTitleRow}>
-                <Ionicons name="time-outline" size={16} color={COLORS.secondary} />
+                <Ionicons
+                  name="time-outline"
+                  size={16}
+                  color={COLORS.secondary}
+                />
                 <Text style={styles.sectionTitle}>Último Jogo</Text>
               </View>
               <MatchCard
@@ -197,7 +226,9 @@ export const Home = ({ navigation }: any) => {
                 onPress={() =>
                   navigation.navigate("MatchDetail", { id: recentMatch.id })
                 }
-                competition={competitions.find((c) => c.id === recentMatch.competitionId)}
+                competition={competitions.find(
+                  (c) => c.id === recentMatch.competitionId,
+                )}
               />
             </View>
           </>
@@ -206,9 +237,13 @@ export const Home = ({ navigation }: any) => {
         {/* ── NEWS ── */}
         <View style={styles.section}>
           <View style={styles.sectionTitleRow}>
-          <Ionicons name="newspaper-outline" size={16} color={COLORS.secondary} />
-          <Text style={styles.sectionTitle}>Últimas Notícias</Text>
-        </View>
+            <Ionicons
+              name="newspaper-outline"
+              size={16}
+              color={COLORS.secondary}
+            />
+            <Text style={styles.sectionTitle}>Últimas Notícias</Text>
+          </View>
           {recentNews.map((news) => (
             <TouchableOpacity
               key={news.id}
@@ -237,7 +272,9 @@ export const Home = ({ navigation }: any) => {
               <View style={styles.newsContent}>
                 <Text style={styles.newsTitle}>{news.title}</Text>
                 <Text style={styles.newsExcerpt}>{news.excerpt}</Text>
-                <Text style={styles.relatedDate}>{formatDatePT(news.createdAt)}</Text>
+                <Text style={styles.relatedDate}>
+                  {formatDatePT(news.createdAt)}
+                </Text>
               </View>
             </TouchableOpacity>
           ))}

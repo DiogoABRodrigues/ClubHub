@@ -4,7 +4,6 @@ import { COLORS } from "../../../../theme/colors";
 export const modalStyles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "transparent",
   },
 
   sheetWrapper: {
@@ -12,15 +11,16 @@ export const modalStyles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "transparent",
   },
 
   sheet: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.backgroundWhite,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingBottom: Platform.OS === "ios" ? 34 : 20,
     maxHeight: "88%",
+    borderWidth: 1,
+    borderColor: COLORS.primary,
   },
 
   handle: {
@@ -41,13 +41,13 @@ export const modalStyles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.surface,
+    borderBottomColor: COLORS.primary,
   },
 
   sheetTitle: {
     fontSize: 17,
     fontWeight: "700",
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
   },
 
   sheetContent: {
@@ -63,12 +63,13 @@ export const modalStyles = StyleSheet.create({
   },
 
   input: {
-    backgroundColor: COLORS.surface,
     borderRadius: 10,
+    borderColor: COLORS.surface,
+    borderWidth: 1,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
   },
 
   textArea: {

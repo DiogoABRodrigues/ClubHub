@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
 
   // ── Header  (fundo azul escuro — dá identidade ao ecrã) ──────────────────
   header: {
-    backgroundColor: COLORS.primaryDark,   // #1E40AF
+    backgroundColor: COLORS.primary,
     paddingTop: SPACING.xl + 8,
     paddingBottom: SPACING.lg,
     paddingHorizontal: SPACING.md,
@@ -39,7 +39,7 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: FONT_SIZE.md,
     fontWeight: "600",
-    color: "#FFFFFF",
+    color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
 
@@ -67,13 +67,13 @@ export const styles = StyleSheet.create({
 
   badgeText: {
     fontSize: FONT_SIZE.xs,
-    color: "#FFFFFF",
+    color: COLORS.textPrimary,
     fontWeight: "600",
   },
 
   competition: {
     fontSize: FONT_SIZE.xs,
-    color: "rgba(255,255,255,0.6)",
+    color: COLORS.textPrimary,
     textAlign: "center",
     marginBottom: SPACING.md,
     textTransform: "uppercase",
@@ -110,7 +110,7 @@ export const styles = StyleSheet.create({
   teamName: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: "#FFFFFF",
+    color: COLORS.textPrimary,
     textAlign: "center",
   },
 
@@ -132,7 +132,7 @@ export const styles = StyleSheet.create({
   scoreText: {
     fontSize: 44,
     fontWeight: "800",
-    color: "#FFFFFF",
+    color: COLORS.textPrimary,
     letterSpacing: -2,
   },
 
@@ -156,7 +156,7 @@ export const styles = StyleSheet.create({
 
   infoText: {
     fontSize: FONT_SIZE.xs,
-    color: "rgba(255,255,255,0.65)",
+    color: COLORS.textPrimary,
   },
 
   // ── Tabs ─────────────────────────────────────────────────────────────────
@@ -166,8 +166,7 @@ export const styles = StyleSheet.create({
 
   tabsList: {
     flexDirection: "row",
-    backgroundColor: COLORS.surface,
-    borderBottomWidth: 1,
+    backgroundColor: COLORS.textPrimary,
     borderBottomColor: COLORS.border,
   },
 
@@ -175,12 +174,13 @@ export const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: SPACING.sm + 2,
     alignItems: "center",
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
     borderBottomColor: "transparent",
+    color: COLORS.primary,
   },
 
   activeTab: {
-    borderBottomColor: COLORS.primary,
+    borderBottomColor: COLORS.textSecondary,
   },
 
   tabText: {
@@ -190,7 +190,8 @@ export const styles = StyleSheet.create({
   },
 
   tabContent: {
-    paddingBottom: SPACING.xl,
+    borderTopColor: COLORS.textSecondary,
+    borderTopWidth: 1,
   },
 
   // ── Timeline ──────────────────────────────────────────────────────────────
@@ -206,7 +207,7 @@ export const styles = StyleSheet.create({
   halfHeaderText: {
     fontSize: 11,
     fontWeight: "700",
-    color: COLORS.textMuted,
+    color: COLORS.textSecondary,
     textTransform: "uppercase",
     letterSpacing: 0.6,
   },
@@ -299,7 +300,7 @@ export const styles = StyleSheet.create({
   lineupSectionTitle: {
     fontSize: 11,
     fontWeight: "700",
-    color: COLORS.textMuted,
+    color: COLORS.textSecondary,
     textTransform: "uppercase",
     letterSpacing: 0.6,
     paddingHorizontal: SPACING.md,
@@ -312,10 +313,11 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: SPACING.md,
     paddingVertical: 10,
-    borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.border,
+    minHeight: 44,
+    borderBottomWidth: 0.8,
+    borderBottomColor: "#E5E7EB",
     gap: 10,
-    backgroundColor: COLORS.surface,
+    backgroundColor: "#FFFFFF",
   },
 
   lineupPhoto: {
@@ -343,12 +345,12 @@ export const styles = StyleSheet.create({
     flex: 1,
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
   },
 
   lineupPosition: {
     fontSize: 12,
-    color: COLORS.textMuted,
+    color: COLORS.textSecondary,
   },
 
   // ── Stats ─────────────────────────────────────────────────────────────────
@@ -490,7 +492,7 @@ export const eventStyles = {
   playerName: {
     flex: 1,
     fontSize: FONT_SIZE.sm,
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
     fontWeight: "500" as const,
   },
   playerNameActive: {

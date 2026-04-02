@@ -31,8 +31,8 @@ const ICON_MAP: Record<string, string> = {
 };
 
 export const AppNavigator = () => {
-  const isAdmin = false;
-  const [adminMode, setAdminMode] = useState(false);
+  const isAdmin = true;
+  const [adminMode, setAdminMode] = useState(true);
 
   return (
     <NavigationContainer>
@@ -42,7 +42,7 @@ export const AppNavigator = () => {
           tabBarActiveTintColor: COLORS.secondary,
           tabBarInactiveTintColor: COLORS.textSecondary,
           tabBarStyle: {
-            backgroundColor: COLORS.background,
+            backgroundColor: "#ffffff",
             borderTopColor: COLORS.border,
           },
           tabBarIcon: ({ color, size }) => {
@@ -58,15 +58,15 @@ export const AppNavigator = () => {
         {/* Troca automática de stack conforme o modo */}
         <Tab.Screen
           name="Jogos"
-          component={adminMode ? AdminMatchesStack : MatchesStack}
-        />
-        <Tab.Screen
-          name="Notícias"
-          component={adminMode ? AdminNewsStack : NewsStack}
+          component={adminMode ? SeasonScreen : MatchesStack}
         />
         <Tab.Screen
           name="Época"
           component={adminMode ? AdminSeasonScreen : SeasonScreen}
+        />
+        <Tab.Screen
+          name="Notícias"
+          component={adminMode ? AdminNewsStack : NewsStack}
         />
         <Tab.Screen
           name="Definições"

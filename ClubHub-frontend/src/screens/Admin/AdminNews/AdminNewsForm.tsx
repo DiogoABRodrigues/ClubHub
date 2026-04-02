@@ -170,118 +170,129 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       {/* HEADER */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleCancel} style={styles.headerBtn}>
-          <Ionicons
-            name="arrow-back"
-            size={24}
-            color={COLORS.textSecondary}
-            onPress={navigation.goBack}
-          />
-        </TouchableOpacity>
-      </View>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={styles.backButton}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={24}
+                color={COLORS.textPrimary}
+              />
+            </TouchableOpacity>
 
-      <ScrollView
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* IMAGE PREVIEW */}
-        <View style={styles.imageSection}>
-          {hasImagePreview ? (
-            <Image
-              source={{ uri: form.image }}
-              style={styles.imagePreview}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={styles.imagePlaceholder}>
-              <Ionicons name="image-outline" size={40} color={COLORS.muted} />
-              <Text style={styles.imagePlaceholderText}>
-                Pré-visualização da imagem
-              </Text>
+            <View style={styles.titleContainer}>
+              <Text style={styles.headerTitle}>News</Text>
             </View>
-          )}
+          </View>
         </View>
 
-        {/* IMAGE URL */}
-        <Field label="Imagem" optional>
-          <TouchableOpacity style={styles.imagePickerBtn} onPress={pickImage}>
-            <Text style={{ color: "#fff" }}>
-              {form.image ? "Alterar imagem" : "Selecionar imagem"}
-            </Text>
-          </TouchableOpacity>
-        </Field>
-
-        {/* TÍTULO */}
-        <Field label="Título" error={errors.title}>
-          <TextInput
-            style={[styles.input, errors.title && styles.inputError]}
-            value={form.title}
-            onChangeText={updateField("title")}
-            placeholder="Título da notícia"
-            placeholderTextColor={COLORS.muted}
-            maxLength={120}
-          />
-          <Text style={styles.charCount}>{form.title.length}/120</Text>
-        </Field>
-
-        {/* RESUMO */}
-        <Field label="Resumo" error={errors.excerpt}>
-          <TextInput
-            style={[
-              styles.input,
-              styles.textArea,
-              errors.excerpt && styles.inputError,
-            ]}
-            value={form.excerpt}
-            onChangeText={updateField("excerpt")}
-            placeholder="Breve descrição da notícia (aparece nos cards)"
-            placeholderTextColor={COLORS.muted}
-            multiline
-            numberOfLines={3}
-            maxLength={300}
-          />
-          <Text style={styles.charCount}>{form.excerpt.length}/300</Text>
-        </Field>
-
-        {/* CONTEÚDO */}
-        <Field label="Conteúdo" error={errors.content}>
-          <TextInput
-            style={[
-              styles.input,
-              styles.textAreaLarge,
-              errors.content && styles.inputError,
-            ]}
-            value={form.content}
-            onChangeText={updateField("content")}
-            placeholder="Conteúdo completo da notícia..."
-            placeholderTextColor={COLORS.muted}
-            multiline
-            textAlignVertical="top"
-          />
-        </Field>
-
-        <TouchableOpacity
-          style={[styles.bottomSaveBtn, saving && styles.saveBtnDisabled]}
-          onPress={handleSave}
-          disabled={saving}
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
         >
-          {saving ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <>
-              <Ionicons
-                name="checkmark-circle-outline"
-                size={18}
-                color="#fff"
+          {/* IMAGE PREVIEW */}
+          <View style={styles.imageSection}>
+            {hasImagePreview ? (
+              <Image
+                source={{ uri: form.image }}
+                style={styles.imagePreview}
+                resizeMode="cover"
               />
-              <Text style={styles.bottomSaveBtnText}>
-                {isEditing ? "Guardar Alterações" : "Publicar Notícia"}
+            ) : (
+              <View style={styles.imagePlaceholder}>
+                <Ionicons name="image-outline" size={40} color={COLORS.muted} />
+                <Text style={styles.imagePlaceholderText}>
+                  Pré-visualização da imagem
+                </Text>
+              </View>
+            )}
+          </View>
+
+          {/* IMAGE URL */}
+          <Field label="Imagem" optional>
+            <TouchableOpacity style={styles.imagePickerBtn} onPress={pickImage}>
+              <Text style={{ color: "#fff" }}>
+                {form.image ? "Alterar imagem" : "Selecionar imagem"}
               </Text>
-            </>
-          )}
-        </TouchableOpacity>
-      </ScrollView>
+            </TouchableOpacity>
+          </Field>
+
+          {/* TÍTULO */}
+          <Field label="Título" error={errors.title}>
+            <TextInput
+              style={[styles.input, errors.title && styles.inputError]}
+              value={form.title}
+              onChangeText={updateField("title")}
+              placeholder="Título da notícia"
+              placeholderTextColor={COLORS.muted}
+              maxLength={120}
+            />
+            <Text style={styles.charCount}>{form.title.length}/120</Text>
+          </Field>
+
+          {/* RESUMO */}
+          <Field label="Resumo" error={errors.excerpt}>
+            <TextInput
+              style={[
+                styles.input,
+                styles.textArea,
+                errors.excerpt && styles.inputError,
+              ]}
+              value={form.excerpt}
+              onChangeText={updateField("excerpt")}
+              placeholder="Breve descrição da notícia (aparece nos cards)"
+              placeholderTextColor={COLORS.muted}
+              multiline
+              numberOfLines={3}
+              maxLength={300}
+            />
+            <Text style={styles.charCount}>{form.excerpt.length}/300</Text>
+          </Field>
+
+          {/* CONTEÚDO */}
+          <Field label="Conteúdo" error={errors.content}>
+            <TextInput
+              style={[
+                styles.input,
+                styles.textAreaLarge,
+                errors.content && styles.inputError,
+              ]}
+              value={form.content}
+              onChangeText={updateField("content")}
+              placeholder="Conteúdo completo da notícia..."
+              placeholderTextColor={COLORS.muted}
+              multiline
+              textAlignVertical="top"
+            />
+          </Field>
+
+          <TouchableOpacity
+            style={[styles.bottomSaveBtn, saving && styles.saveBtnDisabled]}
+            onPress={handleSave}
+            disabled={saving}
+          >
+            {saving ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <>
+                <Ionicons
+                  name="checkmark-circle-outline"
+                  size={18}
+                  color="#fff"
+                />
+                <Text style={styles.bottomSaveBtnText}>
+                  {isEditing ? "Guardar Alterações" : "Publicar Notícia"}
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
     </KeyboardAvoidingView>
   );
 };

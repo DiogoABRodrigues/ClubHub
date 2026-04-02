@@ -10,10 +10,7 @@ import {
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { LiveBadge } from "../../../components/LiveBadge";
-import {
-  Ionicons,
-  FontAwesome5,
-} from "@expo/vector-icons";
+import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { styles } from "../../MatchDetails/MatchDetail.styles";
 import { useMatches } from "../../../hooks/useMatches";
 import { useTeams } from "../../../hooks/useTeams";
@@ -23,7 +20,9 @@ import { COLORS } from "../../../theme/colors";
 import { LocationModal } from "./Components/LocationModal";
 import { DateTimePickerModal } from "./Components/DateTimePickerModal";
 import { AddLineupModal } from "./Components/AddLineupModal";
+
 import { AddEventModal } from "./Components/AddEventModal";
+
 import { usePlayers } from "../../../hooks/usePlayers";
 import { isFieldPlayer } from "../../../utils/playerPositionUtils";
 import { Player } from "../../../models/Player";
@@ -38,8 +37,15 @@ export const AdminMatchDetail = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { id } = route.params as { id: number };
-  const { matches, refreshMatches, addMatchEvent, updateMatch, deleteMatchEvent,startMatch, finishMatch } =
-    useMatches();
+  const {
+    matches,
+    refreshMatches,
+    addMatchEvent,
+    updateMatch,
+    deleteMatchEvent,
+    startMatch,
+    finishMatch,
+  } = useMatches();
   const { teams, refreshTeams } = useTeams();
   const { getActivePlayers, refreshPlayers } = usePlayers();
 
@@ -54,18 +60,20 @@ export const AdminMatchDetail = () => {
     }
     return map;
   }, [players]);
-  const match = useMemo(
-    () => matches.find((m) => m.id === id),
-    [matches, id],
-  );
+  const match = useMemo(() => matches.find((m) => m.id === id), [matches, id]);
 
   if (!match) {
     return (
-      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
         <Text>Jogo não encontrado</Text>
       </View>
     );
-  };
+  }
 
   const { competitions, refreshCompetitions } = useCompetitions();
 
@@ -115,13 +123,15 @@ export const AdminMatchDetail = () => {
     if (!match) return;
 
     try {
-
       if (editingEvent && editingEvent.id) {
         // EDIT: chamar API de update do evento
-        const updatedEvent = await MatchEventService.update(editingEvent.id, form);
+        const updatedEvent = await MatchEventService.update(
+          editingEvent.id,
+          form,
+        );
         // Atualiza localmente no match
         const updatedEvents = (match.events || []).map((e: MatchEvent) =>
-          e.id === editingEvent.id ? updatedEvent : e
+          e.id === editingEvent.id ? updatedEvent : e,
         );
 
         setEditingEvent(null);
@@ -137,7 +147,7 @@ export const AdminMatchDetail = () => {
     }
   };
 
-    const handleDeleteEvent = useCallback(
+  const handleDeleteEvent = useCallback(
     async (event: MatchEvent) => {
       if (!match) return;
       Alert.alert(
@@ -152,12 +162,12 @@ export const AdminMatchDetail = () => {
               deleteMatchEvent(match.id, event);
             },
           },
-        ]
+        ],
       );
     },
-    [match, deleteMatchEvent]
+    [match, deleteMatchEvent],
   );
-  
+
   const [editingEvent, setEditingEvent] = useState<MatchEvent | null>(null);
 
   const handleEditEvent = useCallback((event: MatchEvent) => {
@@ -165,23 +175,39 @@ export const AdminMatchDetail = () => {
     setShowEventModal(true);
   }, []);
 
-  const handleSaveDateTime = useCallback(async (date: string, time: string) => {
-    await updateMatch({
-      id: match.id,
-      data: { date, time }
-    });
-  }, [match.id, updateMatch]);
+  const handleSaveDateTime = useCallback(
+    async (date: string, time: string) => {
+      await updateMatch({
+        id: match.id,
+        data: { date, time },
+      });
+    },
+    [match.id, updateMatch],
+  );
 
-  const handleSaveLocation = useCallback(async (location: string) => {
-   updateMatch({
-      id: match.id,
-      data: { location }
-    })
-  }, [match.id, updateMatch]);
+  const handleSaveLocation = useCallback(
+    async (location: string) => {
+      updateMatch({
+        id: match.id,
+        data: { location },
+      });
+    },
+    [match.id, updateMatch],
+  );
 
   const handleFinishMatch = useCallback(() => {
     if (!match) return;
-    const outcome = match.result ? (match.result.split("-")[0] === match.result.split("-")[1] ? "E" : (match.homeOrAway === "C" ? (match.result.split("-")[0] > match.result.split("-")[1] ? "V" : "D") : (match.result.split("-")[1] > match.result.split("-")[0] ? "V" : "D"))) : "D";
+    const outcome = match.result
+      ? match.result.split("-")[0] === match.result.split("-")[1]
+        ? "E"
+        : match.homeOrAway === "C"
+          ? match.result.split("-")[0] > match.result.split("-")[1]
+            ? "V"
+            : "D"
+          : match.result.split("-")[1] > match.result.split("-")[0]
+            ? "V"
+            : "D"
+      : "D";
     Alert.alert("Terminar jogo", "Tens a certeza que queres terminar o jogo?", [
       { text: "Cancelar", style: "cancel" },
       {
@@ -218,16 +244,14 @@ export const AdminMatchDetail = () => {
 
   // Formação existente para pré-selecionar no modal
   const existingLineup = match.Lineups;
-  
+
   //ordernar por posição (Guarda-Redes, Defesas, Médios, Avançados)
   const sortedLineup = useMemo(() => {
     if (!match.Lineups) return [];
 
     return [...match.Lineups].sort((a, b) => {
-      const aPos =
-        playersMap.get(a.playerId)?.Stats?.[0]?.position || "";
-      const bPos =
-        playersMap.get(b.playerId)?.Stats?.[0]?.position || "";
+      const aPos = playersMap.get(a.playerId)?.Stats?.[0]?.position || "";
+      const bPos = playersMap.get(b.playerId)?.Stats?.[0]?.position || "";
 
       const orderA = getPositionOrder(aPos);
       const orderB = getPositionOrder(bPos);
@@ -298,7 +322,11 @@ export const AdminMatchDetail = () => {
     [match.homeOrAway],
   );
 
-  const competition = useMemo(() => { return competitions.find((c) => c.id === match.competitionId) as Competition; }, [match.competitionId, competitions]);
+  const competition = useMemo(() => {
+    return competitions.find(
+      (c) => c.id === match.competitionId,
+    ) as Competition;
+  }, [match.competitionId, competitions]);
 
   const timeline = useMemo(() => {
     const events = match.events;
@@ -318,42 +346,99 @@ export const AdminMatchDetail = () => {
     return { firstHalf, secondHalf };
   }, [match.events]);
 
+  const handleStartMatch = useCallback(() => {
+    if (!match) return;
+
+    Alert.alert("Começar jogo", "Tens a certeza que queres iniciar o jogo?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Começar",
+        onPress: async () => {
+          await updateMatch({
+            id: match.id,
+            data: {
+              result: "0-0",
+              status: "live",
+              statusTime: "1st",
+            },
+          });
+        },
+      },
+    ]);
+  }, [match, updateMatch]);
+
+  const handleHalftime = useCallback(() => {
+    if (!match) return;
+
+    Alert.alert("Intervalo", "Queres marcar o jogo como intervalo?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Confirmar",
+        onPress: async () => {
+          await updateMatch({
+            id: match.id,
+            data: { statusTime: "interval" },
+          });
+        },
+      },
+    ]);
+  }, [match, updateMatch]);
+
+  const handleSecondHalf = useCallback(() => {
+    if (!match) return;
+
+    Alert.alert("Recomeçar jogo", "Iniciar a segunda parte?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Recomeçar",
+        onPress: async () => {
+          await updateMatch({
+            id: match.id,
+            data: { statusTime: "2nd" },
+          });
+        },
+      },
+    ]);
+  }, [match, updateMatch]);
   return (
     <>
-      <ScrollView 
-      style={styles.container}
-      refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                colors={[COLORS.primary]}
-                tintColor={COLORS.primary}
-              />
-            }
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+          />
+        }
       >
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
-            <Ionicons
-              name="arrow-back"
-              size={24}
-              color={COLORS.textSecondary}
-            />
+            <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
           </TouchableOpacity>
           <Text style={styles.title}>Detalhes do jogo</Text>
           <View style={styles.statusContainer}>
-            {isLive && <LiveBadge interval={match.statusTime === "interval"} />}
-            {isHalftime && (
-              <View>
-                <Text>Intervalo</Text>
+            {match.status === "live" && (
+              <LiveBadge interval={match.statusTime === "interval"} />
+            )}
+            {match.status === "upcoming" && (
+              <View style={styles.upcomingBadge}>
+                <Text style={styles.badgeText}>Agendado</Text>
+              </View>
+            )}
+            {match.status === "finished" && (
+              <View style={styles.fulltimeBadge}>
+                <Text style={styles.badgeText}>Terminado</Text>
               </View>
             )}
           </View>
-            <Text style={styles.competition}>
-              {competition?.name || ""} {match.round ? `- ${match.round}` : ""}
-            </Text>
+          <Text style={styles.competition}>
+            {competition?.name || ""} {match.round ? `- ${match.round}` : ""}
+          </Text>
           {/* Score */}
           <View style={styles.scoreCard}>
             <View style={styles.teamContainer}>
@@ -404,7 +489,7 @@ export const AdminMatchDetail = () => {
                   <Ionicons
                     name="create-outline"
                     size={16}
-                    color={COLORS.primary}
+                    color={COLORS.textPrimary}
                   />
                 </TouchableOpacity>
               )}
@@ -413,7 +498,7 @@ export const AdminMatchDetail = () => {
               <Ionicons
                 name="location-outline"
                 size={16}
-                color={COLORS.textSecondary}
+                color={COLORS.textPrimary}
               />
               <Text style={styles.infoText}>{location}</Text>
               {canEditDateTime && (
@@ -421,7 +506,7 @@ export const AdminMatchDetail = () => {
                   <Ionicons
                     name="create-outline"
                     size={16}
-                    color={COLORS.primary}
+                    color={COLORS.textPrimary}
                   />
                 </TouchableOpacity>
               )}
@@ -433,16 +518,7 @@ export const AdminMatchDetail = () => {
             <View style={adminStyles.adminActions}>
               <TouchableOpacity
                 style={[adminStyles.adminBtn, adminStyles.adminBtn]}
-                onPress={async () =>
-                  await updateMatch({
-                    id: match.id,
-                    data: {
-                      result: "0-0",
-                      status: "live",
-                      statusTime: "1st",
-                    },
-                  })
-                }
+                onPress={handleStartMatch}
               >
                 <Ionicons
                   name="play-circle-outline"
@@ -491,12 +567,7 @@ export const AdminMatchDetail = () => {
               {match.statusTime === "1st" && (
                 <TouchableOpacity
                   style={adminStyles.adminBtn}
-                  onPress={async () => {
-                    await updateMatch({
-                      id: match.id,
-                      data: { statusTime: "interval" }
-                    });
-                  }}
+                  onPress={handleHalftime}
                 >
                   <Ionicons
                     name="pause-circle-outline"
@@ -517,22 +588,17 @@ export const AdminMatchDetail = () => {
               {match.statusTime === "interval" && (
                 <TouchableOpacity
                   style={[adminStyles.adminBtn]}
-                  onPress={async () => {
-                    await updateMatch({
-                      id: match.id,
-                      data: { statusTime: "2nd" }
-                    });
-                  }}
+                  onPress={handleSecondHalf}
                 >
                   <Ionicons
                     name="play-circle-outline"
                     size={16}
-                    color={COLORS.warning}
+                    color={COLORS.primary}
                   />
                   <Text
                     style={[
                       adminStyles.adminBtnText,
-                      { color: COLORS.warning },
+                      { color: COLORS.primary },
                     ]}
                   >
                     Recomeçar
@@ -615,59 +681,146 @@ export const AdminMatchDetail = () => {
             ))}
           </View>
           <View style={styles.tabContent}>
-            <View style={styles.tabContent}>
-              {activeTab === "timeline" &&
-                (match.events && match.events.length > 0 ? (
-                  (() => {
-                    const firstHalf = timeline?.firstHalf || [];
-                    const secondHalf = timeline?.secondHalf || [];
-                    return (
-                      <>
-                        {firstHalf.length > 0 && (
-                          <>
-                            <View style={styles.halfHeader}>
-                              <Text style={styles.halfHeaderText}>
-                                1ª Parte
-                              </Text>
-                            </View>
-                            {firstHalf.map((event: MatchEvent) => (
-                              <EventRow
-                                key={event.id}
-                                event={event}
-                                isOurs={
-                                  isHomeGame ? !event.isOpponent : event.isOpponent
-                                }
-                                onEdit={handleEditEvent}
-                                onDelete={() => handleDeleteEvent(event)}
+            {activeTab === "timeline" &&
+              (match.events && match.events.length > 0 ? (
+                (() => {
+                  const firstHalf = timeline?.firstHalf || [];
+                  const secondHalf = timeline?.secondHalf || [];
+                  return (
+                    <>
+                      {firstHalf.length > 0 && (
+                        <>
+                          <View style={styles.halfHeader}>
+                            <Text style={styles.halfHeaderText}>1ª Parte</Text>
+                          </View>
+                          {firstHalf.map((event: MatchEvent) => (
+                            <EventRow
+                              key={event.id}
+                              event={event}
+                              isOurs={
+                                isHomeGame
+                                  ? !event.isOpponent
+                                  : event.isOpponent
+                              }
+                              onEdit={handleEditEvent}
+                              onDelete={() => handleDeleteEvent(event)}
+                            />
+                          ))}
+                        </>
+                      )}
+                      {secondHalf.length > 0 && (
+                        <>
+                          <View style={[styles.halfHeader, { marginTop: 4 }]}>
+                            <Text style={styles.halfHeaderText}>2ª Parte</Text>
+                          </View>
+                          {secondHalf.map((event: MatchEvent) => (
+                            <EventRow
+                              key={event.id}
+                              event={event}
+                              isOurs={
+                                isHomeGame
+                                  ? !event.isOpponent
+                                  : event.isOpponent
+                              }
+                              onEdit={handleEditEvent}
+                              onDelete={() => handleDeleteEvent(event)}
+                            />
+                          ))}
+                        </>
+                      )}
+                    </>
+                  );
+                })()
+              ) : (
+                <View style={styles.emptyState}>
+                  <FontAwesome5
+                    name="hourglass-half"
+                    size={36}
+                    color={COLORS.textSecondary}
+                  />
+                  <Text style={styles.mutedText}>Sem eventos ainda</Text>
+                </View>
+              ))}
+            {activeTab === "lineup" && (
+              <>
+                {sortedLineup && sortedLineup.length > 0 ? (
+                  <>
+                    {/* Titulares */}
+                    <Text style={adminStyles.lineupSectionTitle}>
+                      Titulares
+                    </Text>
+                    {sortedLineup
+                      .filter((e: any) => e.isStarting)
+                      .map((e: any) => {
+                        const player = playerById.get(e.playerId);
+                        if (!player) return null;
+                        return (
+                          <View key={e.playerId} style={adminStyles.lineupRow}>
+                            {player.photoUrl ? (
+                              <Image
+                                source={{ uri: player.photoUrl }}
+                                style={adminStyles.lineupPhoto}
                               />
-                            ))}
-                          </>
-                        )}
-                        {secondHalf.length > 0 && (
-                          <>
-                            <View style={[styles.halfHeader, { marginTop: 4 }]}>
-                              <Text style={styles.halfHeaderText}>
-                                2ª Parte
-                              </Text>
-                            </View>
-                            {secondHalf.map((event: MatchEvent) => (
-                              <EventRow
-                                key={event.id}
-                                event={event}
-                                isOurs={
-                                  isHomeGame
-                                    ? !event.isOpponent
-                                    : event.isOpponent
-                                }
-                                onEdit={handleEditEvent}
-                                onDelete={() => handleDeleteEvent(event)}
+                            ) : (
+                              <View style={adminStyles.lineupAvatar}>
+                                <Text style={adminStyles.lineupAvatarText}>
+                                  {player.name
+                                    .split(" ")
+                                    .map((w: string) => w[0])
+                                    .slice(0, 2)
+                                    .join("")
+                                    .toUpperCase()}
+                                </Text>
+                              </View>
+                            )}
+                            <Text style={adminStyles.lineupName}>
+                              {player.name}
+                            </Text>
+                            <Text style={adminStyles.lineupPosition}>
+                              {player.Stats?.[0]?.position}
+                            </Text>
+                          </View>
+                        );
+                      })}
+
+                    {/* Suplentes */}
+                    <Text style={adminStyles.lineupSectionTitle}>
+                      Suplentes
+                    </Text>
+                    {sortedLineup
+                      .filter((e: any) => !e.isStarting)
+                      .map((e: any) => {
+                        const player = playerById.get(e.playerId);
+                        if (!player) return null;
+                        return (
+                          <View key={e.playerId} style={adminStyles.lineupRow}>
+                            {player.photoUrl ? (
+                              <Image
+                                source={{ uri: player.photoUrl }}
+                                style={adminStyles.lineupPhoto}
                               />
-                            ))}
-                          </>
-                        )}
-                      </>
-                    );
-                  })()
+                            ) : (
+                              <View style={adminStyles.lineupAvatar}>
+                                <Text style={adminStyles.lineupAvatarText}>
+                                  {player.name
+                                    .split(" ")
+                                    .map((w: string) => w[0])
+                                    .slice(0, 2)
+                                    .join("")
+                                    .toUpperCase()}
+                                </Text>
+                              </View>
+                            )}
+                            <Text style={adminStyles.lineupName}>
+                              {player.name}
+                            </Text>
+                            <Text style={adminStyles.lineupPosition}>
+                              {player.Stats?.[0]?.position}
+                            </Text>
+                          </View>
+                        );
+                      })}
+                  </>
                 ) : (
                   <View style={styles.emptyState}>
                     <FontAwesome5
@@ -675,110 +828,13 @@ export const AdminMatchDetail = () => {
                       size={36}
                       color={COLORS.textSecondary}
                     />
-                    <Text style={styles.mutedText}>Sem eventos ainda</Text>
+                    <Text style={styles.mutedText}>
+                      Formação não disponível
+                    </Text>
                   </View>
-                ))}
-              {activeTab === "lineup" && (
-                <>
-                  {sortedLineup && sortedLineup.length > 0 ? (
-                    <>
-                      {/* Titulares */}
-                      <Text style={adminStyles.lineupSectionTitle}>
-                        Titulares
-                      </Text>
-                      {sortedLineup
-                        .filter((e: any) => e.isStarting)
-                        .map((e: any) => {
-                          const player = playerById.get(e.playerId);
-                          if (!player) return null;
-                          return (
-                            <View
-                              key={e.playerId}
-                              style={adminStyles.lineupRow}
-                            >
-                              {player.photoUrl ? (
-                                <Image
-                                  source={{ uri: player.photoUrl }}
-                                  style={adminStyles.lineupPhoto}
-                                />
-                              ) : (
-                                <View style={adminStyles.lineupAvatar}>
-                                  <Text style={adminStyles.lineupAvatarText}>
-                                    {player.name
-                                      .split(" ")
-                                      .map((w: string) => w[0])
-                                      .slice(0, 2)
-                                      .join("")
-                                      .toUpperCase()}
-                                  </Text>
-                                </View>
-                              )}
-                              <Text style={adminStyles.lineupName}>
-                                {player.name}
-                              </Text>
-                              <Text style={adminStyles.lineupPosition}>
-                                {player.Stats?.[0]?.position}
-                              </Text>
-                            </View>
-                          );
-                        })}
-
-                      {/* Suplentes */}
-                      <Text style={adminStyles.lineupSectionTitle}>
-                        Suplentes
-                      </Text>
-                      {sortedLineup
-                        .filter((e: any) => !e.isStarting)
-                        .map((e: any) => {
-                        const player = playerById.get(e.playerId);
-                          if (!player) return null;
-                          return (
-                            <View
-                              key={e.playerId}
-                              style={adminStyles.lineupRow}
-                            >
-                              {player.photoUrl ? (
-                                <Image
-                                  source={{ uri: player.photoUrl }}
-                                  style={adminStyles.lineupPhoto}
-                                />
-                              ) : (
-                                <View style={adminStyles.lineupAvatar}>
-                                  <Text style={adminStyles.lineupAvatarText}>
-                                    {player.name
-                                      .split(" ")
-                                      .map((w: string) => w[0])
-                                      .slice(0, 2)
-                                      .join("")
-                                      .toUpperCase()}
-                                  </Text>
-                                </View>
-                              )}
-                              <Text style={adminStyles.lineupName}>
-                                {player.name}
-                              </Text>
-                              <Text style={adminStyles.lineupPosition}>
-                                {player.Stats?.[0]?.position}
-                              </Text>
-                            </View>
-                          );
-                        })}
-                    </>
-                  ) : (
-                    <View style={styles.emptyState}>
-                      <FontAwesome5
-                        name="hourglass-half"
-                        size={36}
-                        color={COLORS.textSecondary}
-                      />
-                      <Text style={styles.mutedText}>
-                        Formação não disponível
-                      </Text>
-                    </View>
-                  )}
-                </>
-              )}
-            </View>
+                )}
+              </>
+            )}
           </View>
         </View>
       </ScrollView>

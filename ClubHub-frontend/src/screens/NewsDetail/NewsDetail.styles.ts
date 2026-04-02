@@ -10,6 +10,28 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
+  content: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.lg,
+  },
+
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.sm,
+    marginBottom: SPACING.xs,
+  },
+
+  titleContainer: {
+    justifyContent: "center",
+    marginBottom: 0, // 🔥 remove qualquer offset vertical
+  },
+
+  backButton: {
+    padding: 6,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 
   // ── Header ───────────────────────────────────────────────────────────────
   header: {
@@ -24,17 +46,21 @@ export const styles = StyleSheet.create({
     borderBottomColor: COLORS.border,
   },
 
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: SPACING.sm,
+  eyebrow: {
+    fontSize: 10,
+    fontWeight: "600",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    color: COLORS.textPrimary,
+    marginBottom: 2,
   },
 
   headerTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: "700",
+    fontSize: FONT_SIZE.xl,
+    fontWeight: "800",
     color: COLORS.textPrimary,
-    letterSpacing: -0.3,
+    letterSpacing: -0.8,
+    lineHeight: FONT_SIZE.xl * 1.1,
   },
 
   // ── Imagem de destaque (full-bleed) ───────────────────────────────────────
@@ -60,12 +86,6 @@ export const styles = StyleSheet.create({
 
   logoEmoji: {
     fontSize: FONT_SIZE.xl,
-  },
-
-  // ── Conteúdo do artigo ────────────────────────────────────────────────────
-  content: {
-    paddingHorizontal: SPACING.md,
-    paddingBottom: SPACING.xl,
   },
 
   // ── Badge de categoria ────────────────────────────────────────────────────

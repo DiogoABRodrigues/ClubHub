@@ -35,8 +35,8 @@ export const News = ({ navigation }: any) => {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <View>
-          <Text style={styles.eyebrow}> </Text>
-          <Text style={styles.headerTitle}>Notícias</Text>
+            <Text style={styles.eyebrow}> </Text>
+            <Text style={styles.headerTitle}>Notícias</Text>
           </View>
         </View>
       </View>
@@ -48,9 +48,7 @@ export const News = ({ navigation }: any) => {
             A carregar notícias...
           </Text>
         ) : newsList.length > 0 ? (
-          <View style={styles.newsList}>
-            {renderedNews}
-          </View>
+          <View style={styles.newsList}>{renderedNews}</View>
         ) : (
           <View style={styles.noNews}>
             <View style={styles.logoCircle}>

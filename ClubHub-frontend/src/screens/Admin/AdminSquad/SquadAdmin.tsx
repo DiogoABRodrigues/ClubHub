@@ -4,53 +4,65 @@ import { FlashList } from "@shopify/flash-list";
 import { usePlayers } from "../../../hooks/usePlayers";
 import { Player } from "../../../models/Player";
 import { styles } from "../../Squad/Squad.styles";
-import { mapToMainPosition, getPositionOrder } from "../../../utils/playerPositionUtils";
+import {
+  mapToMainPosition,
+  getPositionOrder,
+} from "../../../utils/playerPositionUtils";
 
 const defaultPlayerImage = require("../../../../assets/player.jpg");
 
-/* ------------------ ROW MEMO ------------------ */
+/* ---------------- UTILS ---------------- */
+const chunkArray = (arr: Player[], size: number) => {
+  const chunks: Player[][] = [];
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size));
+  }
+  return chunks;
+};
+
+/* ---------------- CARD MEMO ---------------- */
 const PlayerCard = React.memo(
-  ({
-    player,
-    onToggle,
-  }: {
-    player: Player;
-    onToggle: (p: Player) => void;
-  }) => {
+  ({ player, onToggle }: { player: Player; onToggle: (p: Player) => void }) => {
+    const [firstName, ...rest] = player.name.split(" ");
+    const lastName = rest.join(" ");
+
     return (
-      <View style={{ width: "48%", marginVertical: 6 }}>
-        <View style={[styles.card, !player.stillOnTeam && { opacity: 0.4 }]}>
-          <View style={styles.playerPhotoWrapper}>
-            <Image
-              source={
-                player.photoUrl
-                  ? { uri: player.photoUrl }
-                  : defaultPlayerImage
-              }
-              style={styles.statsPhoto}
-              resizeMode="contain"
-            />
+      <View style={styles.playerCard}>
+        <Image
+          source={
+            player.photoUrl ? { uri: player.photoUrl } : defaultPlayerImage
+          }
+          style={styles.playerImage}
+          resizeMode="contain"
+        />
+
+        {!player.stillOnTeam && (
+          <View style={{ position: "absolute", top: 6, right: 6 }}>
+            <Text
+              style={{ color: "white", fontSize: 10, backgroundColor: "red" }}
+            >
+              INATIVO
+            </Text>
           </View>
+        )}
 
-          {!player.stillOnTeam && (
-            <View style={{ position: "absolute", top: 6, right: 6 }}>
-              <Text style={{ color: "white", fontSize: 10 }}>INATIVO</Text>
-            </View>
-          )}
+        <Text style={styles.playerName} numberOfLines={1}>
+          {firstName}
+        </Text>
+        <Text style={styles.playerName} numberOfLines={1}>
+          {lastName}
+        </Text>
 
-          <Text style={styles.playerName}>{player.name}</Text>
-
-          <Switch
-            value={!!player.stillOnTeam}
-            onValueChange={() => onToggle(player)}
-          />
-        </View>
+        <Switch
+          value={!!player.stillOnTeam}
+          onValueChange={() => onToggle(player)}
+        />
       </View>
     );
-  }
+  },
 );
 
-/* ------------------ SCREEN ------------------ */
+/* ---------------- SCREEN ---------------- */
 export function AdminSquadScreen() {
   const { players, updatePlayer } = usePlayers();
 
@@ -65,7 +77,7 @@ export function AdminSquadScreen() {
     });
   }, [players]);
 
-  /* GROUPING (stable reference) */
+  /* GROUPING */
   const groupedData = useMemo(() => {
     const groups: Record<string, Player[]> = {};
 
@@ -81,71 +93,89 @@ export function AdminSquadScreen() {
     }));
   }, [sortedPlayers]);
 
-  /* flatten for FlashList (NO UI CHANGE) */
+  /* FLATTEN (ROWS DE 3) */
   const flashData = useMemo(() => {
     const result: any[] = [];
 
     groupedData.forEach((group) => {
       result.push({ type: "header", position: group.position });
 
-      group.players.forEach((player) => {
-        result.push({ type: "player", player });
+      const rows = chunkArray(group.players, 3);
+
+      rows.forEach((row) => {
+        result.push({ type: "row", players: row });
       });
     });
 
     return result;
   }, [groupedData]);
 
-  /* stable toggle */
+  /* TOGGLE */
   const handleToggle = useCallback(
     (player: Player) => {
       const newValue = !player.stillOnTeam;
 
       Alert.alert(
         "Alterar estado",
-        `${player.name} ${
-          newValue ? "volta para a equipa" : "sai da equipa"
-        }?`,
+        `${player.name} ${newValue ? "volta para a equipa" : "sai da equipa"}?`,
         [
           { text: "Cancelar", style: "cancel" },
           {
             text: "Confirmar",
             onPress: () =>
-              updatePlayer({ id: player.id, data: { stillOnTeam: newValue } }),
+              updatePlayer({
+                id: player.id,
+                data: { stillOnTeam: newValue },
+              }),
           },
-        ]
+        ],
       );
     },
-    [updatePlayer]
+    [updatePlayer],
   );
 
-  /* render item (FLASHLIST) */
+  /* RENDER */
   const renderItem = useCallback(
     ({ item }: any) => {
       if (item.type === "header") {
         return (
-          <Text style={styles.positionHeaderText}>
-            {item.position}
-          </Text>
+          <View style={styles.positionHeader}>
+            <Text style={styles.positionHeaderText}>{item.position}</Text>
+          </View>
         );
       }
 
       return (
-        <PlayerCard player={item.player} onToggle={handleToggle} />
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          {item.players.map((p: Player) => (
+            <PlayerCard key={p.id} player={p} onToggle={handleToggle} />
+          ))}
+        </View>
       );
     },
-    [handleToggle]
+    [handleToggle],
   );
 
   return (
     <FlashList
       data={flashData}
       renderItem={renderItem}
-      keyExtractor={(item, index) =>
-        item.type === "header"
-          ? `h-${item.position}-${index}`
-          : item.player.id
-      }
+      keyExtractor={(item, index) => {
+        if (item.type === "header") {
+          return `h-${item.position}-${index}`;
+        }
+
+        if (item.type === "row") {
+          return `r-${item.players.map((p: Player) => p.id).join("-")}`;
+        }
+
+        return `unknown-${index}`;
+      }}
       contentContainerStyle={styles.squadList}
     />
   );

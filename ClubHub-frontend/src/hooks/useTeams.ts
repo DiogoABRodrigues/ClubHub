@@ -12,7 +12,6 @@ export const useTeams = () => {
   return {
     teams: teamsQuery.data ?? [],
     loading: teamsQuery.isLoading,
-    refreshTeams: () =>
-      queryClient.invalidateQueries({ queryKey: ["teams"] }),
+    refreshTeams: () => queryClient.invalidateQueries({ queryKey: ["teams"] }),
   };
 };

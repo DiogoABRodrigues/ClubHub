@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { Trophy, Users, BarChart3, ArrowLeft } from "lucide-react-native";
-import { useNavigation } from "@react-navigation/native";
+import { Trophy, Users, BarChart3 } from "lucide-react-native";
 import { styles } from "./Season.styles";
 import { SquadScreen } from "../Squad/Squad";
 import { Standings } from "../Standings/Standings";
@@ -31,7 +30,7 @@ export function SeasonScreen() {
   const currentSeason = useMemo(() => {
     if (!seasons.length) return null;
     return seasons.reduce((latest, season) =>
-      season.id > latest.id ? season : latest
+      season.id > latest.id ? season : latest,
     );
   }, [seasons]);
 
@@ -71,16 +70,18 @@ export function SeasonScreen() {
   );
 }
 
-const TabButton = React.memo(
-  ({ Icon, label, active, onPress }: any) => (
-    <TouchableOpacity
-      style={[styles.tab, active && styles.tabActive]}
-      onPress={onPress}
-    >
-      <Icon width={20} height={20} color={active ? COLORS.primary : COLORS.primaryDark} />
-      <Text style={[styles.tabText, active && styles.tabTextActive]}>
-        {label}
-      </Text>
-    </TouchableOpacity>
-  )
-);
+const TabButton = React.memo(({ Icon, label, active, onPress }: any) => (
+  <TouchableOpacity
+    style={[styles.tab, active && styles.tabActive]}
+    onPress={onPress}
+  >
+    <Icon
+      width={20}
+      height={20}
+      color={active ? COLORS.primary : COLORS.primaryDark}
+    />
+    <Text style={[styles.tabText, active && styles.tabTextActive]}>
+      {label}
+    </Text>
+  </TouchableOpacity>
+));

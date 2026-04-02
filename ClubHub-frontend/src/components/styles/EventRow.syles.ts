@@ -2,63 +2,42 @@ import { StyleSheet } from "react-native";
 import { COLORS, SPACING, FONT_SIZE, RADIUS } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
-  // ── Separador de parte ────────────────────────────────────────────────────
-  halfHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    backgroundColor: COLORS.surfaceLight,
-  },
-
-  halfHeaderText: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: COLORS.textMuted,
-    textTransform: "uppercase",
-    letterSpacing: 0.6,
-  },
-
-  halfHeaderScore: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: COLORS.textSecondary,
-  },
-
   // ── Linha de evento ───────────────────────────────────────────────────────
   eventRow: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: SPACING.md,
-    paddingVertical: 9,
-    minHeight: 40,
-    borderBottomColor: COLORS.border,
+    paddingVertical: 10,
+    minHeight: 44,
+    borderBottomWidth: 0.8,
+    borderBottomColor: "#E5E7EB",
     gap: 6,
-    backgroundColor: COLORS.surface,
+    backgroundColor: "#FFFFFF",
   },
 
   // ── Minuto ────────────────────────────────────────────────────────────────
   eventMinuteText: {
     fontSize: 12,
-    color: COLORS.textMuted,
+    color: COLORS.textSecondary,
     fontWeight: "500",
-    width: 26,
+    width: 28,
+    textAlign: "left",
   },
 
   eventMinuteTextRight: {
     fontSize: 12,
-    color: COLORS.textMuted,
+    color: COLORS.textSecondary,
     fontWeight: "500",
-    width: 26,
+    width: 28,
     textAlign: "right",
   },
 
-  // ── Lados (casa / fora) ───────────────────────────────────────────────────
+  // ── Lados ─────────────────────────────────────────────────────────────────
   eventSide: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "flex-start",
     gap: 5,
   },
 
@@ -74,19 +53,19 @@ export const styles = StyleSheet.create({
   eventPlayer: {
     fontSize: 13,
     fontWeight: "600",
-    color: COLORS.textPrimary,
+    color: "#111827",
   },
 
   eventAssist: {
     fontSize: 12,
-    color: COLORS.textSecondary,
+    color: "#6B7280",
   },
 
   // ── Resultado parcial ─────────────────────────────────────────────────────
   eventScore: {
     fontSize: 12,
     fontWeight: "700",
-    color: COLORS.success,     // verde — golo a favor
+    color: "#16A34A",
   },
 
   // ── Ícone de evento ───────────────────────────────────────────────────────
@@ -96,7 +75,7 @@ export const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  // ── Cartão físico (amarelo / vermelho) ────────────────────────────────────
+  // ── Cartão físico ─────────────────────────────────────────────────────────
   cardIcon: {
     width: 10,
     height: 14,

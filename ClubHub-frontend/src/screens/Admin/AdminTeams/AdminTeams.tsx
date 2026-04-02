@@ -41,40 +41,45 @@ export const AdminTeams: React.FC = () => {
     return PLAYERS.filter((p) => p.name.toLowerCase().includes(q));
   }, [searchQuery]);
 
-  const renderPlayer = useCallback((player: Player) => (
-    <View key={player.number} style={styles.playerRow}>
-      <View style={{ flex: 1 }}>
-        <View style={styles.playerNumber}>
-          <Text style={{ color: "#0ea5e9" }}>{player.number}</Text>
+  const renderPlayer = useCallback(
+    (player: Player) => (
+      <View key={player.number} style={styles.playerRow}>
+        <View style={{ flex: 1 }}>
+          <View style={styles.playerNumber}>
+            <Text style={{ color: "#0ea5e9" }}>{player.number}</Text>
+          </View>
         </View>
+
+        <Text style={{ flex: 4 }}>{player.name}</Text>
+        <Text style={{ flex: 2 }}>{player.position}</Text>
+
+        <View style={{ flex: 3 }}>
+          <Text
+            style={[
+              styles.playerStatus,
+              player.status === "Active"
+                ? styles.statusActive
+                : styles.statusInjured,
+            ]}
+          >
+            {player.status}
+          </Text>
+        </View>
+
+        <Pressable style={{ flex: 2, alignItems: "flex-end" }}>
+          <Edit width={16} height={16} color="#0ea5e9" />
+        </Pressable>
       </View>
-
-      <Text style={{ flex: 4 }}>{player.name}</Text>
-      <Text style={{ flex: 2 }}>{player.position}</Text>
-
-      <View style={{ flex: 3 }}>
-        <Text
-          style={[
-            styles.playerStatus,
-            player.status === "Active"
-              ? styles.statusActive
-              : styles.statusInjured,
-          ]}
-        >
-          {player.status}
-        </Text>
-      </View>
-
-      <Pressable style={{ flex: 2, alignItems: "flex-end" }}>
-        <Edit width={16} height={16} color="#0ea5e9" />
-      </Pressable>
-    </View>
-  ), []);
+    ),
+    [],
+  );
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.navigate("AdminDashboard" as never)}>
+        <Pressable
+          onPress={() => navigation.navigate("AdminDashboard" as never)}
+        >
           <ArrowLeft width={20} height={20} color="#999" />
         </Pressable>
 

@@ -14,13 +14,13 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-                          {!splashDone ? (
-                            <SplashScreen onFinish={() => setSplashDone(true)} />
-                          ) : (
-                            <AppNavigator />
-                          )}
-      </AuthProvider>
+        <AuthProvider>
+          {!splashDone ? (
+            <SplashScreen onFinish={() => setSplashDone(true)} />
+          ) : (
+            <AppNavigator />
+          )}
+        </AuthProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

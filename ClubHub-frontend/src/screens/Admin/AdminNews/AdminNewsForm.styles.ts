@@ -9,10 +9,31 @@ export const styles = StyleSheet.create({
   },
 
   // ── Header ───────────────────────────────────────────────────────────────
-  header: {
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  content: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.lg,
+  },
+
+  headerLeft: {
     flexDirection: "row",
     alignItems: "center",
+    gap: SPACING.sm,
+    marginBottom: SPACING.xs,
+  },
+
+  titleContainer: {
+    justifyContent: "center",
+    marginBottom: 0, // 🔥 remove qualquer offset vertical
+  },
+
+  header: {
+    flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.xl + 16,
     paddingBottom: SPACING.sm,
@@ -21,14 +42,21 @@ export const styles = StyleSheet.create({
     borderBottomColor: COLORS.border,
   },
 
+  backButton: {
+    padding: 6,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
   headerBtn: {
     padding: SPACING.xs,
   },
-
   headerTitle: {
-    fontSize: FONT_SIZE.md,
-    fontWeight: "700",
+    fontSize: FONT_SIZE.xl,
+    fontWeight: "800",
     color: COLORS.textPrimary,
+    letterSpacing: -0.8,
+    lineHeight: FONT_SIZE.xl * 1.1,
   },
 
   // ── Botão guardar no header ───────────────────────────────────────────────
@@ -49,13 +77,6 @@ export const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "700",
     fontSize: FONT_SIZE.sm,
-  },
-
-  // ── Conteúdo ──────────────────────────────────────────────────────────────
-  content: {
-    padding: SPACING.md,
-    gap: SPACING.lg,
-    paddingBottom: SPACING.xl + SPACING.lg,
   },
 
   // ── Imagem ────────────────────────────────────────────────────────────────

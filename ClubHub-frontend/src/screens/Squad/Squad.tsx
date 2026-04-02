@@ -6,7 +6,6 @@ import { Player } from "../../models/Player";
 import { styles as globalStyles } from "./Squad.styles";
 import { getPositionOrder } from "../../utils/playerPositionUtils";
 import { mapToMainPosition } from "../../utils/playerPositionUtils";
-import { COLORS } from "../../theme/colors";
 const defaultPlayerImage = require("../../../assets/player.jpg");
 
 const chunkArray = (arr: Player[], size: number) => {
@@ -19,55 +18,50 @@ const chunkArray = (arr: Player[], size: number) => {
 
 /* ---------------- CARD MEMO ---------------- */
 const PlayerCard = React.memo(({ player }: { player: Player }) => {
+  const [firstName, ...rest] = player.name.split(" ");
+  const lastName = rest.join(" ");
+
   return (
     <View style={globalStyles.playerCard}>
       <Image
-        source={
-          player.photoUrl
-            ? { uri: player.photoUrl }
-            : defaultPlayerImage
-        }
+        source={player.photoUrl ? { uri: player.photoUrl } : defaultPlayerImage}
         style={globalStyles.playerImage}
         resizeMode="contain"
       />
 
       <Text style={globalStyles.playerName} numberOfLines={1}>
-        {player.name}
+        {firstName}
       </Text>
 
-      {!!player.age && (
-        <Text style={globalStyles.playerAge}>
-          {player.age} anos
-        </Text>
-      )}
+      <Text style={globalStyles.playerName} numberOfLines={1}>
+        {lastName}
+      </Text>
     </View>
   );
 });
-
 /* ---------------- SCREEN ---------------- */
 export const SquadScreen = React.memo(function SquadScreen() {
   useEffect(() => {
-  console.log("MOUNT");
-}, []);
+    console.log("MOUNT");
+  }, []);
   const { getActivePlayers } = usePlayers();
   const activePlayers = getActivePlayers();
 
   /* SORT ONCE */
   const sortedPlayers = useMemo(() => {
-  const sorted = [...activePlayers].sort((a, b) => {
-    const posA = getPositionOrder(a.Stats?.[0]?.position || "");
-    const posB = getPositionOrder(b.Stats?.[0]?.position || "");
+    const sorted = [...activePlayers].sort((a, b) => {
+      const posA = getPositionOrder(a.Stats?.[0]?.position || "");
+      const posB = getPositionOrder(b.Stats?.[0]?.position || "");
 
-    if (posA !== posB) return posA - posB;
-    return (a.Stats?.[0]?.number || 0) - (b.Stats?.[0]?.number || 0);
-  });
+      if (posA !== posB) return posA - posB;
+      return (a.Stats?.[0]?.number || 0) - (b.Stats?.[0]?.number || 0);
+    });
 
-  return sorted;
-}, [activePlayers]);
+    return sorted;
+  }, [activePlayers]);
 
   /* GROUP ONCE */
   const grouped = useMemo(() => {
-
     const groups: Record<string, Player[]> = {};
 
     for (const p of sortedPlayers) {
@@ -103,9 +97,7 @@ export const SquadScreen = React.memo(function SquadScreen() {
     if (item.type === "header") {
       return (
         <View style={globalStyles.positionHeader}>
-          <Text style={globalStyles.positionHeaderText}>
-            {item.position}
-          </Text>
+          <Text style={globalStyles.positionHeaderText}>{item.position}</Text>
         </View>
       );
     }

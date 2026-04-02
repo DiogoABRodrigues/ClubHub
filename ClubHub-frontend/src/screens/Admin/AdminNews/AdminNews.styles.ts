@@ -8,28 +8,41 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
 
-  // ── Header — espelha o AdminMatches ──────────────────────────────────────
+  // ── Header ───────────────────────────────────────────────────────────────
   header: {
     backgroundColor: COLORS.surface,
-    paddingTop: SPACING.xl + 16,
-    paddingBottom: SPACING.sm,
+    paddingTop: SPACING.xl + 8, // espaço para status bar
+    paddingBottom: SPACING.md,
     paddingHorizontal: SPACING.md,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+  },
+
+  content: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.xl,
   },
 
   headerLeft: {
     flexDirection: "row",
-    alignItems: "center",
-    gap: SPACING.sm,
-    marginBottom: SPACING.xs,
+    alignItems: "flex-end",
+    justifyContent: "space-between",
   },
 
   headerTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: "700",
+    fontSize: FONT_SIZE.xl,
+    fontWeight: "800",
     color: COLORS.textPrimary,
-    letterSpacing: -0.3,
+    letterSpacing: -0.8,
+    lineHeight: FONT_SIZE.xl * 1.1,
+  },
+
+  eyebrow: {
+    fontSize: 10,
+    fontWeight: "600",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    color: COLORS.textPrimary,
+    marginBottom: 2,
   },
 
   // ── Botão adicionar ───────────────────────────────────────────────────────
@@ -50,13 +63,6 @@ export const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "700",
     fontSize: FONT_SIZE.sm,
-  },
-
-  // ── Conteúdo ──────────────────────────────────────────────────────────────
-  content: {
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.md,
-    paddingBottom: SPACING.xl,
   },
 
   // ── Wrapper de card com ações ─────────────────────────────────────────────

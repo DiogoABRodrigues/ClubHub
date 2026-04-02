@@ -46,10 +46,9 @@ export const adminStyles = StyleSheet.create({
   },
 
   sheet: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.backgroundWhite,
     borderTopLeftRadius: RADIUS.xl,
     borderTopRightRadius: RADIUS.xl,
-    paddingBottom: Platform.OS === "ios" ? 34 : SPACING.lg,
     maxHeight: "88%",
     flexDirection: "column",
   },
@@ -77,7 +76,7 @@ export const adminStyles = StyleSheet.create({
   sheetTitle: {
     fontSize: FONT_SIZE.md,
     fontWeight: "700",
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
   },
 
   sheetSubtitle: {
@@ -89,7 +88,6 @@ export const adminStyles = StyleSheet.create({
   sheetContent: {
     padding: SPACING.lg,
     gap: SPACING.sm,
-    paddingBottom: SPACING.sm,
   },
 
   sheetTall: {
@@ -145,19 +143,18 @@ export const adminStyles = StyleSheet.create({
   fieldLabel: {
     fontSize: FONT_SIZE.xs,
     fontWeight: "700",
-    color: COLORS.textMuted,
+    color: COLORS.textSecondary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: SPACING.sm,
   },
 
   input: {
-    backgroundColor: COLORS.surfaceLight,
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm + 2,
     fontSize: FONT_SIZE.md,
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
@@ -195,6 +192,7 @@ export const adminStyles = StyleSheet.create({
   },
 
   saveBtnSecondary: {
+    width: "20%",
     backgroundColor: "transparent",
     borderWidth: 1.5,
     borderColor: COLORS.primary,
@@ -223,7 +221,6 @@ export const adminStyles = StyleSheet.create({
     borderTopLeftRadius: RADIUS.xl,
     borderTopRightRadius: RADIUS.xl,
     paddingTop: SPACING.md,
-    paddingBottom: SPACING.xl,
   },
 
   modalHeader: {
@@ -231,7 +228,6 @@ export const adminStyles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.md,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
@@ -411,24 +407,26 @@ export const adminStyles = StyleSheet.create({
 
   // ── Formação (lineup) ─────────────────────────────────────────────────────
   lineupSectionTitle: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 11,
     fontWeight: "700",
-    color: COLORS.textMuted,
+    color: COLORS.textSecondary,
     textTransform: "uppercase",
     letterSpacing: 0.6,
-    marginTop: SPACING.md,
-    marginBottom: SPACING.sm,
-    paddingHorizontal: SPACING.xs,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLORS.surfaceLight,
   },
 
   lineupRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: SPACING.sm,
-    borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.border,
-    gap: SPACING.sm,
-    backgroundColor: COLORS.surface,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: 10,
+    minHeight: 44,
+    borderBottomWidth: 0.8,
+    borderBottomColor: "#E5E7EB",
+    gap: 10,
+    backgroundColor: "#FFFFFF",
   },
 
   lineupPhoto: {
@@ -456,12 +454,12 @@ export const adminStyles = StyleSheet.create({
     flex: 1,
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
   },
 
   lineupPosition: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textMuted,
+    color: COLORS.textSecondary,
   },
 
   // ── Switch row ────────────────────────────────────────────────────────────
@@ -469,11 +467,9 @@ export const adminStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: COLORS.surfaceLight,
-    borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm + 2,
     borderWidth: 1,
+    borderRadius: RADIUS.md,
     borderColor: COLORS.border,
   },
 

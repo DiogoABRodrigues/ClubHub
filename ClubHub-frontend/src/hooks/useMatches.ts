@@ -20,7 +20,7 @@ export const useMatches = () => {
     queryFn: MatchService.getByCurrentSeasonId,
     select: (matches: Match[]) =>
       matches.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
       ),
   });
 
@@ -47,7 +47,7 @@ export const useMatches = () => {
     if (alreadyLive) {
       Alert.alert(
         "Jogo já em direto",
-        `Já existe um jogo a decorrer contra ${alreadyLive.opponent}`
+        `Já existe um jogo a decorrer contra ${alreadyLive.opponent}`,
       );
       return;
     }
@@ -85,7 +85,8 @@ export const useMatches = () => {
   // ADD MATCH EVENT
   // ─────────────────────────────
   const addMatchEvent = async (id: number, event: MatchEvent) => {
-    const match = queryClient.getQueryData<Match[]>(["matches"])
+    const match = queryClient
+      .getQueryData<Match[]>(["matches"])
       ?.find((m) => m.id === id);
 
     if (!match) return;
@@ -95,9 +96,7 @@ export const useMatches = () => {
     const updatedEvents = [...(match.events ?? []), createdEvent];
 
     queryClient.setQueryData<Match[]>(["matches"], (old) =>
-      old?.map((m) =>
-        m.id === id ? { ...m, events: updatedEvents } : m
-      )
+      old?.map((m) => (m.id === id ? { ...m, events: updatedEvents } : m)),
     );
 
     // update result logic (igual ao teu)
@@ -126,20 +125,18 @@ export const useMatches = () => {
   const deleteMatchEvent = async (id: number, event: MatchEvent) => {
     if (!event.id) return;
 
-    const match = queryClient.getQueryData<Match[]>(["matches"])
+    const match = queryClient
+      .getQueryData<Match[]>(["matches"])
       ?.find((m) => m.id === id);
 
     if (!match) return;
 
     await MatchEventService.delete(event.id);
 
-    const updatedEvents =
-      match.events?.filter((e) => e.id !== event.id) ?? [];
+    const updatedEvents = match.events?.filter((e) => e.id !== event.id) ?? [];
 
     queryClient.setQueryData<Match[]>(["matches"], (old) =>
-      old?.map((m) =>
-        m.id === id ? { ...m, events: updatedEvents } : m
-      )
+      old?.map((m) => (m.id === id ? { ...m, events: updatedEvents } : m)),
     );
 
     if (event.type === "goal") {
@@ -166,7 +163,7 @@ export const useMatches = () => {
   // ─────────────────────────────
   const saveLineup = async (
     matchId: number,
-    entries: { playerId: number | string; isStarting: boolean }[]
+    entries: { playerId: number | string; isStarting: boolean }[],
   ) => {
     await LineupService.deleteByMatch(matchId);
 
@@ -176,14 +173,14 @@ export const useMatches = () => {
           matchId,
           playerId: Number(e.playerId),
           isStarting: e.isStarting,
-        })
-      )
+        }),
+      ),
     );
 
     queryClient.setQueryData<Match[]>(["matches"], (old) =>
       old?.map((m) =>
-        m.id === matchId ? { ...m, Lineups: createdLineups } : m
-      )
+        m.id === matchId ? { ...m, Lineups: createdLineups } : m,
+      ),
     );
   };
 

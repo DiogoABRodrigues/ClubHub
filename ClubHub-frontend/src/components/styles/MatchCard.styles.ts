@@ -13,8 +13,7 @@ export const styles = StyleSheet.create({
   logoDark: {
     backgroundColor: "rgba(255,255,255,0.12)",
   },
-  logoLight: {
-  },
+  logoLight: {},
   logoEmoji: {
     fontSize: 18,
   },

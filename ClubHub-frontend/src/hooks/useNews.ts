@@ -8,8 +8,8 @@ const formatNewsImage = (image?: string) => {
 
   const baseUrl =
     Platform.OS === "android"
-      ? "http://192.168.1.107:3000/uploads"
-      : "http://192.168.1.107:3000/uploads";
+      ? "http://192.168.1.105:3000/uploads"
+      : "http://192.168.1.105:3000/uploads";
 
   return `${baseUrl}/${image}`;
 };
@@ -37,7 +37,7 @@ export const useNews = () => {
     mutationFn: (id: number) => NewsService.delete(id),
     onSuccess: (_, id) => {
       queryClient.setQueryData<News[]>(["news"], (old) =>
-        old?.filter((n) => n.id !== id)
+        old?.filter((n) => n.id !== id),
       );
     },
   });
@@ -81,8 +81,8 @@ export const useNews = () => {
         old?.map((n) =>
           n.id === updatedNews.id
             ? { ...updatedNews, image: formatNewsImage(updatedNews.image) }
-            : n
-        )
+            : n,
+        ),
       );
     },
   });

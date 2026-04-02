@@ -16,9 +16,9 @@ const COLS = {
 };
 
 export const Standings = React.memo(function Standings() {
-      useEffect(() => {
-      console.log("MOUNT Standings");
-    }, []);
+  useEffect(() => {
+    console.log("MOUNT Standings");
+  }, []);
   const { standings, loading } = useStandings();
 
   const sorted = useMemo(() => {
@@ -29,13 +29,9 @@ export const Standings = React.memo(function Standings() {
 
   const renderItem = useCallback(
     ({ item }: { item: any }) => (
-      <LeagueTableRow
-        standing={item}
-        green={GREEN_ZONE}
-        red={RED_ZONE}
-      />
+      <LeagueTableRow standing={item} green={GREEN_ZONE} red={RED_ZONE} />
     ),
-    []
+    [],
   );
 
   const keyExtractor = useCallback((item: any) => item.id, []);
@@ -71,17 +67,32 @@ export const Standings = React.memo(function Standings() {
               </View>
 
               {/* Played */}
-              <View style={[styles.headerCell, { flex: COLS.played, alignItems: "center" }]}>
+              <View
+                style={[
+                  styles.headerCell,
+                  { flex: COLS.played, alignItems: "center" },
+                ]}
+              >
                 <Text style={styles.headerText}>J</Text>
               </View>
 
               {/* Goal Diff */}
-              <View style={[styles.headerCell, { flex: COLS.goalDiff, alignItems: "center" }]}>
+              <View
+                style={[
+                  styles.headerCell,
+                  { flex: COLS.goalDiff, alignItems: "center" },
+                ]}
+              >
                 <Text style={styles.headerText}>DG</Text>
               </View>
 
               {/* Points */}
-              <View style={[styles.headerCell, { flex: COLS.points, alignItems: "flex-end" }]}>
+              <View
+                style={[
+                  styles.headerCell,
+                  { flex: COLS.points, alignItems: "flex-end" },
+                ]}
+              >
                 <Text style={styles.headerText}>PTS</Text>
               </View>
             </View>

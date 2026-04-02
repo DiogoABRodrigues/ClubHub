@@ -48,15 +48,20 @@ interface PlayerPickerProps {
 }
 
 const PlayerPicker = React.memo(
-  ({ label, players, selected, onSelect, excludePlayer }: PlayerPickerProps) => {
+  ({
+    label,
+    players,
+    selected,
+    onSelect,
+    excludePlayer,
+  }: PlayerPickerProps) => {
     const [search, setSearch] = useState("");
 
     const filtered = useMemo(() => {
       const q = search.toLowerCase();
       return players.filter(
         (p) =>
-          p.id !== excludePlayer &&
-          (!q || p.name.toLowerCase().includes(q))
+          p.id !== excludePlayer && (!q || p.name.toLowerCase().includes(q)),
       );
     }, [players, search, excludePlayer]);
 
@@ -108,13 +113,11 @@ const PlayerPicker = React.memo(
             })}
           </ScrollView>
         ) : (
-          <Text style={eventStyles.noResults}>
-            Nenhum jogador encontrado
-          </Text>
+          <Text style={eventStyles.noResults}>Nenhum jogador encontrado</Text>
         )}
       </View>
     );
-  }
+  },
 );
 
 /* ───────── MAIN COMPONENT ───────── */
@@ -125,7 +128,14 @@ export const AddEventModal = ({
   startingPlayers,
   substitutePlayers,
   eventToEdit,
-}: { visible: boolean; onClose: () => void; onSave: (event: MatchEvent) => Promise<void>; startingPlayers: Player[]; substitutePlayers: Player[]; eventToEdit?: MatchEvent }) => {
+}: {
+  visible: boolean;
+  onClose: () => void;
+  onSave: (event: MatchEvent) => Promise<void>;
+  startingPlayers: Player[];
+  substitutePlayers: Player[];
+  eventToEdit?: MatchEvent;
+}) => {
   const [form, setForm] = useState<MatchEvent>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
 
@@ -145,8 +155,7 @@ export const AddEventModal = ({
 
   const isOpponent = !!form.isOpponent;
   const isSubstitution = form.type === "substitution";
-  const supportsOpponent =
-    form.type === "goal" || form.type === "red_card";
+  const supportsOpponent = form.type === "goal" || form.type === "red_card";
 
   /* ───────── PLAYERS MERGE ───────── */
   const allPlayers = useMemo(() => {
@@ -156,7 +165,7 @@ export const AddEventModal = ({
     substitutePlayers.forEach((p) => map.set(p.id, p));
 
     return Array.from(map.values()).sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a.name.localeCompare(b.name),
     );
   }, [startingPlayers, substitutePlayers]);
 
@@ -165,7 +174,7 @@ export const AddEventModal = ({
     <K extends keyof MatchEvent>(key: K, value: MatchEvent[K]) => {
       setForm((prev) => ({ ...prev, [key]: value }));
     },
-    []
+    [],
   );
 
   const handleSave = useCallback(async () => {
@@ -177,10 +186,7 @@ export const AddEventModal = ({
     if (!isOpponent) {
       if (isSubstitution) {
         if (!form.playerInId || !form.playerOutId) {
-          Alert.alert(
-            "Atenção",
-            "Seleciona o jogador que sai e o que entra."
-          );
+          Alert.alert("Atenção", "Seleciona o jogador que sai e o que entra.");
           return;
         }
       } else {
@@ -229,7 +235,7 @@ export const AddEventModal = ({
       photoUrl: null,
       age: null,
     }),
-    []
+    [],
   );
 
   return (
@@ -299,9 +305,7 @@ export const AddEventModal = ({
             {supportsOpponent && (
               <View style={adminStyles.switchRow}>
                 <View>
-                  <Text style={adminStyles.fieldLabel}>
-                    Equipa adversária
-                  </Text>
+                  <Text style={adminStyles.fieldLabel}>Equipa adversária</Text>
                 </View>
 
                 <Switch

@@ -2,11 +2,13 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Home } from "../screens/Home/Home";
 import { MatchDetail } from "../screens/MatchDetails/MatchDetail";
+import { AdminMatchDetail } from "../screens/Admin/AdminMatches/AdminMatchDetail";
 import { NewsDetail } from "../screens/NewsDetail/NewsDetail";
 
 export type HomeStackParamList = {
   Home: undefined;
-  MatchDetail: { id: string };
+  MatchDetail: { id: number };
+  AdminMatchDetail: { id: number };
   NewsDetail: { id: string };
 };
 
@@ -21,6 +23,7 @@ export const HomeStack = () => (
   >
     <Stack.Screen name="Home" component={Home} />
     <Stack.Screen name="MatchDetail" component={MatchDetail} />
+    <Stack.Screen name="AdminMatchDetail" component={AdminMatchDetail} />
     <Stack.Screen name="NewsDetail" component={NewsDetail} />
   </Stack.Navigator>
 );

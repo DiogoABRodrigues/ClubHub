@@ -25,7 +25,7 @@ export const MatchDetail = () => {
   const { getActivePlayers, refreshPlayers } = usePlayers();
   const players = getActivePlayers();
   const playersMap = useMemo(() => {
-  const map = new Map<number, any>();
+    const map = new Map<number, any>();
     for (const p of players) {
       map.set(p.id, p);
     }
@@ -38,7 +38,7 @@ export const MatchDetail = () => {
   const match = matches.find((m) => m.id === id);
 
   const [refreshing, setRefreshing] = useState(false);
-    
+
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
 
@@ -75,11 +75,6 @@ export const MatchDetail = () => {
         ]}
       >
         <Text style={styles.mutedText}>Match not found</Text>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={[styles.primaryText, { marginTop: 8 }]}>
-            Back to Matches
-          </Text>
-        </TouchableOpacity>
       </View>
     );
   }
@@ -108,10 +103,8 @@ export const MatchDetail = () => {
     if (!match.Lineups) return [];
 
     return [...match.Lineups].sort((a, b) => {
-      const aPos =
-        playersMap.get(a.playerId)?.Stats?.[0]?.position || "";
-      const bPos =
-        playersMap.get(b.playerId)?.Stats?.[0]?.position || "";
+      const aPos = playersMap.get(a.playerId)?.Stats?.[0]?.position || "";
+      const bPos = playersMap.get(b.playerId)?.Stats?.[0]?.position || "";
 
       const orderA = getPositionOrder(aPos);
       const orderB = getPositionOrder(bPos);
@@ -131,27 +124,31 @@ export const MatchDetail = () => {
     [match.homeOrAway],
   );
 
-  const competition = useMemo(() => { return competitions.find((c) => c.id === match.competitionId) as Competition; }, [match.competitionId, competitions]);
+  const competition = useMemo(() => {
+    return competitions.find(
+      (c) => c.id === match.competitionId,
+    ) as Competition;
+  }, [match.competitionId, competitions]);
 
   return (
-    <ScrollView 
-    style={styles.container}
-    refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={[COLORS.primary]}
-              tintColor={COLORS.primary}
-            />
-          }
-          >
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={[COLORS.primary]}
+          tintColor={COLORS.primary}
+        />
+      }
+    >
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
-          <Ionicons name="arrow-back" size={24} color={COLORS.textSecondary} />
+          <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.title}>Detalhes do jogo</Text>
 
@@ -220,10 +217,10 @@ export const MatchDetail = () => {
         {/* Match Info */}
         <View style={styles.matchInfo}>
           <View style={styles.infoItem}>
-                        <Ionicons
+            <Ionicons
               name="calendar-outline"
               size={16}
-              color={COLORS.primaryLight}
+              color={COLORS.textPrimary}
             />
             <Text style={styles.infoText}>
               {formatDateWithWeekdayPT(match.date)} • {match.time}
@@ -233,7 +230,7 @@ export const MatchDetail = () => {
             <Ionicons
               name="location-outline"
               size={16}
-              color={COLORS.primaryLight}
+              color={COLORS.textPrimary}
             />
             <Text style={styles.infoText}>{location}</Text>
           </View>
@@ -255,7 +252,7 @@ export const MatchDetail = () => {
               <Text
                 style={[
                   styles.tabText,
-                  activeTab === tab.key && { color: COLORS.primary },
+                  activeTab === tab.key && { color: COLORS.textSecondary },
                 ]}
               >
                 {tab.label}
@@ -269,7 +266,6 @@ export const MatchDetail = () => {
           {activeTab === "timeline" &&
             (match.events && match.events.length > 0 ? (
               (() => {
-                
                 const sorted = [...match.events].sort(
                   (a, b) => a.minute - b.minute,
                 );
@@ -277,7 +273,6 @@ export const MatchDetail = () => {
                 // agrupa por 1ª/2ª parte
                 const firstHalf = sorted.filter((e) => e.minute <= 45);
                 const secondHalf = sorted.filter((e) => e.minute > 45);
-
 
                 return (
                   <>
@@ -362,7 +357,6 @@ export const MatchDetail = () => {
                             {player.Stats?.[0]?.position}
                           </Text>
                         </View>
-                        
                       );
                     })}
 

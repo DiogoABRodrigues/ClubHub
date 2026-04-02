@@ -24,24 +24,24 @@ export const NewsDetail = ({ route, navigation }: any) => {
   }, [newsMap, id]);
 
   const relatedNews = useMemo(() => {
-  const result = [];
+    const result = [];
 
-  for (const n of news) {
-    if (n.id !== id) {
-      result.push(n);
-      if (result.length === 3) break;
+    for (const n of news) {
+      if (n.id !== id) {
+        result.push(n);
+        if (result.length === 3) break;
+      }
     }
-  }
 
-  return result;
-}, [news, id]);
+    return result;
+  }, [news, id]);
 
-const goToNewsDetail = useCallback(
-  (newsId: string) => {
-    navigation.navigate("NewsDetail", { id: newsId });
-  },
-  [navigation],
-);
+  const goToNewsDetail = useCallback(
+    (newsId: string) => {
+      navigation.navigate("NewsDetail", { id: newsId });
+    },
+    [navigation],
+  );
 
   if (!newsFound) {
     return (
@@ -62,14 +62,16 @@ const goToNewsDetail = useCallback(
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity onPress={() => goToNewsDetail(newsFound.id)}>
-            <Ionicons
-              name="arrow-back"
-              size={24}
-              color={COLORS.textSecondary}
-            />
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>News</Text>
+
+          <View style={styles.titleContainer}>
+            <Text style={styles.headerTitle}>News</Text>
+          </View>
         </View>
       </View>
 

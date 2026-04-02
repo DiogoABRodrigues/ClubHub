@@ -16,6 +16,7 @@ export const NotificationSettings = ({ navigation }: any) => {
     goals: true,
     finalResult: true,
     newsAlerts: false,
+    gameDayAlerts: true,
   });
 
   const [deviceId, setDeviceId] = useState<string | null>(null);
@@ -38,10 +39,7 @@ export const NotificationSettings = ({ navigation }: any) => {
   const savePreferences = useCallback(
     async (newPrefs: typeof preferences) => {
       setPreferences(newPrefs);
-      await AsyncStorage.setItem(
-        "notificationPrefs",
-        JSON.stringify(newPrefs),
-      );
+      await AsyncStorage.setItem("notificationPrefs", JSON.stringify(newPrefs));
 
       if (deviceId && pushToken) {
         try {
@@ -67,10 +65,7 @@ export const NotificationSettings = ({ navigation }: any) => {
       setPreferences((prev) => {
         const newPrefs = { ...prev, [key]: !prev[key] };
 
-        AsyncStorage.setItem(
-          "notificationPrefs",
-          JSON.stringify(newPrefs),
-        );
+        AsyncStorage.setItem("notificationPrefs", JSON.stringify(newPrefs));
 
         if (deviceId && pushToken) {
           fetch(BACKEND_URL, {
@@ -81,9 +76,7 @@ export const NotificationSettings = ({ navigation }: any) => {
               pushToken,
               preferences: newPrefs,
             }),
-          }).catch((e) =>
-            console.log("Erro backend prefs", e),
-          );
+          }).catch((e) => console.log("Erro backend prefs", e));
         }
 
         return newPrefs;
@@ -93,46 +86,55 @@ export const NotificationSettings = ({ navigation }: any) => {
   );
 
   const notificationTypes = useMemo(
-  () => [
-    {
-      key: "matchStart" as const,
-      icon: "trophy-outline",
-      title: "Início do Jogo",
-      description: "Recebe notificações quando um jogo está prestes a começar",
-      color: COLORS.textPrimary,
-    },
-    {
-      key: "goals" as const,
-      icon: "football-outline",
-      title: "Golos",
-      description: "Recebe alertas instantâneos quando há um golo",
-      color: COLORS.textPrimary,
-    },
-    {
-      key: "finalResult" as const,
-      icon: "checkmark-done-outline",
-      title: "Resultado Final",
-      description: "Recebe notificação quando um jogo termina",
-      color: COLORS.textPrimary,
-    },
-    {
-      key: "newsAlerts" as const,
-      icon: "newspaper-outline",
-      title: "Alertas de Notícias",
-      description: "Mantém-te atualizado com as últimas notícias do clube",
-      color: COLORS.textPrimary,
-    },
-  ],
-  [],
-);
+    () => [
+      {
+        key: "gameDayAlerts" as const,
+        icon: "calendar-outline",
+        title: "Alertas de Jogo",
+        description:
+          "Recebe notificações no dia dos jogos para não perderes nenhum momento importante",
+        color: COLORS.textPrimary,
+      },
+      {
+        key: "matchStart" as const,
+        icon: "trophy-outline",
+        title: "Início do Jogo",
+        description:
+          "Recebe notificações quando um jogo está prestes a começar",
+        color: COLORS.textPrimary,
+      },
+      {
+        key: "goals" as const,
+        icon: "football-outline",
+        title: "Golos",
+        description: "Recebe alertas instantâneos quando há um golo",
+        color: COLORS.textPrimary,
+      },
+      {
+        key: "finalResult" as const,
+        icon: "checkmark-done-outline",
+        title: "Resultado Final",
+        description: "Recebe notificação quando um jogo termina",
+        color: COLORS.textPrimary,
+      },
+      {
+        key: "newsAlerts" as const,
+        icon: "newspaper-outline",
+        title: "Alertas de Notícias",
+        description: "Mantém-te atualizado com as últimas notícias do clube",
+        color: COLORS.textPrimary,
+      },
+    ],
+    [],
+  );
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View>
-          <Text style={styles.eyebrow}> </Text>
-          <Text style={styles.headerTitle}>Definições</Text>
+            <Text style={styles.eyebrow}> </Text>
+            <Text style={styles.headerTitle}>Definições</Text>
           </View>
         </View>
       </View>
@@ -143,9 +145,7 @@ export const NotificationSettings = ({ navigation }: any) => {
           {notificationTypes.map(({ key, icon, title, description, color }) => (
             <View key={key} style={styles.toggleCard}>
               <View style={styles.toggleLeft}>
-                <View
-                  style={[styles.iconCircle]}
-                >
+                <View style={[styles.iconCircle]}>
                   <Ionicons name={icon as any} size={20} color={color} />
                 </View>
                 <View style={{ flex: 1 }}>

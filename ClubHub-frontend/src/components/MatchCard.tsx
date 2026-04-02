@@ -19,10 +19,20 @@ interface MatchCardProps {
 
 // ─── Logo helper ─────────────────────────────────────────────────────────────
 
-const TeamLogo = ({ uri, variant }: { uri: string; variant: "dark" | "light" }) => {
+const TeamLogo = ({
+  uri,
+  variant,
+}: {
+  uri: string;
+  variant: "dark" | "light";
+}) => {
   const logoStyle = variant === "dark" ? styles.logoDark : styles.logoLight;
   return uri ? (
-    <Image source={{ uri }} style={[styles.logo, logoStyle]} resizeMode="contain" />
+    <Image
+      source={{ uri }}
+      style={[styles.logo, logoStyle]}
+      resizeMode="contain"
+    />
   ) : (
     <View style={[styles.logo, logoStyle]}>
       <Text style={styles.logoEmoji}>⚽</Text>
@@ -37,7 +47,8 @@ function getResult(match: Match): { label: string; color: string } | null {
   const parts = match.result.split("-");
   if (parts.length < 2) return null;
   if (match.outcome === "V") return { label: "VITÓRIA", color: COLORS.success };
-  if (match.outcome === "D") return { label: "DERROTA", color: COLORS.destructive};
+  if (match.outcome === "D")
+    return { label: "DERROTA", color: COLORS.destructive };
   return { label: "EMPATE", color: COLORS.textMuted };
 }
 
@@ -47,7 +58,6 @@ export const MatchCard = React.memo(
   ({ match, homeLogo, awayLogo, onPress, competition }: MatchCardProps) => {
     const homeTeam = match.homeOrAway === "C" ? match.teamName : match.opponent;
     const awayTeam = match.homeOrAway === "F" ? match.teamName : match.opponent;
-
     const [homeScore, awayScore] = useMemo(() => {
       if (!match.result) return [null, null];
       const parts = match.result.split("-");
@@ -61,7 +71,9 @@ export const MatchCard = React.memo(
 
     const compLabel = useMemo(() => {
       if (!competition?.name) return "";
-      return match.round ? `${competition.name} · ${match.round}` : competition.name;
+      return match.round
+        ? `${competition.name} · ${match.round}`
+        : competition.name;
     }, [competition, match.round]);
 
     const location = match.location;
@@ -76,18 +88,26 @@ export const MatchCard = React.memo(
     // ── LIVE ─────────────────────────────────────────────────────────────────
     if (match.status === "live") {
       return (
-        <TouchableOpacity style={styles.liveCard} onPress={onPress} activeOpacity={0.88}>
+        <TouchableOpacity
+          style={styles.liveCard}
+          onPress={onPress}
+          activeOpacity={0.88}
+        >
           <View style={styles.liveDecor} pointerEvents="none" />
 
           <View style={styles.cardTop}>
-            <Text style={styles.liveComp} numberOfLines={1}>{compLabel}</Text>
+            <Text style={styles.liveComp} numberOfLines={1}>
+              {compLabel}
+            </Text>
             <LiveBadge interval={match.statusTime === "interval"} />
           </View>
 
           <View style={styles.cardBody}>
             <View style={styles.teamCol}>
               <TeamLogo uri={homeLogo} variant="light" />
-              <Text style={styles.liveTeamName} numberOfLines={2}>{homeTeam}</Text>
+              <Text style={styles.liveTeamName} numberOfLines={2}>
+                {homeTeam}
+              </Text>
             </View>
 
             <View style={styles.liveScoreCol}>
@@ -98,16 +118,31 @@ export const MatchCard = React.memo(
 
             <View style={styles.teamCol}>
               <TeamLogo uri={awayLogo} variant="light" />
-              <Text style={styles.liveTeamName} numberOfLines={2}>{awayTeam}</Text>
+              <Text style={styles.liveTeamName} numberOfLines={2}>
+                {awayTeam}
+              </Text>
             </View>
           </View>
 
           {location ? (
             <View style={styles.cardFooter}>
-              <Ionicons name="location-outline" size={11} color={COLORS.textPrimary} />
-              <Text style={styles.liveFooterText} numberOfLines={1}>{location}</Text>
-              <TouchableOpacity onPress={copyLocation} style={{ marginLeft: 6 }}>
-                <Ionicons name="copy-outline" size={13} color={COLORS.textPrimary} />
+              <Ionicons
+                name="location-outline"
+                size={11}
+                color={COLORS.textPrimary}
+              />
+              <Text style={styles.liveFooterText} numberOfLines={1}>
+                {location}
+              </Text>
+              <TouchableOpacity
+                onPress={copyLocation}
+                style={{ marginLeft: 6 }}
+              >
+                <Ionicons
+                  name="copy-outline"
+                  size={13}
+                  color={COLORS.textPrimary}
+                />
               </TouchableOpacity>
             </View>
           ) : null}
@@ -118,9 +153,15 @@ export const MatchCard = React.memo(
     // ── UPCOMING ──────────────────────────────────────────────────────────────
     if (match.status === "upcoming") {
       return (
-        <TouchableOpacity style={styles.baseCard} onPress={onPress} activeOpacity={0.85}>
+        <TouchableOpacity
+          style={styles.baseCard}
+          onPress={onPress}
+          activeOpacity={0.85}
+        >
           <View style={styles.cardTop}>
-            <Text style={styles.baseComp} numberOfLines={1}>{compLabel}</Text>
+            <Text style={styles.baseComp} numberOfLines={1}>
+              {compLabel}
+            </Text>
             <View style={styles.upBadge}>
               <Text style={styles.upBadgeText}>{formattedDate}</Text>
             </View>
@@ -129,42 +170,66 @@ export const MatchCard = React.memo(
           <View style={styles.cardBody}>
             <View style={styles.teamCol}>
               <TeamLogo uri={homeLogo} variant="light" />
-              <Text style={styles.baseTeamName} numberOfLines={2}>{homeTeam}</Text>
+              <Text style={styles.baseTeamName} numberOfLines={2}>
+                {homeTeam}
+              </Text>
             </View>
 
             <View style={styles.upCenterCol}>
               <Text style={styles.vsText}>VS</Text>
-              {match.time ? <Text style={styles.upTime}>{match.time}</Text> : null}
+              {match.time ? (
+                <Text style={styles.upTime}>{match.time}</Text>
+              ) : null}
             </View>
 
             <View style={styles.teamCol}>
               <TeamLogo uri={awayLogo} variant="light" />
-              <Text style={styles.baseTeamName} numberOfLines={2}>{awayTeam}</Text>
+              <Text style={styles.baseTeamName} numberOfLines={2}>
+                {awayTeam}
+              </Text>
             </View>
           </View>
 
-            <View style={styles.cardFooter}>
-              <Ionicons name="location-outline" size={11} color={COLORS.textMuted} />
-              <Text style={styles.baseFooterText} numberOfLines={1}>{location ? location : "Localização não disponível"}</Text>
-              <TouchableOpacity onPress={copyLocation} style={{ marginLeft: 6 }}>
-                <Ionicons name="copy-outline" size={13} color={COLORS.textPrimary} />
-              </TouchableOpacity>
-            </View>
+          <View style={styles.cardFooter}>
+            <Ionicons
+              name="location-outline"
+              size={11}
+              color={COLORS.textMuted}
+            />
+            <Text style={styles.baseFooterText} numberOfLines={1}>
+              {location ? location : "Localização não disponível"}
+            </Text>
+            <TouchableOpacity onPress={copyLocation} style={{ marginLeft: 6 }}>
+              <Ionicons
+                name="copy-outline"
+                size={13}
+                color={COLORS.textPrimary}
+              />
+            </TouchableOpacity>
+          </View>
         </TouchableOpacity>
       );
     }
 
     // ── FINISHED ──────────────────────────────────────────────────────────────
     return (
-      <TouchableOpacity style={styles.baseCard} onPress={onPress} activeOpacity={0.85}>
+      <TouchableOpacity
+        style={styles.baseCard}
+        onPress={onPress}
+        activeOpacity={0.85}
+      >
         <View style={styles.cardTop}>
-          <Text style={styles.baseComp} numberOfLines={1}>{compLabel}</Text>
+          <Text style={styles.baseComp} numberOfLines={1}>
+            {compLabel}
+          </Text>
         </View>
 
         <View style={styles.cardBody}>
           <View style={styles.teamCol}>
             <TeamLogo uri={homeLogo} variant="light" />
-            <Text style={styles.baseTeamName} numberOfLines={2}>{homeTeam}</Text>
+            <Text style={styles.baseTeamName} numberOfLines={2}>
+              {homeTeam}
+            </Text>
           </View>
 
           <View style={styles.finCenterCol}>
@@ -180,12 +245,18 @@ export const MatchCard = React.memo(
 
           <View style={styles.teamCol}>
             <TeamLogo uri={awayLogo} variant="light" />
-            <Text style={styles.baseTeamName} numberOfLines={2}>{awayTeam}</Text>
+            <Text style={styles.baseTeamName} numberOfLines={2}>
+              {awayTeam}
+            </Text>
           </View>
         </View>
 
         <View style={styles.cardFooter}>
-          <Ionicons name="calendar-outline" size={11} color={COLORS.textMuted} />
+          <Ionicons
+            name="calendar-outline"
+            size={11}
+            color={COLORS.textMuted}
+          />
           <Text style={styles.baseFooterText} numberOfLines={1}>
             {formattedDate}
           </Text>

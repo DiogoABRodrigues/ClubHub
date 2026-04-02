@@ -123,6 +123,6 @@ export const styles = StyleSheet.create({
     height: "70%",
   },
   flex2: {
-      flex: 2,
-    },
+    flex: 2,
+  },
 });

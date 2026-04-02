@@ -7,7 +7,8 @@ import { AdminSquadScreen } from "../AdminSquad/SquadAdmin";
 import { Standings } from "../../Standings/Standings";
 import { SquadStats } from "../../Stats/Stats";
 import { useSeasons } from "../../../hooks/useSeasons";
-
+import { COLORS } from "../../../theme/colors";
+import Ionicons from "@expo/vector-icons/build/Ionicons";
 type SeasonTab = "standings" | "squad" | "stats";
 
 const TABS = [
@@ -39,12 +40,12 @@ export function AdminSeasonScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={navigation.goBack}>
-          <ArrowLeft width={24} height={24} color="#000" />
-        </TouchableOpacity>
-
-        <Text style={styles.title}>Época {currentSeason?.year}</Text>
-        <View style={styles.placeholder} />
+        <View style={styles.headerLeft}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.eyebrow}> </Text>
+            <Text style={styles.headerTitle}>Época {currentSeason?.year}</Text>
+          </View>
+        </View>
       </View>
 
       <View style={styles.tabsContainer}>
@@ -69,7 +70,11 @@ const TabButton = React.memo(({ Icon, label, active, onPress }: any) => (
     style={[styles.tab, active && styles.tabActive]}
     onPress={onPress}
   >
-    <Icon width={20} height={20} color={active ? "#3b82f6" : "#666"} />
+    <Icon
+      width={20}
+      height={20}
+      color={active ? COLORS.primary : COLORS.textSecondary}
+    />
     <Text style={[styles.tabText, active && styles.tabTextActive]}>
       {label}
     </Text>

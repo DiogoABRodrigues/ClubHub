@@ -93,12 +93,16 @@ export const LeagueTableRow = React.memo(
           </View>
 
           {/* PLAYED */}
-          <View style={[styles.cell, { flex: COLS.played, alignItems: "center" }]}>
+          <View
+            style={[styles.cell, { flex: COLS.played, alignItems: "center" }]}
+          >
             <Text style={styles.mutedText}>{standing.played}</Text>
           </View>
 
           {/* GOAL DIFFERENCE */}
-          <View style={[styles.cell, { flex: COLS.goalDiff, alignItems: "center" }]}>
+          <View
+            style={[styles.cell, { flex: COLS.goalDiff, alignItems: "center" }]}
+          >
             <Text style={styles.text}>
               {standing.goalDiff > 0 ? "+" : ""}
               {standing.goalDiff}
@@ -106,7 +110,9 @@ export const LeagueTableRow = React.memo(
           </View>
 
           {/* POINTS */}
-          <View style={[styles.cell, { flex: COLS.points, alignItems: "flex-end" }]}>
+          <View
+            style={[styles.cell, { flex: COLS.points, alignItems: "flex-end" }]}
+          >
             <Text
               style={[styles.text, isUserTeam && { color: COLORS.primary }]}
             >

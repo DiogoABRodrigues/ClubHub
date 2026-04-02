@@ -11,7 +11,6 @@ interface PlayerLineupProps {
 
 export const PlayerLineup = React.memo(
   ({ players, teamName }: PlayerLineupProps) => {
-    // 🔥 Agrupar jogadores numa única passagem
     const positions = useMemo(() => {
       const grouped = {
         GK: [] as Player[],

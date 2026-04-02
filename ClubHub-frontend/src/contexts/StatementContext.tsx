@@ -49,7 +49,7 @@ export const StatementsProvider = ({ children }: any) => {
       console.error("Erro a criar statement:", statement, err);
     }
   };
-  
+
   const updateStatement = async (id: number, updates: Partial<Statement>) => {
     try {
       const updatedStatement = await StatementService.update(id, updates);
@@ -66,11 +66,18 @@ export const StatementsProvider = ({ children }: any) => {
     } catch (err) {
       console.error("Erro a eliminar statement:", err);
     }
-  }
+  };
 
   return (
     <StatementContext.Provider
-      value={{ statements, loading, refreshStatements: fetchStatements, createStatement, updateStatement, deleteStatement }}
+      value={{
+        statements,
+        loading,
+        refreshStatements: fetchStatements,
+        createStatement,
+        updateStatement,
+        deleteStatement,
+      }}
     >
       {children}
     </StatementContext.Provider>

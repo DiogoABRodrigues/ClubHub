@@ -32,19 +32,13 @@ export const AdminSettings = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
+      {/* HEADER */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <Ionicons
-              name="arrow-back"
-              size={20}
-              color={COLORS.textSecondary}
-            />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Definições</Text>
+          <View>
+            <Text style={styles.eyebrow}> </Text>
+            <Text style={styles.headerTitle}>Definições</Text>
+          </View>
         </View>
       </View>
 
@@ -54,15 +48,13 @@ export const AdminSettings = ({ navigation }: any) => {
       >
         {/* Section: Atualizar Dados */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>SINCRONIZAÇÃO</Text>
-
           <View style={styles.card}>
             <View style={styles.cardIconRow}>
               <View style={styles.iconCircle}>
                 <Ionicons
                   name="sync-outline"
                   size={22}
-                  color={COLORS.primary}
+                  color={COLORS.textPrimary}
                 />
               </View>
               <View style={styles.cardTextBlock}>
@@ -77,7 +69,7 @@ export const AdminSettings = ({ navigation }: any) => {
               <Ionicons
                 name="information-circle-outline"
                 size={15}
-                color={COLORS.primary}
+                color={COLORS.textPrimary}
                 style={{ marginTop: 1 }}
               />
               <Text style={styles.infoBannerText}>
@@ -131,34 +123,37 @@ export const AdminSettings = ({ navigation }: any) => {
           </View>
         </View>
         <View style={styles.card}>
-        <View style={styles.cardIconRow}>
-          <View style={styles.iconCircle}>
-            <Ionicons name="megaphone-outline" size={22} color={COLORS.primary} />
-          </View>
+          <View style={styles.cardIconRow}>
+            <View style={styles.iconCircle}>
+              <Ionicons
+                name="megaphone-outline"
+                size={22}
+                color={COLORS.textPrimary}
+              />
+            </View>
 
-          <View style={styles.cardTextBlock}>
-            <Text style={styles.cardTitle}>Comunicado</Text>
-            <Text style={styles.cardDescription}>
-              Criar ou editar o comunicado oficial do clube.
-            </Text>
+            <View style={styles.cardTextBlock}>
+              <Text style={styles.cardTitle}>Comunicado</Text>
+              <Text style={styles.cardDescription}>
+                Criar ou editar o comunicado oficial do clube.
+              </Text>
+            </View>
           </View>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => setStatementModalVisible(true)}
+          >
+            <Text style={styles.actionButtonText}>
+              {activeStatement ? "Editar Comunicado" : "Criar Comunicado"}
+            </Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => setStatementModalVisible(true)}
-        >
-          <Text style={styles.actionButtonText}>
-            {activeStatement ? "Editar Comunicado" : "Criar Comunicado"}
-          </Text>
-        </TouchableOpacity>
-      </View>
       </ScrollView>
       <StatementModal
         visible={statementModalVisible}
         onClose={() => setStatementModalVisible(false)}
       />
     </View>
-    
   );
 };
 

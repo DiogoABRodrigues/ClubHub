@@ -80,12 +80,16 @@ const PlayerCard = React.memo(
 
         {selected && (
           <View style={adminStyles.playerCardCheck}>
-            <Ionicons name="checkmark-circle" size={18} color={COLORS.primary} />
+            <Ionicons
+              name="checkmark-circle"
+              size={18}
+              color={COLORS.primary}
+            />
           </View>
         )}
       </TouchableOpacity>
     );
-  }
+  },
 );
 
 export const AddLineupModal = ({
@@ -117,39 +121,35 @@ export const AddLineupModal = ({
       new Set(
         existingLineup
           .filter((e) => e.isStarting)
-          .map((e) => String(e.playerId))
-      )
+          .map((e) => String(e.playerId)),
+      ),
     );
 
     setSubIds(
       new Set(
         existingLineup
           .filter((e) => !e.isStarting)
-          .map((e) => String(e.playerId))
-      )
+          .map((e) => String(e.playerId)),
+      ),
     );
   }, [visible, existingLineup]);
 
   /* ───────── FILTERS ───────── */
   const eligiblePlayers = useMemo(
     () => players.filter(isFieldPlayer),
-    [players]
+    [players],
   );
 
   const filteredPlayers = useMemo(() => {
     const q = search.toLowerCase();
     if (!q) return eligiblePlayers;
 
-    return eligiblePlayers.filter((p) =>
-      p.name.toLowerCase().includes(q)
-    );
+    return eligiblePlayers.filter((p) => p.name.toLowerCase().includes(q));
   }, [eligiblePlayers, search]);
 
   const displayPlayers = useMemo(() => {
     if (phase === "subs") {
-      return filteredPlayers.filter(
-        (p) => !starterIds.has(String(p.id))
-      );
+      return filteredPlayers.filter((p) => !starterIds.has(String(p.id)));
     }
     return filteredPlayers;
   }, [filteredPlayers, phase, starterIds]);
@@ -165,7 +165,7 @@ export const AddLineupModal = ({
         if (next.size >= MAX_STARTERS) {
           Alert.alert(
             "Limite atingido",
-            `Só podes selecionar ${MAX_STARTERS} titulares.`
+            `Só podes selecionar ${MAX_STARTERS} titulares.`,
           );
           return prev;
         }
@@ -291,12 +291,14 @@ export const AddLineupModal = ({
             ) : (
               <View style={adminStyles.footerRow}>
                 <TouchableOpacity
-                  style={[adminStyles.saveBtn, adminStyles.saveBtnSecondary]}
                   onPress={() => setPhase("starters")}
+                  style={[adminStyles.saveBtn, adminStyles.saveBtnSecondary]}
                 >
-                  <Text style={adminStyles.saveBtnSecondaryText}>
-                    ← Voltar
-                  </Text>
+                  <Ionicons
+                    name="arrow-back"
+                    size={24}
+                    color={COLORS.primary}
+                  />
                 </TouchableOpacity>
 
                 <TouchableOpacity

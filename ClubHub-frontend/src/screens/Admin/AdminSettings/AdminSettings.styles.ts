@@ -7,44 +7,41 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
 
-  // ── Header ────────────────────────────────────────────────
+  // ── Header ───────────────────────────────────────────────────────────────
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.xl + 16,
-    paddingBottom: SPACING.md,
     backgroundColor: COLORS.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: SPACING.sm,
-  },
-  backButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: COLORS.background,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  headerTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: "700",
-    color: COLORS.textPrimary,
-    letterSpacing: -0.3,
+    paddingTop: SPACING.xl + 8, // espaço para status bar
+    paddingBottom: SPACING.md,
+    paddingHorizontal: SPACING.md,
   },
 
-  // ── Content ────────────────────────────────────────────────
   content: {
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.xl,
-    paddingBottom: SPACING.xl * 2,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.xl,
+  },
+
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+  },
+
+  headerTitle: {
+    fontSize: FONT_SIZE.xl,
+    fontWeight: "800",
+    color: COLORS.textPrimary,
+    letterSpacing: -0.8,
+    lineHeight: FONT_SIZE.xl * 1.1,
+  },
+
+  eyebrow: {
+    fontSize: 10,
+    fontWeight: "600",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    color: COLORS.textPrimary,
+    marginBottom: 2,
   },
 
   // ── Section ────────────────────────────────────────────────
@@ -78,25 +75,27 @@ export const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: COLORS.primary + "12",
     justifyContent: "center",
     alignItems: "center",
     flexShrink: 0,
+    borderWidth: 1,
+    borderColor: COLORS.textPrimary,
   },
   cardTextBlock: {
     flex: 1,
     justifyContent: "center",
     gap: 3,
+    color: COLORS.textPrimary,
   },
   cardTitle: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.lg,
     fontWeight: "700",
     color: COLORS.textPrimary,
     letterSpacing: -0.2,
   },
   cardDescription: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
+    color: COLORS.textPrimary,
     lineHeight: 18,
   },
 
@@ -105,22 +104,24 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 6,
-    backgroundColor: COLORS.primary + "0D",
+    backgroundColor: COLORS.primary,
     borderRadius: RADIUS.md,
     padding: SPACING.sm,
     borderWidth: 1,
-    borderColor: COLORS.primary + "20",
+    borderColor: COLORS.textPrimary,
   },
   infoBannerText: {
     fontSize: 12,
-    color: COLORS.textSecondary,
+    color: COLORS.textPrimary,
     flex: 1,
     lineHeight: 17,
   },
 
   // ── Action Button ────────────────────────────────────────────────
   actionButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: "#800000",
+    borderWidth: 1,
+    borderColor: COLORS.textPrimary,
     borderRadius: RADIUS.md,
     paddingVertical: 13,
     paddingHorizontal: SPACING.md,
@@ -128,7 +129,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   actionButtonDisabled: {
-    backgroundColor: COLORS.primary + "60",
+    backgroundColor: COLORS.textPrimary,
   },
   actionButtonDone: {
     backgroundColor: "#22c55e",
