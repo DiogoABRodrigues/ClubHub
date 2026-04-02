@@ -32,9 +32,18 @@ import { Competition } from "../../../models/Competition";
 import { MatchEventService } from "../../../services/MatchEventService";
 import { MatchEvent } from "../../../models/MatchEvent";
 import { getPositionOrder } from "../../../utils/playerPositionUtils";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export const AdminMatchDetail = () => {
   const route = useRoute();
+  const { isAdmin, adminMode } = useAuth();
+  if (!isAdmin) {
+  return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Acesso negado</Text>
+      </View>
+    );
+  }
   const navigation = useNavigation();
   const { id } = route.params as { id: number };
   const {

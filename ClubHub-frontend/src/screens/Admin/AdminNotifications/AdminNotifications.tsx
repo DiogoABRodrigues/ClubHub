@@ -10,8 +10,17 @@ import {
 import { Send, Bell, Target, Trophy, Newspaper } from "lucide-react-native";
 import { styles } from "./AdminNotifications.styles";
 import { COLORS } from "../../../theme/colors";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export const AdminNotifications: React.FC = ({ navigation }: any) => {
+    const { isAdmin, adminMode } = useAuth();
+    if (!isAdmin) {
+    return (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text>Acesso negado</Text>
+        </View>
+      );
+    }
   const [manualTitle, setManualTitle] = useState("");
   const [manualMessage, setManualMessage] = useState("");
   const [selectedType, setSelectedType] = useState("all");

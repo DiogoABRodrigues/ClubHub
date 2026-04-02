@@ -13,6 +13,7 @@ import { useMatches } from "../../hooks/useMatches";
 import { useTeams } from "../../hooks/useTeams";
 import { useCompetitions } from "../../hooks/useCompetitions";
 import { useAuth } from "../../contexts/AuthContext";
+import { EmptyState } from "../../components/EmptyState";
 
 type TabKey = "all" | "live" | "upcoming" | "finished";
 
@@ -178,28 +179,6 @@ export const Matches = ({ navigation }: any) => {
 
   const renderContent = () => (
     <View style={styles.content}>
-      {/*}
-      <View style={styles.tabsRow}>
-        {TABS.map((tab) => (
-          <TouchableOpacity
-            key={tab.key}
-            style={[
-              styles.tab,
-              activeTab === tab.key && styles.tabActive,
-            ]}
-            onPress={() => setActiveTab(tab.key)}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === tab.key && styles.tabTextActive,
-              ]}
-            >
-              {tab.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>{*/}
 
       {showLive && liveMatches.length > 0 && (
         <MatchesSection
@@ -241,11 +220,12 @@ export const Matches = ({ navigation }: any) => {
         />
       )}
 
-      {isEmpty && (
-        <View style={styles.noMatches}>
-          <Text style={styles.noMatchesText}>Não foram encontrados jogos</Text>
-        </View>
-      )}
+        <EmptyState
+          title="Não foi possível encontrar informação"
+          message="Por favor tenta novamente mais tarde."
+          onRetry={onRefresh}
+          retryLabel="Atualizar"
+        />
     </View>
   );
 

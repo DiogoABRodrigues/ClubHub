@@ -16,6 +16,7 @@ import { COLORS } from "../../../theme/colors";
 import { useNews } from "../../../hooks/useNews";
 import * as ImagePicker from "expo-image-picker";
 import { styles } from "./AdminNewsForm.styles";
+import { useAuth } from "../../../contexts/AuthContext";
 
 interface FormData {
   title: string;
@@ -36,7 +37,15 @@ const EMPTY_FORM: FormData = {
 export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
   const editId: number | undefined = route?.params?.id;
   const isEditing = Boolean(editId);
-
+    const { isAdmin, adminMode } = useAuth();
+    if (!isAdmin) {
+    return (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text>Acesso negado</Text>
+        </View>
+      );
+    }
+    
   const { news, createNews, updateNews } = useNews();
 
   const existingNews = useMemo(

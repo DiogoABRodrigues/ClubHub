@@ -9,6 +9,14 @@ import { StatementModal } from "../../../components/StatementModal";
 import { useAuth } from "../../../contexts/AuthContext";
 
 export const AdminSettings = ({ navigation }: any) => {
+    const { isAdmin, adminMode } = useAuth();
+    if (!isAdmin) {
+    return (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text>Acesso negado</Text>
+        </View>
+      );
+    }
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateDone, setUpdateDone] = useState(false);
   const { logout, setAdminMode } = useAuth();

@@ -1,9 +1,7 @@
 import React, { useCallback, useMemo } from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { View, Text, ScrollView } from "react-native";
 import { styles } from "./News.styles";
 import { NewsCard } from "../../components/NewsCard";
-import { COLORS } from "../../theme/colors";
 import { useNews } from "../../hooks/useNews";
 
 export const News = ({ navigation }: any) => {

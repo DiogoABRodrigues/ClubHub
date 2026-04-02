@@ -8,6 +8,7 @@ import {
   mapToMainPosition,
   getPositionOrder,
 } from "../../../utils/playerPositionUtils";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const defaultPlayerImage = require("../../../../assets/player.jpg");
 
@@ -64,6 +65,14 @@ const PlayerCard = React.memo(
 
 /* ---------------- SCREEN ---------------- */
 export function AdminSquadScreen() {
+    const { isAdmin, adminMode } = useAuth();
+    if (!isAdmin) {
+    return (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text>Acesso negado</Text>
+        </View>
+      );
+    }
   const { players, updatePlayer } = usePlayers();
 
   /* SORT ONCE */

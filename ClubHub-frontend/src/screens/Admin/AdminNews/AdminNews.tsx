@@ -9,7 +9,14 @@ import { styles } from "./AdminNews.styles";
 import { useAuth } from "../../../contexts/AuthContext";
 export const AdminNews = ({ navigation }: { navigation: any }) => {
   const { news, loading, deleteNews } = useNews();
-  const { adminMode } = useAuth();
+    const { isAdmin, adminMode } = useAuth();
+    if (!isAdmin) {
+    return (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text>Acesso negado</Text>
+        </View>
+      );
+    }
   const handleDelete = useCallback(
     (id: number, title: string) => {
       Alert.alert("Eliminar notícia", `Eliminar "${title}"?`, [
