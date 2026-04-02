@@ -5,10 +5,12 @@ import { styles } from "./NewsDetail.styles";
 import { COLORS } from "../../theme/colors";
 import { useNews } from "../../hooks/useNews";
 import { formatDatePT } from "../../utils/dateUtils";
+import { useAuth } from "../../contexts/AuthContext";
 
 export const NewsDetail = ({ route, navigation }: any) => {
   const { id } = route.params;
   const { news } = useNews();
+  const { adminMode } = useAuth();
 
   const newsMap = useMemo(() => {
     const map = new Map();
@@ -49,7 +51,7 @@ export const NewsDetail = ({ route, navigation }: any) => {
         <Text style={styles.noNewsText}>
           Ocorreu um erro ao carregar a notícia.
         </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("News")}>
+        <TouchableOpacity onPress={() => navigation.navigate(adminMode ? "AdminNews" : "News")}>
           <Text style={styles.backLink}>Voltar</Text>
         </TouchableOpacity>
       </View>
@@ -63,7 +65,7 @@ export const NewsDetail = ({ route, navigation }: any) => {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.navigate(adminMode ? "AdminNews" : "News")} 
             style={styles.backButton}
           >
             <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />

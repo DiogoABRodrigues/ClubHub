@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as preferenceController from "../controllers/notificationPreference.controller";
-import { authMiddleware, authorizeRoles } from "../middlewares/authMiddleware";
+import { authMiddleware } from "../middlewares/authMiddleware";
+import { authorizeRoles } from "../middlewares/authorizeRoles";
 
 const router = Router();
 

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { TouchableOpacity } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { useAuth } from "../contexts/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../theme/colors";
 
@@ -13,10 +12,9 @@ import { SeasonScreen } from "../screens/Season/SeasonScreen";
 import { NotificationSettings } from "../screens/NotificationSettings/NotificationSettings";
 import { AdminDashboard } from "../screens/Admin/AdminDashboard/AdminDashboard";
 import { AdminNewsStack } from "../navigation/AdminNewsStack";
-import { AdminMatchesStack } from "../navigation/AdminMatchsStack ";
-import { AdminNotifications } from "../screens/Admin/AdminNotifications/AdminNotifications";
 import { AdminSeasonScreen } from "../screens/Admin/AdminSeason/AdminSeasonScreen";
 import { AdminSettings } from "../screens/Admin/AdminSettings/AdminSettings";
+import { useAuth } from "../contexts/AuthContext";
 
 const Tab = createBottomTabNavigator();
 
@@ -31,12 +29,12 @@ const ICON_MAP: Record<string, string> = {
 };
 
 export const AppNavigator = () => {
-  const isAdmin = true;
-  const [adminMode, setAdminMode] = useState(true);
+    const { isAdmin, adminMode, setAdminMode } = useAuth();
 
   return (
-    <NavigationContainer>
+    <NavigationContainer key={adminMode ? "admin-root" : "user-root"}>
       <Tab.Navigator
+       key={adminMode ? "admin" : "user"}
         screenOptions={({ route }) => ({
           headerShown: false,
           tabBarActiveTintColor: COLORS.secondary,
@@ -58,7 +56,7 @@ export const AppNavigator = () => {
         {/* Troca automática de stack conforme o modo */}
         <Tab.Screen
           name="Jogos"
-          component={adminMode ? SeasonScreen : MatchesStack}
+          component={adminMode ? MatchesStack : MatchesStack}
         />
         <Tab.Screen
           name="Época"
@@ -95,7 +93,7 @@ export const AppNavigator = () => {
                 // @ts-ignore comment
                 <TouchableOpacity
                   {...props}
-                  onPress={() => setAdminMode((prev) => !prev)}
+                  onPress={() => setAdminMode(!adminMode)}
                 />
               ),
             }}

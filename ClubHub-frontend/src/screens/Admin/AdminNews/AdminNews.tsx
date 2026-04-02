@@ -6,10 +6,10 @@ import { useNews } from "../../../hooks/useNews";
 import { COLORS } from "../../../theme/colors";
 import { NewsCard } from "../../../components/NewsCard";
 import { styles } from "./AdminNews.styles";
-
+import { useAuth } from "../../../contexts/AuthContext";
 export const AdminNews = ({ navigation }: { navigation: any }) => {
   const { news, loading, deleteNews } = useNews();
-
+  const { adminMode } = useAuth();
   const handleDelete = useCallback(
     (id: number, title: string) => {
       Alert.alert("Eliminar notícia", `Eliminar "${title}"?`, [
@@ -43,7 +43,7 @@ export const AdminNews = ({ navigation }: { navigation: any }) => {
       <View style={styles.container}>
         <Text>Nenhuma notícia</Text>
 
-        <TouchableOpacity onPress={() => navigation.navigate("AdminNewsForm")}>
+        <TouchableOpacity onPress={() => navigation.navigate(adminMode ? "AdminNewsForm" : "NewsDetail")}>
           <Text>Criar primeira notícia</Text>
         </TouchableOpacity>
       </View>

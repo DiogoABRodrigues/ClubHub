@@ -22,9 +22,10 @@ import { formatDatePT } from "../../utils/dateUtils";
 import { useCompetitions } from "../../hooks/useCompetitions";
 
 import { RefreshControl } from "react-native";
+import { useAuth } from "../../contexts/AuthContext";
 export const Home = ({ navigation }: any) => {
   const { news, refreshNews } = useNews();
-
+  const { adminMode } = useAuth();
   const recentNews = useMemo(() => {
     return news.slice(0, 3);
   }, [news]);
@@ -101,10 +102,8 @@ export const Home = ({ navigation }: any) => {
 
   const appTeamLogo = require("../../../assets/icon.png");
 
-  const isAdmin = true;
-
   const navigateToMatchDetail = (matchId: number) => {
-    navigation.navigate(isAdmin ? "AdminMatchDetail" : "MatchDetail", {
+    navigation.navigate(adminMode ? "AdminMatchDetail" : "MatchDetail", {
       id: matchId,
     });
   };

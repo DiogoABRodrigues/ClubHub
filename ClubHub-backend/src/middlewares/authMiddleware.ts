@@ -1,34 +1,26 @@
 import { Request, Response, NextFunction } from "express";
-import AuthService from "../services/auth.service";
+import jwt from "jsonwebtoken";
 
-export const authMiddleware = (
+const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET!;
+
+export function authMiddleware(
   req: Request,
   res: Response,
-  next: NextFunction,
-) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader?.split(" ")[1];
+  next: NextFunction
+) {
+  const authHeader = req.headers.authorization;
 
-  if (!token) return res.status(401).json({ message: "Token não fornecido" });
+  if (!authHeader) {
+    return res.status(401).json({ message: "Token não fornecido" });
+  }
+
+  const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = AuthService.verifyToken(token) as {
-      id: number;
-      role: string;
-    };
+    const decoded = jwt.verify(token, ACCESS_SECRET);
     (req as any).user = decoded;
-    next();
-  } catch (err: any) {
-    return res.status(403).json({ message: "Token inválido ou expirado" });
+    return next();
+  } catch {
+    return res.status(401).json({ message: "Token inválido" });
   }
-};
-
-export const authorizeRoles = (...roles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const user = (req as any).user;
-    if (!user) return res.status(401).json({ message: "Não autenticado" });
-    if (!roles.includes(user.role))
-      return res.status(403).json({ message: "Sem permissão" });
-    next();
-  };
-};
+}

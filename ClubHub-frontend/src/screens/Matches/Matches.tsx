@@ -12,6 +12,7 @@ import { COLORS } from "../../theme/colors";
 import { useMatches } from "../../hooks/useMatches";
 import { useTeams } from "../../hooks/useTeams";
 import { useCompetitions } from "../../hooks/useCompetitions";
+import { useAuth } from "../../contexts/AuthContext";
 
 type TabKey = "all" | "live" | "upcoming" | "finished";
 
@@ -46,7 +47,7 @@ const MatchesSection = React.memo(
     getAwayTeam,
   }: MatchesSectionProps) => {
     const limitedMatches = showAll ? matches : matches.slice(0, 3);
-    const isAdmin = true; // useAuth().user?.isAdmin;
+    const { adminMode } = useAuth();
     const { competitions } = useCompetitions();
     const competitionsMap = useMemo(() => {
       const map = new Map();
@@ -55,7 +56,7 @@ const MatchesSection = React.memo(
     }, [competitions]);
 
     const navigateToMatchDetail = (matchId: string) => {
-      navigation.navigate(isAdmin ? "AdminMatchDetail" : "MatchDetail", {
+      navigation.navigate(adminMode ? "AdminMatchDetail" : "MatchDetail", {
         id: matchId,
       });
     };

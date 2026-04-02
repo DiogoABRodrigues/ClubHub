@@ -44,10 +44,10 @@ export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
 
   // Fecha splash só quando animação terminou e dados estão carregados
   useEffect(() => {
-    if (animationDone && allDataLoaded) {
+    if (animationDone) {
       onFinish();
     }
-  }, [animationDone, allDataLoaded]);
+  }, [animationDone]);
 
   return (
     <View style={styles.container}>

@@ -1,31 +1,42 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
-import Role from "./Role";
+import bcrypt from "bcrypt";
 
 class Admin extends Model {
   declare id: number;
-  declare name: string;
-  declare email: string;
+  declare userName: string;
   declare password: string;
-  declare roleId: number;
+  declare role: string;
+  declare refreshToken?: string | null;
 }
 
 Admin.init(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING, allowNull: false },
-    email: { type: DataTypes.STRING, allowNull: false, unique: true },
+    userName: { type: DataTypes.STRING, allowNull: false, unique: true },
     password: { type: DataTypes.STRING, allowNull: false },
-    roleId: {
-      type: DataTypes.INTEGER,
+    role: {
+      type: DataTypes.ENUM,
       allowNull: false,
-      references: { model: Role, key: "id" },
+      values: ["super_admin", "admin"],
     },
+    refreshToken: { type: DataTypes.TEXT, allowNull: true },
   },
-  { sequelize, modelName: "Admin", tableName: "admins", timestamps: true },
+  { sequelize, modelName: "Admin", tableName: "admins", timestamps: true }
 );
 
-Admin.belongsTo(Role, { foreignKey: "roleId" });
-Role.hasMany(Admin, { foreignKey: "roleId" });
+// Hash password before create
+Admin.beforeCreate(async (admin: any) => {
+  if (admin.password) {
+    admin.password = await bcrypt.hash(admin.password, 10);
+  }
+});
+
+// Hash password before update
+Admin.beforeUpdate(async (admin: any) => {
+  if (admin.changed("password")) {
+    admin.password = await bcrypt.hash(admin.password, 10);
+  }
+});
 
 export default Admin;

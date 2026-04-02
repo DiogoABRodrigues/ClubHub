@@ -115,31 +115,6 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
     }
   };
 
-  const handleCancel = () => {
-    const isDirty = isEditing
-      ? Object.keys(form).some(
-          (k) => form[k as keyof FormData] !== (existingNews as any)?.[k],
-        )
-      : Object.values(form).some((v) => v !== "" && v !== "Team");
-
-    if (isDirty) {
-      Alert.alert(
-        "Descartar alterações?",
-        "Tens alterações não guardadas. Tens a certeza que queres sair?",
-        [
-          { text: "Continuar a editar", style: "cancel" },
-          {
-            text: "Descartar",
-            style: "destructive",
-            onPress: () => navigation.goBack(),
-          },
-        ],
-      );
-    } else {
-      navigation.goBack();
-    }
-  };
-
   const hasImagePreview =
     typeof form.image === "string" && form.image.length > 0;
 

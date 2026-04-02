@@ -7,15 +7,14 @@ import { StyleSheet } from "react-native";
 import { AuthProvider } from "./src/contexts/AuthContext";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./src/lib/queryClient";
-import { registerForPushNotifications, setupNotificationChannels } from "./src/utils/notifications";
 import { SocketProvider } from "./src/contexts/SocketContext";
 
 export default function App() {
   const [splashDone, setSplashDone] = useState(false);
-  useEffect(() => {
+  /*useEffect(() => {
     registerForPushNotifications();
     setupNotificationChannels();
-  }, []);
+  }, []);*/
   
   return (
     <GestureHandlerRootView style={styles.container}>

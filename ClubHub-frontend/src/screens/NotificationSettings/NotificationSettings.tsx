@@ -5,7 +5,9 @@ import { Switch } from "../../components/Switch";
 import { styles } from "./NotificationSettings.styles";
 import { COLORS } from "../../theme/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-//import * as Notifications from 'expo-notifications';
+import { TextInput } from "react-native";
+import { useAuth } from "../../contexts/AuthContext";
+import { login as loginRequest } from "../../services/AuthService";
 
 // URL do teu backend
 const BACKEND_URL = "https://teu-backend.com/api/device/preferences";
@@ -19,6 +21,10 @@ export const NotificationSettings = ({ navigation }: any) => {
     gameDayAlerts: true,
   });
 
+  const { loginAsAdmin } = useAuth();
+
+const [userName, setUserName] = useState("");
+const [password, setPassword] = useState("");
   const [deviceId, setDeviceId] = useState<string | null>(null);
   const [pushToken, setPushToken] = useState<string | null>(null);
 
@@ -161,6 +167,55 @@ export const NotificationSettings = ({ navigation }: any) => {
           ))}
         </View>
       </ScrollView>
+      <View style={{ marginBottom: 15 }}>
+  <TextInput
+    placeholder="Username"
+    value={userName}
+    onChangeText={setUserName}
+    autoCapitalize="none"
+    style={{
+      backgroundColor: "#fff",
+      padding: 12,
+      borderRadius: 10,
+      marginBottom: 10,
+    }}
+  />
+
+  <TextInput
+    placeholder="Password"
+    value={password}
+    onChangeText={setPassword}
+    secureTextEntry
+    style={{
+      backgroundColor: "#fff",
+      padding: 12,
+      borderRadius: 10,
+    }}
+  />
+</View>
+      <View style={{ marginTop: 30, paddingHorizontal: 20 }}>
+      <TouchableOpacity
+        style={{
+          backgroundColor: "#111",
+          paddingVertical: 14,
+          borderRadius: 12,
+          alignItems: "center",
+        }}
+        onPress={async () => {
+  try {
+    const data = await loginRequest(userName, password);
+    await loginAsAdmin(data.accessToken, data.refreshToken);
+    navigation.navigate("Home");
+  } catch (e) {
+    console.log("login error", e);
+  }
+}}
+      >
+        <Text style={{ color: "#fff", fontWeight: "600" }}>
+          Login
+        </Text>
+      </TouchableOpacity>
+    </View>
     </View>
   );
 };

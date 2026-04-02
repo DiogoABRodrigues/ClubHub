@@ -5,7 +5,7 @@ import { COLORS } from "../theme/colors";
 import Ionicons from "@expo/vector-icons/build/Ionicons";
 import { usePlayers } from "../hooks/usePlayers";
 import { MatchEvent } from "../models/MatchEvent";
-
+import { useAuth } from "../contexts/AuthContext";
 interface Props {
   event: MatchEvent;
   isOurs: boolean;
@@ -47,13 +47,13 @@ export const EventRow = ({ event, isOurs, onEdit, onDelete }: Props) => {
     playerIn: playerIn ? playerIn.name : "Jogador Desconecido",
   };
   const minute = event.minute > 90 ? `90'+` : `${event.minute}'`;
-  const isAdmin = true;
+  const { adminMode } = useAuth();
 
   if (isOurs) {
     return (
       <View style={styles.eventRow}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          {isAdmin && (
+          {adminMode && (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <TouchableOpacity onPress={() => onEdit?.(event)}>
                 <Ionicons
@@ -100,7 +100,7 @@ export const EventRow = ({ event, isOurs, onEdit, onDelete }: Props) => {
       {isCard && <CardIcon type={event.type} />}
       <Text style={styles.eventIconText}>{minute}</Text>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        {isAdmin && (
+        {adminMode && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity onPress={() => onEdit?.(event)}>
               <Ionicons

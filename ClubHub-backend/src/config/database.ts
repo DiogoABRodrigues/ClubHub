@@ -18,8 +18,6 @@ require("../models/Player");
 require("../models/Competition");
 require("../models/Match");
 require("../models/Lineup");
-require("../models/Goal");
-require("../models/Role");
 require("../models/Admin");
 require("../models/News");
 require("../models/Statement");
