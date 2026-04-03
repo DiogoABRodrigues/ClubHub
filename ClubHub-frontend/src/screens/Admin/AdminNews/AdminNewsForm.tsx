@@ -83,10 +83,36 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
 
   const validate = (): boolean => {
     const newErrors: Partial<FormData> = {};
-    if (!form.title.trim()) newErrors.title = "O título é obrigatório";
-    if (!form.content.trim()) newErrors.content = "O conteúdo é obrigatório";
+    const missing: string[] = [];
+
+    if (!form.title.trim()) {
+      newErrors.title = "O título é obrigatório";
+      missing.push("Título");
+    }
+    if (!form.excerpt.trim()) {
+      newErrors.excerpt = "O resumo é obrigatório";
+      missing.push("Resumo");
+    }
+    if (!form.content.trim()) {
+      newErrors.content = "O conteúdo é obrigatório";
+      missing.push("Conteúdo");
+    }
+    if (!form.image) {
+      missing.push("Imagem");
+    }
+
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    if (missing.length > 0) {
+      Alert.alert(
+        "Campos obrigatórios",
+        `Por favor preenche os seguintes campos:\n\n• ${missing.join("\n• ")}`,
+        [{ text: "OK" }]
+      );
+      return false;
+    }
+
+    return true;
   };
 
   // No AdminNewsForm, ajuste a função handleSave
@@ -198,7 +224,7 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
           </View>
 
           {/* IMAGE URL */}
-          <Field label="Imagem" optional>
+          <Field label="Imagem">
             <TouchableOpacity style={styles.imagePickerBtn} onPress={pickImage}>
               <Text style={{ color: "#fff" }}>
                 {form.image ? "Alterar imagem" : "Selecionar imagem"}

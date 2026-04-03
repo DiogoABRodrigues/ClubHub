@@ -1,18 +1,23 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { refreshToken } from "./AuthService";
+import Constants from "expo-constants";
+import { teamConfig } from "../config/teamConfig";
+
+const BACKEND_URI = teamConfig.backend_URL;
 
 export const api = axios.create({
-  baseURL: process.env.BACKEND_URI + "/api/",
+  baseURL: BACKEND_URI + "/api/",
   timeout: 5000,
 });
 
 export const scrapperApi = axios.create({
-  baseURL: process.env.BACKEND_URI + "/api/",
+  baseURL: BACKEND_URI + "/api/",
   timeout: 300000,
 });
 
 api.interceptors.request.use(async (config) => {
+
   const token = await AsyncStorage.getItem("accessToken");
 
   if (token) {

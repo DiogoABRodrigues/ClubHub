@@ -1,6 +1,7 @@
 import { io } from "socket.io-client";
+import { teamConfig } from "../config/teamConfig";
 
-export const socket = io(process.env.BACKEND_URI, {
+export const socket = io(teamConfig.backend_URL, {
   autoConnect: false,
   transports: ["websocket", "polling"],
 });

@@ -37,7 +37,8 @@
       "router": {},
       "eas": {
         "projectId": "52c0553d-0cbd-47f4-a4d5-be8489e3e9ef"
-      }
+      },
+      "BACKEND_URI": "https://clubhub-c8u0.onrender.com"
     },
     "owner": "13dean"
   }

@@ -2,14 +2,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Platform } from "react-native";
 import { NewsService } from "../services/NewsService";
 import { News } from "../models/News";
-
+import { teamConfig } from "../config/teamConfig";
 const formatNewsImage = (image?: string) => {
   if (!image) return undefined;
 
   const baseUrl =
     Platform.OS === "android"
-      ? process.env.BACKEND_URI + "/uploads"
-      : process.env.BACKEND_URI + '/uploads';
+      ? teamConfig.backend_URL + "/uploads"
+      : teamConfig.backend_URL + '/uploads';
 
   return `${baseUrl}/${image}`;
 };

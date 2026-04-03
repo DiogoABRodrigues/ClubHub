@@ -15,7 +15,7 @@ ver render das cenas da season!!!!!
 
 
 -- Comandos --
-eas build -p ios
+eas build -p android --profile preview
 
 npx prettier --write .
 
