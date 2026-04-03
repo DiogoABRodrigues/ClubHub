@@ -9,8 +9,8 @@ export const styles = StyleSheet.create({
 
   // ── Header ───────────────────────────────────────────────────────────────
   header: {
-    backgroundColor: COLORS.surface,
-    paddingTop: SPACING.xl + 8, // espaço para status bar
+    backgroundColor: COLORS.primary,        // só o header fica primary
+    paddingTop: SPACING.xl + 8,
     paddingBottom: SPACING.md,
     paddingHorizontal: SPACING.md,
   },
@@ -30,7 +30,7 @@ export const styles = StyleSheet.create({
   headerTitle: {
     fontSize: FONT_SIZE.xl,
     fontWeight: "800",
-    color: COLORS.textPrimary,
+    color: "#fff",
     letterSpacing: -0.8,
     lineHeight: FONT_SIZE.xl * 1.1,
   },
@@ -40,11 +40,11 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
     letterSpacing: 0.8,
     textTransform: "uppercase",
-    color: COLORS.textPrimary,
+    color: "rgba(255,255,255,0.7)",
     marginBottom: 2,
   },
 
-  // ── Section ────────────────────────────────────────────────
+  // ── Section ──────────────────────────────────────────────────────────────
   section: {
     marginBottom: SPACING.lg,
   },
@@ -57,13 +57,13 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 2,
   },
 
-  // ── Card ────────────────────────────────────────────────
+  // ── Card — fundo branco/neutro, sem primary ───────────────────────────────
   card: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: "#ffffff",            // branco — não primary
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: "#e5e7eb",               // cinza suave
     gap: SPACING.md,
   },
   cardIconRow: {
@@ -78,50 +78,48 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexShrink: 0,
+    backgroundColor: "#fef2f2",           // tint leve do primary (vermelho escuro)
     borderWidth: 1,
-    borderColor: COLORS.textPrimary,
+    borderColor: "#fecaca",
   },
   cardTextBlock: {
     flex: 1,
     justifyContent: "center",
     gap: 3,
-    color: COLORS.textPrimary,
   },
   cardTitle: {
-    fontSize: FONT_SIZE.lg,
+    fontSize: FONT_SIZE.md,
     fontWeight: "700",
-    color: COLORS.textPrimary,
+    color: "#111827",                     // quase preto — legível sobre branco
     letterSpacing: -0.2,
   },
   cardDescription: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textPrimary,
+    color: "#6b7280",                     // cinza médio
     lineHeight: 18,
   },
 
-  // ── Info Banner ────────────────────────────────────────────────
+  // ── Info Banner ───────────────────────────────────────────────────────────
   infoBanner: {
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 6,
-    backgroundColor: COLORS.primary,
+    backgroundColor: "#fef9c3",           // amarelo suave — informativo neutro
     borderRadius: RADIUS.md,
     padding: SPACING.sm,
     borderWidth: 1,
-    borderColor: COLORS.textPrimary,
+    borderColor: "#fde68a",
   },
   infoBannerText: {
     fontSize: 12,
-    color: COLORS.textPrimary,
+    color: "#78350f",                     // castanho âmbar — contrasta no amarelo
     flex: 1,
     lineHeight: 17,
   },
 
-  // ── Action Button ────────────────────────────────────────────────
+  // ── Action Button ─────────────────────────────────────────────────────────
   actionButton: {
-    backgroundColor: "#800000",
-    borderWidth: 1,
-    borderColor: COLORS.textPrimary,
+    backgroundColor: COLORS.primary,      // primary só nos botões de ação
     borderRadius: RADIUS.md,
     paddingVertical: 13,
     paddingHorizontal: SPACING.md,
@@ -129,14 +127,17 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   actionButtonDisabled: {
-    backgroundColor: COLORS.textPrimary,
+    backgroundColor: "#9ca3af",
   },
   actionButtonDone: {
-    backgroundColor: "#22c55e",
+    backgroundColor: "#16a34a",
+  },
+  actionButtonDestructive: {
+    backgroundColor: "#dc2626",
   },
   buttonInner: {
     flexDirection: "row",
-    alignItems: "flex-end",
+    alignItems: "center",
     justifyContent: "center",
     gap: 7,
   },

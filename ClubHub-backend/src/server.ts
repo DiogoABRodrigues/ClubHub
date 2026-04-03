@@ -4,9 +4,10 @@ import { connectRedis } from "./config/redis";
 import { initAssociations } from "./models/associations";
 import { initSocket } from "./config/socket";
 import http from "http";
+import { startMatchReminderJob } from "./jobs/matchReminder.job";
 
 const server = http.createServer(app);
-
+startMatchReminderJob();
 initAssociations();
 initSocket(server);
 const PORT = 3000;

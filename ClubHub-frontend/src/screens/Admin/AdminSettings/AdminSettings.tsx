@@ -6,26 +6,32 @@ import { COLORS } from "../../../theme/colors";
 import { ScrapperService } from "../../../services/ScrapperService";
 import { useStatements } from "../../../hooks/useStatements";
 import { StatementModal } from "../../../components/StatementModal";
+import { NotificationModal } from "../../../components/NotificationModal";
 import { useAuth } from "../../../contexts/AuthContext";
-import { Switch } from "../../../components/Switch"; // adjust path
+import { Switch } from "../../../components/Switch";
 import { useAppSetting } from "../../../hooks/useAppSettings";
-
 import { Alert } from "react-native";
 
 export const AdminSettings = ({ navigation }: any) => {
-    const { isAdmin, adminMode } = useAuth();
-    if (!isAdmin) {
+  const { isAdmin, adminMode } = useAuth();
+  if (!isAdmin) {
     return (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <Text>Acesso negado</Text>
-        </View>
-      );
-    }
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Acesso negado</Text>
+      </View>
+    );
+  }
+
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateDone, setUpdateDone] = useState(false);
   const { logout, setAdminMode } = useAuth();
   const [statementModalVisible, setStatementModalVisible] = useState(false);
-  const { value: notificationsEnabled, toggle: toggleNotifications, loading: loadingNotifications } = useAppSetting("notifications_enabled");
+  const [notificationModalVisible, setNotificationModalVisible] = useState(false);
+  const {
+    value: notificationsEnabled,
+    toggle: toggleNotifications,
+    loading: loadingNotifications,
+  } = useAppSetting("notifications_enabled");
   const { statements } = useStatements();
   const activeStatement = statements?.[0];
 
@@ -45,6 +51,7 @@ export const AdminSettings = ({ navigation }: any) => {
       ]
     );
   };
+
   const handleUpdateAll = async () => {
     setIsUpdating(true);
     setUpdateDone(false);
@@ -75,16 +82,12 @@ export const AdminSettings = ({ navigation }: any) => {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* Section: Atualizar Dados */}
+        {/* Card: Atualizar Dados */}
         <View style={styles.section}>
           <View style={styles.card}>
             <View style={styles.cardIconRow}>
               <View style={styles.iconCircle}>
-                <Ionicons
-                  name="sync-outline"
-                  size={22}
-                  color={COLORS.textPrimary}
-                />
+                <Ionicons name="sync-outline" size={22} color={COLORS.primary} />
               </View>
               <View style={styles.cardTextBlock}>
                 <Text style={styles.cardTitle}>Atualizar Dados</Text>
@@ -98,7 +101,7 @@ export const AdminSettings = ({ navigation }: any) => {
               <Ionicons
                 name="information-circle-outline"
                 size={15}
-                color={COLORS.textPrimary}
+                color={COLORS.textSecondary}
                 style={{ marginTop: 1 }}
               />
               <Text style={styles.infoBannerText}>
@@ -119,48 +122,30 @@ export const AdminSettings = ({ navigation }: any) => {
             >
               {isUpdating ? (
                 <View style={styles.buttonInner}>
-                  <Ionicons
-                    name="sync"
-                    size={16}
-                    color="#fff"
-                    style={styles.spinIcon}
-                  />
+                  <Ionicons name="sync" size={16} color="#fff" style={styles.spinIcon} />
                   <Text style={styles.actionButtonText}>A atualizar...</Text>
                 </View>
               ) : updateDone ? (
                 <View style={styles.buttonInner}>
-                  <Ionicons
-                    name="checkmark-circle-outline"
-                    size={16}
-                    color="#fff"
-                  />
+                  <Ionicons name="checkmark-circle-outline" size={16} color="#fff" />
                   <Text style={styles.actionButtonText}>Atualizado</Text>
                 </View>
               ) : (
                 <View style={styles.buttonInner}>
-                  <Ionicons
-                    name="cloud-download-outline"
-                    size={16}
-                    color="#fff"
-                  />
-                  <Text style={styles.actionButtonText}>
-                    Iniciar Atualização
-                  </Text>
+                  <Ionicons name="cloud-download-outline" size={16} color="#fff" />
+                  <Text style={styles.actionButtonText}>Iniciar Atualização</Text>
                 </View>
               )}
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Card: Comunicado */}
         <View style={[styles.card, { marginBottom: 20 }]}>
           <View style={styles.cardIconRow}>
             <View style={styles.iconCircle}>
-              <Ionicons
-                name="megaphone-outline"
-                size={22}
-                color={COLORS.textPrimary}
-              />
+              <Ionicons name="megaphone-outline" size={22} color={COLORS.primary} />
             </View>
-
             <View style={styles.cardTextBlock}>
               <Text style={styles.cardTitle}>Comunicado</Text>
               <Text style={styles.cardDescription}>
@@ -177,71 +162,78 @@ export const AdminSettings = ({ navigation }: any) => {
             </Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.card}>
-  <View style={styles.cardIconRow}>
-    <View style={styles.iconCircle}>
-      <Ionicons
-        name="notifications-outline"
-        size={22}
-        color={COLORS.textPrimary}
-      />
-    </View>
-    <View style={styles.cardTextBlock}>
-      <Text style={styles.cardTitle}>Notificações</Text>
-      <Text style={styles.cardDescription}>
-        Ativar o envio de notificações para todos os utilizadores.
-      </Text>
-    </View>
-    {!loadingNotifications && (
-      <Switch
-        value={notificationsEnabled}
-        onValueChange={handleToggleNotifications}
-        size={32}
-      />
-    )}
-  </View>
-</View>
-        <View style={[styles.card, { marginTop: 20 }]}>
-        <View style={styles.cardIconRow}>
-          <View style={styles.iconCircle}>
-            <Ionicons
-              name="log-out-outline"
-              size={22}
-              color={COLORS.textPrimary}
-            />
-          </View>
 
-          <View style={styles.cardTextBlock}>
-            <Text style={styles.cardTitle}>Logout</Text>
-            <Text style={styles.cardDescription}>
-              Terminar sessão na conta atual.
-            </Text>
+        {/* Card: Notificações (toggle + enviar) */}
+        <View style={[styles.card, { marginBottom: 20 }]}>
+          <View style={styles.cardIconRow}>
+            <View style={styles.iconCircle}>
+              <Ionicons name="notifications-outline" size={22} color={COLORS.primary} />
+            </View>
+            <View style={styles.cardTextBlock}>
+              <Text style={styles.cardTitle}>Notificações</Text>
+              <Text style={styles.cardDescription}>
+                Ativar o envio de notificações para todos os utilizadores.
+              </Text>
+            </View>
+            {!loadingNotifications && (
+              <Switch
+                value={notificationsEnabled}
+                onValueChange={handleToggleNotifications}
+                size={32}
+              />
+            )}
           </View>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => setNotificationModalVisible(true)}
+          >
+            <View style={styles.buttonInner}>
+              <Ionicons name="send-outline" size={16} color="#fff" />
+              <Text style={styles.actionButtonText}>Enviar Notificação</Text>
+            </View>
+          </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={async () => {
-            try {
-              await logout();
-              setAdminMode(false); // 🔥 ISTO É O QUE FALTA
-
-              navigation.reset({
-                index: 0,
-                routes: [{ name: "Início" }],
-              });
-            } catch (e) {
-              console.log("Erro logout", e);
-            }
-          }}
-        >
-          <Text style={styles.actionButtonText}>Sair</Text>
-        </TouchableOpacity>
-      </View>
+        {/* Card: Logout */}
+        <View style={styles.card}>
+          <View style={styles.cardIconRow}>
+            <View style={styles.iconCircle}>
+              <Ionicons name="log-out-outline" size={22} color={COLORS.primary} />
+            </View>
+            <View style={styles.cardTextBlock}>
+              <Text style={styles.cardTitle}>Logout</Text>
+              <Text style={styles.cardDescription}>
+                Terminar sessão na conta atual.
+              </Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.actionButtonDestructive]}
+            onPress={async () => {
+              try {
+                await logout();
+                setAdminMode(false);
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: "Início" }],
+                });
+              } catch (e) {
+                console.log("Erro logout", e);
+              }
+            }}
+          >
+            <Text style={styles.actionButtonText}>Sair</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
+
       <StatementModal
         visible={statementModalVisible}
         onClose={() => setStatementModalVisible(false)}
+      />
+      <NotificationModal
+        visible={notificationModalVisible}
+        onClose={() => setNotificationModalVisible(false)}
       />
     </View>
   );

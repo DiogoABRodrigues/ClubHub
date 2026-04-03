@@ -51,6 +51,8 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.xl,
+    alignContent: "center",
+    justifyContent: "center",
   },
 
   // ── Banner informativo ────────────────────────────────────────────────────
@@ -217,19 +219,19 @@ cancelText: {
 instagramBtn: {
   flexDirection: "row",
   alignItems: "center",
+  alignSelf: "center",
   justifyContent: "center",
   gap: 8,
-  marginHorizontal: SPACING.md,
+  width: "33%",
   marginTop: SPACING.md,
   paddingVertical: 13,
   borderRadius: RADIUS.lg,
-  // Gradiente do Instagram simulado com uma cor sólida
   backgroundColor: COLORS.warning,
 },
 instagramBtnText: {
   color: "#fff",
   fontWeight: "700",
-  fontSize: FONT_SIZE.sm,
+  fontSize: FONT_SIZE.md,
   letterSpacing: 0.3,
 },
 });

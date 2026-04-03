@@ -17,7 +17,7 @@ import matchEventRoutes from "./routes/matchEvent.routes";
 import deviceRoutes from "./routes/device.routes";
 import authRoutes from "./routes/auth.routes";
 import appSettingsRoutes from "./routes/appSettings.routes";
-
+import notificationsRoutes from "./routes/notification.routes";
 const app = express();
 
 // 🔹 Configuração CORS
@@ -52,5 +52,6 @@ app.use("/api/match-events", matchEventRoutes);
 app.use("/api/device", deviceRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/app-settings", appSettingsRoutes);
+app.use("/api/notifications", notificationsRoutes);
 
 export default app;

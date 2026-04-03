@@ -115,14 +115,6 @@ export const NotificationSettings = ({ navigation }: any) => {
           </View>
         </View>
       </View>
-      <TouchableOpacity
-      style={styles.instagramBtn}
-      onPress={() => Linking.openURL(teamConfig.instagram_URL)}
-      activeOpacity={0.8}
-    >
-      <Ionicons name="logo-instagram" size={20} color="#fff" />
-      <Text style={styles.instagramBtnText}>Instagram</Text>
-    </TouchableOpacity>
       <ScrollView contentContainerStyle={styles.content}>
         {/* Notification Toggles */}
         <View style={styles.section}>
@@ -140,12 +132,19 @@ export const NotificationSettings = ({ navigation }: any) => {
               <Switch
                 value={safePreferences[key]}
                 onValueChange={() => {
-    console.log("toggle:", key);
-    togglePreference(key);
-  }}
+                togglePreference(key);
+              }}
               />
             </View>
           ))}
+          <TouchableOpacity
+            style={styles.instagramBtn}
+            onPress={() => Linking.openURL(teamConfig.instagram_URL)}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="logo-instagram" size={20} color="#fff" />
+            <Text style={styles.instagramBtnText}>Instagram</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
       <View style={{ marginBottom: 15 }}>

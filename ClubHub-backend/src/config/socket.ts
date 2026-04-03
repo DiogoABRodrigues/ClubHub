@@ -9,7 +9,6 @@ export const initSocket = (server: http.Server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("🔌 user connected:", socket.id);
 
     // não precisa joinMatch
   });

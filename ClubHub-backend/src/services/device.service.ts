@@ -64,7 +64,6 @@ async updatePreferences(
   }
 
   async getDeviceById(id: string) {
-    console.log("Fetching device by ID:", id);
     return Device.findByPk(id);
   }
 }
