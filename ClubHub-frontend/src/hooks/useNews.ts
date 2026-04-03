@@ -8,8 +8,8 @@ const formatNewsImage = (image?: string) => {
 
   const baseUrl =
     Platform.OS === "android"
-      ? "http://192.168.1.105:3000/uploads"
-      : "http://192.168.1.105:3000/uploads";
+      ? process.env.BACKEND_URI + "/uploads"
+      : process.env.BACKEND_URI + '/uploads';
 
   return `${baseUrl}/${image}`;
 };
