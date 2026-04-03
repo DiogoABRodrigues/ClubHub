@@ -217,7 +217,7 @@ export const AdminMatchDetail = () => {
           : match.result.split("-")[1] > match.result.split("-")[0]
             ? "V"
             : "D"
-      : "D";finishMatch(match.id, outcome);
+      : "D";
     Alert.alert("Terminar jogo", "Tens a certeza que queres terminar o jogo?", [
       { text: "Cancelar", style: "cancel" },
       {
