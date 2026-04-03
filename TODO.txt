@@ -22,7 +22,6 @@ ver render das cenas da season!!!!!
 -- Comandos --
 npx prettier --write .
 
-npx expo install --check
 npx expo-doctor
 
 npx expo install --check
