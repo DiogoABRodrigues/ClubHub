@@ -99,9 +99,6 @@ const MatchesSection = React.memo(
 );
 
 export const Matches = ({ navigation }: any) => {
-  useEffect(() => {
-    console.log("MOUNT matchs");
-  }, []);
   const { matches, refreshMatches } = useMatches();
   const { teams, refreshTeams } = useTeams();
   const { refreshCompetitions } = useCompetitions();

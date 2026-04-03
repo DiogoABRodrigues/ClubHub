@@ -16,6 +16,7 @@ import scraperRoutes from "./routes/scraperRoutes";
 import matchEventRoutes from "./routes/matchEvent.routes";
 import deviceRoutes from "./routes/device.routes";
 import authRoutes from "./routes/auth.routes";
+import appSettingsRoutes from "./routes/appSettings.routes";
 
 const app = express();
 
@@ -50,5 +51,6 @@ app.use("/api", scraperRoutes);
 app.use("/api/match-events", matchEventRoutes);
 app.use("/api/device", deviceRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/app-settings", appSettingsRoutes);
 
 export default app;

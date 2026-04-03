@@ -1,38 +1,31 @@
-import * as Notifications from "expo-notifications";
-import * as Device from "expo-device";
+import messaging from "@react-native-firebase/messaging";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { DeviceService } from "../services/DeviceService";
 
 export async function registerForPushNotifications() {
-  if (!Device.isDevice) return;
+  try {
+    const authStatus = await messaging().requestPermission();
 
-  const { status: existingStatus } =
-    await Notifications.getPermissionsAsync();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-  let finalStatus = existingStatus;
+    if (!enabled) {
+      console.log("Push permission not granted");
+      return;
+    }
 
-  if (existingStatus !== "granted") {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
-  }
+    const token = await messaging().getToken();
 
-  if (finalStatus !== "granted") return;
+    let deviceId = await AsyncStorage.getItem("deviceId");
 
-  const token = (await Notifications.getExpoPushTokenAsync()).data;
+    if (!deviceId) {
+      deviceId = Math.random().toString(36).substring(2);
+      await AsyncStorage.setItem("deviceId", deviceId);
+    }
 
-  let deviceId = await AsyncStorage.getItem("deviceId");
-
-  if (!deviceId) {
-    deviceId = Math.random().toString(36).substring(2);
-    await AsyncStorage.setItem("deviceId", deviceId);
-  }
-
-  await fetch("https://192.168.1.105/api/device", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+    await DeviceService.register({
       id: deviceId,
       pushToken: token,
       platform: Platform.OS,
@@ -40,19 +33,12 @@ export async function registerForPushNotifications() {
       matchday: true,
       result: true,
       news: false,
-    }),
-  });
+    });
+  } catch (err) {
+    console.log("Push registration error:", err);
+  }
 }
 
-export async function setupNotificationChannels() {
-  await Notifications.setNotificationChannelAsync("goals", {
-    name: "Golos",
-    importance: Notifications.AndroidImportance.MAX,
-    vibrationPattern: [0, 300, 200, 300],
-  });
-
-  await Notifications.setNotificationChannelAsync("general", {
-    name: "Geral",
-    importance: Notifications.AndroidImportance.DEFAULT,
-  });
-}
+export const parseBooleanSetting = (value?: string) => {
+  return value === "true";
+};

@@ -35,3 +35,5 @@ config/config.js
 # Optional: Macros ou cache
 .cache/
 /src/generated/prisma
+
+/src/config/*.json

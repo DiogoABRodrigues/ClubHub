@@ -214,4 +214,22 @@ cancelText: {
   color: "#888",
   paddingVertical: 8,
 },
+instagramBtn: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 8,
+  marginHorizontal: SPACING.md,
+  marginTop: SPACING.md,
+  paddingVertical: 13,
+  borderRadius: RADIUS.lg,
+  // Gradiente do Instagram simulado com uma cor sólida
+  backgroundColor: COLORS.warning,
+},
+instagramBtnText: {
+  color: "#fff",
+  fontWeight: "700",
+  fontSize: FONT_SIZE.sm,
+  letterSpacing: 0.3,
+},
 });

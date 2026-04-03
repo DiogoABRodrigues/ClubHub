@@ -178,6 +178,7 @@ export const AddEventModal = ({
   );
 
   const handleSave = useCallback(async () => {
+  if (saving) return; 
     if (!form.minute || form.minute < 1) {
       Alert.alert("Atenção", "O minuto é obrigatório.");
       return;

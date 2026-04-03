@@ -1,13 +1,37 @@
 import News from "../models/News";
 import cache from "../services/cache.service";
 import { CacheKeys } from "../cache/keys";
+import { pushService } from "./push.service";
+import deviceService from "./device.service";
 
 class NewsService {
-  async create(data: any) {
+async create(data: any) {
     const news = await News.create(data);
+
     await cache.del(CacheKeys.news.last10);
+
+    // 📢 PUSH NOTIFICATION
+    await this.notify(news);
+
     return news;
   }
+
+  private async notify(news: any) {
+    const devices = await deviceService.getDevicesForNews();
+
+    if (!devices.length) return;
+
+    const title = "Foi publicada uma nova notícia!";
+    const body = news.title || "Nova atualização disponível";
+
+    const response = await pushService.sendToDevices(devices, {
+      title,
+      body,
+    });
+
+    await pushService.handleReceipts(response);
+  }
+
 
   async getAll() {
     return await News.findAll({

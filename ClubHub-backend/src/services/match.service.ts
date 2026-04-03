@@ -7,6 +7,8 @@ import cache from "../services/cache.service";
 import { CacheKeys } from "../cache/keys";
 import Season from "../models/Season";
 import socketService from "./socket.service";
+import { pushService } from "./push.service";
+import deviceService from "./device.service";
 
 export default class MatchService {
   async getAll() {
@@ -78,6 +80,9 @@ export default class MatchService {
     }
 
     await match.update(updates);
+     if (updates.status === "finished") {
+    await this.notifyResult(match);
+  }
     await cache.del(CacheKeys.matches.bySeason(match.seasonId as number));
     await cache.del(CacheKeys.standings.bySeason(match.seasonId as number));
     socketService.emitMatchUpdate(match);
@@ -107,4 +112,31 @@ export default class MatchService {
   async updateOutcome(id: number, outcome: string) {
     return this.update(id, { outcome });
   }
+
+  private async notifyResult(match: Match) {
+  const devices = await deviceService.getDevicesForResults();
+
+  if (!devices.length) return;
+
+  const title = "Fim do jogo";
+  if(match.homeOrAway === "C"){
+    const body = `${match.teamName} ${match.result} ${match.opponent}`;
+    const response = await pushService.sendToDevices(devices, {
+      title,
+      body,
+    });
+
+    await pushService.handleReceipts(response);
+    return;
+  }
+  const body = `${match.opponent} ${match.result} ${match.teamName}`;
+
+  const response = await pushService.sendToDevices(devices, {
+    title,
+    body,
+  });
+
+  await pushService.handleReceipts(response);
 }
+}
+

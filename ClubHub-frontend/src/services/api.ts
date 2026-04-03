@@ -12,6 +12,17 @@ export const scrapperApi = axios.create({
   timeout: 300000,
 });
 
+api.interceptors.request.use(async (config) => {
+  const token = await AsyncStorage.getItem("accessToken");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+// ✅ RESPONSE
 api.interceptors.response.use(
   (res) => res,
   async (error) => {

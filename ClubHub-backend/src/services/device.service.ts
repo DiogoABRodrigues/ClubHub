@@ -10,8 +10,8 @@ class DeviceService {
     result?: boolean;
     news?: boolean;
   }) {
-    const [device] = await Device.upsert(data);
-    return device;
+await Device.upsert(data);
+return await Device.findByPk(data.id);
   }
 
   async updatePreferences(
@@ -48,8 +48,8 @@ class DeviceService {
   async deleteByTokens(tokens: string[]) {
     await Device.destroy({
       where: {
-        pushToken: tokens,
-      },
+  pushToken: tokens
+},
     });
   }
 }

@@ -206,6 +206,7 @@ export const AdminMatchDetail = () => {
 
   const handleFinishMatch = useCallback(() => {
     if (!match) return;
+    
     const outcome = match.result
       ? match.result.split("-")[0] === match.result.split("-")[1]
         ? "E"
@@ -216,7 +217,7 @@ export const AdminMatchDetail = () => {
           : match.result.split("-")[1] > match.result.split("-")[0]
             ? "V"
             : "D"
-      : "D";
+      : "D";finishMatch(match.id, outcome);
     Alert.alert("Terminar jogo", "Tens a certeza que queres terminar o jogo?", [
       { text: "Cancelar", style: "cancel" },
       {

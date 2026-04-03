@@ -8,6 +8,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TextInput } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
 import { login as loginRequest } from "../../services/AuthService";
+import { Linking } from "react-native";
+import { teamConfig } from "../../config/teamConfig";
 
 // URL do teu backend
 const BACKEND_URL = "https://teu-backend.com/api/device/preferences";
@@ -118,14 +120,6 @@ const [password, setPassword] = useState("");
         color: COLORS.textPrimary,
       },
       {
-        key: "matchStart" as const,
-        icon: "trophy-outline",
-        title: "Início do Jogo",
-        description:
-          "Recebe notificações quando um jogo está prestes a começar",
-        color: COLORS.textPrimary,
-      },
-      {
         key: "goals" as const,
         icon: "football-outline",
         title: "Golos",
@@ -162,7 +156,14 @@ const [password, setPassword] = useState("");
           </View>
         </View>
       </View>
-
+      <TouchableOpacity
+      style={styles.instagramBtn}
+      onPress={() => Linking.openURL(teamConfig.instagram_URL)}
+      activeOpacity={0.8}
+    >
+      <Ionicons name="logo-instagram" size={20} color="#fff" />
+      <Text style={styles.instagramBtnText}>Instagram</Text>
+    </TouchableOpacity>
       <ScrollView contentContainerStyle={styles.content}>
         {/* Notification Toggles */}
         <View style={styles.section}>

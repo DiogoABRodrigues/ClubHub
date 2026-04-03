@@ -9,15 +9,17 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./src/lib/queryClient";
 import { SocketProvider } from "./src/contexts/SocketContext";
 import { registerForPushNotifications } from "./src/utils/notifications";
-import { setupNotificationChannels } from "./src/utils/notifications";
 
 export default function App() {
   const [splashDone, setSplashDone] = useState(false);
   useEffect(() => {
     if (!splashDone) return;
 
-    registerForPushNotifications();
-    setupNotificationChannels();
+    const initializeNotifications = async () => {
+      await registerForPushNotifications();
+    };
+
+    initializeNotifications();
   }, [splashDone]);
   return (
     <GestureHandlerRootView style={styles.container}>

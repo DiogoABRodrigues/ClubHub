@@ -1,84 +1,56 @@
-import deviceService from "./device.service";
-
-const EXPO_URL = "https://exp.host/--/api/v2/push/send";
-const RECEIPTS_URL = "https://exp.host/--/api/v2/push/getReceipts";
+// services/push.service.ts
+import admin from "./firebase.service";
+import Device from "../models/Device";
 
 class PushService {
-  // 📤 ENVIAR NOTIFICAÇÕES
-  async sendToDevices(devices: any[], payload: any) {
-    const messages = devices.map((d) => ({
-      to: d.pushToken,
-      sound: "default",
-      ...payload,
-    }));
+  async sendToDevices(devices: any[], payload: { title: string; body: string }) {
+    const tokens = devices
+      .map(d => d.pushToken)
+      .filter((t): t is string => typeof t === "string" && t.length > 10);
 
-    const response = await fetch(EXPO_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    if (!tokens.length) {
+      console.log("⚠️ No valid FCM tokens");
+      return null;
+    }
+
+    const response = await admin.messaging().sendEachForMulticast({
+      tokens,
+      notification: {
+        title: payload.title,
+        body: payload.body,
       },
-      body: JSON.stringify(messages),
     });
-
-    const data = await response.json();
-
-    // 🔗 mapear ticket → token
-    return data.data.map((ticket: any, index: number) => ({
-      ...ticket,
-      pushToken: devices[index].pushToken,
-    }));
-  }
-
-  // 📥 TRATAR RECEIPTS (erros)
-  async handleReceipts(tickets: any[]) {
-    if (!tickets || tickets.length === 0) return;
-
-    // 📌 map ticketId -> pushToken
-    const ticketMap = new Map<string, string>();
-
-    tickets.forEach((t) => {
-      if (t.id && t.pushToken) {
-        ticketMap.set(t.id, t.pushToken);
-      }
-    });
-
-    const receiptIds = tickets
-      .filter((t) => t.status === "ok")
-      .map((t) => t.id);
-
-    if (receiptIds.length === 0) return;
-
-    const response = await fetch(RECEIPTS_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ids: receiptIds }),
-    });
-
-    const receipts = await response.json();
 
     const invalidTokens: string[] = [];
 
-    for (const id in receipts.data) {
-      const receipt = receipts.data[id];
+    response.responses.forEach((r, i) => {
+      if (!r.success) {
+        const code = r.error?.code;
 
-      if (receipt.status === "error") {
-        if (receipt.details?.error === "DeviceNotRegistered") {
-          const pushToken = ticketMap.get(id);
-
-          if (pushToken) {
-            invalidTokens.push(pushToken);
-          }
+        if (
+          code === "messaging/registration-token-not-registered" ||
+          code === "messaging/invalid-registration-token"
+        ) {
+          invalidTokens.push(tokens[i]);
         }
       }
+    });
+
+    if (invalidTokens.length) {
+      await Device.destroy({
+        where: { token: invalidTokens },
+      });
     }
 
-    // 🧹 remover tokens inválidos da DB
-    if (invalidTokens.length > 0) {
-      await deviceService.deleteByTokens(invalidTokens);
-    }
+    console.log("FCM response:", response);
+
+    return response;
+  }
+
+  async handleReceipts(response: any) {
+    if (!response) return;
+    console.log("FCM receipts:", response.responses);
   }
 }
 
-export default new PushService();
+export const pushService = new PushService();

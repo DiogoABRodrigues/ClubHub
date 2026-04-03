@@ -60,11 +60,6 @@ export const AdminNotifications: React.FC = ({ navigation }: any) => {
   ];
 
   const handleSendManual = () => {
-    console.log("Enviando notificação manual:", {
-      title: manualTitle,
-      message: manualMessage,
-      type: selectedType,
-    });
     setManualTitle("");
     setManualMessage("");
   };

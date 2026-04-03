@@ -7,6 +7,10 @@ import { ScrapperService } from "../../../services/ScrapperService";
 import { useStatements } from "../../../hooks/useStatements";
 import { StatementModal } from "../../../components/StatementModal";
 import { useAuth } from "../../../contexts/AuthContext";
+import { Switch } from "../../../components/Switch"; // adjust path
+import { useAppSetting } from "../../../hooks/useAppSettings";
+
+import { Alert } from "react-native";
 
 export const AdminSettings = ({ navigation }: any) => {
     const { isAdmin, adminMode } = useAuth();
@@ -21,10 +25,26 @@ export const AdminSettings = ({ navigation }: any) => {
   const [updateDone, setUpdateDone] = useState(false);
   const { logout, setAdminMode } = useAuth();
   const [statementModalVisible, setStatementModalVisible] = useState(false);
-
+  const { value: notificationsEnabled, toggle: toggleNotifications, loading: loadingNotifications } = useAppSetting("notifications_enabled");
   const { statements } = useStatements();
   const activeStatement = statements?.[0];
 
+  const handleToggleNotifications = (newValue: boolean) => {
+    Alert.alert(
+      newValue ? "Ativar Notificações" : "Desativar Notificações",
+      newValue
+        ? "Tens a certeza que queres ativar todas as notificações para todos os utilizadores?"
+        : "Tens a certeza que queres desativar todas as notificações para todos os utilizadores?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Confirmar",
+          style: newValue ? "default" : "destructive",
+          onPress: () => toggleNotifications(newValue),
+        },
+      ]
+    );
+  };
   const handleUpdateAll = async () => {
     setIsUpdating(true);
     setUpdateDone(false);
@@ -131,7 +151,7 @@ export const AdminSettings = ({ navigation }: any) => {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.card}>
+        <View style={[styles.card, { marginBottom: 20 }]}>
           <View style={styles.cardIconRow}>
             <View style={styles.iconCircle}>
               <Ionicons
@@ -157,6 +177,30 @@ export const AdminSettings = ({ navigation }: any) => {
             </Text>
           </TouchableOpacity>
         </View>
+        <View style={styles.card}>
+  <View style={styles.cardIconRow}>
+    <View style={styles.iconCircle}>
+      <Ionicons
+        name="notifications-outline"
+        size={22}
+        color={COLORS.textPrimary}
+      />
+    </View>
+    <View style={styles.cardTextBlock}>
+      <Text style={styles.cardTitle}>Notificações</Text>
+      <Text style={styles.cardDescription}>
+        Ativar o envio de notificações para todos os utilizadores.
+      </Text>
+    </View>
+    {!loadingNotifications && (
+      <Switch
+        value={!notificationsEnabled}
+        onValueChange={handleToggleNotifications}
+        size={32}
+      />
+    )}
+  </View>
+</View>
         <View style={[styles.card, { marginTop: 20 }]}>
         <View style={styles.cardIconRow}>
           <View style={styles.iconCircle}>

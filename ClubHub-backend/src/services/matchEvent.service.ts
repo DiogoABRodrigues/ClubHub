@@ -1,12 +1,14 @@
 import MatchEvent from "../models/MatchEvent";
 import Match from "../models/Match";
-import pushService from "./push.service";
+import { pushService } from "./push.service";
 import deviceService from "./device.service";
 import spamGuard from "../utils/eventSpamGuard";
 import { buildEventKey } from "../utils/buildEventKey";
 import cache from "../services/cache.service";
 import { CacheKeys } from "../cache/keys";
 import socketService from "./socket.service";
+import Player from "../models/Player";
+import { teamConfig } from "../config/teamConfig";
 
 class MatchEventService {
   async createEvent(matchId: number, data: any) {
@@ -14,7 +16,7 @@ class MatchEventService {
     const key = buildEventKey(data, matchId);
 
     // 🚨 2. anti-spam check
-    if (spamGuard.isDuplicate(key)) {
+    if (await spamGuard.isDuplicate(key)) {
       console.log("🚫 Duplicate event blocked:", key);
       return null;
     }
@@ -59,51 +61,43 @@ class MatchEventService {
     return true;
   }
 
-  async notify(event: any, action: "create" | "delete") {
+  async notify(event: MatchEvent, action: "create" | "delete") {
     let devices: any[] = [];
     let title = "";
     let body = "";
-
+    devices = await deviceService.getDevicesForGoals();
     if (action === "delete") {
-      devices = await deviceService.getDevicesForMatchday();
-      title = "Correção de Evento 🔁";
-      body = `Evento de ${event.type} aos ${event.minute}' foi corrigido`;
+      title = "Correção!";
+      body = `Evento de ${event.type} aos ${event.minute}' foi apagado.`;
     } else {
+      let playerName;
+      if(event.isOpponent) {
+        playerName = "Adversário";
+      } else {
+        const player = await Player.findByPk(event.playerId || -1);
+        playerName = player ? player.name : teamConfig.name;
+      }
       switch (event.type) {
         case "goal":
-          devices = await deviceService.getDevicesForGoals();
-          title = "GOLO ⚽";
-          body = `Min ${event.minute}'`;
-          break;
-
-        case "yellow_card":
-          devices = await deviceService.getDevicesForMatchday();
-          title = "Amarelo 🟨";
-          body = `Min ${event.minute}'`;
+          title = "Golo!";
+          body = `${playerName} - ${event.minute}'`;
           break;
 
         case "red_card":
-          devices = await deviceService.getDevicesForMatchday();
           title = "Vermelho 🟥";
-          body = `Min ${event.minute}'`;
-          break;
-
-        case "substitution":
-          devices = await deviceService.getDevicesForMatchday();
-          title = "Substituição 🔄";
-          body = `Min ${event.minute}'`;
+          body = `${playerName} - ${event.minute}'`;
           break;
       }
     }
 
     if (!devices.length) return;
+console.log("DEVICES:", devices.map(d => d.pushToken));
+const response = await pushService.sendToDevices(devices, {
+  title,
+  body,
+});
 
-    const tickets = await pushService.sendToDevices(devices, {
-      title,
-      body,
-    });
-
-    await pushService.handleReceipts(tickets);
+await pushService.handleReceipts(response);
   }
 }
 
