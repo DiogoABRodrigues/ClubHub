@@ -13,4 +13,8 @@ router.post("/logout", authMiddleware, (req, res) =>
 
 router.get("/me", authMiddleware, (req, res) => MeController.me(req, res));
 
+router.get("/wake-up", (req, res) => {
+  res.status(200).json({ message: "Backend acordado!" });
+});
+
 export default router;

@@ -5,11 +5,13 @@ import { initAssociations } from "./models/associations";
 import { initSocket } from "./config/socket";
 import http from "http";
 import { startMatchReminderJob } from "./jobs/matchReminder.job";
+import { wakeUpBackend } from "./jobs/wake-up";
 
 const server = http.createServer(app);
 startMatchReminderJob();
 initAssociations();
 initSocket(server);
+wakeUpBackend();
 const PORT = 3000;
 
 async function startServer() {
