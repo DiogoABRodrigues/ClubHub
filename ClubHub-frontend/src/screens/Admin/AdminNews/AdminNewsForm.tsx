@@ -156,6 +156,7 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
   const pickImage = async () => {
     // Pedir permissão
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+console.log(status);
     if (status !== "granted") {
       Alert.alert("Permissão negada", "Precisas de permitir acesso às fotos.");
       return;
