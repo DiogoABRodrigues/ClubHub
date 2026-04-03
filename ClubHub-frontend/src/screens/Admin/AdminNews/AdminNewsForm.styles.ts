@@ -85,7 +85,7 @@ export const styles = StyleSheet.create({
     overflow: "hidden",
     backgroundColor: COLORS.surfaceLight,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: COLORS.primary,
   },
 
   imagePreview: {
@@ -102,7 +102,7 @@ export const styles = StyleSheet.create({
 
   imagePlaceholderText: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.textMuted,
+    color: COLORS.textPrimary,
   },
 
   imagePickerBtn: {
@@ -128,7 +128,7 @@ export const styles = StyleSheet.create({
     borderRadius: RADIUS.xl,
     backgroundColor: COLORS.surfaceLight,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: COLORS.primary,
   },
 
   categoryChipActive: {
@@ -161,14 +161,14 @@ export const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: FONT_SIZE.xs,
     fontWeight: "700",
-    color: COLORS.textMuted,
+    color: COLORS.textSecondary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
 
   fieldOptional: {
     fontSize: 11,
-    color: COLORS.textMuted,
+    color: COLORS.textSecondary,
     fontStyle: "italic",
   },
 
@@ -180,14 +180,14 @@ export const styles = StyleSheet.create({
 
   // ── Input ─────────────────────────────────────────────────────────────────
   input: {
-    backgroundColor: COLORS.surfaceLight,
+    backgroundColor: COLORS.textPrimary,
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm + 2,
     fontSize: FONT_SIZE.md,
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: COLORS.primary,
   },
 
   inputError: {
@@ -208,7 +208,7 @@ export const styles = StyleSheet.create({
 
   charCount: {
     fontSize: 11,
-    color: COLORS.textMuted,
+    color: COLORS.textSecondary,
     alignSelf: "flex-end",
     marginTop: 2,
   },

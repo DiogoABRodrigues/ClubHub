@@ -42,6 +42,26 @@ class DeviceController {
       return res.status(500).json({ error: "Server error" });
     }
   }
+
+  async getById(req: Request, res: Response) {
+    try {
+      const rawId = req.params.id;
+      const id = Array.isArray(rawId) ? rawId[0] : rawId;
+
+      if (!id) {
+        return res.status(400).json({ error: "Missing id" });
+      }
+
+      const device = await deviceService.getDeviceById(id);
+      if (!device) {
+        return res.status(404).json({ error: "Device not found" });
+      }
+
+      return res.json(device);
+    } catch (err) {
+      return res.status(500).json({ error: "Server error" });
+    }
+  }
 }
 
 export default new DeviceController();

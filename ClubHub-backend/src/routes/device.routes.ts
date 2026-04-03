@@ -9,4 +9,6 @@ router.post("/", deviceController.register);
 // atualizar preferências
 router.patch("/:id", deviceController.updatePreferences);
 
+router.get("/:id", deviceController.getById);
+
 export default router;

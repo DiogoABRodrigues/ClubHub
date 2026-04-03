@@ -15,10 +15,12 @@ export const DeviceService = {
     await api.post("/device", payload);
   },
 
-  updatePreferences: async (
-    id: string,
-    payload: Partial<Omit<DevicePayload, "id" | "pushToken" | "platform">>
-  ): Promise<void> => {
-    await api.patch(`/device/${id}`, payload);
-  },
+  updatePreferences: async (id: string, payload: any) => {
+      await api.patch(`/device/${id}`, payload);
+    },
+
+  getById: async (id: string): Promise<DevicePayload> => {
+    const response = await api.get(`/device/${id}`);
+    return response.data;
+  }
 };

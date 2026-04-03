@@ -14,12 +14,22 @@ await Device.upsert(data);
 return await Device.findByPk(data.id);
   }
 
-  async updatePreferences(
-    id: string,
-    preferences: { goals?: boolean; matchday?: boolean; result?: boolean; news?: boolean },
-  ) {
-    await Device.update(preferences, { where: { id } });
+async updatePreferences(
+  id: string,
+  preferences: { goals?: boolean; matchday?: boolean; result?: boolean; news?: boolean },
+) {
+  const [updatedRows] = await Device.update(preferences, {
+    where: { id },
+  });
+
+  if (updatedRows === 0) {
+    console.log("❌ No rows updated for device:", id);
+  } else {
+    console.log("✅ Updated device:", id);
   }
+
+  return updatedRows;
+}
 
   async getDevicesForGoals() {
     return Device.findAll({
@@ -51,6 +61,11 @@ return await Device.findByPk(data.id);
   pushToken: tokens
 },
     });
+  }
+
+  async getDeviceById(id: string) {
+    console.log("Fetching device by ID:", id);
+    return Device.findByPk(id);
   }
 }
 

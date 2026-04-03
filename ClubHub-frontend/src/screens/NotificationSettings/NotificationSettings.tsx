@@ -10,29 +10,41 @@ import { useAuth } from "../../contexts/AuthContext";
 import { login as loginRequest } from "../../services/AuthService";
 import { Linking } from "react-native";
 import { teamConfig } from "../../config/teamConfig";
-
-// URL do teu backend
-const BACKEND_URL = "https://teu-backend.com/api/device/preferences";
+import { useDevicePreferences } from "../../hooks/useDevicePreferences";
 
 export const NotificationSettings = ({ navigation }: any) => {
-  const [preferences, setPreferences] = useState({
-    matchStart: true,
-    goals: true,
-    finalResult: true,
-    newsAlerts: false,
-    gameDayAlerts: true,
-  });
+
+
 
   const { loginAsAdmin, setAdminMode } = useAuth();
 
-const [userName, setUserName] = useState("");
-const [password, setPassword] = useState("");
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
   const [deviceId, setDeviceId] = useState<string | null>(null);
   const [pushToken, setPushToken] = useState<string | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [tapCount, setTapCount] = useState(0);
   const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  
+
+      const loadDeviceId = async () => {
+      const storedDeviceId = await AsyncStorage.getItem("deviceId");
+      setDeviceId(storedDeviceId);
+    };
+  useEffect(() => {
+
+
+    loadDeviceId();
+  }, []);
+
+    const { preferences, loading, updatePreferences } =
+  useDevicePreferences(deviceId);
+  const safePreferences = (preferences ?? {
+    gameDayAlerts: false,
+    goals: false,
+    finalResult: false,
+    newsAlerts: false,
+  }) as NonNullable<typeof preferences>;
+
   const handleTitleTap = useCallback(() => {
     setTapCount((prev) => {
       const next = prev + 1;
@@ -45,69 +57,6 @@ const [password, setPassword] = useState("");
       return next;
     });
   }, []);
-
-  const loadPreferences = useCallback(async () => {
-    try {
-      const stored = await AsyncStorage.getItem("notificationPrefs");
-      if (stored) setPreferences(JSON.parse(stored));
-    } catch (e) {
-      console.log("Erro a carregar preferências", e);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadPreferences();
-  }, [loadPreferences]);
-
-  // 3️⃣ Guardar preferências local + enviar para backend
-  const savePreferences = useCallback(
-    async (newPrefs: typeof preferences) => {
-      setPreferences(newPrefs);
-      await AsyncStorage.setItem("notificationPrefs", JSON.stringify(newPrefs));
-
-      if (deviceId && pushToken) {
-        try {
-          await fetch(BACKEND_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              deviceId,
-              pushToken,
-              preferences: newPrefs,
-            }),
-          });
-        } catch (e) {
-          console.log("Erro a enviar preferências para o backend", e);
-        }
-      }
-    },
-    [deviceId, pushToken],
-  );
-
-  const togglePreference = useCallback(
-    (key: keyof typeof preferences) => {
-      setPreferences((prev) => {
-        const newPrefs = { ...prev, [key]: !prev[key] };
-
-        AsyncStorage.setItem("notificationPrefs", JSON.stringify(newPrefs));
-
-        if (deviceId && pushToken) {
-          fetch(BACKEND_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              deviceId,
-              pushToken,
-              preferences: newPrefs,
-            }),
-          }).catch((e) => console.log("Erro backend prefs", e));
-        }
-
-        return newPrefs;
-      });
-    },
-    [deviceId, pushToken],
-  );
 
   const notificationTypes = useMemo(
     () => [
@@ -143,6 +92,16 @@ const [password, setPassword] = useState("");
     ],
     [],
   );
+
+  const togglePreference = (key: keyof NonNullable<typeof preferences>) => {
+    const newPrefs = {
+      ...safePreferences,
+      [key]: !safePreferences[key],
+    };
+
+    updatePreferences(newPrefs);
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -179,8 +138,11 @@ const [password, setPassword] = useState("");
                 </View>
               </View>
               <Switch
-                value={preferences[key]}
-                onValueChange={() => togglePreference(key)}
+                value={safePreferences[key]}
+                onValueChange={() => {
+    console.log("toggle:", key);
+    togglePreference(key);
+  }}
               />
             </View>
           ))}
