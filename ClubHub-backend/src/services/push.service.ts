@@ -41,7 +41,7 @@ class PushService {
 
     if (invalidTokens.length) {
       await Device.destroy({
-        where: { token: invalidTokens },
+        where: { pushToken: invalidTokens },
       });
     }
 
