@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import newsService from "../services/news.service";
 
-const baseUrl = process.env.BASE_URL
+const baseUrl = process.env.API_BASE_URL
 
 class NewsController {
   async create(req: Request, res: Response) {
