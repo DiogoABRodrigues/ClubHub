@@ -51,7 +51,9 @@ export const NewsDetail = ({ route, navigation }: any) => {
         <Text style={styles.noNewsText}>
           Ocorreu um erro ao carregar a notícia.
         </Text>
-        <TouchableOpacity onPress={() => navigation.navigate(adminMode ? "AdminNews" : "News")}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate(adminMode ? "AdminNews" : "News")}
+        >
           <Text style={styles.backLink}>Voltar</Text>
         </TouchableOpacity>
       </View>
@@ -65,7 +67,9 @@ export const NewsDetail = ({ route, navigation }: any) => {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <TouchableOpacity
-            onPress={() => navigation.navigate(adminMode ? "AdminNews" : "News")} 
+            onPress={() =>
+              navigation.navigate(adminMode ? "AdminNews" : "News")
+            }
             style={styles.backButton}
           >
             <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />

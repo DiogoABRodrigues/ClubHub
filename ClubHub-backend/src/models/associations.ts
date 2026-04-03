@@ -10,6 +10,12 @@ export const initAssociations = () => {
   Match.hasMany(Lineup, { foreignKey: "matchId" });
   Player.hasMany(Lineup, { foreignKey: "playerId" });
 
-  Player.hasMany(Stats, { foreignKey: "playerExternalId", sourceKey: "externalId" });
-  Stats.belongsTo(Player, { foreignKey: "playerExternalId", targetKey: "externalId" });
+  Player.hasMany(Stats, {
+    foreignKey: "playerExternalId",
+    sourceKey: "externalId",
+  });
+  Stats.belongsTo(Player, {
+    foreignKey: "playerExternalId",
+    targetKey: "externalId",
+  });
 };

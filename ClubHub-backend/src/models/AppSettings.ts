@@ -28,7 +28,7 @@ AppSettings.init(
     modelName: "AppSettings",
     tableName: "app_settings",
     timestamps: true,
-  }
+  },
 );
 
 export default AppSettings;

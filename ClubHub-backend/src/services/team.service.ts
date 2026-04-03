@@ -4,7 +4,7 @@ import { CacheKeys } from "../cache/keys";
 
 export default class TeamService {
   async getAll() {
-   const key = "app:teams:all";
+    const key = "app:teams:all";
 
     const cached = await cache.get(key);
     if (cached) return cached;

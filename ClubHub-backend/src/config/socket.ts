@@ -9,7 +9,6 @@ export const initSocket = (server: http.Server) => {
   });
 
   io.on("connection", (socket) => {
-
     // não precisa joinMatch
   });
 

@@ -20,9 +20,9 @@ export default class MatchService {
     const key = CacheKeys.matches.bySeason(seasonId);
 
     const cached = await cache.get(key);
-    if (cached){
+    if (cached) {
       return cached;
-    } 
+    }
 
     const matches = await Match.findAll({
       where: { seasonId },
@@ -81,9 +81,9 @@ export default class MatchService {
     }
 
     await match.update(updates);
-     if (updates.status === "finished") {
-    await this.notifyResult(match);
-  }
+    if (updates.status === "finished") {
+      await this.notifyResult(match);
+    }
     await cache.del(CacheKeys.matches.bySeason(match.seasonId as number));
     await cache.del(CacheKeys.standings.bySeason(match.seasonId as number));
     socketService.emitMatchUpdate(match);
@@ -115,7 +115,9 @@ export default class MatchService {
   }
 
   private async notifyResult(match: Match) {
-        const settings = await AppSettings.findOne({ where: { key: "notifications_enabled" } });
+    const settings = await AppSettings.findOne({
+      where: { key: "notifications_enabled" },
+    });
     const rawValue = settings?.dataValues.value;
 
     const notificationsEnabled =
@@ -125,29 +127,28 @@ export default class MatchService {
       rawValue === "1";
 
     if (!notificationsEnabled) return;
-  const devices = await deviceService.getDevicesForResults();
+    const devices = await deviceService.getDevicesForResults();
 
-  if (!devices.length) return;
+    if (!devices.length) return;
 
-  const title = "Fim do jogo";
-  if(match.homeOrAway === "C"){
-    const body = `${match.teamName} ${match.result} ${match.opponent}`;
+    const title = "Fim do jogo";
+    if (match.homeOrAway === "C") {
+      const body = `${match.teamName} ${match.result} ${match.opponent}`;
+      const response = await pushService.sendToDevices(devices, {
+        title,
+        body,
+      });
+
+      await pushService.handleReceipts(response);
+      return;
+    }
+    const body = `${match.opponent} ${match.result} ${match.teamName}`;
+
     const response = await pushService.sendToDevices(devices, {
       title,
       body,
     });
 
     await pushService.handleReceipts(response);
-    return;
   }
-  const body = `${match.opponent} ${match.result} ${match.teamName}`;
-
-  const response = await pushService.sendToDevices(devices, {
-    title,
-    body,
-  });
-
-  await pushService.handleReceipts(response);
 }
-}
-

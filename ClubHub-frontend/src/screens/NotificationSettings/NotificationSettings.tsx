@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { View, Text, ScrollView, TouchableOpacity, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Switch } from "../../components/Switch";
@@ -13,9 +19,6 @@ import { teamConfig } from "../../config/teamConfig";
 import { useDevicePreferences } from "../../hooks/useDevicePreferences";
 
 export const NotificationSettings = ({ navigation }: any) => {
-
-
-
   const { loginAsAdmin, setAdminMode } = useAuth();
 
   const [userName, setUserName] = useState("");
@@ -26,18 +29,16 @@ export const NotificationSettings = ({ navigation }: any) => {
   const [tapCount, setTapCount] = useState(0);
   const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-      const loadDeviceId = async () => {
-      const storedDeviceId = await AsyncStorage.getItem("deviceId");
-      setDeviceId(storedDeviceId);
-    };
+  const loadDeviceId = async () => {
+    const storedDeviceId = await AsyncStorage.getItem("deviceId");
+    setDeviceId(storedDeviceId);
+  };
   useEffect(() => {
-
-
     loadDeviceId();
   }, []);
 
-    const { preferences, loading, updatePreferences } =
-  useDevicePreferences(deviceId);
+  const { preferences, loading, updatePreferences } =
+    useDevicePreferences(deviceId);
   const safePreferences = (preferences ?? {
     gameDayAlerts: false,
     goals: false,
@@ -132,8 +133,8 @@ export const NotificationSettings = ({ navigation }: any) => {
               <Switch
                 value={safePreferences[key]}
                 onValueChange={() => {
-                togglePreference(key);
-              }}
+                  togglePreference(key);
+                }}
               />
             </View>
           ))}
@@ -147,50 +148,49 @@ export const NotificationSettings = ({ navigation }: any) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <View style={{ marginBottom: 15 }}>
-  </View>
-  <Modal visible={showLoginModal} transparent>
-  <View style={styles.modalOverlay}>
-    <View style={styles.modalCard}>
-      <Text style={styles.modalTitle}>Acesso Admin</Text>
+      <View style={{ marginBottom: 15 }}></View>
+      <Modal visible={showLoginModal} transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Acesso Admin</Text>
 
-      <TextInput
-        placeholder="Username"
-        value={userName}
-        onChangeText={setUserName}
-        autoCapitalize="none"
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-      />
+            <TextInput
+              placeholder="Username"
+              value={userName}
+              onChangeText={setUserName}
+              autoCapitalize="none"
+              style={styles.input}
+            />
+            <TextInput
+              placeholder="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              style={styles.input}
+            />
 
-      <TouchableOpacity
-        style={styles.loginBtn}
-        onPress={async () => {
-          try {
-            const data = await loginRequest(userName, password);
-            await loginAsAdmin(data.accessToken, data.refreshToken);
-            setShowLoginModal(false);
-            setAdminMode(true);
-          } catch (e) {
-            console.log("login error", e);
-          }
-        }}
-      >
-        <Text style={styles.loginBtnText}>Entrar</Text>
-      </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.loginBtn}
+              onPress={async () => {
+                try {
+                  const data = await loginRequest(userName, password);
+                  await loginAsAdmin(data.accessToken, data.refreshToken);
+                  setShowLoginModal(false);
+                  setAdminMode(true);
+                } catch (e) {
+                  console.log("login error", e);
+                }
+              }}
+            >
+              <Text style={styles.loginBtnText}>Entrar</Text>
+            </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => setShowLoginModal(false)}>
-        <Text style={styles.cancelText}>Cancelar</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-</Modal>
+            <TouchableOpacity onPress={() => setShowLoginModal(false)}>
+              <Text style={styles.cancelText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

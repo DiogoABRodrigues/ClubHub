@@ -9,14 +9,14 @@ import { styles } from "./AdminNews.styles";
 import { useAuth } from "../../../contexts/AuthContext";
 export const AdminNews = ({ navigation }: { navigation: any }) => {
   const { news, loading, deleteNews } = useNews();
-    const { isAdmin, adminMode } = useAuth();
-    if (!isAdmin) {
+  const { isAdmin, adminMode } = useAuth();
+  if (!isAdmin) {
     return (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <Text>Acesso negado</Text>
-        </View>
-      );
-    }
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Acesso negado</Text>
+      </View>
+    );
+  }
   const handleDelete = useCallback(
     (id: number, title: string) => {
       Alert.alert("Eliminar notícia", `Eliminar "${title}"?`, [
@@ -50,7 +50,11 @@ export const AdminNews = ({ navigation }: { navigation: any }) => {
       <View style={styles.container}>
         <Text>Nenhuma notícia</Text>
 
-        <TouchableOpacity onPress={() => navigation.navigate(adminMode ? "AdminNewsForm" : "NewsDetail")}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate(adminMode ? "AdminNewsForm" : "NewsDetail")
+          }
+        >
           <Text>Criar primeira notícia</Text>
         </TouchableOpacity>
       </View>

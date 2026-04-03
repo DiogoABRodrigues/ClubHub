@@ -15,6 +15,6 @@ export const MatchesStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false, animation: "none" }}>
     <Stack.Screen name="Matches" component={Matches} />
     <Stack.Screen name="MatchDetail" component={MatchDetail} />
-      <Stack.Screen name="AdminMatchDetail" component={AdminMatchDetail} />
+    <Stack.Screen name="AdminMatchDetail" component={AdminMatchDetail} />
   </Stack.Navigator>
 );

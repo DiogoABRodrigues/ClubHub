@@ -22,58 +22,55 @@ export const useDevicePreferences = (deviceId: string | null) => {
   // ─────────────────────────────
   // GET
   // ─────────────────────────────
-const query = useQuery({
-  queryKey: ["devicePreferences", deviceId],
-  queryFn: async () => {
-    const data = await DeviceService.getById(deviceId!);
-    return mapFromApi(data);
-  },
-  enabled: !!deviceId,
-});
+  const query = useQuery({
+    queryKey: ["devicePreferences", deviceId],
+    queryFn: async () => {
+      const data = await DeviceService.getById(deviceId!);
+      return mapFromApi(data);
+    },
+    enabled: !!deviceId,
+  });
 
   // ─────────────────────────────
   // UPDATE
   // ─────────────────────────────
-const mutation = useMutation({
-  mutationFn: (prefs: any) =>
-    DeviceService.updatePreferences(deviceId!, mapToApi(prefs)),
+  const mutation = useMutation({
+    mutationFn: (prefs: any) =>
+      DeviceService.updatePreferences(deviceId!, mapToApi(prefs)),
 
-  onMutate: async (newPrefs) => {
-  await queryClient.cancelQueries({
-    queryKey: ["devicePreferences", deviceId],
+    onMutate: async (newPrefs) => {
+      await queryClient.cancelQueries({
+        queryKey: ["devicePreferences", deviceId],
+      });
+
+      const previous = queryClient.getQueryData([
+        "devicePreferences",
+        deviceId,
+      ]);
+
+      queryClient.setQueryData(["devicePreferences", deviceId], (old: any) => ({
+        ...old,
+        ...newPrefs,
+      }));
+
+      return { previous };
+    },
+
+    onError: (_err, _newPrefs, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(
+          ["devicePreferences", deviceId],
+          context.previous,
+        );
+      }
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["devicePreferences", deviceId],
+      });
+    },
   });
-
-  const previous = queryClient.getQueryData([
-    "devicePreferences",
-    deviceId,
-  ]);
-
-  queryClient.setQueryData(
-    ["devicePreferences", deviceId],
-    (old: any) => ({
-      ...old,
-      ...newPrefs,
-    })
-  );
-
-  return { previous };
-},
-
-  onError: (_err, _newPrefs, context) => {
-    if (context?.previous) {
-      queryClient.setQueryData(
-        ["devicePreferences", deviceId],
-        context.previous
-      );
-    }
-  },
-
-  onSuccess: () => {
-    queryClient.invalidateQueries({
-      queryKey: ["devicePreferences", deviceId],
-    });
-  },
-});
   return {
     preferences: query.data,
     loading: query.isLoading,

@@ -1,4 +1,4 @@
-import React, { useCallback,  } from "react";
+import React, { useCallback } from "react";
 import {
   Modal,
   View,
@@ -37,23 +37,25 @@ export const LocationModal = React.memo(
 
     const [keyboardHeight, setKeyboardHeight] = useState(0);
 
-  useEffect(() => {
-    const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
-    const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+    useEffect(() => {
+      const showEvent =
+        Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+      const hideEvent =
+        Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
 
-    const showSub = Keyboard.addListener(showEvent, (e) => {
-      setKeyboardHeight(e.endCoordinates.height);
-    });
+      const showSub = Keyboard.addListener(showEvent, (e) => {
+        setKeyboardHeight(e.endCoordinates.height);
+      });
 
-    const hideSub = Keyboard.addListener(hideEvent, () => {
-      setKeyboardHeight(0);
-    });
+      const hideSub = Keyboard.addListener(hideEvent, () => {
+        setKeyboardHeight(0);
+      });
 
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
+      return () => {
+        showSub.remove();
+        hideSub.remove();
+      };
+    }, []);
 
     // 🔥 evita double save / race condition
     const handleSave = useCallback(async () => {
@@ -91,59 +93,54 @@ export const LocationModal = React.memo(
 
     return (
       <Modal visible={visible} transparent animationType="slide">
-  <Pressable style={modalStyles.overlay} onPress={handleClose} />
+        <Pressable style={modalStyles.overlay} onPress={handleClose} />
 
-  <KeyboardAwareScrollView
-    contentContainerStyle={{ flex: 1, justifyContent: "flex-end" }}
-    enableOnAndroid
-    keyboardShouldPersistTaps="handled"
-  >
-    <View
-      style={[
-        modalStyles.sheet,
-        { marginBottom: keyboardHeight },
-      ]}
-  >
-      <View style={modalStyles.handle} />
-
-      <View style={modalStyles.sheetHeader}>
-        <Text style={modalStyles.sheetTitle}>Editar Localização</Text>
-
-        <TouchableOpacity onPress={handleClose}>
-          <Ionicons name="close" size={22} color={COLORS.textSecondary} />
-        </TouchableOpacity>
-      </View>
-
-      <View style={modalStyles.sheetContent}>
-        <Text style={modalStyles.fieldLabel}>Local do jogo</Text>
-
-        <TextInput
-          style={modalStyles.input}
-          value={value}
-          onChangeText={handleChangeText}
-          placeholder="Ex: Estádio Municipal"
-          autoFocus
-          returnKeyType="done"
-          editable={!saving}
-        />
-
-        <TouchableOpacity
-          style={[
-            modalStyles.saveBtn,
-            saving && modalStyles.saveBtnDisabled,
-          ]}
-          onPress={handleSave}
+        <KeyboardAwareScrollView
+          contentContainerStyle={{ flex: 1, justifyContent: "flex-end" }}
+          enableOnAndroid
+          keyboardShouldPersistTaps="handled"
         >
-          {saving ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={modalStyles.saveBtnText}>Guardar</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-    </View>
-  </KeyboardAwareScrollView>
-</Modal>
+          <View style={[modalStyles.sheet, { marginBottom: keyboardHeight }]}>
+            <View style={modalStyles.handle} />
+
+            <View style={modalStyles.sheetHeader}>
+              <Text style={modalStyles.sheetTitle}>Editar Localização</Text>
+
+              <TouchableOpacity onPress={handleClose}>
+                <Ionicons name="close" size={22} color={COLORS.textSecondary} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={modalStyles.sheetContent}>
+              <Text style={modalStyles.fieldLabel}>Local do jogo</Text>
+
+              <TextInput
+                style={modalStyles.input}
+                value={value}
+                onChangeText={handleChangeText}
+                placeholder="Ex: Estádio Municipal"
+                autoFocus
+                returnKeyType="done"
+                editable={!saving}
+              />
+
+              <TouchableOpacity
+                style={[
+                  modalStyles.saveBtn,
+                  saving && modalStyles.saveBtnDisabled,
+                ]}
+                onPress={handleSave}
+              >
+                {saving ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={modalStyles.saveBtnText}>Guardar</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAwareScrollView>
+      </Modal>
     );
   },
 );

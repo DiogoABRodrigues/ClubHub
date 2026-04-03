@@ -33,13 +33,15 @@ export default class PlayerService {
     const externalIds = squad.map((s) => s.playerExternalId);
 
     const players = await Player.findAll({
-      where: { externalId: externalIds }, include: [
+      where: { externalId: externalIds },
+      include: [
         {
           model: Stats,
           where: { seasonId },
           required: false,
         },
-      ] });
+      ],
+    });
     return players;
   }
 

@@ -26,7 +26,8 @@ export const AdminSettings = ({ navigation }: any) => {
   const [updateDone, setUpdateDone] = useState(false);
   const { logout, setAdminMode } = useAuth();
   const [statementModalVisible, setStatementModalVisible] = useState(false);
-  const [notificationModalVisible, setNotificationModalVisible] = useState(false);
+  const [notificationModalVisible, setNotificationModalVisible] =
+    useState(false);
   const {
     value: notificationsEnabled,
     toggle: toggleNotifications,
@@ -48,7 +49,7 @@ export const AdminSettings = ({ navigation }: any) => {
           style: newValue ? "default" : "destructive",
           onPress: () => toggleNotifications(newValue),
         },
-      ]
+      ],
     );
   };
 
@@ -87,7 +88,11 @@ export const AdminSettings = ({ navigation }: any) => {
           <View style={styles.card}>
             <View style={styles.cardIconRow}>
               <View style={styles.iconCircle}>
-                <Ionicons name="sync-outline" size={22} color={COLORS.primary} />
+                <Ionicons
+                  name="sync-outline"
+                  size={22}
+                  color={COLORS.primary}
+                />
               </View>
               <View style={styles.cardTextBlock}>
                 <Text style={styles.cardTitle}>Atualizar Dados</Text>
@@ -122,18 +127,33 @@ export const AdminSettings = ({ navigation }: any) => {
             >
               {isUpdating ? (
                 <View style={styles.buttonInner}>
-                  <Ionicons name="sync" size={16} color="#fff" style={styles.spinIcon} />
+                  <Ionicons
+                    name="sync"
+                    size={16}
+                    color="#fff"
+                    style={styles.spinIcon}
+                  />
                   <Text style={styles.actionButtonText}>A atualizar...</Text>
                 </View>
               ) : updateDone ? (
                 <View style={styles.buttonInner}>
-                  <Ionicons name="checkmark-circle-outline" size={16} color="#fff" />
+                  <Ionicons
+                    name="checkmark-circle-outline"
+                    size={16}
+                    color="#fff"
+                  />
                   <Text style={styles.actionButtonText}>Atualizado</Text>
                 </View>
               ) : (
                 <View style={styles.buttonInner}>
-                  <Ionicons name="cloud-download-outline" size={16} color="#fff" />
-                  <Text style={styles.actionButtonText}>Iniciar Atualização</Text>
+                  <Ionicons
+                    name="cloud-download-outline"
+                    size={16}
+                    color="#fff"
+                  />
+                  <Text style={styles.actionButtonText}>
+                    Iniciar Atualização
+                  </Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -144,7 +164,11 @@ export const AdminSettings = ({ navigation }: any) => {
         <View style={[styles.card, { marginBottom: 20 }]}>
           <View style={styles.cardIconRow}>
             <View style={styles.iconCircle}>
-              <Ionicons name="megaphone-outline" size={22} color={COLORS.primary} />
+              <Ionicons
+                name="megaphone-outline"
+                size={22}
+                color={COLORS.primary}
+              />
             </View>
             <View style={styles.cardTextBlock}>
               <Text style={styles.cardTitle}>Comunicado</Text>
@@ -167,7 +191,11 @@ export const AdminSettings = ({ navigation }: any) => {
         <View style={[styles.card, { marginBottom: 20 }]}>
           <View style={styles.cardIconRow}>
             <View style={styles.iconCircle}>
-              <Ionicons name="notifications-outline" size={22} color={COLORS.primary} />
+              <Ionicons
+                name="notifications-outline"
+                size={22}
+                color={COLORS.primary}
+              />
             </View>
             <View style={styles.cardTextBlock}>
               <Text style={styles.cardTitle}>Notificações</Text>
@@ -198,7 +226,11 @@ export const AdminSettings = ({ navigation }: any) => {
         <View style={styles.card}>
           <View style={styles.cardIconRow}>
             <View style={styles.iconCircle}>
-              <Ionicons name="log-out-outline" size={22} color={COLORS.primary} />
+              <Ionicons
+                name="log-out-outline"
+                size={22}
+                color={COLORS.primary}
+              />
             </View>
             <View style={styles.cardTextBlock}>
               <Text style={styles.cardTitle}>Logout</Text>

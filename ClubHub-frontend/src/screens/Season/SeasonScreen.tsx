@@ -67,7 +67,8 @@ export function SeasonScreen() {
 
       {/* Renderização condicional direta */}
       {activeTab === "standings" && <Standings />}
-      {activeTab === "squad" && (adminMode ? <AdminSquadScreen /> : <SquadScreen />)}
+      {activeTab === "squad" &&
+        (adminMode ? <AdminSquadScreen /> : <SquadScreen />)}
       {activeTab === "stats" && <SquadStats />}
     </View>
   );

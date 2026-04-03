@@ -16,7 +16,6 @@ class DeviceController {
         platform,
         goals,
         matchday,
-
       });
 
       return res.json(device);
@@ -35,7 +34,12 @@ class DeviceController {
         return res.status(400).json({ error: "Missing id" });
       }
 
-      await deviceService.updatePreferences(id, { goals, matchday, result, news });
+      await deviceService.updatePreferences(id, {
+        goals,
+        matchday,
+        result,
+        news,
+      });
 
       return res.json({ success: true });
     } catch (err) {

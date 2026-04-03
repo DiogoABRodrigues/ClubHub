@@ -65,14 +65,14 @@ const PlayerCard = React.memo(
 
 /* ---------------- SCREEN ---------------- */
 export function AdminSquadScreen() {
-    const { isAdmin, adminMode } = useAuth();
-    if (!isAdmin) {
+  const { isAdmin, adminMode } = useAuth();
+  if (!isAdmin) {
     return (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <Text>Acesso negado</Text>
-        </View>
-      );
-    }
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Acesso negado</Text>
+      </View>
+    );
+  }
   const { players, updatePlayer } = usePlayers();
 
   /* SORT ONCE */

@@ -10,21 +10,21 @@ router.post(
   "/",
   authMiddleware,
   authorizeRoles("admin"),
-  LineupController.create
+  LineupController.create,
 );
 
 router.patch(
   "/:id",
   authMiddleware,
   authorizeRoles("admin"),
-  LineupController.update
+  LineupController.update,
 );
 
 router.delete(
   "/",
   authMiddleware,
   authorizeRoles("admin"),
-  LineupController.deleteByMatch
+  LineupController.deleteByMatch,
 );
 
 export default router;

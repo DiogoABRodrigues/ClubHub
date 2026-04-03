@@ -6,7 +6,7 @@ const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET!;
 export function authMiddleware(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   const authHeader = req.headers.authorization;
 

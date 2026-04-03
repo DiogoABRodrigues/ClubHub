@@ -10,26 +10,31 @@ class DeviceService {
     result?: boolean;
     news?: boolean;
   }) {
-await Device.upsert(data);
-return await Device.findByPk(data.id);
+    await Device.upsert(data);
+    return await Device.findByPk(data.id);
   }
 
-async updatePreferences(
-  id: string,
-  preferences: { goals?: boolean; matchday?: boolean; result?: boolean; news?: boolean },
-) {
-  const [updatedRows] = await Device.update(preferences, {
-    where: { id },
-  });
+  async updatePreferences(
+    id: string,
+    preferences: {
+      goals?: boolean;
+      matchday?: boolean;
+      result?: boolean;
+      news?: boolean;
+    },
+  ) {
+    const [updatedRows] = await Device.update(preferences, {
+      where: { id },
+    });
 
-  if (updatedRows === 0) {
-    console.log("❌ No rows updated for device:", id);
-  } else {
-    console.log("✅ Updated device:", id);
+    if (updatedRows === 0) {
+      console.log("❌ No rows updated for device:", id);
+    } else {
+      console.log("✅ Updated device:", id);
+    }
+
+    return updatedRows;
   }
-
-  return updatedRows;
-}
 
   async getDevicesForGoals() {
     return Device.findAll({
@@ -58,8 +63,8 @@ async updatePreferences(
   async deleteByTokens(tokens: string[]) {
     await Device.destroy({
       where: {
-  pushToken: tokens
-},
+        pushToken: tokens,
+      },
     });
   }
 

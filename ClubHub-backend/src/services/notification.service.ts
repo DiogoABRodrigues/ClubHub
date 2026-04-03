@@ -3,12 +3,7 @@ import { pushService } from "./push.service";
 import deviceService from "./device.service";
 
 class NotificationService {
-
-  async create(data: {
-    title: string;
-    body: string;
-    type: string;
-  }) {
+  async create(data: { title: string; body: string; type: string }) {
     const notification = await Notification.create(data);
     await this.notify(notification);
     return notification;

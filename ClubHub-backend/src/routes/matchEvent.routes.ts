@@ -14,21 +14,21 @@ router.post(
   "/:matchId/events",
   authMiddleware,
   authorizeRoles("admin"),
-  createMatchEvent
+  createMatchEvent,
 );
 
 router.put(
   "/events/:id",
   authMiddleware,
   authorizeRoles("admin"),
-  updateMatchEvent
+  updateMatchEvent,
 );
 
 router.delete(
   "/events/:id",
   authMiddleware,
   authorizeRoles("admin"),
-  deleteMatchEvent
+  deleteMatchEvent,
 );
 
 export default router;

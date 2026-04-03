@@ -7,11 +7,7 @@ export const cacheGet = async (key: string) => {
   return data ? JSON.parse(data) : null;
 };
 
-export const cacheSet = async (
-  key: string,
-  value: any,
-  ttl = DEFAULT_TTL
-) => {
+export const cacheSet = async (key: string, value: any, ttl = DEFAULT_TTL) => {
   await redis.set(key, JSON.stringify(value), "EX", ttl);
 };
 

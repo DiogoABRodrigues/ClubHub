@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
 
   // ── Header ───────────────────────────────────────────────────────────────
   header: {
-    backgroundColor: COLORS.primary,        // só o header fica primary
+    backgroundColor: COLORS.primary, // só o header fica primary
     paddingTop: SPACING.xl + 8,
     paddingBottom: SPACING.md,
     paddingHorizontal: SPACING.md,
@@ -59,11 +59,11 @@ export const styles = StyleSheet.create({
 
   // ── Card — fundo branco/neutro, sem primary ───────────────────────────────
   card: {
-    backgroundColor: "#ffffff",            // branco — não primary
+    backgroundColor: "#ffffff", // branco — não primary
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     borderWidth: 1,
-    borderColor: "#e5e7eb",               // cinza suave
+    borderColor: "#e5e7eb", // cinza suave
     gap: SPACING.md,
   },
   cardIconRow: {
@@ -78,7 +78,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexShrink: 0,
-    backgroundColor: "#fef2f2",           // tint leve do primary (vermelho escuro)
+    backgroundColor: "#fef2f2", // tint leve do primary (vermelho escuro)
     borderWidth: 1,
     borderColor: "#fecaca",
   },
@@ -90,12 +90,12 @@ export const styles = StyleSheet.create({
   cardTitle: {
     fontSize: FONT_SIZE.md,
     fontWeight: "700",
-    color: "#111827",                     // quase preto — legível sobre branco
+    color: "#111827", // quase preto — legível sobre branco
     letterSpacing: -0.2,
   },
   cardDescription: {
     fontSize: FONT_SIZE.xs,
-    color: "#6b7280",                     // cinza médio
+    color: "#6b7280", // cinza médio
     lineHeight: 18,
   },
 
@@ -104,7 +104,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 6,
-    backgroundColor: "#fef9c3",           // amarelo suave — informativo neutro
+    backgroundColor: "#fef9c3", // amarelo suave — informativo neutro
     borderRadius: RADIUS.md,
     padding: SPACING.sm,
     borderWidth: 1,
@@ -112,14 +112,14 @@ export const styles = StyleSheet.create({
   },
   infoBannerText: {
     fontSize: 12,
-    color: "#78350f",                     // castanho âmbar — contrasta no amarelo
+    color: "#78350f", // castanho âmbar — contrasta no amarelo
     flex: 1,
     lineHeight: 17,
   },
 
   // ── Action Button ─────────────────────────────────────────────────────────
   actionButton: {
-    backgroundColor: COLORS.primary,      // primary só nos botões de ação
+    backgroundColor: COLORS.primary, // primary só nos botões de ação
     borderRadius: RADIUS.md,
     paddingVertical: 13,
     paddingHorizontal: SPACING.md,

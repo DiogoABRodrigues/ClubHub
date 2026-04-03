@@ -16,7 +16,7 @@ router.post(
   authMiddleware,
   authorizeRoles("admin"),
   upload.single("image"),
-  newsController.create
+  newsController.create,
 );
 
 router.put(
@@ -24,14 +24,14 @@ router.put(
   authMiddleware,
   authorizeRoles("admin"),
   upload.single("image"),
-  newsController.update
+  newsController.update,
 );
 
 router.delete(
   "/:id",
   authMiddleware,
   authorizeRoles("admin"),
-  newsController.delete
+  newsController.delete,
 );
 
 export default router;

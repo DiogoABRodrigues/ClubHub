@@ -6,7 +6,7 @@ import deviceService from "./device.service";
 import AppSettings from "../models/AppSettings";
 
 class NewsService {
-async create(data: any) {
+  async create(data: any) {
     const news = await News.create(data);
 
     await cache.del(CacheKeys.news.last10);
@@ -18,7 +18,9 @@ async create(data: any) {
   }
 
   private async notify(news: any) {
-        const settings = await AppSettings.findOne({ where: { key: "notifications_enabled" } });
+    const settings = await AppSettings.findOne({
+      where: { key: "notifications_enabled" },
+    });
     const rawValue = settings?.dataValues.value;
 
     const notificationsEnabled =
@@ -42,7 +44,6 @@ async create(data: any) {
 
     await pushService.handleReceipts(response);
   }
-
 
   async getAll() {
     return await News.findAll({

@@ -5,7 +5,11 @@ import { authorizeRoles } from "../middlewares/authorizeRoles";
 
 const router = Router();
 
-router.post("/", authMiddleware,
-  authorizeRoles("admin"), notificationController.create);
+router.post(
+  "/",
+  authMiddleware,
+  authorizeRoles("admin"),
+  notificationController.create,
+);
 
 export default router;

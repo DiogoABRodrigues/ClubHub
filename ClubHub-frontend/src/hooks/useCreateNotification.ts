@@ -6,8 +6,7 @@ export const useCreateNotification = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (data: Notification) =>
-      NotificationService.create(data),
+    mutationFn: (data: Notification) => NotificationService.create(data),
 
     onSuccess: () => {
       // opcional: atualizar lista se tiveres query de notifications

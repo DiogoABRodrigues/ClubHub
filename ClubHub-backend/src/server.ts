@@ -20,9 +20,9 @@ async function startServer() {
 
     console.log("DB ligada");
 
-  server.listen(PORT, () => {
-    console.log(`Servidor a correr em http://localhost:${PORT}`);
-  });
+    server.listen(PORT, () => {
+      console.log(`Servidor a correr em http://localhost:${PORT}`);
+    });
   } catch (error) {
     console.error("Erro ao iniciar o backend:", error);
     process.exit(1);

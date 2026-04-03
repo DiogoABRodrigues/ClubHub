@@ -3,9 +3,12 @@ import admin from "./firebase.service";
 import Device from "../models/Device";
 
 class PushService {
-  async sendToDevices(devices: any[], payload: { title: string; body: string }) {
+  async sendToDevices(
+    devices: any[],
+    payload: { title: string; body: string },
+  ) {
     const tokens = devices
-      .map(d => d.pushToken)
+      .map((d) => d.pushToken)
       .filter((t): t is string => typeof t === "string" && t.length > 10);
 
     if (!tokens.length) {

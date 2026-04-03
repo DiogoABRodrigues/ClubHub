@@ -56,11 +56,11 @@ export const NotificationModal = ({ visible, onClose }: Props) => {
                 onError: () => {
                   Alert.alert("Erro", "Não foi possível enviar a notificação.");
                 },
-              }
+              },
             );
           },
         },
-      ]
+      ],
     );
   };
 

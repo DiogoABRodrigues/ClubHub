@@ -38,12 +38,7 @@ MatchEvent.init(
     },
 
     type: {
-      type: DataTypes.ENUM(
-        "goal",
-        "yellow_card",
-        "red_card",
-        "substitution",
-      ),
+      type: DataTypes.ENUM("goal", "yellow_card", "red_card", "substitution"),
       allowNull: false,
     },
 

@@ -22,7 +22,7 @@ Admin.init(
     },
     refreshToken: { type: DataTypes.TEXT, allowNull: true },
   },
-  { sequelize, modelName: "Admin", tableName: "admins", timestamps: true }
+  { sequelize, modelName: "Admin", tableName: "admins", timestamps: true },
 );
 
 // Hash password before create

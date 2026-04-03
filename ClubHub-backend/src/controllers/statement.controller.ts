@@ -4,9 +4,7 @@ import StatementService from "../services/statement.service";
 class StatementController {
   async create(req: Request, res: Response) {
     try {
-      const statement = await StatementService.createStatement(
-        req.body,
-      );
+      const statement = await StatementService.createStatement(req.body);
       res.status(201).json(statement);
     } catch (error: any) {
       res.status(400).json({ error: error.message });

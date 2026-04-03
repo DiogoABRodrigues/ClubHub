@@ -27,12 +27,12 @@ const ICON_MAP: Record<string, string> = {
 };
 
 export const AppNavigator = () => {
-    const { isAdmin, adminMode, setAdminMode } = useAuth();
-    const EmptyScreen = () => null;
+  const { isAdmin, adminMode, setAdminMode } = useAuth();
+  const EmptyScreen = () => null;
   return (
     <NavigationContainer key={adminMode ? "admin-root" : "user-root"}>
       <Tab.Navigator
-       key={adminMode ? "admin" : "user"}
+        key={adminMode ? "admin" : "user"}
         screenOptions={({ route }) => ({
           headerShown: false,
           tabBarActiveTintColor: COLORS.secondary,
@@ -52,14 +52,8 @@ export const AppNavigator = () => {
         <Tab.Screen name="Início" component={HomeStack} />
 
         {/* Troca automática de stack conforme o modo */}
-        <Tab.Screen
-          name="Jogos"
-          component={MatchesStack}
-        />
-        <Tab.Screen
-          name="Época"
-          component={SeasonScreen}
-        />
+        <Tab.Screen name="Jogos" component={MatchesStack} />
+        <Tab.Screen name="Época" component={SeasonScreen} />
         <Tab.Screen
           name="Notícias"
           component={adminMode ? AdminNewsStack : NewsStack}
@@ -72,24 +66,24 @@ export const AppNavigator = () => {
         {/* Botão Admin — só visível para admins */}
         {isAdmin && (
           <Tab.Screen
-          name="Admin"
-          component={EmptyScreen} // continua necessário, mas agora limpo
-          listeners={{
-            tabPress: (e) => {
-              e.preventDefault(); // impede navegação
-              setAdminMode(!adminMode);
-            },
-          }}
-          options={{
-            tabBarIcon: ({ size }) => (
-              <Ionicons
-                name="shield-checkmark"
-                size={size}
-                color={adminMode ? COLORS.secondary : COLORS.textSecondary}
-              />
-            ),
-          }}
-        />
+            name="Admin"
+            component={EmptyScreen} // continua necessário, mas agora limpo
+            listeners={{
+              tabPress: (e) => {
+                e.preventDefault(); // impede navegação
+                setAdminMode(!adminMode);
+              },
+            }}
+            options={{
+              tabBarIcon: ({ size }) => (
+                <Ionicons
+                  name="shield-checkmark"
+                  size={size}
+                  color={adminMode ? COLORS.secondary : COLORS.textSecondary}
+                />
+              ),
+            }}
+          />
         )}
       </Tab.Navigator>
     </NavigationContainer>

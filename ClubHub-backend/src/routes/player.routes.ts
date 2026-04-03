@@ -15,7 +15,7 @@ router.put(
   "/:playerId",
   authMiddleware,
   authorizeRoles("admin"),
-  PlayerController.updatePlayer
+  PlayerController.updatePlayer,
 );
 
 export default router;

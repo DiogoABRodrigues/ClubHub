@@ -38,7 +38,7 @@ export const AdminMatchDetail = () => {
   const route = useRoute();
   const { isAdmin, adminMode } = useAuth();
   if (!isAdmin) {
-  return (
+    return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text>Acesso negado</Text>
       </View>
@@ -206,7 +206,7 @@ export const AdminMatchDetail = () => {
 
   const handleFinishMatch = useCallback(() => {
     if (!match) return;
-    
+
     const outcome = match.result
       ? match.result.split("-")[0] === match.result.split("-")[1]
         ? "E"

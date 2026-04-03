@@ -2,7 +2,7 @@ import { notificationQueue } from "../queues/notification.queue";
 import pushService from "../services/push.service";
 
 // 🔥 processa jobs da queue
-notificationQueue.process(async (job : any) => {
+notificationQueue.process(async (job: any) => {
   const { devices, payload } = job.data;
 
   console.log("📨 Sending push notifications...");

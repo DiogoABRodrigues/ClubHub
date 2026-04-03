@@ -13,21 +13,21 @@ router.post(
   "/",
   authMiddleware,
   authorizeRoles("admin"),
-  StatementController.create
+  StatementController.create,
 );
 
 router.put(
   "/:id",
   authMiddleware,
   authorizeRoles("admin"),
-  StatementController.update
+  StatementController.update,
 );
 
 router.delete(
   "/:id",
   authMiddleware,
   authorizeRoles("admin"),
-  StatementController.deleteStatement
+  StatementController.deleteStatement,
 );
 
 export default router;

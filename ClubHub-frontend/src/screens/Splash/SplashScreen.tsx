@@ -26,9 +26,11 @@ export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
   const { loading: seasonsLoading } = useSeasons();
   const { loading: statementsLoading } = useStatements();
   const { loading: statsLoading } = useStats();
-  const { loading: appSettingsLoading } = useAppSetting("notifications_enabled");
+  const { loading: appSettingsLoading } = useAppSetting(
+    "notifications_enabled",
+  );
 
-   // Animação
+  // Animação
   const opacity = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(0.8)).current;
 

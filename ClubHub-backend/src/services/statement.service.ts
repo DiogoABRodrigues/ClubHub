@@ -4,7 +4,7 @@ import { Op } from "sequelize";
 import cache from "../services/cache.service";
 import { CacheKeys } from "../cache/keys";
 class StatementService {
-async createStatement(data: Partial<Statement>) {
+  async createStatement(data: Partial<Statement>) {
     const now = new Date();
 
     // Expirar todos os statements ativos
@@ -12,12 +12,9 @@ async createStatement(data: Partial<Statement>) {
       { dateToExpire: now },
       {
         where: {
-          [Op.or]: [
-            { dateToExpire: { [Op.gt]: now } },
-            { dateToExpire: null },
-          ],
+          [Op.or]: [{ dateToExpire: { [Op.gt]: now } }, { dateToExpire: null }],
         },
-      }
+      },
     );
 
     try {
@@ -44,10 +41,7 @@ async createStatement(data: Partial<Statement>) {
     const now = new Date();
     return await Statement.findOne({
       where: {
-        [Op.or]: [
-          { dateToExpire: { [Op.gt]: now } },
-          { dateToExpire: null },
-        ],
+        [Op.or]: [{ dateToExpire: { [Op.gt]: now } }, { dateToExpire: null }],
       },
     });
   }

@@ -36,7 +36,7 @@ Notification.init(
     modelName: "Notification",
     tableName: "notifications",
     timestamps: true,
-  }
+  },
 );
 
 export default Notification;

@@ -2,9 +2,9 @@ import { StyleSheet, Platform } from "react-native";
 import { COLORS } from "../../../../theme/colors";
 
 export const modalStyles = StyleSheet.create({
-overlay: {
-  zIndex: 1,
-},
+  overlay: {
+    zIndex: 1,
+  },
 
   sheetWrapper: {
     position: "absolute",

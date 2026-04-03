@@ -191,8 +191,8 @@ export async function savePlayersAndSquad(players: any[]) {
       position: p.position,
     });
 
-  await cache.del("players:current");
-  await cache.del("squad:current");
-  await cache.del("stats:current");
+    await cache.del("players:current");
+    await cache.del("squad:current");
+    await cache.del("stats:current");
   }
 }

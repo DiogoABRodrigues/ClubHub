@@ -176,7 +176,6 @@ export const Matches = ({ navigation }: any) => {
 
   const renderContent = () => (
     <View style={styles.content}>
-
       {showLive && liveMatches.length > 0 && (
         <MatchesSection
           title="Em direto"
@@ -217,12 +216,12 @@ export const Matches = ({ navigation }: any) => {
         />
       )}
 
-        <EmptyState
-          title="Não foi possível encontrar informação"
-          message="Por favor tenta novamente mais tarde."
-          onRetry={onRefresh}
-          retryLabel="Atualizar"
-        />
+      <EmptyState
+        title="Não foi possível encontrar informação"
+        message="Por favor tenta novamente mais tarde."
+        onRetry={onRefresh}
+        retryLabel="Atualizar"
+      />
     </View>
   );
 

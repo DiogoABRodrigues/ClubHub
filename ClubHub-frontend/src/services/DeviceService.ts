@@ -16,11 +16,11 @@ export const DeviceService = {
   },
 
   updatePreferences: async (id: string, payload: any) => {
-      await api.patch(`/device/${id}`, payload);
-    },
+    await api.patch(`/device/${id}`, payload);
+  },
 
   getById: async (id: string): Promise<DevicePayload> => {
     const response = await api.get(`/device/${id}`);
     return response.data;
-  }
+  },
 };

@@ -6,9 +6,9 @@ class Device extends Model {
   declare pushToken: string;
   declare platform: "android" | "ios";
 
-  declare goals: boolean;  
-  declare matchday: boolean; 
-  declare result: boolean; 
+  declare goals: boolean;
+  declare matchday: boolean;
+  declare result: boolean;
   declare news: boolean;
 }
 

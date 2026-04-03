@@ -38,7 +38,7 @@ router.post(
         message: "Erro ao executar scraper",
       });
     }
-  }
+  },
 );
 
 export default router;

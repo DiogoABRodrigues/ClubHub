@@ -15,56 +15,56 @@ router.post(
   "/",
   authMiddleware,
   authorizeRoles("admin"),
-  MatchController.create
+  MatchController.create,
 );
 
 router.patch(
   "/:id",
   authMiddleware,
   authorizeRoles("admin"),
-  MatchController.update
+  MatchController.update,
 );
 
 router.patch(
   "/:id/date-time",
   authMiddleware,
   authorizeRoles("admin"),
-  MatchController.updateDateTime
+  MatchController.updateDateTime,
 );
 
 router.patch(
   "/:id/score",
   authMiddleware,
   authorizeRoles("admin"),
-  MatchController.updateScore
+  MatchController.updateScore,
 );
 
 router.patch(
   "/:id/location",
   authMiddleware,
   authorizeRoles("admin"),
-  MatchController.updateLocation
+  MatchController.updateLocation,
 );
 
 router.patch(
   "/:id/events",
   authMiddleware,
   authorizeRoles("admin"),
-  MatchController.updateEvents
+  MatchController.updateEvents,
 );
 
 router.patch(
   "/:id/status",
   authMiddleware,
   authorizeRoles("admin"),
-  MatchController.updateStatus
+  MatchController.updateStatus,
 );
 
 router.patch(
   "/:id/outcome",
   authMiddleware,
   authorizeRoles("admin"),
-  MatchController.updateOutcome
+  MatchController.updateOutcome,
 );
 
 export default router;

@@ -63,7 +63,9 @@ class MatchEventService {
   }
 
   async notify(event: MatchEvent, action: "create" | "delete") {
-    const settings = await AppSettings.findOne({ where: { key: "notifications_enabled" } });
+    const settings = await AppSettings.findOne({
+      where: { key: "notifications_enabled" },
+    });
     const rawValue = settings?.dataValues.value;
 
     const notificationsEnabled =
@@ -73,7 +75,7 @@ class MatchEventService {
       rawValue === "1";
 
     if (!notificationsEnabled) return;
-    
+
     let devices: any[] = [];
     let title = "";
     let body = "";
@@ -83,7 +85,7 @@ class MatchEventService {
       body = `Evento de ${event.type} aos ${event.minute}' foi apagado.`;
     } else {
       let playerName;
-      if(event.isOpponent) {
+      if (event.isOpponent) {
         playerName = "Adversário";
       } else {
         const player = await Player.findByPk(event.playerId || -1);
@@ -103,12 +105,12 @@ class MatchEventService {
     }
 
     if (!devices.length) return;
-const response = await pushService.sendToDevices(devices, {
-  title,
-  body,
-});
+    const response = await pushService.sendToDevices(devices, {
+      title,
+      body,
+    });
 
-await pushService.handleReceipts(response);
+    await pushService.handleReceipts(response);
   }
 }
 
