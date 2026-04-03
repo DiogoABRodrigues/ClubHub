@@ -7,16 +7,14 @@ import http from "http";
 import { startMatchReminderJob } from "./jobs/matchReminder.job";
 import { wakeUpBackend } from "./jobs/wake-up";
 
+const PORT = process.env.PORT;
+
 const server = http.createServer(app);
+
 startMatchReminderJob();
 initAssociations();
 initSocket(server);
 wakeUpBackend();
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
 
 async function startServer() {
   try {
@@ -27,7 +25,7 @@ async function startServer() {
     console.log("DB ligada");
 
     server.listen(PORT, () => {
-      console.log(`Servidor a correr em http://localhost:${PORT}`);
+      console.log(`Servidor a correr em ${PORT}`);
     });
   } catch (error) {
     console.error("Erro ao iniciar o backend:", error);
