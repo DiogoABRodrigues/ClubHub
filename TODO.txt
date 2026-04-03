@@ -1,11 +1,6 @@
 -- Features --
 
-
-game day noti cron job
 ver bug modals
-
-alojar backend
-build frontend
 
 ver render das cenas da season!!!!!
 
@@ -20,6 +15,8 @@ ver render das cenas da season!!!!!
 
 
 -- Comandos --
+eas build -p ios
+
 npx prettier --write .
 
 npx expo-doctor

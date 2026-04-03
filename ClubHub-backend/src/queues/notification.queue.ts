@@ -1,5 +1,4 @@
 import Bull from "bull";
-import redis from "../config/redis";
 
 export const notificationQueue = new Bull("notifications", {
   redis: {

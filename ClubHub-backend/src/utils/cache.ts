@@ -8,9 +8,10 @@ export const cacheGet = async (key: string) => {
 };
 
 export const cacheSet = async (key: string, value: any, ttl = DEFAULT_TTL) => {
-  await redis.set(key, JSON.stringify(value), "EX", ttl);
+  await redis.set(key, JSON.stringify(value), {
+    EX: ttl,
+  });
 };
-
 export const cacheDel = async (key: string) => {
   await redis.del(key);
 };
