@@ -48,15 +48,28 @@ export const AdminNews = ({ navigation }: { navigation: any }) => {
   if (!news.length) {
     return (
       <View style={styles.container}>
-        <Text>Nenhuma notícia</Text>
+        {/* HEADER */}
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <View>
+              <Text style={styles.eyebrow}> </Text>
+              <Text style={styles.headerTitle}>Notícias</Text>
+            </View>
+          </View>
+        </View>
 
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate(adminMode ? "AdminNewsForm" : "NewsDetail")
-          }
-        >
-          <Text>Criar primeira notícia</Text>
-        </TouchableOpacity>
+        <View style={styles.emptyState}>
+          <View style={styles.emptyIcon}>
+            <Text style={{ fontSize: 24 }}>📰</Text>
+          </View>
+          <Text style={styles.emptyText}>Nenhuma notícia encontrada</Text>
+          <TouchableOpacity
+            style={styles.createButton}
+            onPress={() => navigation.navigate("AdminNewsForm")}
+          >
+            <Text style={styles.createButtonText}>Criar primeira notícia</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
