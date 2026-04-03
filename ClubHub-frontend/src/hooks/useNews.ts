@@ -3,16 +3,6 @@ import { Platform } from "react-native";
 import { NewsService } from "../services/NewsService";
 import { News } from "../models/News";
 import { teamConfig } from "../config/teamConfig";
-const formatNewsImage = (image?: string) => {
-  if (!image) return undefined;
-
-  const baseUrl =
-    Platform.OS === "android"
-      ? teamConfig.backend_URL + "/uploads"
-      : teamConfig.backend_URL + '/uploads';
-
-  return `${baseUrl}/${image}`;
-};
 
 export const useNews = () => {
   const queryClient = useQueryClient();
@@ -23,11 +13,7 @@ export const useNews = () => {
   const newsQuery = useQuery({
     queryKey: ["news"],
     queryFn: NewsService.getLast10,
-    select: (data: News[]) =>
-      data.map((n) => ({
-        ...n,
-        image: formatNewsImage(n.image),
-      })),
+    select: (data: News[]) => data,
   });
 
   // ─────────────────────────────
@@ -56,7 +42,7 @@ export const useNews = () => {
 
     onSuccess: (newNews) => {
       queryClient.setQueryData<News[]>(["news"], (old) => [
-        { ...newNews, image: formatNewsImage(newNews.image) },
+        newNews,
         ...(old ?? []),
       ]);
     },
@@ -80,7 +66,7 @@ export const useNews = () => {
       queryClient.setQueryData<News[]>(["news"], (old) =>
         old?.map((n) =>
           n.id === updatedNews.id
-            ? { ...updatedNews, image: formatNewsImage(updatedNews.image) }
+            ? { ...updatedNews, updatedNews }
             : n,
         ),
       );

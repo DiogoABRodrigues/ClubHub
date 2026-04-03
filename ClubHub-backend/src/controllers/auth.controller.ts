@@ -41,6 +41,10 @@ class AuthController {
       return res.status(500).json({ message: "Erro no logout" });
     }
   }
+
+  async wakeUp(req: Request, res: Response) {
+    return res.status(200).json({ message: "API a funcionar" });
+  }
 }
 
 export default new AuthController();

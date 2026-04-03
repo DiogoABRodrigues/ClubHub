@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import newsService from "../services/news.service";
 
+const baseUrl = process.env.BASE_URL
+
 class NewsController {
   async create(req: Request, res: Response) {
     try {
@@ -18,7 +20,7 @@ class NewsController {
 
       const news = await newsService.create({
         ...req.body,
-        image: imageFilename,
+        image: req.file ? `${baseUrl}/uploads/${req.file.filename}` : null,
       });
 
       return res.status(201).json(news);
@@ -41,7 +43,9 @@ class NewsController {
 
       const updateData = {
         ...req.body,
-        ...(imageFilename && { image: imageFilename }),
+        ...(req.file && {
+          image: `${baseUrl}/uploads/${req.file.filename}`,
+        }),
       };
 
       // Remove o campo image do body se ele existir como string

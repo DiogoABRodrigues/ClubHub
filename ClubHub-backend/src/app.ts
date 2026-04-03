@@ -53,5 +53,6 @@ app.use("/api/device", deviceRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/app-settings", appSettingsRoutes);
 app.use("/api/notifications", notificationsRoutes);
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 export default app;
