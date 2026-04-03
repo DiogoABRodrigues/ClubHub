@@ -35,10 +35,10 @@ export const adminStyles = StyleSheet.create({
   // ── Bottom sheet — base ───────────────────────────────────────────────────
   overlay: {
     flex: 1,
+    
   },
 
   sheetWrapper: {
-    backgroundColor: "transparent",
     position: "absolute",
     bottom: 0,
     left: 0,
@@ -47,10 +47,12 @@ export const adminStyles = StyleSheet.create({
 
   sheet: {
     backgroundColor: COLORS.backgroundWhite,
-    borderTopLeftRadius: RADIUS.xl,
-    borderTopRightRadius: RADIUS.xl,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: Platform.OS === "ios" ? 34 : 20,
     maxHeight: "88%",
-    flexDirection: "column",
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
   handle: {

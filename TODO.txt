@@ -1,11 +1,13 @@
 -- Features --
 
 
-notifications page 
+game day noti cron job
+ver bug modals
+
+alojar backend
+build frontend
 
 ver render das cenas da season!!!!!
-
-
 
  -- NEXT VISUAIS--
  side swipe

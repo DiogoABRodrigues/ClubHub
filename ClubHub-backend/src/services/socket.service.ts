@@ -3,7 +3,6 @@ import { getIO } from "../config/socket";
 class SocketService {
   emitMatchUpdate(match: any) {
     const io = getIO();
-    console.log("Emitting match update for match ID:", match.id);
     io.emit("match:update", match);
   }
 

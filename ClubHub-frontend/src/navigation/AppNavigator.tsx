@@ -28,7 +28,7 @@ const ICON_MAP: Record<string, string> = {
 
 export const AppNavigator = () => {
     const { isAdmin, adminMode, setAdminMode } = useAuth();
-
+    const EmptyScreen = () => null;
   return (
     <NavigationContainer key={adminMode ? "admin-root" : "user-root"}>
       <Tab.Navigator
@@ -54,7 +54,7 @@ export const AppNavigator = () => {
         {/* Troca automática de stack conforme o modo */}
         <Tab.Screen
           name="Jogos"
-          component={adminMode ? MatchesStack : MatchesStack}
+          component={MatchesStack}
         />
         <Tab.Screen
           name="Época"
@@ -72,30 +72,24 @@ export const AppNavigator = () => {
         {/* Botão Admin — só visível para admins */}
         {isAdmin && (
           <Tab.Screen
-            name="Admin"
-            component={() => null}
-            options={{
-              tabBarIcon: ({ size }) => (
-                <Ionicons
-                  name="shield-checkmark"
-                  size={size}
-                  color={adminMode ? COLORS.secondary : COLORS.textSecondary}
-                />
-              ),
-              tabBarLabel: "Admin",
-              tabBarLabelStyle: {
-                color: adminMode ? COLORS.secondary : COLORS.textSecondary,
-                fontWeight: adminMode ? "700" : "400",
-              },
-              tabBarButton: (props) => (
-                // @ts-ignore comment
-                <TouchableOpacity
-                  {...props}
-                  onPress={() => setAdminMode(!adminMode)}
-                />
-              ),
-            }}
-          />
+          name="Admin"
+          component={EmptyScreen} // continua necessário, mas agora limpo
+          listeners={{
+            tabPress: (e) => {
+              e.preventDefault(); // impede navegação
+              setAdminMode(!adminMode);
+            },
+          }}
+          options={{
+            tabBarIcon: ({ size }) => (
+              <Ionicons
+                name="shield-checkmark"
+                size={size}
+                color={adminMode ? COLORS.secondary : COLORS.textSecondary}
+              />
+            ),
+          }}
+        />
         )}
       </Tab.Navigator>
     </NavigationContainer>

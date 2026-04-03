@@ -2,9 +2,9 @@ import { StyleSheet, Platform } from "react-native";
 import { COLORS } from "../../../../theme/colors";
 
 export const modalStyles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-  },
+overlay: {
+  zIndex: 1,
+},
 
   sheetWrapper: {
     position: "absolute",
@@ -20,7 +20,7 @@ export const modalStyles = StyleSheet.create({
     paddingBottom: Platform.OS === "ios" ? 34 : 20,
     maxHeight: "88%",
     borderWidth: 1,
-    borderColor: COLORS.primary,
+    borderColor: COLORS.border,
   },
 
   handle: {
@@ -41,7 +41,7 @@ export const modalStyles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.primary,
+    borderBottomColor: COLORS.border,
   },
 
   sheetTitle: {

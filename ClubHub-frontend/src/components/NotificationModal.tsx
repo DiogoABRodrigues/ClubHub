@@ -37,18 +37,7 @@ export const NotificationModal = ({ visible, onClose }: Props) => {
       Alert.alert("Erro", "Preenche todos os campos.");
       return;
     }
-createNotification(
-              { title, body, type: "manual" },
-              {
-                onSuccess: () => {
-                  Alert.alert("Sucesso", "Notificação enviada com sucesso!");
-                  handleClose();
-                },
-                onError: () => {
-                  Alert.alert("Erro", "Não foi possível enviar a notificação.");
-                },
-              }
-            );
+
     Alert.alert(
       "Confirmar envio",
       "Tens a certeza que queres enviar esta notificação para todos os utilizadores?",

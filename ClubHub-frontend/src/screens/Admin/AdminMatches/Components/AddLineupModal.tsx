@@ -227,7 +227,7 @@ export const AddLineupModal = ({
       <Pressable style={adminStyles.overlay} onPress={onClose} />
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={adminStyles.sheetWrapper}
       >
         <View style={[adminStyles.sheet, adminStyles.sheetTall]}>
@@ -265,7 +265,10 @@ export const AddLineupModal = ({
           {loading ? (
             <ActivityIndicator style={{ marginTop: 40 }} />
           ) : (
-            <ScrollView contentContainerStyle={adminStyles.playerGrid}>
+            <ScrollView
+              contentContainerStyle={adminStyles.playerGrid}
+              keyboardShouldPersistTaps="handled"
+            >
               {displayPlayers.map((p) => (
                 <PlayerCard
                   key={String(p.id)}
