@@ -9,6 +9,7 @@ import { CacheKeys } from "../cache/keys";
 import socketService from "./socket.service";
 import Player from "../models/Player";
 import { teamConfig } from "../config/teamConfig";
+import AppSettings from "../models/AppSettings";
 
 class MatchEventService {
   async createEvent(matchId: number, data: any) {
@@ -62,6 +63,17 @@ class MatchEventService {
   }
 
   async notify(event: MatchEvent, action: "create" | "delete") {
+    const settings = await AppSettings.findOne({ where: { key: "notifications_enabled" } });
+    const rawValue = settings?.dataValues.value;
+
+    const notificationsEnabled =
+      rawValue === true ||
+      rawValue === "true" ||
+      rawValue === 1 ||
+      rawValue === "1";
+
+    if (!notificationsEnabled) return;
+    
     let devices: any[] = [];
     let title = "";
     let body = "";
@@ -91,7 +103,6 @@ class MatchEventService {
     }
 
     if (!devices.length) return;
-console.log("DEVICES:", devices.map(d => d.pushToken));
 const response = await pushService.sendToDevices(devices, {
   title,
   body,

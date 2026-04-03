@@ -9,6 +9,7 @@ import Season from "../models/Season";
 import socketService from "./socket.service";
 import { pushService } from "./push.service";
 import deviceService from "./device.service";
+import AppSettings from "../models/AppSettings";
 
 export default class MatchService {
   async getAll() {
@@ -114,6 +115,16 @@ export default class MatchService {
   }
 
   private async notifyResult(match: Match) {
+        const settings = await AppSettings.findOne({ where: { key: "notifications_enabled" } });
+    const rawValue = settings?.dataValues.value;
+
+    const notificationsEnabled =
+      rawValue === true ||
+      rawValue === "true" ||
+      rawValue === 1 ||
+      rawValue === "1";
+
+    if (!notificationsEnabled) return;
   const devices = await deviceService.getDevicesForResults();
 
   if (!devices.length) return;
