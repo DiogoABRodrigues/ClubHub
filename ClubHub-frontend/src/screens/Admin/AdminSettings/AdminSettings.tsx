@@ -194,7 +194,7 @@ export const AdminSettings = ({ navigation }: any) => {
     </View>
     {!loadingNotifications && (
       <Switch
-        value={!notificationsEnabled}
+        value={notificationsEnabled}
         onValueChange={handleToggleNotifications}
         size={32}
       />

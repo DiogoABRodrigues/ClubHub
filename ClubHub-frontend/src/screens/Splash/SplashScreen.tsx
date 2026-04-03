@@ -4,7 +4,12 @@ import { useMatches } from "../../hooks/useMatches";
 import { useTeams } from "../../hooks/useTeams";
 import { useStandings } from "../../hooks/useStandings";
 import { useNews } from "../../hooks/useNews";
-
+import { useAppSetting } from "../../hooks/useAppSettings";
+import { useCompetitions } from "../../hooks/useCompetitions";
+import { usePlayers } from "../../hooks/usePlayers";
+import { useSeasons } from "../../hooks/useSeasons";
+import { useStatements } from "../../hooks/useStatements";
+import { useStats } from "../../hooks/useStats";
 import { styles } from "./Splash.styles";
 
 interface SplashScreenProps {
@@ -16,10 +21,14 @@ export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
   const { loading: teamsLoading } = useTeams();
   const { loading: standingsLoading } = useStandings();
   const { loading: newsLoading } = useNews();
+  const { loading: competitionsLoading } = useCompetitions();
+  const { loading: playersLoading } = usePlayers();
+  const { loading: seasonsLoading } = useSeasons();
+  const { loading: statementsLoading } = useStatements();
+  const { loading: statsLoading } = useStats();
+  const { loading: appSettingsLoading } = useAppSetting("notifications_enabled");
 
-  const allDataLoaded =
-    !matchesLoading && !teamsLoading && !standingsLoading && !newsLoading;
-  // Animação
+   // Animação
   const opacity = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(0.8)).current;
 

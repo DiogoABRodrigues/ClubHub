@@ -14,7 +14,15 @@ export function useAppSetting(key: string) {
 
   const toggle = async (newValue: boolean) => {
     setValue(newValue);
-    await AppSettingsService.toggle(key as any, newValue);
+    try {
+      await AppSettingsService.toggle(newValue);
+
+      const fresh = await AppSettingsService.get(key as any);
+      setValue(fresh);
+    } catch (e) {
+      console.log("toggle error", e);
+      setValue(!newValue); // rollback
+    }
   };
 
   return { value, toggle, loading };
