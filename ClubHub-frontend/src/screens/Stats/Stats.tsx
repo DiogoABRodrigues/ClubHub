@@ -144,7 +144,7 @@ export const SquadStats = React.memo(function SquadStats() {
             style={globalStyles.statsPhoto}
             resizeMode="contain"
           />
-          <Text style={globalStyles.playerName}>{item.name}</Text>
+          <Text style={globalStyles.playerName } >{item.name}</Text>
         </View>
         <Text style={globalStyles.statsText}>
           {item.Stats?.[0]?.gamesPlayed}
