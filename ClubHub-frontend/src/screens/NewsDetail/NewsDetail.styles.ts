@@ -8,11 +8,9 @@ export const styles = StyleSheet.create({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   content: {
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.lg,
   },
 
   headerLeft: {
@@ -109,7 +107,7 @@ export const styles = StyleSheet.create({
   newsTitle: {
     fontSize: FONT_SIZE.xl,
     fontWeight: "700",
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
     marginBottom: SPACING.sm,
     lineHeight: 30,
     letterSpacing: -0.4,
