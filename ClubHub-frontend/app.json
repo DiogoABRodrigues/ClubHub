@@ -16,16 +16,19 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#800000",
         "foregroundImage": "./assets/1024.png",
-        "backgroundImage": "./assets/1024.png",
         "monochromeImage": "./assets/1024.png"
       },
       "googleServicesFile": "./google-services.json",
       "predictiveBackGestureEnabled": false,
       "package": "com.x13dean13.A.D.E.C.A.S"
     },
-    "web": {
+    "notification": {
+      "icon": "./assets/mono.png",
+      "color": "#800000"
+    },
+      "web": {
       "favicon": "./assets/icon.png"
     },
     "plugins": [
