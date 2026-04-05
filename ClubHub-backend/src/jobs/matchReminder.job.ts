@@ -3,6 +3,7 @@ import Match from "../models/Match";
 import { pushService } from "../services/push.service";
 import deviceService from "../services/device.service";
 import AppSettings from "../models/AppSettings";
+import { teamConfig } from "../config/teamConfig";
 
 export const startMatchReminderJob = () => {
   // ⏰ Todos os dias às 10:30
@@ -38,11 +39,10 @@ export const startMatchReminderJob = () => {
       if (!devices.length) return;
 
       // 🔔 Enviar notificação para cada jogo
-      for (const match of matches) {
-        const title = "Jogo hoje!";
+        const title = "Dio de jogo!";
 
         const body =
-          "Hoje é dia de jogo! Não te esqueças de apoiar o teu clube!";
+          "Hoje é dia de jogo! Não te esqueças de apoiar o " + teamConfig.name + "!";
 
         const response = await pushService.sendToDevices(devices, {
           title,
@@ -50,11 +50,14 @@ export const startMatchReminderJob = () => {
         });
 
         await pushService.handleReceipts(response);
-      }
 
       console.log("✅ Notifications sent");
     } catch (err) {
       console.error("❌ Cron error:", err);
     }
-  });
+  },
+  {
+    timezone: "Europe/Lisbon",
+  }
+);
 };
