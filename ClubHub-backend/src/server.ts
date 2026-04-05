@@ -6,11 +6,6 @@ import { initSocket } from "./config/socket";
 import http from "http";
 import { startMatchReminderJob } from "./jobs/matchReminder.job";
 import { wakeUpBackend } from "./jobs/wake-up";
-import { scrapeTeamStats } from "./scrapers/statsScraper";
-import { scrapeAllTeams } from "./scrapers/allTeamsScraper";
-import { scrapeTeamPlayers } from "./scrapers/playersScraper";
-import { scrapeStandings } from "./scrapers/standingsScraper";
-import { scrapeTeamMatches } from "./scrapers/matchScraper";
 
 const PORT = process.env.PORT;
 
@@ -26,11 +21,6 @@ async function startServer() {
     await sequelize.authenticate();
     await connectRedis();
     await sequelize.sync({ alter: true });
-    const matches = await scrapeTeamMatches();
-          const standings = await scrapeStandings();
-          const players = await scrapeTeamPlayers();
-          const teams = await scrapeAllTeams();
-          const stats = await scrapeTeamStats();
     console.log("DB ligada");
 
     server.listen(PORT, () => {

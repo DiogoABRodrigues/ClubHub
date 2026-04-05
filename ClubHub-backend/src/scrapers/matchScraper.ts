@@ -112,10 +112,19 @@ export async function saveMatches(
 
 // Scraper principal
 export async function scrapeTeamMatches(): Promise<ScrapedMatch[]> {
-  const browser = await puppeteer.launch({
-    headless: false,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
+  let browser;
+
+  try {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      executablePath:
+        process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+    });
+  } catch (err) {
+    console.error("🔥 ERRO AO ABRIR BROWSER:", err);
+    return [];
+  }
   const page = await browser.newPage();
   await page.setViewport({ width: 1920, height: 1080 });
   await page.setUserAgent(
