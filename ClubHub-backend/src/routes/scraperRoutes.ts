@@ -6,6 +6,7 @@ import { scrapeTeamStats } from "../scrapers/statsScraper";
 import { scrapeAllTeams } from "../scrapers/allTeamsScraper";
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { authorizeRoles } from "../middlewares/authorizeRoles";
+import { redis } from "../config/redis";
 
 const router = Router();
 
@@ -31,6 +32,7 @@ router.post(
         totalPlayers: players.length,
         totalTeams: teams.length,
       });
+      await redis.flushDb();
     } catch (error) {
       console.error(error);
       res.status(500).json({

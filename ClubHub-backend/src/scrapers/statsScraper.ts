@@ -105,6 +105,5 @@ export async function scrapeTeamStats() {
       position: s.position,
     });
   }
-  await cache.del("stats:current");
   return stats;
 }

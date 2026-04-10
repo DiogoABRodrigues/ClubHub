@@ -5,7 +5,6 @@ import Team from "../models/Team";
 import Standing from "../models/Standing";
 import Season from "../models/Season";
 import cache from "../services/cache.service";
-import { CacheKeys } from "../cache/keys";
 
 export interface StandingRow {
   position: number;
@@ -360,7 +359,6 @@ export async function saveStandings(
   });
 
   await Standing.bulkCreate(data);
-  await cache.del("standings:current");
 
   console.log(
     `✅ Standings guardadas para a competição ${competitionId} e season ${seasonId}`,

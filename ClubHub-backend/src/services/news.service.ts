@@ -11,7 +11,6 @@ class NewsService {
 
     await cache.del(CacheKeys.news.last10);
 
-    // 📢 PUSH NOTIFICATION
     await this.notify(news);
 
     return news;
@@ -74,7 +73,7 @@ class NewsService {
   async update(id: number, data: any) {
     const news = await News.findByPk(id);
     if (!news) return null;
-
+    await cache.del(CacheKeys.news.last10);
     await news.update(data);
     return news;
   }
@@ -82,7 +81,7 @@ class NewsService {
   async delete(id: number) {
     const news = await News.findByPk(id);
     if (!news) return null;
-
+    await cache.del(CacheKeys.news.last10);
     await news.destroy();
     return true;
   }

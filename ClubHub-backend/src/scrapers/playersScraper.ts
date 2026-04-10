@@ -6,7 +6,6 @@ import Season from "../models/Season"; // vamos criar este modelo
 import { teamConfig } from "../config/teamConfig";
 import Stats from "../models/Stats";
 import cache from "../services/cache.service";
-import { CacheKeys } from "../cache/keys";
 
 async function getOrCreateSeason() {
   const [season] = await Season.findOrCreate({
@@ -199,8 +198,5 @@ export async function savePlayersAndSquad(players: any[]) {
       position: p.position,
     });
 
-    await cache.del("players:current");
-    await cache.del("squad:current");
-    await cache.del("stats:current");
   }
 }

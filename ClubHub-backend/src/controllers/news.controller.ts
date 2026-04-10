@@ -6,9 +6,6 @@ const baseUrl = process.env.API_BASE_URL
 class NewsController {
   async create(req: Request, res: Response) {
     try {
-      console.log("File received:", req.file); // Debug
-      console.log("Body received:", req.body); // Debug
-
       // Verifica se o arquivo foi recebido corretamente
       let imageFilename = null;
       if (req.file) {
