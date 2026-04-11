@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn src/server.ts",
-    "build": "tsc && node -e \"require('@sparticuz/chromium-min').executablePath('URL_DO_CHROMIUM')\"",
+    "build": "tsc",
     "start": "node dist/server.js",
     "postinstall": "npx puppeteer browsers install chrome"
   },
