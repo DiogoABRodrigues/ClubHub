@@ -21,12 +21,16 @@ export async function scrapeTeamPlayers() {
     await page.setUserAgent(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
     );
-    await page.setViewport({ width: 1920, height: 1080 });
+    await page.setViewport({ width: 1280, height: 800 });
 
-    await page.goto(teamConfig.players_url, {
-      waitUntil: "domcontentloaded",
-      timeout: 90000,
-    });
+    try {
+      await page.goto(teamConfig.players_url, {
+        waitUntil: "domcontentloaded",
+        timeout: 90000,
+      });
+    } catch {
+      console.log("⚠️ Timeout no goto players, a tentar continuar...");
+    }
 
     // Aceitar cookies
     try {
@@ -38,10 +42,14 @@ export async function scrapeTeamPlayers() {
       });
     } catch {}
 
-    // Esperar pelo conteúdo renderizado pelo JS
-    await page.waitForSelector("#team_squad .staff, #team_squad .innerbox", {
-      timeout: 30000,
-    });
+    // Esperar pelo JS renderizar o conteúdo
+    try {
+      await page.waitForSelector("#team_squad .staff, #team_squad .innerbox", {
+        timeout: 30000,
+      });
+    } catch {
+      console.log("⚠️ #team_squad não encontrado, a ler HTML disponível...");
+    }
 
     const html = await page.content();
     const $ = cheerio.load(html);

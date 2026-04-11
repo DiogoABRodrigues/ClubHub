@@ -9,17 +9,14 @@ let sharedBrowser: Browser | null = null;
 
 async function getExecutablePath(): Promise<string | undefined> {
   if (process.env.NODE_ENV !== "production") return undefined;
-
   if (!cachedExecutablePath) {
     cachedExecutablePath = await chromium.executablePath(CHROMIUM_URL);
   }
-
   return cachedExecutablePath;
 }
 
 export async function warmupBrowser() {
   if (process.env.NODE_ENV !== "production") return;
-
   console.log("⏳ A descarregar Chromium...");
   cachedExecutablePath = await chromium.executablePath(CHROMIUM_URL);
   console.log("✅ Chromium pronto:", cachedExecutablePath);
@@ -27,14 +24,22 @@ export async function warmupBrowser() {
 
 async function createBrowser(): Promise<Browser> {
   return puppeteer.launch({
-    args: chromium.args,
+    args: [
+      ...chromium.args,
+      "--disable-dev-shm-usage",   // evita crashes por falta de memória partilhada
+      "--disable-gpu",
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-web-security",
+      "--disable-features=IsolateOrigins,site-per-process",
+      "--blink-settings=imagesEnabled=false", // não carrega imagens → muito mais rápido
+    ],
     executablePath: cachedExecutablePath ?? (await getExecutablePath()),
     headless: true,
-    defaultViewport: { width: 1920, height: 1080 },
+    defaultViewport: { width: 1280, height: 800 }, // viewport menor → menos memória
   });
 }
 
-// Usado pelos scrapers — partilha o browser, fecha apenas a page
 export async function getSharedBrowser(): Promise<Browser> {
   if (sharedBrowser && sharedBrowser.connected) {
     return sharedBrowser;
@@ -44,7 +49,6 @@ export async function getSharedBrowser(): Promise<Browser> {
   return sharedBrowser;
 }
 
-// Chamado no fim de todos os scrapers (no router)
 export async function closeSharedBrowser(): Promise<void> {
   if (sharedBrowser) {
     await sharedBrowser.close();
@@ -53,7 +57,6 @@ export async function closeSharedBrowser(): Promise<void> {
   }
 }
 
-// Mantido para compatibilidade com código que ainda use launchBrowser diretamente
 export async function launchBrowser(): Promise<Browser> {
   return createBrowser();
 }
