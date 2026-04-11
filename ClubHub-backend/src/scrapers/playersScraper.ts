@@ -1,4 +1,3 @@
-import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
 import Player from "../models/Player";
 import Squad from "../models/Squad";

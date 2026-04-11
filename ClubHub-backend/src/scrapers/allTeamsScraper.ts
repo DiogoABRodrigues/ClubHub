@@ -1,5 +1,3 @@
-import puppeteer from "puppeteer";
-import chromium from "@sparticuz/chromium-min";
 import * as cheerio from "cheerio";
 import Team from "../models/Team";
 import { teamConfig } from "../config/teamConfig";

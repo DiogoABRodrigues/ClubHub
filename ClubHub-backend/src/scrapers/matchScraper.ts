@@ -1,5 +1,6 @@
 // src/scrapers/matchScraper.ts
 import { teamConfig } from "../config/teamConfig";
+import * as cheerio from "cheerio";
 import Match from "../models/Match";
 import Competition from "../models/Competition";
 import Season from "../models/Season";
@@ -115,8 +116,8 @@ export async function scrapeTeamMatches(): Promise<ScrapedMatch[]> {
 
   console.log(`🌐 A aceder a: ${teamConfig.matches_url}`);
   await page.goto(teamConfig.matches_url, {
-    waitUntil: "networkidle2",
-    timeout: 30000,
+    waitUntil: "domcontentloaded",
+    timeout: 60000,
   });
 
   // Aceitar cookies
@@ -133,72 +134,67 @@ export async function scrapeTeamMatches(): Promise<ScrapedMatch[]> {
     });
   } catch {}
 
-  await page.waitForSelector("#team_games table", { timeout: 10000 });
-  await new Promise((r) => setTimeout(r, 2000));
+  await page.waitForSelector("#team_games table", { timeout: 15000 });
 
-  const scrapedMatches: ScrapedMatch[] = await page.evaluate(() => {
-    const rows = Array.from(document.querySelectorAll("tr.parent"));
-    return rows
-      .map((row) => {
-        const cells = row.querySelectorAll("td");
-        if (cells.length < 9) return null;
-
-        let outcome: "V" | "E" | "D" | null = null;
-        const formEl = cells[0].querySelector(".form .sign");
-        if (formEl?.classList.contains("win")) outcome = "V";
-        else if (formEl?.classList.contains("draw")) outcome = "E";
-        else if (formEl?.classList.contains("lost")) outcome = "D";
-
-        const date = cells[1].textContent?.trim() || "";
-        const time = cells[2].textContent?.trim() || "";
-        let homeOrAway: "C" | "F" =
-          cells[3].textContent?.trim() === "(F)" ? "F" : "C";
-
-        let opponent =
-          cells[5].querySelector("a")?.textContent?.trim() ||
-          cells[5].textContent?.trim() ||
-          "";
-        opponent = opponent.replace(/\s+B$/, "").trim();
-
-        let result = cells[6].textContent?.trim() || null;
-        if (result === "-" || result === "") result = null;
-
-        let competition =
-          cells[7].querySelector("a")?.textContent?.trim() ||
-          cells[7].textContent?.trim() ||
-          "";
-
-        let round = cells[8].textContent?.trim() || "";
-        if (!round) {
-          const roundMatch = competition.match(/(J\d+|1\/\d+|Taça)/i);
-          if (roundMatch) round = roundMatch[1];
-        }
-
-        if (!date || !opponent) return null;
-        return {
-          date,
-          time,
-          homeOrAway,
-          opponent,
-          result,
-          competition,
-          round,
-          outcome,
-        } as ScrapedMatch;
-      })
-      .filter(Boolean) as ScrapedMatch[];
-  });
-
+  const html = await page.content(); // ← tira o HTML após JS renderizar
   await browser.close();
 
+  const $ = cheerio.load(html); // ← cheerio a partir daqui
+  const scrapedMatches: ScrapedMatch[] = [];
+
+  $("tr.parent").each((_, row) => {
+    const cells = $(row).find("td");
+    if (cells.length < 9) return;
+
+    let outcome: "V" | "E" | "D" | null = null;
+    const formEl = $(cells[0]).find(".form .sign");
+    if (formEl.hasClass("win")) outcome = "V";
+    else if (formEl.hasClass("draw")) outcome = "E";
+    else if (formEl.hasClass("lost")) outcome = "D";
+
+    const date = $(cells[1]).text().trim();
+    const time = $(cells[2]).text().trim();
+    const homeOrAway: "C" | "F" =
+      $(cells[3]).text().trim() === "(F)" ? "F" : "C";
+
+    let opponent =
+      $(cells[5]).find("a").text().trim() || $(cells[5]).text().trim();
+    opponent = opponent.replace(/\s+B$/, "").trim();
+
+    let result = $(cells[6]).text().trim() || null;
+    if (result === "-" || result === "") result = null;
+
+    const competition =
+      $(cells[7]).find("a").text().trim() || $(cells[7]).text().trim();
+
+    let round = $(cells[8]).text().trim();
+    if (!round) {
+      const roundMatch = competition.match(/(J\d+|1\/\d+|Taça)/i);
+      if (roundMatch) round = roundMatch[1];
+    }
+
+    if (!date || !opponent) return;
+
+    scrapedMatches.push({
+      date,
+      time,
+      homeOrAway,
+      opponent,
+      result,
+      competition,
+      round,
+      outcome,
+      seasonId: 0,
+    });
+  });
+
   console.log(`\n📊 Total de jogos encontrados: ${scrapedMatches.length}`);
-  const uniqueComps = Array.from(
-    new Set(scrapedMatches.map((m) => m.competition)),
-  );
+  const uniqueComps = Array.from(new Set(scrapedMatches.map((m) => m.competition)));
   console.log(`🏆 Competições detectadas: ${uniqueComps.join(", ")}`);
 
   if (scrapedMatches.length > 0) {
     await saveMatches(teamConfig.name, scrapedMatches);
   }
+
   return scrapedMatches;
 }
