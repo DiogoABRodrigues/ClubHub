@@ -6,6 +6,7 @@ import { initSocket } from "./config/socket";
 import http from "http";
 import { startMatchReminderJob } from "./jobs/matchReminder.job";
 import { wakeUpBackend } from "./jobs/wake-up";
+import { warmupBrowser } from "./utils/browser";
 
 const PORT = process.env.PORT;
 
@@ -23,8 +24,9 @@ async function startServer() {
     await sequelize.sync({ alter: true });
     console.log("DB ligada");
 
-    server.listen(PORT, () => {
+    server.listen(PORT, async () => {
       console.log(`Servidor a correr em ${PORT}`);
+      await warmupBrowser();
     });
   } catch (error) {
     console.error("Erro ao iniciar o backend:", error);
