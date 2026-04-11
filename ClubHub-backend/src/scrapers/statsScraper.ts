@@ -3,7 +3,7 @@ import * as cheerio from "cheerio";
 import Stats from "../models/Stats";
 import Season from "../models/Season";
 import { teamConfig } from "../config/teamConfig";
-import cache from "../services/cache.service";
+import { launchBrowser } from "../utils/browser";
 
 async function getOrCreateSeason() {
   const [season] = await Season.findOrCreate({
@@ -14,19 +14,7 @@ async function getOrCreateSeason() {
 }
 
 export async function scrapeTeamStats() {
-  let browser;
-
-  try {
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      executablePath:
-        process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-    });
-  } catch (err) {
-    console.error("🔥 ERRO AO ABRIR BROWSER:", err);
-    return [];
-  }
+   const browser = await launchBrowser();
   const page = await browser.newPage();
 
   await page.setUserAgent(
@@ -37,7 +25,7 @@ export async function scrapeTeamStats() {
 
   await page.goto(teamConfig.stats, {
     waitUntil: "networkidle2",
-    timeout: 30000,
+    timeout: 300000,
   });
 
   // Aceitar cookies (se existir)

@@ -34,7 +34,7 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
   const page = await browser.newPage();
 
   // Configurar timeout maior
-  page.setDefaultTimeout(60000);
+  page.setDefaultTimeout(300000);
 
   // Adicionar user agent realista
   await page.setUserAgent(
@@ -47,7 +47,7 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
     // Tentar diferentes estratégias de waitUntil
     await page.goto(teamConfig.standings_url, {
       waitUntil: "domcontentloaded", // Mais rápido que networkidle2
-      timeout: 60000,
+      timeout: 300000,
     });
 
     // Aceitar cookies com um seletor mais abrangente
@@ -76,7 +76,7 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
 
     // Esperar por qualquer tabela, não apenas com ID específico
     try {
-      await page.waitForSelector("table", { timeout: 30000 });
+      await page.waitForSelector("table", { timeout: 300000 });
       console.log("✅ Tabela encontrada");
     } catch (error) {
       console.log("❌ Tabela não encontrada. Tentando alternativas...");

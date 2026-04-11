@@ -116,12 +116,12 @@ export async function scrapeTeamMatches(): Promise<ScrapedMatch[]> {
   console.log(`🌐 A aceder a: ${teamConfig.matches_url}`);
   await page.goto(teamConfig.matches_url, {
     waitUntil: "networkidle2",
-    timeout: 30000,
+    timeout: 300000,
   });
 
   // Aceitar cookies
   try {
-    await page.waitForSelector("button", { timeout: 5000 });
+    await page.waitForSelector("button", { timeout: 300000 });
     await page.evaluate(() => {
       const btns = Array.from(document.querySelectorAll("button"));
       const acceptBtn = btns.find(
@@ -133,8 +133,8 @@ export async function scrapeTeamMatches(): Promise<ScrapedMatch[]> {
     });
   } catch {}
 
-  await page.waitForSelector("#team_games table", { timeout: 10000 });
-  await new Promise((r) => setTimeout(r, 2000));
+  await page.waitForSelector("#team_games table", { timeout: 300000 });
+  await new Promise((r) => setTimeout(r, 300000));
 
   const scrapedMatches: ScrapedMatch[] = await page.evaluate(() => {
     const rows = Array.from(document.querySelectorAll("tr.parent"));

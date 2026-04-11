@@ -28,7 +28,7 @@ export async function scrapeTeamPlayers() {
 
   await page.goto(teamConfig.players_url, {
     waitUntil: "networkidle2",
-    timeout: 30000,
+    timeout: 300000,
   });
 
   // Aceitar cookies (se existir)

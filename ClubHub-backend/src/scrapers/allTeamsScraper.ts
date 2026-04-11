@@ -26,11 +26,11 @@ export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
 
   for (const comp of competitions) {
     try {
-      await page.goto(comp.url, { waitUntil: "networkidle2", timeout: 30000 });
+      await page.goto(comp.url, { waitUntil: "networkidle2", timeout: 300000 });
 
       // Aceitar cookies
       try {
-        await page.waitForSelector("button", { timeout: 5000 });
+        await page.waitForSelector("button", { timeout: 300000 });
         await page.evaluate(() => {
           const buttons = Array.from(document.querySelectorAll("button"));
           const acceptBtn = buttons.find(
@@ -44,9 +44,9 @@ export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
 
       // Aguardar pela tabela de classificação
       await page.waitForSelector("table tbody tr, table tr", {
-        timeout: 10000,
+        timeout: 300000,
       });
-      await new Promise((r) => setTimeout(r, 2000));
+      await new Promise((r) => setTimeout(r, 300000));
 
       const html = await page.content();
       const $ = cheerio.load(html);
