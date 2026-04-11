@@ -8,7 +8,7 @@ const BACKEND_URI = teamConfig.backend_URL;
 
 export const api = axios.create({
   baseURL: BACKEND_URI + "/api/",
-  timeout: 5000,
+  timeout: 15000,
 });
 
 export const scrapperApi = axios.create({

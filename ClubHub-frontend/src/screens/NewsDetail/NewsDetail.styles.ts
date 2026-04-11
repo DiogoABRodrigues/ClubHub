@@ -141,7 +141,7 @@ export const styles = StyleSheet.create({
 
   contentText: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
     lineHeight: 22,
   },
 
@@ -156,7 +156,7 @@ export const styles = StyleSheet.create({
   relatedTitle: {
     fontSize: FONT_SIZE.md,
     fontWeight: "700",
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
     marginBottom: SPACING.md,
     letterSpacing: -0.2,
   },

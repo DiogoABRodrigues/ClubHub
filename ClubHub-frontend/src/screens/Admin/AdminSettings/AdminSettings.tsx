@@ -60,7 +60,6 @@ export const AdminSettings = ({ navigation }: any) => {
       await ScrapperService.scrapAll();
       setUpdateDone(true);
     } catch (error) {
-      console.error("Erro ao atualizar dados:", error);
       alert("Falha ao atualizar dados. Tente novamente.");
     } finally {
       setIsUpdating(false);
