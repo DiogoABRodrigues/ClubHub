@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 import Team from "../models/Team";
 import { teamConfig } from "../config/teamConfig";
-import { launchBrowser } from "../utils/browser";
+import { getSharedBrowser, launchBrowser } from "../utils/browser";
 
 export interface ScrapedTeam {
   name: string;
@@ -11,9 +11,7 @@ export interface ScrapedTeam {
 
 const competitions = [{ url: teamConfig.teams1 }, { url: teamConfig.teams2 }];
 export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
-const browser = await launchBrowser();
-
-
+  const browser = await getSharedBrowser();
   const page = await browser.newPage();
   await page.setViewport({ width: 1920, height: 1080 });
   await page.setUserAgent(
@@ -98,7 +96,7 @@ const browser = await launchBrowser();
     }
   }
 
-  await browser.close();
+  await page.close();
 
   // Remover duplicados globais por nome
   const uniqueTeams = allTeams.filter(

@@ -4,7 +4,7 @@ import * as cheerio from "cheerio";
 import Match from "../models/Match";
 import Competition from "../models/Competition";
 import Season from "../models/Season";
-import { launchBrowser } from "../utils/browser";
+import { getSharedBrowser } from "../utils/browser";
 export interface ScrapedMatch {
   date: string;
   time: string;
@@ -107,7 +107,7 @@ export async function saveMatches(
 
 // Scraper principal
 export async function scrapeTeamMatches(): Promise<ScrapedMatch[]> {
-  const browser = await launchBrowser();
+  const browser = await getSharedBrowser();
   const page = await browser.newPage();
   await page.setViewport({ width: 1920, height: 1080 });
   await page.setUserAgent(
@@ -134,10 +134,16 @@ export async function scrapeTeamMatches(): Promise<ScrapedMatch[]> {
     });
   } catch {}
 
-  await page.waitForSelector("#team_games table", { timeout: 15000 });
+  try {
+    await page.waitForSelector("#team_games table", { timeout: 20000 });
+  } catch {
+    // tenta recarregar uma vez
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.waitForSelector("#team_games table", { timeout: 20000 });
+  }
 
   const html = await page.content(); // ← tira o HTML após JS renderizar
-  await browser.close();
+  await page.close();
 
   const $ = cheerio.load(html); // ← cheerio a partir daqui
   const scrapedMatches: ScrapedMatch[] = [];

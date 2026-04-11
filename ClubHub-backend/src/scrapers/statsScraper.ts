@@ -2,7 +2,7 @@ import * as cheerio from "cheerio";
 import Stats from "../models/Stats";
 import Season from "../models/Season";
 import { teamConfig } from "../config/teamConfig";
-import { launchBrowser } from "../utils/browser";
+import { getSharedBrowser, launchBrowser } from "../utils/browser";
 
 async function getOrCreateSeason() {
   const [season] = await Season.findOrCreate({
@@ -13,7 +13,7 @@ async function getOrCreateSeason() {
 }
 
 export async function scrapeTeamStats() {
-   const browser = await launchBrowser();
+  const browser = await getSharedBrowser();
   const page = await browser.newPage();
 
   await page.setUserAgent(
@@ -38,7 +38,7 @@ export async function scrapeTeamStats() {
   } catch (err) {}
 
   const html = await page.content();
-  await browser.close();
+  await page.close();
 
   const $ = cheerio.load(html);
   const stats: any[] = [];

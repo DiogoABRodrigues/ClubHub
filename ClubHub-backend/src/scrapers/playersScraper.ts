@@ -4,7 +4,7 @@ import Squad from "../models/Squad";
 import Season from "../models/Season"; // vamos criar este modelo
 import { teamConfig } from "../config/teamConfig";
 import Stats from "../models/Stats";
-import { launchBrowser } from "../utils/browser";
+import { getSharedBrowser, launchBrowser } from "../utils/browser";
 async function getOrCreateSeason() {
   const [season] = await Season.findOrCreate({
     where: { year: teamConfig.currentSeason },
@@ -14,8 +14,7 @@ async function getOrCreateSeason() {
 }
 
 export async function scrapeTeamPlayers() {
-  const browser = await launchBrowser();
-
+  const browser = await getSharedBrowser();
   const page = await browser.newPage();
 
   await page.setUserAgent(
@@ -40,7 +39,7 @@ export async function scrapeTeamPlayers() {
   } catch (err) {}
 
   const html = await page.content();
-  await browser.close();
+  await page.close();
 
   const $ = cheerio.load(html);
   const players: any[] = [];

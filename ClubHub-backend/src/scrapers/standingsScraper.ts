@@ -3,7 +3,7 @@ import { teamConfig } from "../config/teamConfig";
 import Team from "../models/Team";
 import Standing from "../models/Standing";
 import Season from "../models/Season";
-import { launchBrowser } from "../utils/browser";
+import { getSharedBrowser, launchBrowser } from "../utils/browser";
 export interface StandingRow {
   position: number;
   teamName: string;
@@ -29,8 +29,7 @@ async function getOrCreateSeason(seasonName: string) {
 }
 
 export async function scrapeStandings(): Promise<StandingRow[]> {
- const browser = await launchBrowser();
-
+  const browser = await getSharedBrowser();
   const page = await browser.newPage();
 
   // Configurar timeout maior
@@ -297,7 +296,7 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
 
     throw error;
   } finally {
-    await browser.close();
+    await page.close();
   }
 }
 

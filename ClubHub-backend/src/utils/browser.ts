@@ -1,10 +1,11 @@
-import puppeteer from "puppeteer";
+import puppeteer, { Browser } from "puppeteer";
 import chromium from "@sparticuz/chromium-min";
 
 const CHROMIUM_URL =
   "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar";
 
 let cachedExecutablePath: string | undefined;
+let sharedBrowser: Browser | null = null;
 
 async function getExecutablePath(): Promise<string | undefined> {
   if (process.env.NODE_ENV !== "production") return undefined;
@@ -24,12 +25,35 @@ export async function warmupBrowser() {
   console.log("✅ Chromium pronto:", cachedExecutablePath);
 }
 
-export async function launchBrowser() {
+async function createBrowser(): Promise<Browser> {
   return puppeteer.launch({
     args: chromium.args,
-    executablePath: cachedExecutablePath ?? await getExecutablePath(),
+    executablePath: cachedExecutablePath ?? (await getExecutablePath()),
     headless: true,
     defaultViewport: { width: 1920, height: 1080 },
   });
 }
 
+// Usado pelos scrapers — partilha o browser, fecha apenas a page
+export async function getSharedBrowser(): Promise<Browser> {
+  if (sharedBrowser && sharedBrowser.connected) {
+    return sharedBrowser;
+  }
+  console.log("🚀 A iniciar browser partilhado...");
+  sharedBrowser = await createBrowser();
+  return sharedBrowser;
+}
+
+// Chamado no fim de todos os scrapers (no router)
+export async function closeSharedBrowser(): Promise<void> {
+  if (sharedBrowser) {
+    await sharedBrowser.close();
+    sharedBrowser = null;
+    console.log("🔒 Browser partilhado fechado.");
+  }
+}
+
+// Mantido para compatibilidade com código que ainda use launchBrowser diretamente
+export async function launchBrowser(): Promise<Browser> {
+  return createBrowser();
+}
