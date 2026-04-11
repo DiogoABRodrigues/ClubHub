@@ -5,7 +5,7 @@ import Squad from "../models/Squad";
 import Season from "../models/Season"; // vamos criar este modelo
 import { teamConfig } from "../config/teamConfig";
 import Stats from "../models/Stats";
-import cache from "../services/cache.service";
+import { launchBrowser } from "../utils/browser";
 
 async function getOrCreateSeason() {
   const [season] = await Season.findOrCreate({
@@ -16,19 +16,8 @@ async function getOrCreateSeason() {
 }
 
 export async function scrapeTeamPlayers() {
-  let browser;
+  const browser = await launchBrowser();
 
-  try {
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      executablePath:
-        process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-    });
-  } catch (err) {
-    console.error("🔥 ERRO AO ABRIR BROWSER:", err);
-    return [];
-  }
   const page = await browser.newPage();
 
   await page.setUserAgent(

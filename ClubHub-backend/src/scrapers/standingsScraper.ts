@@ -1,11 +1,9 @@
-import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
 import { teamConfig } from "../config/teamConfig";
 import Team from "../models/Team";
 import Standing from "../models/Standing";
 import Season from "../models/Season";
-import cache from "../services/cache.service";
-
+import { launchBrowser } from "../utils/browser";
 export interface StandingRow {
   position: number;
   teamName: string;
@@ -31,19 +29,7 @@ async function getOrCreateSeason(seasonName: string) {
 }
 
 export async function scrapeStandings(): Promise<StandingRow[]> {
-  let browser;
-
-  try {
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      executablePath:
-        process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-    });
-  } catch (err) {
-    console.error("🔥 ERRO AO ABRIR BROWSER:", err);
-    return [];
-  }
+ const browser = await launchBrowser();
 
   const page = await browser.newPage();
 

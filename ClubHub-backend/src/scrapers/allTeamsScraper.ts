@@ -1,8 +1,9 @@
 import puppeteer from "puppeteer";
+import chromium from "@sparticuz/chromium-min";
 import * as cheerio from "cheerio";
 import Team from "../models/Team";
 import { teamConfig } from "../config/teamConfig";
-import cache from "../services/cache.service";
+import { launchBrowser } from "../utils/browser";
 
 export interface ScrapedTeam {
   name: string;
@@ -10,23 +11,10 @@ export interface ScrapedTeam {
   logoUrl?: string;
 }
 
-// URLs das competições
 const competitions = [{ url: teamConfig.teams1 }, { url: teamConfig.teams2 }];
-
 export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
-  let browser;
+  const browser = await launchBrowser();
 
-  try {
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      executablePath:
-        process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-    });
-  } catch (err) {
-    console.error("🔥 ERRO AO ABRIR BROWSER:", err);
-    return [];
-  }
 
   const page = await browser.newPage();
   await page.setViewport({ width: 1920, height: 1080 });

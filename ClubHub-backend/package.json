@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@sparticuz/chromium-min": "^147.0.0",
     "@upstash/redis": "^1.37.0",
     "axios": "^1.13.6",
     "bcrypt": "^6.0.0",
