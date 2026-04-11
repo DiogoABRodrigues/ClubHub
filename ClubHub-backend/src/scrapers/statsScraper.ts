@@ -23,8 +23,8 @@ export async function scrapeTeamStats() {
   await page.setViewport({ width: 1920, height: 1080 });
 
   await page.goto(teamConfig.stats, {
-    waitUntil: "networkidle2",
-    timeout: 30000,
+    waitUntil: "domcontentloaded",
+    timeout: 60000,
   });
 
   // Aceitar cookies (se existir)

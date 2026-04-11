@@ -24,7 +24,7 @@ const browser = await launchBrowser();
 
   for (const comp of competitions) {
     try {
-      await page.goto(comp.url, { waitUntil: "networkidle2", timeout: 30000 });
+      await page.goto(comp.url, { waitUntil: "domcontentloaded", timeout: 60000 });
 
       // Aceitar cookies
       try {
