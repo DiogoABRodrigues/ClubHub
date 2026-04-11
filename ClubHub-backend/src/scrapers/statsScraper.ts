@@ -25,7 +25,7 @@ export async function scrapeTeamStats() {
 
   await page.goto(teamConfig.stats, {
     waitUntil: "networkidle2",
-    timeout: 300000,
+    timeout: 30000,
   });
 
   // Aceitar cookies (se existir)

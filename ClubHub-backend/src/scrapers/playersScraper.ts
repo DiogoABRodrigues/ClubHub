@@ -6,7 +6,6 @@ import Season from "../models/Season"; // vamos criar este modelo
 import { teamConfig } from "../config/teamConfig";
 import Stats from "../models/Stats";
 import { launchBrowser } from "../utils/browser";
-
 async function getOrCreateSeason() {
   const [season] = await Season.findOrCreate({
     where: { year: teamConfig.currentSeason },
@@ -28,7 +27,7 @@ export async function scrapeTeamPlayers() {
 
   await page.goto(teamConfig.players_url, {
     waitUntil: "networkidle2",
-    timeout: 300000,
+    timeout: 30000,
   });
 
   // Aceitar cookies (se existir)
