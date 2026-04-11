@@ -11,17 +11,28 @@ import { closeSharedBrowser } from "../utils/browser";
 
 const router = Router();
 
+async function restartBrowser() {
+  await closeSharedBrowser();
+  // pequena pausa para o processo limpar memória
+  await new Promise((r) => setTimeout(r, 2000));
+}
+
 router.post(
   "/scrape/allInfo",
   authMiddleware,
   authorizeRoles("admin"),
   async (req, res) => {
     try {
-      // Os scrapers partilham o mesmo browser internamente via getSharedBrowser()
       const matches = await scrapeTeamMatches();
       const standings = await scrapeStandings();
+
+      await restartBrowser();
+
       const players = await scrapeTeamPlayers();
       const teams = await scrapeAllTeams();
+
+      await restartBrowser();
+
       const stats = await scrapeTeamStats();
 
       res.json({
@@ -42,7 +53,6 @@ router.post(
         message: "Erro ao executar scraper",
       });
     } finally {
-      // Garante que o browser fecha sempre, mesmo em caso de erro
       await closeSharedBrowser();
     }
   },
