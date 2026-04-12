@@ -22,6 +22,12 @@ class PushService {
         title: payload.title,
         body: payload.body,
       },
+      android: {
+        notification: {
+          color: "#800000",
+          icon: "icon_notifications",
+        },
+      },
     });
 
     const invalidTokens: string[] = [];
