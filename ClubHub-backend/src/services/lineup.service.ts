@@ -15,20 +15,30 @@ export default class LineupService {
   }) {
     // Cria o lineup
     const lineup = await Lineup.create(data);
-
+    const match = await Match.findByPk(data.matchId);
+    if (match?.seasonId != null) {
+      await cache.del(CacheKeys.matches.bySeason(match.seasonId));
+    }
     return lineup;
   }
 
   async update(id: number, updates: Partial<{ isStarting: boolean }>) {
     const lineup = await Lineup.findByPk(id);
     if (!lineup) throw new Error("Lineup not found");
-
+    const match = await Match.findByPk(lineup.matchId);
+    if (match?.seasonId != null) {
+      await cache.del(CacheKeys.matches.bySeason(match.seasonId));
+    }
     await lineup.update(updates);
 
     return lineup;
   }
 
   async deleteByMatch(matchId: number) {
+    const match = await Match.findByPk(matchId);
+    if (match?.seasonId != null) {
+      await cache.del(CacheKeys.matches.bySeason(match.seasonId));
+    }
     await Lineup.destroy({ where: { matchId } });
   }
 }

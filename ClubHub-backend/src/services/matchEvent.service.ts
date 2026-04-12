@@ -10,19 +10,16 @@ import socketService from "./socket.service";
 import Player from "../models/Player";
 import { teamConfig } from "../config/teamConfig";
 import AppSettings from "../models/AppSettings";
-
+import cacheService from "../services/cache.service";
 class MatchEventService {
   async createEvent(matchId: number, data: any) {
-    // 🧠 1. criar chave única
     const key = buildEventKey(data, matchId);
 
-    // 🚨 2. anti-spam check
     if (await spamGuard.isDuplicate(key)) {
       console.log("🚫 Duplicate event blocked:", key);
       return null;
     }
 
-    // 💾 3. criar evento
     const event = await MatchEvent.create({
       ...data,
       matchId,
@@ -33,8 +30,6 @@ class MatchEventService {
     if (match?.seasonId != null) {
       await cache.del(CacheKeys.matches.bySeason(match.seasonId));
     }
-
-    // 📢 4. notificar
     await this.notify(event, "create");
 
     return event;
@@ -56,6 +51,10 @@ class MatchEventService {
 
     await MatchEvent.destroy({ where: { id: eventId } });
 
+    const match = await Match.findByPk(event.matchId);
+    if (match?.seasonId != null) {
+      await cache.del(CacheKeys.matches.bySeason(match.seasonId));
+    }
     await this.notify(event, "delete");
     socketService.emitMatchEvent(event.matchId, event);
 
