@@ -4,12 +4,12 @@
     "slug": "ADECAS",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/1024.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/transparant.png",
       "resizeMode": "contain",
-      "backgroundColor": "#000000"
+      "backgroundColor": "#800000"
     },
     "ios": {
       "supportsTablet": true
