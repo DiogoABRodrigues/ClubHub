@@ -38,6 +38,7 @@
       "expo-font",
       "expo-router",
       "@react-native-community/datetimepicker",
+      "./plugins/androidFixes",
       [
         "expo-build-properties",
         {
