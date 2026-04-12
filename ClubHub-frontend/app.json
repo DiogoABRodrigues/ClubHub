@@ -18,32 +18,42 @@
       "adaptiveIcon": {
         "backgroundColor": "#800000",
         "foregroundImage": "./assets/1024.png",
-        "monochromeImage": "./assets/1024.png"
+        "monochromeImage": "./assets/mono.png"
+      },
+      "notification": {
+        "icon": "./assets/mono.png",
+        "color": "#800000"
       },
       "googleServicesFile": "./google-services.json",
       "predictiveBackGestureEnabled": false,
       "package": "com.x13dean13.A.D.E.C.A.S",
-      "permissions": ["POST_NOTIFICATIONS"]
+      "permissions": [
+        "POST_NOTIFICATIONS"
+      ]
     },
-    "notification": {
-      "icon": "./assets/mono.png",
-      "color": "#800000"
-    },
-      "web": {
+    "web": {
       "favicon": "./assets/icon.png"
     },
     "plugins": [
       "expo-font",
       "expo-router",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "manifestQueries": {}
+          }
+        }
+      ]
     ],
     "extra": {
       "router": {},
+      "BACKEND_URI": "https://clubhub-c8u0.onrender.com",
       "eas": {
-        "projectId": "52c0553d-0cbd-47f4-a4d5-be8489e3e9ef"
-      },
-      "BACKEND_URI": "https://clubhub-c8u0.onrender.com"
+        "projectId": "2118d1ae-beb4-4503-a7ab-106eab98fb24"
+      }
     },
-    "owner": "13dean"
+    "owner": "13dean13"
   }
 }
