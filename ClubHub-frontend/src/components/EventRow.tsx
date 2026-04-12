@@ -36,13 +36,21 @@ export const EventRow = ({ event, isOurs, onEdit, onDelete }: Props) => {
   const playerOut = players.find((p) => p.id === event.playerOutId);
   const playerIn = players.find((p) => p.id === event.playerInId);
 
+  const playerName = (event: MatchEvent) => {
+    if (event.isOwnGoal) return "Auto-golo";
+    if (event.isOpponent) {
+      if(event.type === "red_card") {
+        return "Jogador Adversário";
+      }
+      return "Golo Adversário";
+    }
+    const player = players.find((p) => p.id === event.playerId);
+    return player ? player.name : "Jogador";
+  }
+
   const eventWithNames = {
     ...event,
-    player: event.isOwnGoal
-      ? "Auto-golo"
-      : player
-        ? player.name
-        : "Golo Adversário",
+    player: playerName(event),
     playerOut: playerOut ? playerOut.name : "Jogador Desconecido",
     playerIn: playerIn ? playerIn.name : "Jogador Desconecido",
   };

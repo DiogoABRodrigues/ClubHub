@@ -24,10 +24,10 @@ const TABS: Tab[] = [
   { key: "stats", label: "Estatísticas", icon: BarChart3 },
 ];
 
-// SeasonScreen.tsx
 export function SeasonScreen() {
   const { adminMode } = useAuth();
   const [activeTab, setActiveTab] = useState<SeasonTab>("standings");
+  const [visited, setVisited] = useState<Set<SeasonTab>>(new Set(["standings"]));
   const { seasons } = useSeasons();
 
   const currentSeason = useMemo(() => {
@@ -39,9 +39,9 @@ export function SeasonScreen() {
 
   const handleTabPress = useCallback((tab: SeasonTab) => {
     setActiveTab(tab);
+    setVisited((prev) => new Set(prev).add(tab));
   }, []);
 
-  // Renderizar os componentes condicionalmente sem usar função
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -65,11 +65,23 @@ export function SeasonScreen() {
         ))}
       </View>
 
-      {/* Renderização condicional direta */}
-      {activeTab === "standings" && <Standings />}
-      {activeTab === "squad" &&
-        (adminMode ? <AdminSquadScreen /> : <SquadScreen />)}
-      {activeTab === "stats" && <SquadStats />}
+      {visited.has("standings") && (
+        <View style={{ flex: 1, display: activeTab === "standings" ? "flex" : "none" }}>
+          <Standings />
+        </View>
+      )}
+
+      {visited.has("squad") && (
+        <View style={{ flex: 1, display: activeTab === "squad" ? "flex" : "none" }}>
+          {adminMode ? <AdminSquadScreen /> : <SquadScreen />}
+        </View>
+      )}
+
+      {visited.has("stats") && (
+        <View style={{ flex: 1, display: activeTab === "stats" ? "flex" : "none" }}>
+          <SquadStats />
+        </View>
+      )}
     </View>
   );
 }

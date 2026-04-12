@@ -38,13 +38,6 @@ export const NewsDetail = ({ route, navigation }: any) => {
     return result;
   }, [news, id]);
 
-  const goToNewsDetail = useCallback(
-    (newsId: string) => {
-      navigation.navigate("NewsDetail", { id: newsId });
-    },
-    [navigation],
-  );
-
   if (!newsFound) {
     return (
       <View style={styles.noNewsContainer}>
@@ -66,14 +59,12 @@ export const NewsDetail = ({ route, navigation }: any) => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate(adminMode ? "AdminNews" : "News")
-            }
-            style={styles.backButton}
-          >
-            <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
-          </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
+        </TouchableOpacity>
 
           <View style={styles.titleContainer}>
             <Text style={styles.headerTitle}>News</Text>
