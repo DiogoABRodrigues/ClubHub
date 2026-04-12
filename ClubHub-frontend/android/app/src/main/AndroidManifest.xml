@@ -21,8 +21,9 @@
       android:name="com.google.firebase.messaging.default_notification_icon"
       android:resource="@drawable/icon_notifications" />
     <meta-data
-      android:name="com.google.firebase.messaging.default_notification_color"
-      android:resource="@color/notification_color" />
+        android:name="com.google.firebase.messaging.default_notification_color"
+        android:resource="@color/notification_color"
+        tools:replace="android:resource" />
     <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true" android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
