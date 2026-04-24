@@ -4,7 +4,7 @@
     "slug": "ADECAS",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/1024.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/transparant.png",
