@@ -18,7 +18,7 @@ async function restartBrowser() {
 }
 
 router.post(
-  "/scrape/allInfo",
+  "/allInfo",
   authMiddleware,
   authorizeRoles("admin"),
   async (req, res) => {
