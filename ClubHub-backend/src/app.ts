@@ -19,6 +19,7 @@ import authRoutes from "./routes/auth.routes";
 import appSettingsRoutes from "./routes/appSettings.routes";
 import notificationsRoutes from "./routes/notification.routes";
 import rateLimit from "express-rate-limit";
+import compression from "compression";
 
 const app = express();
 
@@ -49,13 +50,14 @@ app.set("trust proxy", 1);
 
 app.use(
   cors({
-    origin: "*",
+    origin: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   }),
 );
 
 app.use(express.json());
+app.use(compression());
 
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/scrape", scraperLimiter, scraperRoutes);
