@@ -3,6 +3,10 @@ import Squad from "../models/Squad";
 import Stats from "../models/Stats";
 import cache from "../services/cache.service";
 import { CacheKeys } from "../cache/keys";
+import SeasonService from "./season.service";
+import Season from "../models/Season";
+
+const seasonService = new SeasonService();
 export default class PlayerService {
   async getAll() {
     return Player.findAll();
@@ -27,22 +31,9 @@ export default class PlayerService {
   }
 
   async getByCurrentSeasonId() {
-    const squad = await Squad.findAll({ order: [["seasonId", "DESC"]] });
-    if (!squad.length) return [];
-    const seasonId = squad[0].seasonId;
-    const externalIds = squad.map((s) => s.playerExternalId);
-
-    const players = await Player.findAll({
-      where: { externalId: externalIds },
-      include: [
-        {
-          model: Stats,
-          where: { seasonId },
-          required: false,
-        },
-      ],
-    });
-    return players;
+    const season = await new SeasonService().getCurrentSeason() as Season;
+    if (!season) return [];
+    return this.getBySeasonId(season.id); 
   }
 
   async updatePlayer(playerId: number, updates: Partial<Player>) {

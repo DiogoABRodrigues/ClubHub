@@ -5,7 +5,13 @@ import Device from "../models/Device";
 class PushService {
   async sendToDevices(
     devices: any[],
-    payload: { title: string; body: string },
+    payload: { 
+      title: string; 
+      body: string; 
+      imageUrl?: string
+      mainTeamLogoUrl?: string
+      otherTeamLogoUrl?: string
+    },
   ) {
     const tokens = devices
       .map((d) => d.pushToken)
@@ -26,6 +32,7 @@ class PushService {
         notification: {
           color: "#800000",
           icon: "icon_notifications",
+          imageUrl: payload.imageUrl ? undefined : payload.imageUrl,
         },
       },
     });

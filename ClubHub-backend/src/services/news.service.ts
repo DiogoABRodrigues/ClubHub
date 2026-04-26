@@ -4,6 +4,7 @@ import { CacheKeys } from "../cache/keys";
 import { pushService } from "./push.service";
 import deviceService from "./device.service";
 import AppSettings from "../models/AppSettings";
+import { getNotificationsEnabled } from "../utils/getNotificationsEnabled";
 
 class NewsService {
   async create(data: any) {
@@ -17,18 +18,9 @@ class NewsService {
   }
 
   private async notify(news: any) {
-    const settings = await AppSettings.findOne({
-      where: { key: "notifications_enabled" },
-    });
-    const rawValue = settings?.dataValues.value;
+    const settings = await getNotificationsEnabled();
 
-    const notificationsEnabled =
-      rawValue === true ||
-      rawValue === "true" ||
-      rawValue === 1 ||
-      rawValue === "1";
-
-    if (!notificationsEnabled) return;
+    if (!settings) return;
     const devices = await deviceService.getDevicesForNews();
 
     if (!devices.length) return;
@@ -39,6 +31,7 @@ class NewsService {
     const response = await pushService.sendToDevices(devices, {
       title,
       body,
+      imageUrl: news.imageUrl,
     });
 
     await pushService.handleReceipts(response);

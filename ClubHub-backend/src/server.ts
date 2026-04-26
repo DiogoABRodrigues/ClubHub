@@ -21,7 +21,7 @@ async function startServer() {
   try {
     await sequelize.authenticate();
     await connectRedis();
-    await sequelize.sync({ alter: true });
+    //await sequelize.sync({ alter: true });
     console.log("DB ligada");
 
     server.listen(PORT, async () => {

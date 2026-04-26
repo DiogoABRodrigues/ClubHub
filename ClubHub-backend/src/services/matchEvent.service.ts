@@ -11,6 +11,7 @@ import Player from "../models/Player";
 import { teamConfig } from "../config/teamConfig";
 import AppSettings from "../models/AppSettings";
 import cacheService from "../services/cache.service";
+import { getNotificationsEnabled } from "../utils/getNotificationsEnabled";
 class MatchEventService {
   async createEvent(matchId: number, data: any) {
     const key = buildEventKey(data, matchId);
@@ -62,18 +63,9 @@ class MatchEventService {
   }
 
   async notify(event: MatchEvent, action: "create" | "delete") {
-    const settings = await AppSettings.findOne({
-      where: { key: "notifications_enabled" },
-    });
-    const rawValue = settings?.dataValues.value;
+    const settings = await getNotificationsEnabled();
 
-    const notificationsEnabled =
-      rawValue === true ||
-      rawValue === "true" ||
-      rawValue === 1 ||
-      rawValue === "1";
-
-    if (!notificationsEnabled) return;
+    if (!settings) return;
 
     let devices: any[] = [];
     let title = "";

@@ -24,11 +24,23 @@ class CacheService {
   }
 
   async clearPattern(pattern: string) {
-    const keys = await redis.keys(pattern);
-    if (!keys.length) return;
+    let cursor = "0";
 
-    await redis.del(keys);
+    do {
+      const { cursor: nextCursor, keys } = await redis.scan(cursor, {
+        MATCH: pattern,
+        COUNT: 100,
+      });
+
+      cursor = nextCursor;
+
+      if (keys.length) {
+        await redis.del(keys);
+      }
+
+    } while (cursor !== "0");
   }
+  
 }
 
 export default new CacheService();
