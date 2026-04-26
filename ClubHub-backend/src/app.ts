@@ -59,9 +59,9 @@ app.use(
 app.use(express.json());
 app.use(compression());
 
+app.use("/api", limiter);
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/scrape", scraperLimiter, scraperRoutes);
-app.use("/api", limiter);
 app.use("/api/teams", teamRoutes);
 app.use("/api/players", playerRoutes);
 app.use("/api/competitions", competitionRoutes);
