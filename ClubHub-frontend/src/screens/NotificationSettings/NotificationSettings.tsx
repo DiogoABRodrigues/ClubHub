@@ -143,7 +143,7 @@ export const NotificationSettings = ({ navigation }: any) => {
             onPress={() => Linking.openURL(teamConfig.instagram_URL)}
             activeOpacity={0.8}
           >
-            <Ionicons name="logo-instagram" size={20} color="#fff" />
+            <Ionicons name="logo-instagram" size={20} color="#FFFFFF" />
             <Text style={styles.instagramBtnText}>Instagram</Text>
           </TouchableOpacity>
         </View>

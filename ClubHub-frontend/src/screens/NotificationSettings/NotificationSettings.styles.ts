@@ -222,16 +222,19 @@ export const styles = StyleSheet.create({
     alignSelf: "center",
     justifyContent: "center",
     gap: 8,
-    width: "33%",
+    width: "60%",
     marginTop: SPACING.md,
     paddingVertical: 13,
     borderRadius: RADIUS.lg,
     backgroundColor: COLORS.warning,
+    borderWidth: 1.5,
+    borderColor: "#FFFFFF",
   },
   instagramBtnText: {
-    color: "#fff",
+    color: "#FFFFFF",
     fontWeight: "700",
     fontSize: FONT_SIZE.md,
     letterSpacing: 0.3,
   },
+  
 });
