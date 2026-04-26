@@ -8,6 +8,7 @@ export const useStandings = () => {
   const standingsQuery = useQuery({
     queryKey: ["standings"],
     queryFn: StandingService.getByCurrentSeasonId,
+    staleTime: 1000 * 60 * 10,
   });
 
   return {

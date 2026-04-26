@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { refreshToken } from "../services/AuthService";
+import { setMemoryToken } from "../services/api";
 
 type AuthContextType = {
   isAdmin: boolean;
@@ -28,6 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const loginAsAdmin = async (access: string, refresh: string) => {
+    setMemoryToken(access);
     setAccessToken(access);
     setIsAdmin(true);
 
@@ -36,6 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
+    setMemoryToken(null);
     setAccessToken(null);
     setIsAdmin(false);
 

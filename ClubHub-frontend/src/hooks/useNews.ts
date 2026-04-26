@@ -62,15 +62,11 @@ export const useNews = () => {
       imageUri?: string;
     }) => NewsService.update(id, news as News, imageUri),
 
-    onSuccess: (updatedNews) => {
-      queryClient.setQueryData<News[]>(["news"], (old) =>
-        old?.map((n) =>
-          n.id === updatedNews.id
-            ? { ...updatedNews, updatedNews }
-            : n,
-        ),
-      );
-    },
+  onSuccess: (updatedNews) => {
+    queryClient.setQueryData<News[]>(["news"], (old) =>
+      old?.map((n) => (n.id === updatedNews.id ? updatedNews : n)),
+    );
+  },
   });
 
   return {

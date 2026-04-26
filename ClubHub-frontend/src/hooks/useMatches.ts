@@ -18,6 +18,8 @@ export const useMatches = () => {
   const matchesQuery = useQuery({
     queryKey: ["matches"],
     queryFn: MatchService.getByCurrentSeasonId,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
     select: (matches: Match[]) =>
       matches.sort(
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),

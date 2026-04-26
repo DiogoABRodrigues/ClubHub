@@ -1,10 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { refreshToken } from "./AuthService";
-import Constants from "expo-constants";
 import { teamConfig } from "../config/teamConfig";
 
 const BACKEND_URI = teamConfig.backend_URL;
+let memoryToken: string | null = null;
+
+export function setMemoryToken(token: string | null) {
+  memoryToken = token;
+}
 
 export const api = axios.create({
   baseURL: BACKEND_URI + "/api/",
@@ -18,7 +22,7 @@ export const scrapperApi = axios.create({
 
 api.interceptors.request.use(async (config) => {
 
-  const token = await AsyncStorage.getItem("accessToken");
+  const token = memoryToken ?? await AsyncStorage.getItem("accessToken");
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -28,7 +32,7 @@ api.interceptors.request.use(async (config) => {
 });
 
 scrapperApi.interceptors.request.use(async (config) => {
-  const token = await AsyncStorage.getItem("accessToken");
+  const token = memoryToken ?? await AsyncStorage.getItem("accessToken");
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -37,7 +41,6 @@ scrapperApi.interceptors.request.use(async (config) => {
   return config;
 });
 
-// ✅ RESPONSE
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
