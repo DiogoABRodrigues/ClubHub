@@ -4,24 +4,16 @@ import { pushService } from "../services/push.service";
 import deviceService from "../services/device.service";
 import AppSettings from "../models/AppSettings";
 import { teamConfig } from "../config/teamConfig";
+import { getNotificationsEnabled } from "../utils/getNotificationsEnabled";
 
 export const startMatchReminderJob = () => {
-  // ⏰ Todos os dias às 10:30
+  
   cron.schedule("30 10 * * *", async () => {
     try {
-      // 🔒 Ver se notificações estão ativas
-      const settings = await AppSettings.findOne({
-        where: { key: "notifications_enabled" },
-      });
-      const rawValue = settings?.dataValues.value;
+      
+      const settings = await getNotificationsEnabled();
 
-      const notificationsEnabled =
-        rawValue === true ||
-        rawValue === "true" ||
-        rawValue === 1 ||
-        rawValue === "1";
-
-      if (!notificationsEnabled) return;
+      if (!settings) return;
 
       const today = new Date().toISOString().split("T")[0];
 
@@ -38,8 +30,8 @@ export const startMatchReminderJob = () => {
 
       if (!devices.length) return;
 
-      // 🔔 Enviar notificação para cada jogo
-        const title = "Dio de jogo!";
+      
+        const title = "Dia de jogo!";
 
         const body =
           "Hoje é dia de jogo! Não te esqueças de apoiar o " + teamConfig.name + "!";
