@@ -9,8 +9,6 @@ import { CacheKeys } from "../cache/keys";
 import socketService from "./socket.service";
 import Player from "../models/Player";
 import { teamConfig } from "../config/teamConfig";
-import AppSettings from "../models/AppSettings";
-import cacheService from "../services/cache.service";
 import { getNotificationsEnabled } from "../utils/getNotificationsEnabled";
 class MatchEventService {
   async createEvent(matchId: number, data: any) {
@@ -31,17 +29,16 @@ class MatchEventService {
     if (match?.seasonId != null) {
       await cache.del(CacheKeys.matches.bySeason(match.seasonId));
     }
-    await this.notify(event, "create");
+    await this.notify(event, "create", match ?? undefined);
 
     return event;
   }
 
   async updateEvent(eventId: number, data: any) {
-    await MatchEvent.update(data, { where: { id: eventId } });
     const event = await MatchEvent.findByPk(eventId);
-    if (event) {
-      socketService.emitMatchEvent(event.matchId, event);
-    }
+    if (!event) return null;
+    await event.update(data);
+    socketService.emitMatchEvent(event.matchId, event);
     return event;
   }
 
@@ -56,13 +53,13 @@ class MatchEventService {
     if (match?.seasonId != null) {
       await cache.del(CacheKeys.matches.bySeason(match.seasonId));
     }
-    await this.notify(event, "delete");
+    await this.notify(event, "delete", match ?? undefined);
     socketService.emitMatchEvent(event.matchId, event);
 
     return true;
   }
 
-  async notify(event: MatchEvent, action: "create" | "delete") {
+  async notify(event: MatchEvent, action: "create" | "delete", match?: Match) {
     const settings = await getNotificationsEnabled();
 
     if (!settings) return;
@@ -73,7 +70,7 @@ class MatchEventService {
     devices = await deviceService.getDevicesForGoals();
     if (action === "delete") {
       title = "Correção!";
-      body = `Evento de ${event.type} aos ${event.minute}' foi apagado.`;
+      body = `Evento de ${event.type} aos ${event.minute}' foi corrigido.`;
     } else {
       let playerName;
       if (event.isOpponent) {
@@ -85,7 +82,8 @@ class MatchEventService {
       switch (event.type) {
         case "goal":
           title = "Golo!";
-          body = `${playerName} - ${event.minute}'`;
+          const result = match?.result ? `\n[${match.result}]` : "";
+          body = `${playerName} - ${event.minute}'${result}`;
           break;
 
         case "red_card":

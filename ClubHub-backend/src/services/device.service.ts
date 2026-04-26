@@ -1,4 +1,5 @@
 import Device from "../models/Device";
+import { cacheGet, cacheSet, cacheDelPattern } from "../utils/cache";
 
 class DeviceService {
   async upsertDevice(data: {
@@ -11,6 +12,10 @@ class DeviceService {
     news?: boolean;
   }) {
     await Device.upsert(data);
+
+    // invalidar cache global de devices
+    await cacheDelPattern("devices:*");
+
     return await Device.findByPk(data.id);
   }
 
@@ -33,31 +38,70 @@ class DeviceService {
       console.log("✅ Updated device:", id);
     }
 
+    // 🔥 importantíssimo: invalidar cache
+    await cacheDelPattern("devices:*");
+
     return updatedRows;
   }
 
   async getDevicesForGoals() {
-    return Device.findAll({
+    const key = "devices:goals";
+
+    const cached = await cacheGet(key);
+    if (cached) return cached;
+
+    const data = await Device.findAll({
       where: { goals: true },
     });
+
+    await cacheSet(key, data, 600); // 10 min ok
+
+    return data;
   }
 
   async getDevicesForMatchday() {
-    return Device.findAll({
+    const key = "devices:matchday";
+
+    const cached = await cacheGet(key);
+    if (cached) return cached;
+
+    const data = await Device.findAll({
       where: { matchday: true },
     });
+
+    await cacheSet(key, data, 600);
+
+    return data;
   }
 
   async getDevicesForResults() {
-    return Device.findAll({
+    const key = "devices:results";
+
+    const cached = await cacheGet(key);
+    if (cached) return cached;
+
+    const data = await Device.findAll({
       where: { result: true },
     });
+
+    await cacheSet(key, data, 600);
+
+    return data;
   }
 
   async getDevicesForNews() {
-    return Device.findAll({
+    const key = "devices:news";
+
+    const cached = await cacheGet(key);
+    if (cached) return cached;
+
+    const data = await Device.findAll({
       where: { news: true },
     });
+
+    await cacheSet(key, data, 600);
+
+    return data;
   }
 
   async deleteByTokens(tokens: string[]) {
@@ -66,6 +110,8 @@ class DeviceService {
         pushToken: tokens,
       },
     });
+
+    await cacheDelPattern("devices:*");
   }
 
   async getDeviceById(id: string) {

@@ -69,18 +69,27 @@ async function getOrCreateCompetition(competitionStr: string) {
 }
 
 // Guardar/atualizar jogos
-export async function saveMatches(
-  teamName: string,
-  scrapedMatches: ScrapedMatch[],
-) {
-  for (const match of scrapedMatches) {
-    let competitionId: number | null = null;
-    let seasonId: number | null = null;
+export async function saveMatches(teamName: string, scrapedMatches: ScrapedMatch[]) {
+  const seasonCache = new Map<string, Season>();
+  const competitionCache = new Map<string, Competition>();
 
-    if (match.competition) {
-      const competition = await getOrCreateCompetition(match.competition);
-      competitionId = competition.id;
-      seasonId = competition.seasonId;
+  for (const match of scrapedMatches) {
+    // Vai à BD apenas se não estiver já em memória
+    const { name, season: seasonName } = parseCompetition(match.competition);
+    
+    let season = seasonCache.get(seasonName);
+    if (!season) {
+      season = await Season.findOne({ where: { year: seasonName } }) 
+               ?? await Season.create({ year: seasonName });
+      seasonCache.set(seasonName, season);
+    }
+
+    const compKey = `${name}:${season.id}`;
+    let competition = competitionCache.get(compKey);
+    if (!competition) {
+      competition = await Competition.findOne({ where: { name, seasonId: season.id } })
+                   ?? await Competition.create({ name, seasonId: season.id });
+      competitionCache.set(compKey, competition);
     }
 
     const location = match.homeOrAway === "C" ? teamConfig.teamLocation : null;
@@ -92,8 +101,8 @@ export async function saveMatches(
       homeOrAway: match.homeOrAway,
       opponent: match.opponent,
       result: match.result,
-      competitionId,
-      seasonId,
+      competitionId: competition.id,
+      seasonId: season.id,
       round: match.round,
       outcome: match.outcome,
       status: match.result ? "finished" : "upcoming",
