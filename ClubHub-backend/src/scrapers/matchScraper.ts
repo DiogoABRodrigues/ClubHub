@@ -114,35 +114,71 @@ export async function scrapeTeamMatches(): Promise<ScrapedMatch[]> {
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
   );
 
+  // Anti-detecção de headless
+  await page.evaluateOnNewDocument(() => {
+    Object.defineProperty(navigator, "webdriver", { get: () => undefined });
+  });
+
   console.log(`🌐 A aceder a: ${teamConfig.matches_url}`);
+  
+  // Usar 'networkidle2' em vez de 'domcontentloaded'
   await page.goto(teamConfig.matches_url, {
-    waitUntil: "domcontentloaded",
+    waitUntil: "networkidle2",
     timeout: 60000,
   });
 
-  // Aceitar cookies
+  // Aceitar cookies com espera explícita
   try {
-    await page.waitForSelector("button", { timeout: 5000 });
-    await page.evaluate(() => {
+    await page.waitForSelector("button", { timeout: 8000 });
+    const clicked = await page.evaluate(() => {
       const btns = Array.from(document.querySelectorAll("button"));
       const acceptBtn = btns.find(
         (b) =>
           b.textContent?.includes("Aceitar") ||
           b.textContent?.includes("Aceitar todos"),
       );
-      if (acceptBtn) (acceptBtn as HTMLElement).click();
+      if (acceptBtn) {
+        (acceptBtn as HTMLElement).click();
+        return true;
+      }
+      return false;
     });
-  } catch {}
-
-  try {
-    await page.waitForSelector("#team_games table", { timeout: 20000 });
+    if (clicked) {
+      console.log("🍪 Cookies aceites");
+      // Aguarda que a página reaja ao aceitar cookies
+      await new Promise(r => setTimeout(r, 2000));
+    }
   } catch {
-    // tenta recarregar uma vez
-    await page.reload({ waitUntil: "domcontentloaded" });
-    await page.waitForSelector("#team_games table", { timeout: 20000 });
+    console.log("⚠️ Sem banner de cookies");
   }
 
-  const html = await page.content(); // ← tira o HTML após JS renderizar
+  // Tentar encontrar a tabela com retry e logs de diagnóstico
+  const maxAttempts = 3;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      console.log(`🔄 Tentativa ${attempt}/${maxAttempts} - aguardar #team_games table...`);
+      await page.waitForSelector("#team_games table", { timeout: 20000 });
+      console.log("✅ Tabela encontrada!");
+      break;
+    } catch {
+      if (attempt === maxAttempts) {
+        // Log diagnóstico antes de falhar
+        const bodySnippet = await page.evaluate(() =>
+          document.body?.innerHTML?.slice(0, 2000) ?? "body vazio"
+        );
+        console.error("❌ Conteúdo da página (primeiros 2000 chars):\n", bodySnippet);
+        
+        await page.close();
+        throw new Error(`Selector #team_games table não encontrado após ${maxAttempts} tentativas`);
+      }
+      
+      console.log(`⏳ Tentativa ${attempt} falhou, a recarregar...`);
+      await page.reload({ waitUntil: "networkidle2", timeout: 60000 });
+      await new Promise(r => setTimeout(r, 3000));
+    }
+  }
+
+  const html = await page.content();
   await page.close();
 
   const $ = cheerio.load(html); // ← cheerio a partir daqui
