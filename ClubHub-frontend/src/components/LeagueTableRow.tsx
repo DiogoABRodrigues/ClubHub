@@ -6,6 +6,7 @@ import {
   LayoutAnimation,
   Image,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./styles/LeagueTableRow.styles";
 import { COLORS } from "../theme/colors";
 import { Standing } from "../models/Standing";
@@ -15,8 +16,8 @@ import { teamConfig } from "../config/teamConfig";
 interface Props {
   standing: Standing;
   isUserTeam?: boolean;
-  green: number; // número de posições verdes (promoção)
-  red: number; // número de posições vermelhas (descida)
+  green: number;
+  red: number;
 }
 
 const COLS = {
@@ -26,6 +27,41 @@ const COLS = {
   goalDiff: 1,
   points: 1,
 };
+
+// ─── Logo helper ──────────────────────────────────────────────────────────────
+
+const TeamLogo = ({ uri }: { uri?: string }) => {
+  const [failed, setFailed] = useState(false);
+
+  if (uri && !failed) {
+    return (
+      <Image
+        source={{ uri }}
+        style={styles.teamLogo}
+        resizeMode="contain"
+        onError={() => setFailed(true)}
+      />
+    );
+  }
+
+  return (
+    <View
+      style={[
+        styles.teamLogo,
+        {
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "rgba(0,0,0,0.05)",
+          borderRadius: 4,
+        },
+      ]}
+    >
+      <Ionicons name="shield-outline" size={14} color={COLORS.textMuted} />
+    </View>
+  );
+};
+
+// ─── Main component ───────────────────────────────────────────────────────────
 
 export const LeagueTableRow = React.memo(
   ({ standing, isUserTeam = false, green, red }: Props) => {
@@ -46,7 +82,6 @@ export const LeagueTableRow = React.memo(
     }, [teams]);
 
     const normalizedName = standing.teamName.trim().toLowerCase();
-
     const teamLogo = teamMap[normalizedName]?.logoUrl;
 
     const appTeamName = teamConfig.name.trim().toLowerCase();
@@ -77,13 +112,7 @@ export const LeagueTableRow = React.memo(
 
           {/* TEAM NAME + LOGO */}
           <View style={[styles.teamRow, { flex: COLS.team }]}>
-            {teamLogo && (
-              <Image
-                source={{ uri: teamLogo }}
-                style={styles.teamLogo}
-                resizeMode="contain"
-              />
-            )}
+            <TeamLogo uri={teamLogo} />
             <Text
               style={[styles.text, isUserTeam && styles.bold]}
               numberOfLines={1}

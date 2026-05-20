@@ -1,10 +1,10 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import { View, Text, TouchableOpacity, Alert, Image } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./styles/MatchCard.styles";
 import { COLORS } from "../theme/colors";
 import { Match } from "../models/Match";
 import { LiveBadge } from "./LiveBadge";
-import { Ionicons } from "@expo/vector-icons";
 import { formatDateWithWeekdayPT } from "../utils/dateUtils";
 import * as Clipboard from "expo-clipboard";
 import { Competition } from "../models/Competition";
@@ -19,23 +19,42 @@ interface MatchCardProps {
 
 // ─── Logo helper ─────────────────────────────────────────────────────────────
 
-const TeamLogo = ({
-  uri,
-  variant,
-}: {
-  uri: string;
-  variant: "dark" | "light";
-}) => {
+const TeamLogo = ({ uri, variant }: { uri: string; variant: "dark" | "light" }) => {
+  const [failed, setFailed] = useState(false);
   const logoStyle = variant === "dark" ? styles.logoDark : styles.logoLight;
-  return uri ? (
-    <Image
-      source={{ uri }}
-      style={[styles.logo, logoStyle]}
-      resizeMode="contain"
-    />
-  ) : (
-    <View style={[styles.logo, logoStyle]}>
-      <Text style={styles.logoEmoji}>⚽</Text>
+
+  if (uri && !failed) {
+    return (
+      <Image
+        source={{ uri }}
+        style={[styles.logo, logoStyle]}
+        resizeMode="contain"
+        onError={() => setFailed(true)}
+      />
+    );
+  }
+
+  return (
+    <View
+      style={[
+        styles.logo,
+        logoStyle,
+        {
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor:
+            variant === "dark"
+              ? "rgba(0,0,0,0.08)"
+              : "rgba(255,255,255,0.12)",
+          borderRadius: 4,
+        },
+      ]}
+    >
+      <Ionicons
+        name="shield-outline"
+        size={20}
+        color={variant === "dark" ? COLORS.textMuted : "rgba(255,255,255,0.5)"}
+      />
     </View>
   );
 };
