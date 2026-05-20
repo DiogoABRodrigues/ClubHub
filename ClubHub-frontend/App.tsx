@@ -1,6 +1,6 @@
 // App.tsx
 import React, { useEffect, useState } from "react";
-import { SplashScreen } from "./src/screens/Splash/SplashScreen";
+import { SplashScreen as SplashScreenComponent } from "./src/screens/Splash/SplashScreen";
 import { AppNavigator } from "./src/navigation/AppNavigator";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StyleSheet } from "react-native";
@@ -9,25 +9,32 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./src/lib/queryClient";
 import { SocketProvider } from "./src/contexts/SocketContext";
 import { registerForPushNotifications } from "./src/utils/notifications";
+import * as SplashScreen from "expo-splash-screen";
+
+// Mantém o splash nativo visível até chamarmos hideAsync()
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [splashDone, setSplashDone] = useState(false);
+
+  const handleSplashFinish = async () => {
+    // Esconde o splash nativo e só depois mostra o navigator
+    await SplashScreen.hideAsync();
+    setSplashDone(true);
+  };
+
   useEffect(() => {
     if (!splashDone) return;
-
-    const initializeNotifications = async () => {
-      await registerForPushNotifications();
-    };
-
-    initializeNotifications();
+    registerForPushNotifications();
   }, [splashDone]);
+
   return (
     <GestureHandlerRootView style={styles.container}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <SocketProvider>
             {!splashDone ? (
-              <SplashScreen onFinish={() => setSplashDone(true)} />
+              <SplashScreenComponent onFinish={handleSplashFinish} />
             ) : (
               <AppNavigator />
             )}
