@@ -41,9 +41,6 @@ const PlayerCard = React.memo(({ player }: { player: Player }) => {
 });
 /* ---------------- SCREEN ---------------- */
 export const SquadScreen = React.memo(function SquadScreen() {
-  useEffect(() => {
-    console.log("MOUNT");
-  }, []);
   const { getActivePlayers } = usePlayers();
   const activePlayers = getActivePlayers();
 

@@ -8,6 +8,7 @@ import { LiveBadge } from "./LiveBadge";
 import { formatDateWithWeekdayPT } from "../utils/dateUtils";
 import * as Clipboard from "expo-clipboard";
 import { Competition } from "../models/Competition";
+import { ZZImage } from "./ZZImage";
 
 interface MatchCardProps {
   match: Match;
@@ -24,12 +25,15 @@ const TeamLogo = ({ uri, variant }: { uri: string; variant: "dark" | "light" }) 
   const logoStyle = variant === "dark" ? styles.logoDark : styles.logoLight;
 
   if (uri && !failed) {
+    console.log("Loading logo:", uri);
     return (
-      <Image
-        source={{ uri }}
+      <ZZImage
+        uri={uri}
         style={[styles.logo, logoStyle]}
         resizeMode="contain"
-        onError={() => setFailed(true)}
+        onError={() => {
+          setFailed(true);
+        }}
       />
     );
   }

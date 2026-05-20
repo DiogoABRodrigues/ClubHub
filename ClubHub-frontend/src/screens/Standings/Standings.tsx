@@ -16,9 +16,6 @@ const COLS = {
 };
 
 export const Standings = React.memo(function Standings() {
-  useEffect(() => {
-    console.log("MOUNT Standings");
-  }, []);
   const { standings, loading } = useStandings();
 
   const sorted = useMemo(() => {

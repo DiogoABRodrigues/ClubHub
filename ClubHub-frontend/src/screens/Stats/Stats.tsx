@@ -34,9 +34,6 @@ const SortIcon = React.memo(
 );
 
 export const SquadStats = React.memo(function SquadStats() {
-  useEffect(() => {
-    console.log("MOUNT SquadStats");
-  }, []);
   const { players } = usePlayers();
   const [sortField, setSortField] = useState<SortField>("goals");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
