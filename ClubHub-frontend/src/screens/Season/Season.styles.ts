@@ -84,7 +84,6 @@ export const styles = StyleSheet.create({
 
   tabActive: {
     borderColor: COLORS.primary,
-    borderWidth: 1,
   },
 
   tabText: {

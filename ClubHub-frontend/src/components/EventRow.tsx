@@ -54,7 +54,7 @@ export const EventRow = ({ event, isOurs, onEdit, onDelete }: Props) => {
     playerOut: playerOut ? playerOut.name : "Jogador Desconecido",
     playerIn: playerIn ? playerIn.name : "Jogador Desconecido",
   };
-  const minute = event.minute > 90 ? `90'+` : `${event.minute}'`;
+  const minute = event.minute >= 90 ? `90+'` : `${event.minute}'`;
   const { adminMode } = useAuth();
 
   if (isOurs) {

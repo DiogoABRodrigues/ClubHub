@@ -71,7 +71,7 @@ export const styles = StyleSheet.create({
   // ── Ícone de evento ───────────────────────────────────────────────────────
   eventIconText: {
     fontSize: 14,
-    width: 20,
+    width: 30,
     textAlign: "center",
   },
 
