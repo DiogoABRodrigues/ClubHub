@@ -266,9 +266,18 @@ export const MatchDetail = () => {
           {activeTab === "timeline" &&
             (match.events && match.events.length > 0 ? (
               (() => {
-                const sorted = [...match.events].sort(
-                  (a, b) => a.minute - b.minute,
-                );
+                const sorted = [...match.events].sort((a, b) => {
+                  // primeiro ordena pelo minuto
+                  if (a.minute !== b.minute) {
+                    return a.minute - b.minute;
+                  }
+
+                  // se o minuto for igual, ordena pelo createdAt
+                  return (
+                    new Date(a.createdAt).getTime() -
+                    new Date(b.createdAt).getTime()
+                  );
+                });
 
                 // agrupa por 1ª/2ª parte
                 const firstHalf = sorted.filter((e) => e.minute <= 45);
