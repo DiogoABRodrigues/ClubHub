@@ -12,6 +12,7 @@ import { COLORS } from "../theme/colors";
 import { Standing } from "../models/Standing";
 import { useTeams } from "../hooks/useTeams";
 import { teamConfig } from "../config/teamConfig";
+import { ZZImage } from "./ZZImage";
 
 interface Props {
   standing: Standing;
@@ -35,8 +36,8 @@ const TeamLogo = ({ uri }: { uri?: string }) => {
 
   if (uri && !failed) {
     return (
-      <Image
-        source={{ uri }}
+      <ZZImage
+        uri={uri}
         style={styles.teamLogo}
         resizeMode="contain"
         onError={() => setFailed(true)}
