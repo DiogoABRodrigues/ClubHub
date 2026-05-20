@@ -63,53 +63,42 @@ class MatchEventService {
     const settings = await getNotificationsEnabled();
     if (!settings) return;
 
-    const devices = await deviceService.getDevicesForGoals();
-    if (!devices.length) return;
-
+    let devices: any[] = [];
     let title = "";
     let body = "";
-
+    devices = await deviceService.getDevicesForGoals();
     if (action === "delete") {
       title = "Correção!";
       body = `Evento de ${event.type} aos ${event.minute}' foi corrigido.`;
     } else {
-      let playerName: string;
-
+      let playerName;
       if (event.isOpponent) {
         playerName = "Adversário";
       } else {
         const player = await Player.findByPk(event.playerId || -1);
         playerName = player ? player.name : teamConfig.name;
       }
-
       switch (event.type) {
-        case "goal": {
+        case "goal":
+          title = "Golo!";
           const freshMatch = match?.id ? await Match.findByPk(match.id) : match;
-          const result = freshMatch?.result ? ` [${freshMatch.result}]` : "";
-
-          if (event.isOwnGoal && !event.isOpponent) {
-            title = "Golo Adversário ⚽";
-            body = `Golo Próprio - ${event.minute}'${result}`;
-          } else {
-            title = "Golo! ⚽";
-            body = `${playerName} - ${event.minute}'${result}`;
-          }
+          const result = freshMatch?.result ? `\n[${freshMatch.result}]` : "";
+          body = `${playerName} - ${event.minute}'${result}`;
           break;
-        }
 
         case "red_card":
           title = "Vermelho 🟥";
           body = `${playerName} - ${event.minute}'`;
           break;
-
-        default:
-          return;
       }
     }
 
-    if (!title || !body) return;
+    if (!devices.length) return;
+    const response = await pushService.sendToDevices(devices, {
+      title,
+      body,
+    });
 
-    const response = await pushService.sendToDevices(devices, { title, body });
     await pushService.handleReceipts(response);
   }
 }
