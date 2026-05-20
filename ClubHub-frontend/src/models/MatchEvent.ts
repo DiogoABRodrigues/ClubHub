@@ -18,4 +18,6 @@ export type MatchEvent = {
 
   isOpponent: boolean;
   isOwnGoal?: boolean;
+
+  createdAt?: Date;
 };
