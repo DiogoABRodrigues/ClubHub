@@ -25,7 +25,6 @@ const TeamLogo = ({ uri, variant }: { uri: string; variant: "dark" | "light" }) 
   const logoStyle = variant === "dark" ? styles.logoDark : styles.logoLight;
 
   if (uri && !failed) {
-    console.log("Loading logo:", uri);
     return (
       <ZZImage
         uri={uri}
