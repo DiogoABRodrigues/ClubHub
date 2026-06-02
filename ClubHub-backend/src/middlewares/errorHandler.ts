@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { ValidationError } from "sequelize";
 import { AppError } from "../errors/AppError";
 
 export function notFoundHandler(
@@ -25,10 +24,12 @@ export function errorHandler(
     });
   }
 
-  if (error instanceof ValidationError) {
+  // Sequelize ValidationError — verificamos pelo nome para evitar problemas de import
+  if (error.name === "SequelizeValidationError") {
+    const details = (error as any).errors?.map((e: any) => e.message) ?? [];
     return res.status(400).json({
       message: "Erro de validacao.",
-      details: error.errors.map((item) => item.message),
+      details,
     });
   }
 
