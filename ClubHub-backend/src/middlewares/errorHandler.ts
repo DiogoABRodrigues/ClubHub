@@ -24,7 +24,6 @@ export function errorHandler(
     });
   }
 
-  // Sequelize ValidationError — verificamos pelo nome para evitar problemas de import
   if (error.name === "SequelizeValidationError") {
     const details = (error as any).errors?.map((e: any) => e.message) ?? [];
     return res.status(400).json({
