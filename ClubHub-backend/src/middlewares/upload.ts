@@ -1,27 +1,13 @@
 import multer from "multer";
 import path from "path";
-import fs from "fs";
+import { randomUUID } from "crypto";
+import { Request } from "express";
+import { supabase } from "../lib/supabase";
 
-// garantir que a pasta uploads existe
-const uploadPath = path.join(__dirname, "../../uploads");
+const BUCKET = process.env.SUPABASE_BUCKET ?? "uploads";
 
-if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath, { recursive: true });
-}
-
-// configuração do storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + "-" + file.originalname;
-    cb(null, uniqueName);
-  },
-});
-
-// filtro para aceitar só imagens
-const fileFilter: multer.Options["fileFilter"] = (req, file, cb) => {
+// ─── Multer: memória (sem escrever nada em disco) ─────────────────────────────
+const fileFilter: multer.Options["fileFilter"] = (_req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
     cb(null, true);
   } else {
@@ -29,11 +15,30 @@ const fileFilter: multer.Options["fileFilter"] = (req, file, cb) => {
   }
 };
 
-// export do upload
 export const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB
-  },
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB
 });
+
+// ─── Helper: faz upload para Supabase Storage e devolve URL pública ───────────
+export async function uploadToSupabase(
+  req: Request & { file?: Express.Multer.File },
+): Promise<string | null> {
+  if (!req.file) return null;
+
+  const ext = path.extname(req.file.originalname).toLowerCase() || ".jpg";
+  const filename = `${randomUUID()}${ext}`;
+
+  const { error } = await supabase.storage
+    .from(BUCKET)
+    .upload(filename, req.file.buffer, {
+      contentType: req.file.mimetype,
+      upsert: false,
+    });
+
+  if (error) throw new Error(`Supabase upload falhou: ${error.message}`);
+
+  const { data } = supabase.storage.from(BUCKET).getPublicUrl(filename);
+  return data.publicUrl;
+}

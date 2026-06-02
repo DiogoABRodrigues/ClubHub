@@ -20,13 +20,16 @@ class AuthService {
 
   async login(userName: string, password: string) {
     const admin = await Admin.findOne({ where: { userName } });
-    if (!admin) throw new Error("Utilizador não encontrado");
+
+    // Mensagem genérica para não revelar se o utilizador existe ou não
+    const INVALID = "Credenciais inválidas";
+
+    if (!admin) throw new Error(INVALID);
 
     const valid = await bcrypt.compare(password, admin.password);
-    if (!valid) throw new Error("Password inválida");
+    if (!valid) throw new Error(INVALID);
 
     const payload = { id: admin.id, role: admin.role };
-
     const accessToken = this.generateAccessToken(payload);
     const refreshToken = this.generateRefreshToken(payload);
 
@@ -45,7 +48,6 @@ class AuthService {
     }
 
     const payload = { id: admin.id, role: admin.role };
-
     const accessToken = this.generateAccessToken(payload);
     const refreshToken = this.generateRefreshToken(payload);
 

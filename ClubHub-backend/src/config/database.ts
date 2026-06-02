@@ -11,12 +11,17 @@ export const sequelize = new Sequelize(process.env.DATABASE_URL!, {
     idle: 10000,    // fecha ligação inativa
   },
   dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
+    ssl:
+      process.env.NODE_ENV === "production"
+        ? {
+            require: true,
+            // Valida o certificado SSL do servidor (protege contra MITM)
+            rejectUnauthorized: true,
+          }
+        : false,
   },
 });
+
 require("../models/Team");
 require("../models/Player");
 require("../models/Competition");
