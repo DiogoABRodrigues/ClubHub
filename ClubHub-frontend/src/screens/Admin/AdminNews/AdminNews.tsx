@@ -9,7 +9,7 @@ import { styles } from "./AdminNews.styles";
 import { useAuth } from "../../../contexts/AuthContext";
 export const AdminNews = ({ navigation }: { navigation: any }) => {
   const { news, loading, deleteNews } = useNews();
-  const { isAdmin, adminMode } = useAuth();
+  const { isAdmin } = useAuth();
   if (!isAdmin) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -109,17 +109,9 @@ export const AdminNews = ({ navigation }: { navigation: any }) => {
 
             <View style={styles.newsActions}>
               <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("AdminNewsForm", { id: item.id })
-                }
-              >
-                <Edit width={16} height={16} color={COLORS.primary} />
-              </TouchableOpacity>
-
-              <TouchableOpacity
                 onPress={() => handleDelete(item.id, item.title)}
               >
-                <Trash2 width={16} height={16} color="red" />
+                <Trash2 width={16} height={16} color="white" />
               </TouchableOpacity>
             </View>
           </View>

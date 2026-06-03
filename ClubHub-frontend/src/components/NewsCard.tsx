@@ -1,8 +1,6 @@
 import React, { useMemo, useCallback } from "react";
 import { View, Text, Image, Pressable } from "react-native";
 import { styles } from "./styles/NewsCard.styles";
-import { COLORS } from "../theme/colors";
-import { Ionicons } from "@expo/vector-icons";
 import { News } from "../models/News";
 import { formatDatePT } from "../utils/dateUtils";
 
@@ -16,25 +14,6 @@ export const NewsCard = React.memo(({ news, onPress }: Props) => {
     () => formatDatePT(news.createdAt),
     [news.createdAt],
   );
-
-  const categoryStyle = useMemo(() => {
-    switch (news.category) {
-      case "Team":
-        return {
-          backgroundColor: COLORS.primary + "20",
-          color: COLORS.primary,
-        };
-      case "Transfers":
-        return {
-          backgroundColor: COLORS.secondary + "20",
-          color: COLORS.secondary,
-        };
-      case "Events":
-        return { backgroundColor: COLORS.surface, color: COLORS.textPrimary };
-      default:
-        return { backgroundColor: COLORS.surface, color: COLORS.textSecondary };
-    }
-  }, [news.category]);
 
   const handlePress = useCallback(() => {
     onPress?.();
