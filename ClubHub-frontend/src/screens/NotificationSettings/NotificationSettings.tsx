@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Modal, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Modal, Pressable, Keyboard } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Switch } from "../../components/Switch";
 import { styles } from "./NotificationSettings.styles";
@@ -149,13 +149,12 @@ export const NotificationSettings = ({ navigation }: any) => {
         </View>
       </ScrollView>
       <View style={{ marginBottom: 15 }}></View>
-      <Modal visible={showLoginModal} transparent>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
+      <Modal visible={showLoginModal} transparent animationType="slide">
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={Keyboard.dismiss}
         >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalCard}>
+          <Pressable style={styles.modalCard}>
             <Text style={styles.modalTitle}>Acesso Admin</Text>
 
             <TextInput
@@ -192,9 +191,8 @@ export const NotificationSettings = ({ navigation }: any) => {
             <TouchableOpacity onPress={() => setShowLoginModal(false)}>
               <Text style={styles.cancelText}>Cancelar</Text>
             </TouchableOpacity>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
+          </Pressable>
+        </Pressable>
       </Modal>
     </View>
   );

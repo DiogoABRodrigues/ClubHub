@@ -20,6 +20,7 @@
         "foregroundImage": "./assets/1024_foreground_380.png",
         "monochromeImage": "./assets/mono.png"
       },
+      "softwareKeyboardLayoutMode": "pan",
       "notification": {
         "icon": "./assets/mono.png",
         "color": "#800000"
