@@ -9,6 +9,7 @@ import {
   TextInput,
   Alert,
   Pressable,
+  ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { adminStyles } from "../screens/Admin/AdminMatches/AdminMatchDetail.styles";
@@ -29,13 +30,11 @@ export const StatementModal = ({ visible, onClose }: Props) => {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-
   const [dateToExpire, setDateToExpire] = useState<Date | null>(null);
   const [pickerVisible, setPickerVisible] = useState(false);
 
   useEffect(() => {
     if (!visible) return;
-
     if (activeStatement) {
       setTitle(activeStatement.title || "");
       setContent(activeStatement.message || "");
@@ -48,42 +47,22 @@ export const StatementModal = ({ visible, onClose }: Props) => {
   }, [visible]);
 
   const formatDate = (date: Date) =>
-    date.toLocaleDateString("pt-PT", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
+    date.toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit", year: "numeric" });
 
   const formatTime = (date: Date) =>
-    date.toLocaleTimeString("pt-PT", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    date.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" });
 
   const handleSave = async () => {
     if (!title || !content || !dateToExpire) {
       Alert.alert("Erro", "Preenche todos os campos.");
       return;
     }
-
     try {
       if (activeStatement) {
-        await updateStatement({
-          id: activeStatement.id,
-          updates: {
-            title,
-            message: content,
-            dateToExpire,
-          },
-        });
+        await updateStatement({ id: activeStatement.id, updates: { title, message: content, dateToExpire } });
       } else {
-        await createStatement({
-          title,
-          message: content,
-          dateToExpire,
-        });
+        await createStatement({ title, message: content, dateToExpire });
       }
-
       onClose();
     } catch {
       Alert.alert("Erro", "Não foi possível guardar.");
@@ -97,12 +76,7 @@ export const StatementModal = ({ visible, onClose }: Props) => {
         text: "Eliminar",
         style: "destructive",
         onPress: async () => {
-          await deleteStatement({
-            id: activeStatement.id,
-            updates: {
-              dateToExpire: new Date(Date.now() - 1),
-            },
-          });
+          await deleteStatement({ id: activeStatement.id, updates: { dateToExpire: new Date(Date.now() - 1) } });
           onClose();
         },
       },
@@ -111,10 +85,12 @@ export const StatementModal = ({ visible, onClose }: Props) => {
 
   return (
     <Modal visible={visible} transparent animationType="slide">
-      <Pressable style={adminStyles.overlay} onPress={onClose} />
+      {/* Overlay fecha o modal ao tocar fora */}
+      <Pressable style={{ flex: 1 }} onPress={onClose} />
 
+      {/* KeyboardAvoidingView fora do Pressable, colado ao fundo */}
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={adminStyles.sheetWrapper}
       >
         <View style={adminStyles.sheet}>
@@ -124,15 +100,17 @@ export const StatementModal = ({ visible, onClose }: Props) => {
             <Text style={adminStyles.sheetTitle}>
               {activeStatement ? "Editar Statement" : "Criar Statement"}
             </Text>
-
             <TouchableOpacity onPress={onClose}>
               <Ionicons name="close" size={22} color={COLORS.textSecondary} />
             </TouchableOpacity>
           </View>
 
-          <View style={adminStyles.sheetContent}>
+          {/* ScrollView para o conteúdo subir com o teclado */}
+          <ScrollView
+            contentContainerStyle={adminStyles.sheetContent}
+            keyboardShouldPersistTaps="handled"
+          >
             <Text style={adminStyles.fieldLabel}>Título</Text>
-
             <TextInput
               style={adminStyles.input}
               value={title}
@@ -142,7 +120,6 @@ export const StatementModal = ({ visible, onClose }: Props) => {
             />
 
             <Text style={adminStyles.fieldLabel}>Conteúdo</Text>
-
             <TextInput
               style={[adminStyles.input, adminStyles.textAreaLarge]}
               multiline
@@ -151,17 +128,10 @@ export const StatementModal = ({ visible, onClose }: Props) => {
               placeholder="Conteúdo do statement..."
               placeholderTextColor={COLORS.muted}
             />
-            <Text style={adminStyles.fieldLabel}>Expira em</Text>
 
-            <TouchableOpacity
-              style={adminStyles.input}
-              onPress={() => setPickerVisible(true)}
-            >
-              <Text
-                style={{
-                  color: dateToExpire ? COLORS.textPrimary : COLORS.muted,
-                }}
-              >
+            <Text style={adminStyles.fieldLabel}>Expira em</Text>
+            <TouchableOpacity style={adminStyles.input} onPress={() => setPickerVisible(true)}>
+              <Text style={{ color: dateToExpire ? COLORS.textPrimary : COLORS.muted }}>
                 {dateToExpire
                   ? `${formatDate(dateToExpire)} às ${formatTime(dateToExpire)}`
                   : "Selecionar data de expiração"}
@@ -176,38 +146,25 @@ export const StatementModal = ({ visible, onClose }: Props) => {
 
             {activeStatement && (
               <TouchableOpacity
-                style={[
-                  adminStyles.saveBtn,
-                  {
-                    backgroundColor: "#e53935",
-                    marginTop: 10,
-                  },
-                ]}
+                style={[adminStyles.saveBtn, { backgroundColor: "#e53935", marginTop: 10 }]}
                 onPress={handleDelete}
               >
                 <Text style={adminStyles.saveBtnText}>Eliminar Comunicado</Text>
               </TouchableOpacity>
             )}
-          </View>
+          </ScrollView>
         </View>
       </KeyboardAvoidingView>
+
       <DateTimePickerModal
         visible={pickerVisible}
-        initialDate={
-          dateToExpire
-            ? dateToExpire.toISOString().split("T")[0]
-            : new Date().toISOString().split("T")[0]
-        }
-        initialTime={
-          dateToExpire ? dateToExpire.toTimeString().slice(0, 5) : "12:00"
-        }
+        initialDate={dateToExpire ? dateToExpire.toISOString().split("T")[0] : new Date().toISOString().split("T")[0]}
+        initialTime={dateToExpire ? dateToExpire.toTimeString().slice(0, 5) : "12:00"}
         onClose={() => setPickerVisible(false)}
         onSave={async (date, time) => {
           const [year, month, day] = date.split("-").map(Number);
           const [hour, minute] = time.split(":").map(Number);
-
-          const newDate = new Date(year, month - 1, day, hour, minute);
-          setDateToExpire(newDate);
+          setDateToExpire(new Date(year, month - 1, day, hour, minute));
         }}
       />
     </Modal>
