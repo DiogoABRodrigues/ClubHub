@@ -1,11 +1,14 @@
-import React, { useMemo, useCallback, useEffect } from "react";
-import { View, Text, Image } from "react-native";
+import React, { useMemo, useCallback, useEffect, useState } from "react";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { usePlayers } from "../../hooks/usePlayers";
+import { useSeasons } from "../../hooks/useSeasons";
 import { Player } from "../../models/Player";
 import { styles as globalStyles } from "./Squad.styles";
 import { getPositionOrder } from "../../utils/playerPositionUtils";
 import { mapToMainPosition } from "../../utils/playerPositionUtils";
+import { PlayerCardModal } from "../../components/PlayerCardModal";
+
 const defaultPlayerImage = require("../../../assets/player.jpg");
 
 const chunkArray = (arr: Player[], size: number) => {
@@ -16,33 +19,62 @@ const chunkArray = (arr: Player[], size: number) => {
   return chunks;
 };
 
-/* ---------------- CARD MEMO ---------------- */
-const PlayerCard = React.memo(({ player }: { player: Player }) => {
-  const [firstName, ...rest] = player.name.split(" ");
-  const lastName = rest.join(" ");
+// ─────────────────────────────────────────────────────────────
+//  CARD MEMO — agora com onPress
+// ─────────────────────────────────────────────────────────────
+const PlayerCard = React.memo(
+  ({
+    player,
+    onPress,
+  }: {
+    player: Player;
+    onPress: (player: Player) => void;
+  }) => {
+    const [firstName, ...rest] = player.name.split(" ");
+    const lastName = rest.join(" ");
 
-  return (
-    <View style={globalStyles.playerCard}>
-      <Image
-        source={player.photoUrl ? { uri: player.photoUrl } : defaultPlayerImage}
-        style={globalStyles.playerImage}
-        resizeMode="contain"
-      />
+    return (
+      <TouchableOpacity
+        style={globalStyles.playerCard}
+        onPress={() => onPress(player)}
+        activeOpacity={0.75}
+      >
+        <Image
+          source={
+            player.photoUrl ? { uri: player.photoUrl } : defaultPlayerImage
+          }
+          style={globalStyles.playerImage}
+          resizeMode="contain"
+        />
 
-      <Text style={globalStyles.playerName} numberOfLines={1}>
-        {firstName}
-      </Text>
+        <Text style={globalStyles.playerName} numberOfLines={1}>
+          {firstName}
+        </Text>
 
-      <Text style={globalStyles.playerName} numberOfLines={1}>
-        {lastName}
-      </Text>
-    </View>
-  );
-});
-/* ---------------- SCREEN ---------------- */
+        <Text style={globalStyles.playerName} numberOfLines={1}>
+          {lastName}
+        </Text>
+      </TouchableOpacity>
+    );
+  },
+);
+
+// ─────────────────────────────────────────────────────────────
+//  SCREEN
+// ─────────────────────────────────────────────────────────────
 export const SquadScreen = React.memo(function SquadScreen() {
   const { getActivePlayers } = usePlayers();
+  const { seasons } = useSeasons();
   const activePlayers = getActivePlayers();
+
+  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+
+  /* Mapa de seasonId → year para apresentar no modal */
+  const seasonMap = useMemo<Record<number, string>>(
+    () =>
+      Object.fromEntries(seasons.map((s) => [s.id, s.year])),
+    [seasons],
+  );
 
   /* SORT ONCE */
   const sortedPlayers = useMemo(() => {
@@ -90,40 +122,61 @@ export const SquadScreen = React.memo(function SquadScreen() {
     return result;
   }, [grouped]);
 
-  const renderItem = useCallback(({ item }: any) => {
-    if (item.type === "header") {
-      return (
-        <View style={globalStyles.positionHeader}>
-          <Text style={globalStyles.positionHeaderText}>{item.position}</Text>
-        </View>
-      );
-    }
-
-    return (
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        {item.players.map((p: Player) => (
-          <PlayerCard key={p.id} player={p} />
-        ))}
-      </View>
-    );
+  const handlePlayerPress = useCallback((player: Player) => {
+    setSelectedPlayer(player);
   }, []);
 
+  const handleCloseModal = useCallback(() => {
+    setSelectedPlayer(null);
+  }, []);
+
+  const renderItem = useCallback(
+    ({ item }: any) => {
+      if (item.type === "header") {
+        return (
+          <View style={globalStyles.positionHeader}>
+            <Text style={globalStyles.positionHeaderText}>
+              {item.position}
+            </Text>
+          </View>
+        );
+      }
+
+      return (
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          {item.players.map((p: Player) => (
+            <PlayerCard key={p.id} player={p} onPress={handlePlayerPress} />
+          ))}
+        </View>
+      );
+    },
+    [handlePlayerPress],
+  );
+
   return (
-    <FlashList
-      data={data}
-      renderItem={renderItem}
-      keyExtractor={(item, index) => {
-        if (item.type === "header") {
-          return `h-${item.position}-${index}`;
-        }
+    <>
+      <FlashList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => {
+          if (item.type === "header") {
+            return `h-${item.position}-${index}`;
+          }
 
-        if (item.type === "row") {
-          return `r-${item.players.map((p: Player) => p.id).join("-")}`;
-        }
+          if (item.type === "row") {
+            return `r-${item.players.map((p: Player) => p.id).join("-")}`;
+          }
 
-        return `unknown-${index}`;
-      }}
-      contentContainerStyle={globalStyles.squadList}
-    />
+          return `unknown-${index}`;
+        }}
+        contentContainerStyle={globalStyles.squadList}
+      />
+
+      <PlayerCardModal
+        player={selectedPlayer}
+        seasonMap={seasonMap}
+        onClose={handleCloseModal}
+      />
+    </>
   );
 });
