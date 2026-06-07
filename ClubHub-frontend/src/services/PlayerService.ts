@@ -1,4 +1,3 @@
-// services/PlayerService.ts
 import { api } from "./api";
 import { Player } from "../models/Player";
 
@@ -13,6 +12,11 @@ export const PlayerService = {
   },
   getByCurrentSeasonId: async (): Promise<Player[]> => {
     const { data } = await api.get("/players/current");
+    return data;
+  },
+  /** Todas as stats de todas as épocas — usado no PlayerCardModal */
+  getAllStats: async (playerId: number): Promise<Player> => {
+    const { data } = await api.get(`/players/${playerId}/allstats`);
     return data;
   },
   updatePlayer: async (

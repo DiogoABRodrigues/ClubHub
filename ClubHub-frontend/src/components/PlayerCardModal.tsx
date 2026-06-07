@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   View,
@@ -6,41 +6,37 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import { Player } from "../models/Player";
 import { Stats } from "../models/Stats";
+import { PlayerService } from "../services/PlayerService";
+import { useSeasons } from "../hooks/useSeasons";
+import { COLORS, SPACING} from "../theme/colors";
 import { styles } from "./styles/PlayerCardModal.styles";
 
 const defaultPlayerImage = require("../../assets/player.jpg");
 
 //  Linha de stat individual
-const StatRow = ({
-  season,
-  stats,
-}: {
-  season: string;
-  stats: Stats;
-}) => (
+const StatRow = ({ season, stats }: { season: string; stats: Stats }) => (
   <View style={styles.statRow}>
     <Text style={styles.seasonLabel}>{season}</Text>
 
     <View style={styles.statCell}>
       <Text style={styles.statValue}>{stats.gamesPlayed ?? 0}</Text>
-      <Text style={styles.statLabel}>J</Text>
     </View>
 
     <View style={styles.statCell}>
-      <Text style={styles.statValue}>
+      <Text style={[styles.statValue]}>
         {stats.goals ?? 0}
       </Text>
-      <Text style={styles.statLabel}>G</Text>
     </View>
 
     <View style={styles.statCell}>
       <Text style={styles.statValue}>
         {(stats.minutesPlayed ?? 0)}
       </Text>
-      <Text style={styles.statLabel}>Min</Text>
     </View>
   </View>
 );
@@ -50,45 +46,61 @@ const StatRow = ({
 // ─────────────────────────────────────────────────────────────
 interface PlayerCardModalProps {
   player: Player | null;
-  /** Mapa de seasonId → year string, ex: { 1: "2023/24", 2: "2024/25" } */
-  seasonMap: Record<number, string>;
   onClose: () => void;
 }
 
 export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
   player,
-  seasonMap,
   onClose,
 }) => {
+  const { seasons } = useSeasons();
+  const seasonMap = Object.fromEntries(seasons.map((s) => [s.id, s.year]));
+  const [fullPlayer, setFullPlayer] = useState<Player | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  // Quando o modal abre, vai buscar o jogador com TODAS as stats
+  useEffect(() => {
+    if (!player) {
+      setFullPlayer(null);
+      return;
+    }
+
+    setLoading(true);
+    PlayerService.getAllStats(player.id)
+      .then(setFullPlayer)
+      .catch(() => setFullPlayer(player)) // fallback: usa o que já temos
+      .finally(() => setLoading(false));
+  }, [player?.id]);
+
   if (!player) return null;
 
-  const [firstName, ...rest] = player.name.split(" ");
+  const display = fullPlayer ?? player;
+  const [firstName, ...rest] = display.name.split(" ");
   const lastName = rest.join(" ");
 
-  const currentStat = player.Stats?.[0];
+  // Posição e número da época mais recente
+  const currentStat = display.Stats?.[0];
   const position = currentStat?.position ?? "—";
   const number = currentStat?.number;
 
-  // Ordena as stats da mais recente para a mais antiga
-  const sortedStats = [...(player.Stats ?? [])].sort(
-    (a, b) => b.seasonId - a.seasonId,
-  );
+  // Já chegam ordenadas do backend (season year DESC)
+  const sortedStats = display.Stats ?? [];
 
   return (
     <Modal
       visible={!!player}
-      animationType="none"
+      animationType="slide"
       transparent
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
         <View style={styles.card}>
-          {/* ── Botão fechar ── */}
+          {/* Botão fechar */}
           <TouchableOpacity style={styles.closeBtn} onPress={onClose} hitSlop={12}>
             <Text style={styles.closeBtnText}>✕</Text>
           </TouchableOpacity>
 
-          {/* ── Conteúdo em duas colunas ── */}
+          {/* Corpo em duas colunas */}
           <View style={styles.body}>
             {/* Coluna esquerda — foto */}
             <View style={styles.photoCol}>
@@ -99,18 +111,15 @@ export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
               )}
               <Image
                 source={
-                  player.photoUrl
-                    ? { uri: player.photoUrl }
+                  display.photoUrl
+                    ? { uri: display.photoUrl }
                     : defaultPlayerImage
                 }
                 style={styles.photo}
                 resizeMode="contain"
               />
-
               <Text style={styles.firstName}>{firstName}</Text>
-              <Text style={styles.lastName} numberOfLines={1}>
-                {lastName}
-              </Text>
+              <Text style={styles.lastName} numberOfLines={1}>{lastName}</Text>
               <View style={styles.positionBadge}>
                 <Text style={styles.positionText}>{position}</Text>
               </View>
@@ -120,26 +129,34 @@ export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
             <View style={styles.statsCol}>
               <Text style={styles.statsTitle}>Estatísticas</Text>
 
-              {/* Cabeçalho da tabela */}
-              <View style={styles.statsHeader}>
-                <Text style={[styles.statLabel, { flex: 2 }]}>Época</Text>
-                <Text style={[styles.statLabel, styles.colCenter]}>JJ</Text>
-                <Text style={[styles.statLabel, styles.colCenter]}>G</Text>
-                <Text style={[styles.statLabel, styles.colCenter]}>Min</Text>
-              </View>
-
-              {sortedStats.length === 0 ? (
-                <Text style={styles.noStats}>Sem registos disponíveis</Text>
+              {loading ? (
+                <ActivityIndicator
+                  style={{ marginTop: SPACING.lg }}
+                  color={COLORS.primary}
+                />
               ) : (
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  {sortedStats.map((s) => (
-                    <StatRow
-                      key={s.seasonId}
-                      season={seasonMap[s.seasonId] ?? String(s.seasonId)}
-                      stats={s}
-                    />
-                  ))}
-                </ScrollView>
+                <>
+                  <View style={styles.statsHeader}>
+                    <Text style={[styles.statLabel, { flex: 2 }]}>Época</Text>
+                    <Text style={[styles.statLabel, styles.colCenter]}>J</Text>
+                    <Text style={[styles.statLabel, styles.colCenter]}>G</Text>
+                    <Text style={[styles.statLabel, styles.colCenter]}>Min</Text>
+                  </View>
+
+                  {sortedStats.length === 0 ? (
+                    <Text style={styles.noStats}>Sem registos disponíveis</Text>
+                  ) : (
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                      {sortedStats.map((s) => (
+                        <StatRow
+                          key={s.seasonId}
+                          season={seasonMap[s.seasonId] ?? String(s.seasonId)}
+                          stats={s}
+                        />
+                      ))}
+                    </ScrollView>
+                  )}
+                </>
               )}
             </View>
           </View>

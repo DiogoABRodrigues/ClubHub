@@ -1,40 +1,31 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlayerService } from "../services/PlayerService";
 import { Player } from "../models/Player";
+import { useCurrentSeason } from "./useCurrentSeason";
 
 export const usePlayers = () => {
   const queryClient = useQueryClient();
-  // ─────────────────────────────────────────────
-  // GET PLAYERS
-  // ─────────────────────────────────────────────
+  const { currentSeasonId } = useCurrentSeason();
+
   const playersQuery = useQuery({
-    queryKey: ["players"],
-    queryFn: PlayerService.getByCurrentSeasonId,
+    queryKey: ["players", currentSeasonId],
+    queryFn: () => PlayerService.getBySeasonId(currentSeasonId!),
+    enabled: !!currentSeasonId,
     select: (players: Player[]) => players,
   });
 
-  // ─────────────────────────────────────────────
-  // UPDATE PLAYER
-  // ─────────────────────────────────────────────
   const updatePlayerMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: Partial<Player> }) =>
       PlayerService.updatePlayer(id, data),
-
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["players"] });
+      queryClient.invalidateQueries({ queryKey: ["players", currentSeasonId] });
     },
   });
 
-  // ─────────────────────────────────────────────
-  // ACTIVE PLAYERS (DERIVED STATE)
-  // ─────────────────────────────────────────────
   const getActivePlayers = (): Player[] => {
     return playersQuery.data?.filter((p) => p.stillOnTeam === true) ?? [];
   };
 
-  // ─────────────────────────────────────────────
-  // RETURN (igual ao teu context API)
-  // ─────────────────────────────────────────────
   return {
     players: playersQuery.data ?? [],
     loading: playersQuery.isLoading,

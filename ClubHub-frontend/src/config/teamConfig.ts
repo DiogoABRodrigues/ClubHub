@@ -13,7 +13,7 @@ export const teamConfig = {
   currentSeason: getCurrentSeason(),
   team_stadium: "Campo Costa do Monte, Arcos de Valdevez",
   instagram_URL: "https://www.instagram.com/adecasoficial/",
-  backend_URL: "https://clubhub-c8u0.onrender.com",
+  backend_URL: "http://localhost:3000",
 };
 
 function getCurrentSeason() {

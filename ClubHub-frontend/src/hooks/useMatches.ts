@@ -1,23 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Alert } from "react-native";
-
 import { MatchService } from "../services/MatchService";
 import { MatchEventService } from "../services/MatchEventService";
 import { LineupService } from "../services/LineupService";
-
 import { Match } from "../models/Match";
 import { MatchEvent } from "../models/MatchEvent";
 import { Lineup } from "../models/Lineup";
+import { useCurrentSeason } from "./useCurrentSeason";
 
 export const useMatches = () => {
   const queryClient = useQueryClient();
+  const { currentSeasonId } = useCurrentSeason();
 
-  // ─────────────────────────────
-  // GET MATCHES
-  // ─────────────────────────────
   const matchesQuery = useQuery({
-    queryKey: ["matches"],
-    queryFn: MatchService.getByCurrentSeasonId,
+    queryKey: ["matches", currentSeasonId],
+    queryFn: () => MatchService.getBySeasonId(currentSeasonId!),
+    enabled: !!currentSeasonId,
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     select: (matches: Match[]) =>
@@ -26,24 +24,16 @@ export const useMatches = () => {
       ),
   });
 
-  // ─────────────────────────────
-  // UPDATE MATCH
-  // ─────────────────────────────
   const updateMatch = useMutation({
     mutationFn: ({ id, data }: { id: number; data: Partial<Match> }) =>
       MatchService.update(id, data),
-
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["matches"] });
+      queryClient.invalidateQueries({ queryKey: ["matches", currentSeasonId] });
     },
   });
 
-  // ─────────────────────────────
-  // START MATCH
-  // ─────────────────────────────
   const startMatch = async (id: number) => {
-    const matches = queryClient.getQueryData<Match[]>(["matches"]);
-
+    const matches = queryClient.getQueryData<Match[]>(["matches", currentSeasonId]);
     const alreadyLive = matches?.find((m) => m.status === "live");
 
     if (alreadyLive) {
@@ -56,59 +46,38 @@ export const useMatches = () => {
 
     await updateMatch.mutateAsync({
       id,
-      data: {
-        status: "live",
-        date: new Date().toISOString(),
-      },
+      data: { status: "live", date: new Date().toISOString() },
     });
   };
 
-  // ─────────────────────────────
-  // PAUSE MATCH
-  // ─────────────────────────────
   const pauseMatch = async (id: number) => {
-    await updateMatch.mutateAsync({
-      id,
-      data: { status: "halftime" },
-    });
+    await updateMatch.mutateAsync({ id, data: { status: "halftime" } });
   };
 
-  // ─────────────────────────────
-  // FINISH MATCH
-  // ─────────────────────────────
   const finishMatch = async (id: number, outcome: "V" | "D" | "E") => {
-    await updateMatch.mutateAsync({
-      id,
-      data: { status: "finished", outcome },
-    });
+    await updateMatch.mutateAsync({ id, data: { status: "finished", outcome } });
   };
 
-  // ─────────────────────────────
-  // ADD MATCH EVENT
-  // ─────────────────────────────
   const addMatchEvent = async (id: number, event: MatchEvent) => {
     const match = queryClient
-      .getQueryData<Match[]>(["matches"])
+      .getQueryData<Match[]>(["matches", currentSeasonId])
       ?.find((m) => m.id === id);
 
     if (!match) return;
 
     const createdEvent = await MatchEventService.create(match.id, event);
-
     const updatedEvents = [...(match.events ?? []), createdEvent];
 
-    queryClient.setQueryData<Match[]>(["matches"], (old) =>
+    queryClient.setQueryData<Match[]>(["matches", currentSeasonId], (old) =>
       old?.map((m) => (m.id === id ? { ...m, events: updatedEvents } : m)),
     );
 
-    // update result logic (igual ao teu)
     const houseGame = match.homeOrAway === "C";
     let result = match.result || "0-0";
     let [goalsFor, goalsAgainst] = result.split("-").map(Number);
 
     if (event.type === "goal") {
       const isForUs = !event.isOpponent;
-
       if (isForUs && houseGame) goalsFor++;
       else if (isForUs && !houseGame) goalsAgainst++;
       else if (!isForUs && houseGame) goalsAgainst++;
@@ -121,23 +90,19 @@ export const useMatches = () => {
     }
   };
 
-  // ─────────────────────────────
-  // DELETE MATCH EVENT
-  // ─────────────────────────────
   const deleteMatchEvent = async (id: number, event: MatchEvent) => {
     if (!event.id) return;
 
     const match = queryClient
-      .getQueryData<Match[]>(["matches"])
+      .getQueryData<Match[]>(["matches", currentSeasonId])
       ?.find((m) => m.id === id);
 
     if (!match) return;
 
     await MatchEventService.delete(event.id);
-
     const updatedEvents = match.events?.filter((e) => e.id !== event.id) ?? [];
 
-    queryClient.setQueryData<Match[]>(["matches"], (old) =>
+    queryClient.setQueryData<Match[]>(["matches", currentSeasonId], (old) =>
       old?.map((m) => (m.id === id ? { ...m, events: updatedEvents } : m)),
     );
 
@@ -145,7 +110,6 @@ export const useMatches = () => {
       const houseGame = match.homeOrAway === "C";
       let result = match.result || "0-0";
       let [goalsFor, goalsAgainst] = result.split("-").map(Number);
-
       const isForUs = !event.isOpponent;
 
       if (isForUs && houseGame) goalsFor--;
@@ -160,9 +124,6 @@ export const useMatches = () => {
     }
   };
 
-  // ─────────────────────────────
-  // SAVE LINEUP
-  // ─────────────────────────────
   const saveLineup = async (
     matchId: number,
     entries: { playerId: number | string; isStarting: boolean }[],
@@ -179,7 +140,7 @@ export const useMatches = () => {
       ),
     );
 
-    queryClient.setQueryData<Match[]>(["matches"], (old) =>
+    queryClient.setQueryData<Match[]>(["matches", currentSeasonId], (old) =>
       old?.map((m) =>
         m.id === matchId ? { ...m, Lineups: createdLineups } : m,
       ),
@@ -190,8 +151,7 @@ export const useMatches = () => {
     matches: matchesQuery.data ?? [],
     loading: matchesQuery.isLoading,
     refreshMatches: () =>
-      queryClient.invalidateQueries({ queryKey: ["matches"] }),
-
+      queryClient.invalidateQueries({ queryKey: ["matches", currentSeasonId] }),
     updateMatch: updateMatch.mutate,
     startMatch,
     pauseMatch,

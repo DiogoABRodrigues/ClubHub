@@ -1,13 +1,15 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { StandingService } from "../services/StandingService";
-import { Standing } from "../models/Standing";
+import { useCurrentSeason } from "./useCurrentSeason";
 
 export const useStandings = () => {
   const queryClient = useQueryClient();
+  const { currentSeasonId } = useCurrentSeason();
 
   const standingsQuery = useQuery({
-    queryKey: ["standings"],
-    queryFn: StandingService.getByCurrentSeasonId,
+    queryKey: ["standings", currentSeasonId],
+    queryFn: () => StandingService.getBySeasonId(currentSeasonId!),
+    enabled: !!currentSeasonId,
     staleTime: 1000 * 60 * 10,
   });
 
@@ -15,6 +17,6 @@ export const useStandings = () => {
     standings: standingsQuery.data ?? [],
     loading: standingsQuery.isLoading,
     refreshStandings: () =>
-      queryClient.invalidateQueries({ queryKey: ["standings"] }),
+      queryClient.invalidateQueries({ queryKey: ["standings", currentSeasonId] }),
   };
 };

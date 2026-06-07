@@ -2,7 +2,6 @@ import React, { useMemo, useCallback, useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { usePlayers } from "../../hooks/usePlayers";
-import { useSeasons } from "../../hooks/useSeasons";
 import { Player } from "../../models/Player";
 import { styles as globalStyles } from "./Squad.styles";
 import { getPositionOrder } from "../../utils/playerPositionUtils";
@@ -64,17 +63,9 @@ const PlayerCard = React.memo(
 // ─────────────────────────────────────────────────────────────
 export const SquadScreen = React.memo(function SquadScreen() {
   const { getActivePlayers } = usePlayers();
-  const { seasons } = useSeasons();
   const activePlayers = getActivePlayers();
 
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
-
-  /* Mapa de seasonId → year para apresentar no modal */
-  const seasonMap = useMemo<Record<number, string>>(
-    () =>
-      Object.fromEntries(seasons.map((s) => [s.id, s.year])),
-    [seasons],
-  );
 
   /* SORT ONCE */
   const sortedPlayers = useMemo(() => {
@@ -174,7 +165,6 @@ export const SquadScreen = React.memo(function SquadScreen() {
 
       <PlayerCardModal
         player={selectedPlayer}
-        seasonMap={seasonMap}
         onClose={handleCloseModal}
       />
     </>
