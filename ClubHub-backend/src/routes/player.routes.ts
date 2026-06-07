@@ -9,6 +9,7 @@ const router = Router();
 router.get("/", PlayerController.getAll);
 router.get("/season/:seasonId", PlayerController.getBySeasonId);
 router.get("/current", PlayerController.getByCurrentSeasonId);
+router.get("/:playerId/allstats", PlayerController.getAllStatsByPlayerId);
 
 // ADMIN ONLY
 router.put(

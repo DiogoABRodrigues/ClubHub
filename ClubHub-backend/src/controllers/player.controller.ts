@@ -12,14 +12,12 @@ export default class PlayerController {
   static async getById(req: Request, res: Response) {
     const seasonId = parseInt(String(req.params.seasonId));
     const data = await service.getBySeasonId(seasonId);
-
     res.json(data);
   }
 
   static async getBySeasonId(req: Request, res: Response) {
     const seasonId = parseInt(String(req.params.seasonId));
     const data = await service.getBySeasonId(seasonId);
-
     res.json(data);
   }
 
@@ -28,9 +26,16 @@ export default class PlayerController {
     res.json(data);
   }
 
+  static async getAllStatsByPlayerId(req: Request, res: Response) {
+    const playerId = parseInt(String(req.params.playerId));
+    const data = await service.getAllStatsByPlayerId(playerId);
+    if (!data) return res.status(404).json({ error: "Jogador não encontrado" });
+    res.json(data);
+  }
+
   static async updatePlayer(req: Request, res: Response) {
     const playerId = parseInt(String(req.params.playerId));
-    const updates = req.body; // { stillOnTeam: boolean }
+    const updates = req.body;
 
     try {
       const updatedPlayer = await service.updatePlayer(playerId, updates);
