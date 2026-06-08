@@ -2,10 +2,10 @@ import React, { useMemo, useCallback } from "react";
 import { View, Text, FlatList } from "react-native";
 import { useStandings } from "../../hooks/useStandings";
 import { useCompetitions } from "../../hooks/useCompetitions";
-import { useCurrentSeason } from "../../hooks/useCurrentSeason";
 import { LeagueTableRow } from "../../components/LeagueTableRow";
 import { styles } from "./Standings.styles";
 import { LegendItem } from "../../models/Competition";
+import { useSelectedSeason } from "../../contexts/Selectedseasoncontext";
 
 const COLS = {
   position: 1,
@@ -18,8 +18,7 @@ const COLS = {
 export const Standings = React.memo(function Standings() {
   const { standings, loading } = useStandings();
   const { competitions } = useCompetitions();
-  console.log("Standings render", { standings, competitions });
-  const { currentSeasonId } = useCurrentSeason();
+  const { selectedSeason: currentSeason } = useSelectedSeason();
 
   const sorted = useMemo(() => {
     const arr = standings ? [...standings] : [];

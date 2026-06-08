@@ -119,7 +119,7 @@ export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
                 resizeMode="contain"
               />
               <Text style={styles.firstName}>{firstName}</Text>
-              <Text style={styles.lastName} numberOfLines={1}>{lastName}</Text>
+              <Text style={styles.firstName} numberOfLines={1}>{lastName}</Text>
               <View style={styles.positionBadge}>
                 <Text style={styles.positionText}>{position}</Text>
               </View>
