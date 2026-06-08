@@ -89,7 +89,7 @@ export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
   return (
     <Modal
       visible={!!player}
-      animationType="slide"
+      animationType="none"
       transparent
       onRequestClose={onClose}
     >

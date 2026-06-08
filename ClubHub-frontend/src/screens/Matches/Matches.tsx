@@ -14,6 +14,7 @@ import { useTeams } from "../../hooks/useTeams";
 import { useCompetitions } from "../../hooks/useCompetitions";
 import { useAuth } from "../../contexts/AuthContext";
 import { EmptyState } from "../../components/EmptyState";
+import { SeasonPicker } from "../../components/Seasonpicker";
 
 type TabKey = "all" | "live" | "upcoming" | "finished";
 
@@ -236,6 +237,7 @@ export const Matches = ({ navigation }: any) => {
             <Text style={styles.eyebrow}> </Text>
             <Text style={styles.headerTitle}>Jogos e Resultados</Text>
           </View>
+          <SeasonPicker />
         </View>
       </View>
 

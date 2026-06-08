@@ -1,10 +1,10 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { StandingService } from "../services/StandingService";
-import { useCurrentSeason } from "./useCurrentSeason";
+import { useSelectedSeason } from "../contexts/Selectedseasoncontext";
 
 export const useStandings = () => {
   const queryClient = useQueryClient();
-  const { currentSeasonId } = useCurrentSeason();
+  const { selectedSeasonId: currentSeasonId } = useSelectedSeason();
 
   const standingsQuery = useQuery({
     queryKey: ["standings", currentSeasonId],

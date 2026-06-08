@@ -6,11 +6,11 @@ import { LineupService } from "../services/LineupService";
 import { Match } from "../models/Match";
 import { MatchEvent } from "../models/MatchEvent";
 import { Lineup } from "../models/Lineup";
-import { useCurrentSeason } from "./useCurrentSeason";
+import { useSelectedSeason } from "../contexts/Selectedseasoncontext";
 
 export const useMatches = () => {
   const queryClient = useQueryClient();
-  const { currentSeasonId } = useCurrentSeason();
+  const { selectedSeasonId: currentSeasonId } = useSelectedSeason();
 
   const matchesQuery = useQuery({
     queryKey: ["matches", currentSeasonId],

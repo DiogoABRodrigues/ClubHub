@@ -8,6 +8,7 @@ import { AuthProvider } from "./src/contexts/AuthContext";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./src/lib/queryClient";
 import { SocketProvider } from "./src/contexts/SocketContext";
+import { SelectedSeasonProvider } from "./src/contexts/Selectedseasoncontext";
 import { registerForPushNotifications } from "./src/utils/notifications";
 import * as SplashScreen from "expo-splash-screen";
 
@@ -31,6 +32,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <QueryClientProvider client={queryClient}>
+        <SelectedSeasonProvider>
         <AuthProvider>
           <SocketProvider>
             {!splashDone ? (
@@ -40,6 +42,7 @@ export default function App() {
             )}
           </SocketProvider>
         </AuthProvider>
+        </SelectedSeasonProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

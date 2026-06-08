@@ -5,9 +5,10 @@ import { styles } from "./Season.styles";
 import { SquadScreen } from "../Squad/Squad";
 import { Standings } from "../Standings/Standings";
 import { SquadStats } from "../Stats/Stats";
-import { useSeasons } from "../../hooks/useSeasons";
 import { COLORS } from "../../theme/colors";
 import { useAuth } from "../../contexts/AuthContext";
+import { useSelectedSeason } from "../../contexts/Selectedseasoncontext";
+import { SeasonPicker } from "../../components/Seasonpicker";
 import { AdminSquadScreen } from "../Admin/AdminSquad/SquadAdmin";
 
 type SeasonTab = "standings" | "squad" | "stats";
@@ -28,17 +29,7 @@ export function SeasonScreen() {
   const { adminMode } = useAuth();
   const [activeTab, setActiveTab] = useState<SeasonTab>("standings");
   const [visited, setVisited] = useState<Set<SeasonTab>>(new Set(["standings"]));
-  const { seasons } = useSeasons();
-
-  const currentSeason = useMemo(() => {
-    if (!seasons.length) return null;
-    // Ordena pelo ano da época (ex: "2025/2026" → 2025) em vez do id
-    return seasons.reduce((latest, season) => {
-      const latestYear = parseInt(latest.year.split("/")?.[0] ?? "0");
-      const seasonYear = parseInt(season.year.split("/")?.[0] ?? "0");
-      return seasonYear > latestYear ? season : latest;
-    });
-  }, [seasons]);
+  const { selectedSeason: currentSeason } = useSelectedSeason();
 
   const handleTabPress = useCallback((tab: SeasonTab) => {
     setActiveTab(tab);
@@ -53,6 +44,7 @@ export function SeasonScreen() {
             <Text style={styles.eyebrow}> </Text>
             <Text style={styles.headerTitle}>Época {currentSeason?.year}</Text>
           </View>
+          <SeasonPicker />
         </View>
       </View>
 
