@@ -25,7 +25,7 @@ const TABS: Tab[] = [
   { key: "stats", label: "Estatísticas", icon: BarChart3 },
 ];
 
-export function SeasonScreen() {
+export function SeasonScreen({ navigation }: any) {
   const { adminMode } = useAuth();
   const [activeTab, setActiveTab] = useState<SeasonTab>("standings");
   const [visited, setVisited] = useState<Set<SeasonTab>>(new Set(["standings"]));
@@ -62,7 +62,9 @@ export function SeasonScreen() {
 
       {visited.has("standings") && (
         <View style={{ flex: 1, display: activeTab === "standings" ? "flex" : "none" }}>
-          <Standings />
+          <Standings
+            navigation={navigation}
+          />
         </View>
       )}
 

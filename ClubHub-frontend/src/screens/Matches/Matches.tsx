@@ -18,12 +18,6 @@ import { SeasonPicker } from "../../components/Seasonpicker";
 
 type TabKey = "all" | "live" | "upcoming" | "finished";
 
-const TABS: { key: TabKey; label: string }[] = [
-  { key: "all", label: "Todos" },
-  { key: "upcoming", label: "Próximos" },
-  { key: "finished", label: "Terminados" },
-];
-
 interface MatchesSectionProps {
   title: string;
   isLive?: boolean;
@@ -110,12 +104,11 @@ export const Matches = ({ navigation }: any) => {
     return map;
   }, [teams]);
 
-  const [activeTab, setActiveTab] = useState<TabKey>("all");
+  const [activeTab] = useState<TabKey>("all");
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [showAllFinished, setShowAllFinished] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  // ✅ Reset automático ao mudar tab
   useEffect(() => {
     if (activeTab === "all") {
       setShowAllUpcoming(false);

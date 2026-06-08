@@ -6,6 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../theme/colors";
 
 import { HomeStack } from "./HomeStack";
+import { SeasonStack } from "./SeasonStack";
 import { MatchesStack } from "./MatchesStack";
 import { NewsStack } from "./NewsStack";
 import { SeasonScreen } from "../screens/Season/SeasonScreen";
@@ -53,7 +54,7 @@ export const AppNavigator = () => {
 
         {/* Troca automática de stack conforme o modo */}
         <Tab.Screen name="Jogos" component={MatchesStack} />
-        <Tab.Screen name="Época" component={SeasonScreen} />
+        <Tab.Screen name="Época" component={SeasonStack} />
         <Tab.Screen
           name="Notícias"
           component={adminMode ? AdminNewsStack : NewsStack}

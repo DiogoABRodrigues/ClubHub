@@ -1,11 +1,38 @@
 import React, { useMemo, useCallback } from "react";
-import { View, Text, FlatList } from "react-native";
+import { View, Text, SectionList } from "react-native";
 import { useStandings } from "../../hooks/useStandings";
 import { useCompetitions } from "../../hooks/useCompetitions";
+import { useMatches } from "../../hooks/useMatches";
 import { LeagueTableRow } from "../../components/LeagueTableRow";
+import { CupMatchRow } from "../../components/CupMatchRow";
 import { styles } from "./Standings.styles";
 import { LegendItem } from "../../models/Competition";
 import { useSelectedSeason } from "../../contexts/Selectedseasoncontext";
+import { Match } from "../../models/Match";
+import { useAuth } from "../../contexts/AuthContext";
+
+type LeagueSection = {
+  type: "league";
+  competitionId: number;
+  competitionName: string;
+  legend: LegendItem[];
+  data: any[];
+};
+
+type CupRound = {
+  round: string;
+  matches: Match[];
+};
+
+type CupSection = {
+  type: "cup";
+  competitionId: number;
+  competitionName: string;
+  rounds: CupRound[];
+  data: CupRound[];
+};
+
+type Section = LeagueSection | CupSection;
 
 const COLS = {
   position: 1,
@@ -15,41 +42,274 @@ const COLS = {
   points: 1,
 };
 
-export const Standings = React.memo(function Standings() {
-  const { standings, loading } = useStandings();
-  const { competitions } = useCompetitions();
+const CUP_ROUND_ORDER = [
+  "final",
+  "meia-final",
+  "meias-finais",
+  "quartos-de-final",
+  "oitavos-de-final",
+  "dezasseis avos",
+  "trinta e dois avos",
+];
+
+function sortRounds(a: CupRound, b: CupRound): number {
+  const aIdx = CUP_ROUND_ORDER.findIndex((r) =>
+    a.round.toLowerCase().includes(r),
+  );
+
+  const bIdx = CUP_ROUND_ORDER.findIndex((r) =>
+    b.round.toLowerCase().includes(r),
+  );
+
+  if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+  if (aIdx !== -1) return -1;
+  if (bIdx !== -1) return 1;
+
+  return a.round.localeCompare(b.round);
+}
+
+export const Standings = React.memo(function Standings({ navigation }: any) {
+  const { adminMode } = useAuth();
+  const { standings, loading: standingsLoading } = useStandings();
+  const { competitions, loading: competitionsLoading } = useCompetitions();
+  const { matches } = useMatches();
   const { selectedSeason: currentSeason } = useSelectedSeason();
 
-  const sorted = useMemo(() => {
-    const arr = standings ? [...standings] : [];
-    arr.sort((a, b) => a.position - b.position);
-    return arr;
-  }, [standings]);
+  const navigateToMatchDetail = (matchId: number) => {
+      navigation.navigate(adminMode ? "AdminMatchDetail" : "MatchDetail", {
+        id: matchId,
+      });
+    };
 
-  // Pega a legenda da competição da época atual
-  const legend = useMemo<LegendItem[]>(() => {
-    if (standings.length === 0) return [];
-    const { seasonId, competitionId } = standings[0];
-    const competition = competitions.find(
-      (c) => c.seasonId === seasonId && c.id === competitionId,
+  const sections = useMemo<Section[]>(() => {
+    if (!currentSeason || !competitions.length) return [];
+
+    const seasonCompetitions = competitions.filter(
+      (c) => c.seasonId === currentSeason.id,
     );
-    return competition?.legend ?? [];
-  }, [competitions, standings]);
 
-  const renderItem = useCallback(
-    ({ item }: { item: any }) => (
-      <LeagueTableRow standing={item} />
+    const result: Section[] = [];
+
+    for (const comp of seasonCompetitions) {
+      const isCup = comp.name.toLowerCase().includes("taça");
+
+      if (isCup) {
+        const competitionMatches = matches.filter(
+          (m) => m.competitionId === comp.id,
+        );
+
+        if (competitionMatches.length === 0) continue;
+
+        const roundMap = new Map<string, Match[]>();
+
+        competitionMatches.forEach((match) => {
+          const round = match.round ?? "Sem ronda";
+
+          if (!roundMap.has(round)) {
+            roundMap.set(round, []);
+          }
+
+          roundMap.get(round)!.push(match);
+        });
+
+        const rounds: CupRound[] = Array.from(roundMap.entries())
+          .map(([round, roundMatches]) => ({
+            round,
+            matches: roundMatches.sort(
+              (a, b) =>
+                new Date(b.date).getTime() -
+                new Date(a.date).getTime(),
+            ),
+          }))
+          .sort(sortRounds);
+
+        result.push({
+          type: "cup",
+          competitionId: comp.id,
+          competitionName: comp.name,
+          rounds,
+          data: rounds,
+        });
+      } else {
+        const competitionStandings = standings
+          .filter((s) => s.competitionId === comp.id)
+          .sort((a, b) => a.position - b.position);
+
+        if (competitionStandings.length === 0) continue;
+
+        result.push({
+          type: "league",
+          competitionId: comp.id,
+          competitionName: comp.name,
+          legend: comp.legend ?? [],
+          data: competitionStandings,
+        });
+      }
+    }
+
+    return result;
+  }, [
+    competitions,
+    standings,
+    matches,
+    currentSeason,
+  ]);
+
+  const renderItem = 
+    ({ item, section }: { item: any; section: Section }) => {
+      if (section.type === "league") {
+        return <LeagueTableRow standing={item} />;
+      }
+
+      const round = item as CupRound;
+
+      return (
+        <View style={styles.cupRoundBlock}>
+          <Text style={styles.roundLabel}>
+            {round.round}
+          </Text>
+
+          {round.matches.map((match) => (
+            <CupMatchRow
+              onPress={() => navigateToMatchDetail(match.id)}
+              key={match.id}
+              match={match}
+            />
+          ))}
+        </View>
+      );
+    }
+
+  const renderSectionHeader = useCallback(
+    ({ section }: { section: Section }) => (
+      <View>
+        <Text style={styles.sectionTitle}>
+          {section.competitionName}
+        </Text>
+
+        {section.type === "league" && (
+          <View style={styles.tableHeader}>
+            <View
+              style={[
+                styles.headerCell,
+                { flex: COLS.position },
+              ]}
+            >
+              <Text style={styles.headerText}></Text>
+            </View>
+
+            <View
+              style={[
+                styles.headerCell,
+                { flex: COLS.team },
+              ]}
+            >
+              <Text style={styles.headerText}></Text>
+            </View>
+
+            <View
+              style={[
+                styles.headerCell,
+                {
+                  flex: COLS.played,
+                  alignItems: "center",
+                },
+              ]}
+            >
+              <Text style={styles.headerText}>J</Text>
+            </View>
+
+            <View
+              style={[
+                styles.headerCell,
+                {
+                  flex: COLS.goalDiff,
+                  alignItems: "center",
+                },
+              ]}
+            >
+              <Text style={styles.headerText}>DG</Text>
+            </View>
+
+            <View
+              style={[
+                styles.headerCell,
+                {
+                  flex: COLS.points,
+                  alignItems: "flex-end",
+                },
+              ]}
+            >
+              <Text style={styles.headerText}>PTS</Text>
+            </View>
+          </View>
+        )}
+      </View>
     ),
     [],
   );
 
-  const keyExtractor = useCallback((item: any) => item.id, []);
+  const renderSectionFooter = useCallback(
+    ({ section }: { section: Section }) => {
+      if (
+        section.type !== "league" ||
+        section.legend.length === 0
+      ) {
+        return null;
+      }
 
-  if (loading) {
+      return (
+        <View style={styles.legend}>
+          <Text style={styles.legendTitle}>
+            Legenda
+          </Text>
+
+          <View style={styles.legendItems}>
+            {section.legend.map((item, index) => (
+              <View
+                key={index}
+                style={styles.legendItem}
+              >
+                <View
+                  style={[
+                    styles.legendColor,
+                    {
+                      backgroundColor:
+                        item.color,
+                    },
+                  ]}
+                />
+
+                <Text style={styles.legendText}>
+                  {item.label}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      );
+    },
+    [],
+  );
+
+  const keyExtractor = useCallback(
+    (item: any, index: number) =>
+      item?.id?.toString() ??
+      item?.round ??
+      String(index),
+    [],
+  );
+
+  if (standingsLoading || competitionsLoading) {
     return (
       <View style={styles.container}>
-        <Text style={{ textAlign: "center", marginTop: 50 }}>
-          A carregar classificação...
+        <Text
+          style={{
+            textAlign: "center",
+            marginTop: 50,
+          }}
+        >
+          A carregar classificações...
         </Text>
       </View>
     );
@@ -57,52 +317,17 @@ export const Standings = React.memo(function Standings() {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={sorted}
+      <SectionList
+        sections={sections}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
-        ListHeaderComponent={
-          <View>
-            <View style={styles.tableHeader}>
-              <View style={[styles.headerCell, { flex: COLS.position }]}>
-                <Text style={styles.headerText}></Text>
-              </View>
-              <View style={[styles.headerCell, { flex: COLS.team }]}>
-                <Text style={styles.headerText}></Text>
-              </View>
-              <View style={[styles.headerCell, { flex: COLS.played, alignItems: "center" }]}>
-                <Text style={styles.headerText}>J</Text>
-              </View>
-              <View style={[styles.headerCell, { flex: COLS.goalDiff, alignItems: "center" }]}>
-                <Text style={styles.headerText}>DG</Text>
-              </View>
-              <View style={[styles.headerCell, { flex: COLS.points, alignItems: "flex-end" }]}>
-                <Text style={styles.headerText}>PTS</Text>
-              </View>
-            </View>
-          </View>
-        }
-        ListFooterComponent={
-          legend.length > 0 ? (
-            <View style={styles.legend}>
-              <Text style={styles.legendTitle}>Legenda</Text>
-              <View style={styles.legendItems}>
-                {legend.map((item, index) => (
-                  <View key={index} style={styles.legendItem}>
-                    <View
-                      style={[styles.legendColor, { backgroundColor: item.color }]}
-                    />
-                    <Text style={styles.legendText}>{item.label}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          ) : null
-        }
+        renderSectionHeader={renderSectionHeader}
+        renderSectionFooter={renderSectionFooter}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
-        initialNumToRender={15}
-        maxToRenderPerBatch={15}
+        stickySectionHeadersEnabled={false}
+        initialNumToRender={20}
+        maxToRenderPerBatch={20}
         windowSize={5}
         removeClippedSubviews
       />

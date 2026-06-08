@@ -151,9 +151,10 @@ export const styles = StyleSheet.create({
   },
 
   sectionTitle: {
+    paddingVertical: 10,
     fontSize: FONT_SIZE.md,
     fontWeight: "700",
-    color: COLORS.textPrimary,
+    color: COLORS.textSecondary,
   },
 
   // ── Tabela completa (wrapper) ──────────────────────────────────────────────
@@ -164,5 +165,21 @@ export const styles = StyleSheet.create({
     overflow: "hidden",
     marginBottom: SPACING.md,
     backgroundColor: COLORS.surface,
+  },
+
+  // ── Taça: bloco de ronda ───────────────────────────────────────────────────
+  cupRoundBlock: {
+    marginBottom: SPACING.sm,
+  },
+
+  roundLabel: {
+    fontSize: FONT_SIZE.xs,
+    fontWeight: "600",
+    color: COLORS.textSecondary,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    marginBottom: SPACING.xs,
+    marginTop: SPACING.xs,
+    opacity: 0.6,
   },
 });

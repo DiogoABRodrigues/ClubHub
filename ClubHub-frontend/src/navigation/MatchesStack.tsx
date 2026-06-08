@@ -4,8 +4,8 @@ import { MatchDetail } from "../screens/MatchDetails/MatchDetail";
 import { AdminMatchDetail } from "../screens/Admin/AdminMatches/AdminMatchDetail";
 
 export type MatchesStackParamList = {
-  Matches: undefined; // ecrã principal da lista
-  MatchDetail: { id: string }; // detalhe do jogo
+  Matches: undefined; 
+  MatchDetail: { id: string }; 
   AdminMatchDetail: { id: string };
 };
 
