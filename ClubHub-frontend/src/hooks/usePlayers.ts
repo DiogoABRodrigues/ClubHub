@@ -22,8 +22,35 @@ export const usePlayers = () => {
     },
   });
 
+  const updateSquadStatusMutation = useMutation({
+    mutationFn: ({
+      playerExternalId,
+      seasonId,
+      status,
+    }: {
+      playerExternalId: number;
+      seasonId: number;
+      status: "active" | "left" | "error";
+    }) => PlayerService.updateSquadStatus(playerExternalId, seasonId, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["players", currentSeasonId] });
+    },
+  });
+
+  // Apenas jogadores ativos — para o ecrã público do plantel
   const getActivePlayers = (): Player[] => {
-    return playersQuery.data?.filter((p) => p.stillOnTeam === true) ?? [];
+    return (
+      playersQuery.data?.filter((p) => (p.squadStatus ?? "active") === "active") ?? []
+    );
+  };
+
+  // Ativos + quem saiu ("left") — não inclui erros
+  const getVisiblePlayers = (): Player[] => {
+    return (
+      playersQuery.data?.filter(
+        (p) => (p.squadStatus ?? "active") !== "error",
+      ) ?? []
+    );
   };
 
   return {
@@ -31,6 +58,8 @@ export const usePlayers = () => {
     loading: playersQuery.isLoading,
     refreshPlayers: playersQuery.refetch,
     updatePlayer: updatePlayerMutation.mutate,
+    updateSquadStatus: updateSquadStatusMutation.mutate,
     getActivePlayers,
+    getVisiblePlayers,
   };
 };

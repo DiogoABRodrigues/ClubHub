@@ -28,7 +28,16 @@ export const isFieldPlayer = (player: Player) => {
   const pos = mapToMainPosition(player.Stats?.[0]?.position || "");
 
   return (
-    player.stillOnTeam &&
+    player.squadStatus === "active" &&
+    ["Guarda Redes", "Defesa", "Médio", "Avançado"].includes(pos)
+  );
+};
+
+export const isFieldPlayer4Stats = (player: Player) => {
+  const pos = mapToMainPosition(player.Stats?.[0]?.position || "");
+
+  return (
+    (player.squadStatus === "active" || player.squadStatus === "left") &&
     ["Guarda Redes", "Defesa", "Médio", "Avançado"].includes(pos)
   );
 };

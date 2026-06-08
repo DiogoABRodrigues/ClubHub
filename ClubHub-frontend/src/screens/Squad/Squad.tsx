@@ -1,11 +1,10 @@
-import React, { useMemo, useCallback, useEffect, useState } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { usePlayers } from "../../hooks/usePlayers";
 import { Player } from "../../models/Player";
 import { styles as globalStyles } from "./Squad.styles";
-import { getPositionOrder } from "../../utils/playerPositionUtils";
-import { mapToMainPosition } from "../../utils/playerPositionUtils";
+import { getPositionOrder, mapToMainPosition } from "../../utils/playerPositionUtils";
 import { PlayerCardModal } from "../../components/PlayerCardModal";
 
 const defaultPlayerImage = require("../../../assets/player.jpg");
@@ -19,7 +18,10 @@ const chunkArray = (arr: Player[], size: number) => {
 };
 
 // ─────────────────────────────────────────────────────────────
-//  CARD MEMO — agora com onPress
+//  CARD MEMO
+//  - status "active" → normal
+//  - status "left"   → opacidade reduzida + badge "Saiu"
+//  - status "error"  → nunca chega aqui (filtrado antes)
 // ─────────────────────────────────────────────────────────────
 const PlayerCard = React.memo(
   ({
@@ -31,10 +33,11 @@ const PlayerCard = React.memo(
   }) => {
     const [firstName, ...rest] = player.name.split(" ");
     const lastName = rest.join(" ");
+    const hasLeft = player.squadStatus === "left";
 
     return (
       <TouchableOpacity
-        style={globalStyles.playerCard}
+        style={[globalStyles.playerCard, hasLeft && { opacity: 0.45 }]}
         onPress={() => onPress(player)}
         activeOpacity={0.75}
       >
@@ -42,15 +45,29 @@ const PlayerCard = React.memo(
           source={
             player.photoUrl ? { uri: player.photoUrl } : defaultPlayerImage
           }
-          style={globalStyles.playerImage}
+          style={[
+            globalStyles.playerImage,
+            hasLeft && { tintColor: undefined }, 
+          ]}
           resizeMode="contain"
         />
-
-        <Text style={globalStyles.playerName} numberOfLines={1}>
+        <Text
+          style={[
+            globalStyles.playerName,
+            hasLeft && { color: "#888" },
+          ]}
+          numberOfLines={1}
+        >
           {firstName}
         </Text>
 
-        <Text style={globalStyles.playerName} numberOfLines={1}>
+        <Text
+          style={[
+            globalStyles.playerName,
+            hasLeft && { color: "#888" },
+          ]}
+          numberOfLines={1}
+        >
           {lastName}
         </Text>
       </TouchableOpacity>
@@ -62,34 +79,30 @@ const PlayerCard = React.memo(
 //  SCREEN
 // ─────────────────────────────────────────────────────────────
 export const SquadScreen = React.memo(function SquadScreen() {
-  const { getActivePlayers } = usePlayers();
-  const activePlayers = getActivePlayers();
+  // getVisiblePlayers devolve "active" + "left"; "error" já foi filtrado
+  const { getVisiblePlayers } = usePlayers();
+  const visiblePlayers = getVisiblePlayers();
 
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
 
   /* SORT ONCE */
   const sortedPlayers = useMemo(() => {
-    const sorted = [...activePlayers].sort((a, b) => {
+    return [...visiblePlayers].sort((a, b) => {
       const posA = getPositionOrder(a.Stats?.[0]?.position || "");
       const posB = getPositionOrder(b.Stats?.[0]?.position || "");
-
       if (posA !== posB) return posA - posB;
       return (a.Stats?.[0]?.number || 0) - (b.Stats?.[0]?.number || 0);
     });
-
-    return sorted;
-  }, [activePlayers]);
+  }, [visiblePlayers]);
 
   /* GROUP ONCE */
   const grouped = useMemo(() => {
     const groups: Record<string, Player[]> = {};
-
     for (const p of sortedPlayers) {
       const key = mapToMainPosition(p.Stats?.[0]?.position || "");
       if (!groups[key]) groups[key] = [];
       groups[key].push(p);
     }
-
     return Object.entries(groups).map(([position, players]) => ({
       position,
       players,
@@ -99,17 +112,12 @@ export const SquadScreen = React.memo(function SquadScreen() {
   /* FLATTEN FOR VIRTUAL LIST */
   const data = useMemo(() => {
     const result: any[] = [];
-
     grouped.forEach((group) => {
       result.push({ type: "header", position: group.position });
-
-      const rows = chunkArray(group.players, 3);
-
-      rows.forEach((row) => {
+      chunkArray(group.players, 3).forEach((row) => {
         result.push({ type: "row", players: row });
       });
     });
-
     return result;
   }, [grouped]);
 
@@ -150,23 +158,15 @@ export const SquadScreen = React.memo(function SquadScreen() {
         data={data}
         renderItem={renderItem}
         keyExtractor={(item, index) => {
-          if (item.type === "header") {
-            return `h-${item.position}-${index}`;
-          }
-
-          if (item.type === "row") {
+          if (item.type === "header") return `h-${item.position}-${index}`;
+          if (item.type === "row")
             return `r-${item.players.map((p: Player) => p.id).join("-")}`;
-          }
-
           return `unknown-${index}`;
         }}
         contentContainerStyle={globalStyles.squadList}
       />
 
-      <PlayerCardModal
-        player={selectedPlayer}
-        onClose={handleCloseModal}
-      />
+      <PlayerCardModal player={selectedPlayer} onClose={handleCloseModal} />
     </>
   );
 });

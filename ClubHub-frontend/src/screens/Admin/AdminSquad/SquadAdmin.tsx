@@ -1,14 +1,15 @@
 import React, { useCallback, useMemo } from "react";
-import { View, Text, Image, Switch, Alert } from "react-native";
+import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { usePlayers } from "../../../hooks/usePlayers";
-import { Player } from "../../../models/Player";
+import { Player, SquadStatus } from "../../../models/Player";
 import { styles } from "../../Squad/Squad.styles";
 import {
   mapToMainPosition,
   getPositionOrder,
 } from "../../../utils/playerPositionUtils";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useSelectedSeason } from "../../../contexts/Selectedseasoncontext";
 
 const defaultPlayerImage = require("../../../../assets/player.jpg");
 
@@ -21,14 +22,49 @@ const chunkArray = (arr: Player[], size: number) => {
   return chunks;
 };
 
+const STATUS_LABELS: Record<SquadStatus, string> = {
+  active: "Ativo",
+  left: "Saiu",
+  error: "Erro",
+};
+
+const STATUS_COLORS: Record<SquadStatus, string> = {
+  active: "#22c55e",
+  left:   "#f59e0b",
+  error:  "#ef4444",
+};
+
+const NEXT_STATUS: Record<SquadStatus, SquadStatus> = {
+  active: "left",
+  left:   "error",
+  error:  "active",
+};
+
 /* ---------------- CARD MEMO ---------------- */
 const PlayerCard = React.memo(
-  ({ player, onToggle }: { player: Player; onToggle: (p: Player) => void }) => {
+  ({
+    player,
+    onChangeStatus,
+  }: {
+    player: Player;
+    onChangeStatus: (p: Player, next: SquadStatus) => void;
+  }) => {
     const [firstName, ...rest] = player.name.split(" ");
     const lastName = rest.join(" ");
+    const currentStatus: SquadStatus = player.squadStatus ?? "active";
+    const nextStatus = NEXT_STATUS[currentStatus];
+
+    const isLeft  = currentStatus === "left";
+    const isError = currentStatus === "error";
 
     return (
-      <View style={styles.playerCard}>
+      <View
+        style={[
+          styles.playerCard,
+          isLeft  && { opacity: 0.55 },
+          isError && { opacity: 0.25 },
+        ]}
+      >
         <Image
           source={
             player.photoUrl ? { uri: player.photoUrl } : defaultPlayerImage
@@ -37,15 +73,22 @@ const PlayerCard = React.memo(
           resizeMode="contain"
         />
 
-        {!player.stillOnTeam && (
-          <View style={{ position: "absolute", top: 6, right: 6 }}>
-            <Text
-              style={{ color: "white", fontSize: 10, backgroundColor: "red" }}
-            >
-              INATIVO
-            </Text>
-          </View>
-        )}
+        {/* Badge de estado */}
+        <View
+          style={{
+            position: "absolute",
+            top: 4,
+            right: 4,
+            backgroundColor: STATUS_COLORS[currentStatus],
+            borderRadius: 4,
+            paddingHorizontal: 4,
+            paddingVertical: 2,
+          }}
+        >
+          <Text style={{ color: "#fff", fontSize: 9, fontWeight: "700" }}>
+            {STATUS_LABELS[currentStatus]}
+          </Text>
+        </View>
 
         <Text style={styles.playerName} numberOfLines={1}>
           {firstName}
@@ -54,10 +97,22 @@ const PlayerCard = React.memo(
           {lastName}
         </Text>
 
-        <Switch
-          value={!!player.stillOnTeam}
-          onValueChange={() => onToggle(player)}
-        />
+        {/* Botão para mudar para o próximo estado */}
+        <TouchableOpacity
+          onPress={() => onChangeStatus(player, nextStatus)}
+          style={{
+            marginTop: 4,
+            paddingHorizontal: 8,
+            paddingVertical: 3,
+            borderRadius: 6,
+            borderWidth: 1,
+            borderColor: STATUS_COLORS[nextStatus],
+          }}
+        >
+          <Text style={{ fontSize: 9, color: STATUS_COLORS[nextStatus], fontWeight: "600" }}>
+            → {STATUS_LABELS[nextStatus]}
+          </Text>
+        </TouchableOpacity>
       </View>
     );
   },
@@ -65,7 +120,7 @@ const PlayerCard = React.memo(
 
 /* ---------------- SCREEN ---------------- */
 export function AdminSquadScreen() {
-  const { isAdmin, adminMode } = useAuth();
+  const { isAdmin } = useAuth();
   if (!isAdmin) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -73,77 +128,72 @@ export function AdminSquadScreen() {
       </View>
     );
   }
-  const { players, updatePlayer } = usePlayers();
 
-  /* SORT ONCE */
+  const { players, updateSquadStatus } = usePlayers();
+  const { selectedSeasonId } = useSelectedSeason();
+
+  /* SORT ONCE — mostra TODOS (incluindo "error") para o admin */
   const sortedPlayers = useMemo(() => {
     return [...players].sort((a, b) => {
       const posA = getPositionOrder(a.Stats?.[0]?.position || "");
       const posB = getPositionOrder(b.Stats?.[0]?.position || "");
-
       if (posA !== posB) return posA - posB;
       return (a.Stats?.[0]?.number || 0) - (b.Stats?.[0]?.number || 0);
     });
   }, [players]);
 
-  /* GROUPING */
   const groupedData = useMemo(() => {
     const groups: Record<string, Player[]> = {};
-
     for (const p of sortedPlayers) {
       const key = mapToMainPosition(p.Stats?.[0]?.position || "");
       if (!groups[key]) groups[key] = [];
       groups[key].push(p);
     }
-
     return Object.entries(groups).map(([position, players]) => ({
       position,
       players,
     }));
   }, [sortedPlayers]);
 
-  /* FLATTEN (ROWS DE 3) */
   const flashData = useMemo(() => {
     const result: any[] = [];
-
     groupedData.forEach((group) => {
       result.push({ type: "header", position: group.position });
-
-      const rows = chunkArray(group.players, 3);
-
-      rows.forEach((row) => {
+      chunkArray(group.players, 3).forEach((row) => {
         result.push({ type: "row", players: row });
       });
     });
-
     return result;
   }, [groupedData]);
 
-  /* TOGGLE */
-  const handleToggle = useCallback(
-    (player: Player) => {
-      const newValue = !player.stillOnTeam;
+  const handleChangeStatus = useCallback(
+    (player: Player, nextStatus: SquadStatus) => {
+      const labels: Record<SquadStatus, string> = {
+        active: "Ativo (aparece normalmente)",
+        left:   "Saiu (aparece a cinzento)",
+        error:  "Erro (não aparece)",
+      };
 
       Alert.alert(
         "Alterar estado",
-        `${player.name} ${newValue ? "volta para a equipa" : "sai da equipa"}?`,
+        `${player.name}\n\n${STATUS_LABELS[player.squadStatus ?? "active"]} → ${labels[nextStatus]}`,
         [
           { text: "Cancelar", style: "cancel" },
           {
             text: "Confirmar",
             onPress: () =>
-              updatePlayer({
-                id: player.id,
-                data: { stillOnTeam: newValue },
+              updateSquadStatus({
+                playerExternalId: player.externalId,
+                seasonId: selectedSeasonId!,
+                status: nextStatus,
               }),
           },
         ],
       );
     },
-    [updatePlayer],
+    [updateSquadStatus, selectedSeasonId],
   );
 
-  /* RENDER */
   const renderItem = useCallback(
     ({ item }: any) => {
       if (item.type === "header") {
@@ -155,19 +205,18 @@ export function AdminSquadScreen() {
       }
 
       return (
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           {item.players.map((p: Player) => (
-            <PlayerCard key={p.id} player={p} onToggle={handleToggle} />
+            <PlayerCard
+              key={p.id}
+              player={p}
+              onChangeStatus={handleChangeStatus}
+            />
           ))}
         </View>
       );
     },
-    [handleToggle],
+    [handleChangeStatus],
   );
 
   return (
@@ -175,14 +224,9 @@ export function AdminSquadScreen() {
       data={flashData}
       renderItem={renderItem}
       keyExtractor={(item, index) => {
-        if (item.type === "header") {
-          return `h-${item.position}-${index}`;
-        }
-
-        if (item.type === "row") {
+        if (item.type === "header") return `h-${item.position}-${index}`;
+        if (item.type === "row")
           return `r-${item.players.map((p: Player) => p.id).join("-")}`;
-        }
-
         return `unknown-${index}`;
       }}
       contentContainerStyle={styles.squadList}

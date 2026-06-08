@@ -26,4 +26,15 @@ export const PlayerService = {
     const { data } = await api.put(`/players/${playerId}`, updates);
     return data;
   },
+  /** Atualiza o status do jogador num squad/época específicos (admin only). */
+  updateSquadStatus: async (
+    playerExternalId: number,
+    seasonId: number,
+    status: "active" | "left" | "error",
+  ): Promise<void> => {
+    await api.patch(
+      `/squad/${playerExternalId}/season/${seasonId}/status`,
+      { status },
+    );
+  },
 };
