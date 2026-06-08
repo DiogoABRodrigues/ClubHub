@@ -1,6 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { SeasonService } from "../services/SeasonService";
-import { Season } from "../models/Season";
 
 export const useSeasons = () => {
   const queryClient = useQueryClient();

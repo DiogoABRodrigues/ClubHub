@@ -12,6 +12,7 @@ export type Standing = {
   goalsFor: number;
   goalsAgainst: number;
   goalDiff: number;
+  rowColor: string | null; // cor vinda do zerozero, ex: "#6aa121"
   createdAt: string;
   updatedAt: string;
 };

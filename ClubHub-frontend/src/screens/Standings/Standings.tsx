@@ -1,11 +1,11 @@
-import React, { useMemo, useCallback, useEffect } from "react";
+import React, { useMemo, useCallback } from "react";
 import { View, Text, FlatList } from "react-native";
 import { useStandings } from "../../hooks/useStandings";
+import { useCompetitions } from "../../hooks/useCompetitions";
+import { useCurrentSeason } from "../../hooks/useCurrentSeason";
 import { LeagueTableRow } from "../../components/LeagueTableRow";
 import { styles } from "./Standings.styles";
-
-const GREEN_ZONE = 2;
-const RED_ZONE = 19;
+import { LegendItem } from "../../models/Competition";
 
 const COLS = {
   position: 1,
@@ -17,6 +17,9 @@ const COLS = {
 
 export const Standings = React.memo(function Standings() {
   const { standings, loading } = useStandings();
+  const { competitions } = useCompetitions();
+  console.log("Standings render", { standings, competitions });
+  const { currentSeasonId } = useCurrentSeason();
 
   const sorted = useMemo(() => {
     const arr = standings ? [...standings] : [];
@@ -24,9 +27,19 @@ export const Standings = React.memo(function Standings() {
     return arr;
   }, [standings]);
 
+  // Pega a legenda da competição da época atual
+  const legend = useMemo<LegendItem[]>(() => {
+    if (standings.length === 0) return [];
+    const { seasonId, competitionId } = standings[0];
+    const competition = competitions.find(
+      (c) => c.seasonId === seasonId && c.id === competitionId,
+    );
+    return competition?.legend ?? [];
+  }, [competitions, standings]);
+
   const renderItem = useCallback(
     ({ item }: { item: any }) => (
-      <LeagueTableRow standing={item} green={GREEN_ZONE} red={RED_ZONE} />
+      <LeagueTableRow standing={item} />
     ),
     [],
   );
@@ -51,74 +64,41 @@ export const Standings = React.memo(function Standings() {
         renderItem={renderItem}
         ListHeaderComponent={
           <View>
-            {/* TABLE HEADER */}
             <View style={styles.tableHeader}>
-              {/* Position */}
               <View style={[styles.headerCell, { flex: COLS.position }]}>
                 <Text style={styles.headerText}></Text>
               </View>
-
-              {/* Team */}
               <View style={[styles.headerCell, { flex: COLS.team }]}>
                 <Text style={styles.headerText}></Text>
               </View>
-
-              {/* Played */}
-              <View
-                style={[
-                  styles.headerCell,
-                  { flex: COLS.played, alignItems: "center" },
-                ]}
-              >
+              <View style={[styles.headerCell, { flex: COLS.played, alignItems: "center" }]}>
                 <Text style={styles.headerText}>J</Text>
               </View>
-
-              {/* Goal Diff */}
-              <View
-                style={[
-                  styles.headerCell,
-                  { flex: COLS.goalDiff, alignItems: "center" },
-                ]}
-              >
+              <View style={[styles.headerCell, { flex: COLS.goalDiff, alignItems: "center" }]}>
                 <Text style={styles.headerText}>DG</Text>
               </View>
-
-              {/* Points */}
-              <View
-                style={[
-                  styles.headerCell,
-                  { flex: COLS.points, alignItems: "flex-end" },
-                ]}
-              >
+              <View style={[styles.headerCell, { flex: COLS.points, alignItems: "flex-end" }]}>
                 <Text style={styles.headerText}>PTS</Text>
               </View>
             </View>
           </View>
         }
         ListFooterComponent={
-          <View style={styles.legend}>
-            <Text style={styles.legendTitle}>Legenda</Text>
-
-            <View style={styles.legendItems}>
-              <View style={styles.legendItem}>
-                <View
-                  style={[styles.legendColor, { backgroundColor: "#47d406" }]}
-                />
-                <Text style={styles.legendText}>
-                  Campeão - Promoção à 1ª Divisão Sabseg
-                </Text>
-              </View>
-
-              <View style={styles.legendItem}>
-                <View
-                  style={[styles.legendColor, { backgroundColor: "#0ee950" }]}
-                />
-                <Text style={styles.legendText}>
-                  Promoção à 1ª Divisão Sabseg
-                </Text>
+          legend.length > 0 ? (
+            <View style={styles.legend}>
+              <Text style={styles.legendTitle}>Legenda</Text>
+              <View style={styles.legendItems}>
+                {legend.map((item, index) => (
+                  <View key={index} style={styles.legendItem}>
+                    <View
+                      style={[styles.legendColor, { backgroundColor: item.color }]}
+                    />
+                    <Text style={styles.legendText}>{item.label}</Text>
+                  </View>
+                ))}
               </View>
             </View>
-          </View>
+          ) : null
         }
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}

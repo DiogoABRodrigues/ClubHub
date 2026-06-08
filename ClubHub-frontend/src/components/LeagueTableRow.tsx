@@ -17,8 +17,6 @@ import { ZZImage } from "./ZZImage";
 interface Props {
   standing: Standing;
   isUserTeam?: boolean;
-  green: number;
-  red: number;
 }
 
 const COLS = {
@@ -65,7 +63,7 @@ const TeamLogo = ({ uri }: { uri?: string }) => {
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export const LeagueTableRow = React.memo(
-  ({ standing, isUserTeam = false, green, red }: Props) => {
+  ({ standing, isUserTeam = false }: Props) => {
     const { teams } = useTeams();
     const [expanded, setExpanded] = useState(false);
 
@@ -85,15 +83,17 @@ export const LeagueTableRow = React.memo(
     const normalizedName = standing.teamName.trim().toLowerCase();
     const teamLogo = teamMap[normalizedName]?.logoUrl;
 
-    const appTeamName = teamConfig.name.trim().toLowerCase();
-    const isAppTeam = normalizedName === appTeamName;
+    //const appTeamName = teamConfig.name.trim().toLowerCase();
+    //const isAppTeam = normalizedName === appTeamName;
 
     const rowBackgroundColor = useMemo(() => {
-      if (isAppTeam) return COLORS.secondaryLight;
-      if (standing.position <= green) return COLORS.successLight;
-      if (standing.position >= red) return COLORS.errorLight;
+      //if (isAppTeam) return COLORS.tercearyLight;
+      if (standing.rowColor) {
+        // Adiciona transparência à cor do zerozero (30% opacidade)
+        return standing.rowColor + "4D";
+      }
       return COLORS.background;
-    }, [standing.position, isAppTeam, green, red]);
+    }, [standing.rowColor, /*isAppTeam*/]);
 
     return (
       <TouchableOpacity activeOpacity={0.8} onPress={toggleExpand}>

@@ -8,6 +8,7 @@ export const COLORS = {
   primaryDark: "#000000", // Deep Blue  — header do MatchDetail
   primaryLight: "#e4d54e",
   secondaryLight: "#8000004b", // Blue Tint  — fundos de seleção / hover / badges
+  tercearyLight: "#80000031", // Coral      — ícones de secção inativa, detalhes menores
 
   // ── Superfícies ───────────────────────────
   background: "#FFFFFFE6",
