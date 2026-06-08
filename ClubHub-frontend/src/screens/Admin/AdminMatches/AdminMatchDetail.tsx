@@ -179,10 +179,10 @@ export const AdminMatchDetail = () => {
 
   const [editingEvent, setEditingEvent] = useState<MatchEvent | null>(null);
 
-  const handleEditEvent = useCallback((event: MatchEvent) => {
-    setEditingEvent(event);
-    setShowEventModal(true);
-  }, []);
+const handleEditEvent = useCallback((event: MatchEvent) => {
+  setEditingEvent(event);
+  setShowEventModal(true);
+}, []);
 
   const handleSaveDateTime = useCallback(
     async (date: string, time: string) => {
@@ -207,6 +207,8 @@ export const AdminMatchDetail = () => {
   const handleFinishMatch = useCallback(() => {
     if (!match) return;
 
+    const isPenaltyDecided = match.statusTime === "penalties";
+
     const outcome = match.result
       ? match.result.split("-")[0] === match.result.split("-")[1]
         ? "E"
@@ -218,12 +220,13 @@ export const AdminMatchDetail = () => {
             ? "V"
             : "D"
       : "D";
+
     Alert.alert("Terminar jogo", "Tens a certeza que queres terminar o jogo?", [
       { text: "Cancelar", style: "cancel" },
       {
         text: "Terminar",
         style: "destructive",
-        onPress: () => finishMatch(match.id, outcome),
+        onPress: () => finishMatch(match.id, outcome, isPenaltyDecided),
       },
     ]);
   }, [match, finishMatch]);
@@ -315,7 +318,8 @@ export const AdminMatchDetail = () => {
   const isLive = match.status === "live";
   const isHalftime = match.status === "halftime";
   const isUpcoming = match.status === "upcoming";
-  const canEditDateTime = isLive || isUpcoming;
+  const isFinished = match.status === "finished";
+  const canEditDateTime = isLive || isUpcoming || isFinished;
 
   const gameIsToday = useMemo(() => {
     const today = new Date();
@@ -344,16 +348,32 @@ export const AdminMatchDetail = () => {
 
     const firstHalf: MatchEvent[] = [];
     const secondHalf: MatchEvent[] = [];
+    const extra: MatchEvent[] = [];
+    const penalties: MatchEvent[] = [];
 
     for (const e of events) {
-      if (e.minute <= 45) firstHalf.push(e);
-      else secondHalf.push(e);
+      if (e.type === "penalty_shootout") {
+        penalties.push(e);
+      } else if (e.phase === "extra") {
+        extra.push(e);
+      } else if (e.phase === "2nd" || (!e.phase && e.minute > 45)) {
+        secondHalf.push(e);
+      } else {
+        firstHalf.push(e);
+      }
     }
 
-    firstHalf.sort((a, b) => a.minute - b.minute);
-    secondHalf.sort((a, b) => a.minute - b.minute);
+  const byMinute = (a: MatchEvent, b: MatchEvent) => {
+    if (a.minute !== b.minute) return a.minute - b.minute;
+    // @ts-ignore
+    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+  };
 
-    return { firstHalf, secondHalf };
+    firstHalf.sort(byMinute);
+    secondHalf.sort(byMinute);
+    extra.sort(byMinute);
+    penalties.sort(byMinute)
+    return { firstHalf, secondHalf, extra, penalties };
   }, [match.events]);
 
   const handleStartMatch = useCallback(() => {
@@ -406,6 +426,32 @@ export const AdminMatchDetail = () => {
             id: match.id,
             data: { statusTime: "2nd" },
           });
+        },
+      },
+    ]);
+  }, [match, updateMatch]);
+
+  const handleExtraTime = useCallback(() => {
+    if (!match) return;
+    Alert.alert("Prolongamento", "Iniciar prolongamento?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Confirmar",
+        onPress: async () => {
+          await updateMatch({ id: match.id, data: { statusTime: "extra" } });
+        },
+      },
+    ]);
+  }, [match, updateMatch]);
+
+  const handlePenalties = useCallback(() => {
+    if (!match) return;
+    Alert.alert("Penaltis", "Iniciar série de penaltis?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Confirmar",
+        onPress: async () => {
+          await updateMatch({ id: match.id, data: { statusTime: "penalties" } });
         },
       },
     ]);
@@ -464,6 +510,7 @@ export const AdminMatchDetail = () => {
               </View>
               <Text style={styles.teamName}>{homeTeamName}</Text>
             </View>
+            <View style={{ alignItems: "center", marginTop: 8 }}>
             <View style={styles.scoreContainer}>
               <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
                 {match.result?.split("-")[0]}
@@ -473,6 +520,12 @@ export const AdminMatchDetail = () => {
                 {match.result?.split("-")[1]}
               </Text>
             </View>
+            {match.decidedByPenalties && (
+              <Text style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", marginTop: 2 }}>
+                após g.p.
+              </Text>
+            )}
+          </View>
             <View style={styles.teamContainer}>
               <View style={styles.teamLogo}>
                 {awayLogo ? (
@@ -617,6 +670,82 @@ export const AdminMatchDetail = () => {
               )}
 
               {match.statusTime === "2nd" && (
+                <>
+                  <TouchableOpacity
+                    style={adminStyles.adminBtn}
+                    onPress={handleExtraTime}
+                  >
+                    <Ionicons
+                      name="time-outline"
+                      size={16}
+                      color={COLORS.warning}
+                    />
+                    <Text
+                      style={[
+                        adminStyles.adminBtnText,
+                        { color: COLORS.warning },
+                      ]}
+                    >
+                      Prolongamento
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={adminStyles.adminBtn}
+                    onPress={handleFinishMatch}
+                  >
+                    <Ionicons
+                      name="stop-circle-outline"
+                      size={16}
+                      color={COLORS.error}
+                    />
+                    <Text
+                      style={[adminStyles.adminBtnText, { color: COLORS.error }]}
+                    >
+                      Terminar
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              )}
+
+              {match.statusTime === "extra" && (
+                <>
+                  <TouchableOpacity
+                    style={adminStyles.adminBtn}
+                    onPress={handlePenalties}
+                  >
+                    <Ionicons
+                      name="football-outline"
+                      size={16}
+                      color={COLORS.warning}
+                    />
+                    <Text
+                      style={[
+                        adminStyles.adminBtnText,
+                        { color: COLORS.warning },
+                      ]}
+                    >
+                      Penaltis
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={adminStyles.adminBtn}
+                    onPress={handleFinishMatch}
+                  >
+                    <Ionicons
+                      name="stop-circle-outline"
+                      size={16}
+                      color={COLORS.error}
+                    />
+                    <Text
+                      style={[adminStyles.adminBtnText, { color: COLORS.error }]}
+                    >
+                      Terminar
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              )}
+
+              {match.statusTime === "penalties" && (
                 <TouchableOpacity
                   style={adminStyles.adminBtn}
                   onPress={handleFinishMatch}
@@ -696,6 +825,8 @@ export const AdminMatchDetail = () => {
                 (() => {
                   const firstHalf = timeline?.firstHalf || [];
                   const secondHalf = timeline?.secondHalf || [];
+                  const extraTime = timeline?.extra || [];
+                  const penaltyShootout = timeline?.penalties || [];
                   return (
                     <>
                       {firstHalf.length > 0 && (
@@ -734,6 +865,48 @@ export const AdminMatchDetail = () => {
                               }
                               onEdit={handleEditEvent}
                               onDelete={() => handleDeleteEvent(event)}
+                              adminMode= {adminMode}
+                            />
+                          ))}
+                        </>
+                      )}
+                      {extraTime.length > 0 && (
+                        <>
+                          <View style={[styles.halfHeader, { marginTop: 4 }]}>
+                            <Text style={styles.halfHeaderText}>Prolongamento</Text>
+                          </View>
+                          {extraTime.map((event: MatchEvent) => (
+                            <EventRow
+                              key={event.id}
+                              event={event}
+                              isOurs={
+                                isHomeGame
+                                  ? !event.isOpponent
+                                  : event.isOpponent
+                              }
+                              onEdit={handleEditEvent}
+                              onDelete={() => handleDeleteEvent(event)}
+                            />
+                          ))}
+                        </>
+                      )}
+                      {penaltyShootout.length > 0 && (
+                        <>
+                          <View style={[styles.halfHeader, { marginTop: 4 }]}>
+                            <Text style={styles.halfHeaderText}>Penaltis</Text>
+                          </View>
+                          {penaltyShootout.map((event: MatchEvent) => (
+                            <EventRow
+                              key={event.id}
+                              event={event}
+                              isOurs={
+                                isHomeGame
+                                  ? !event.isOpponent
+                                  : event.isOpponent
+                              }
+                              onEdit={handleEditEvent}
+                              onDelete={() => handleDeleteEvent(event)}
+                              adminMode= {adminMode}
                             />
                           ))}
                         </>
@@ -859,6 +1032,11 @@ export const AdminMatchDetail = () => {
         startingPlayers={startingPlayers}
         substitutePlayers={substitutePlayers}
         eventToEdit={editingEvent || undefined}
+        currentPhase={
+          match.statusTime === "penalties" ? "penalties" :
+          match.statusTime === "extra" ? "extra" :
+          match.statusTime === "2nd" ? "2nd" : "1st"
+        }
       />
       <AddLineupModal
         visible={showLineupModal}

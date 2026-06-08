@@ -8,18 +8,20 @@ export const adminStyles = StyleSheet.create({
   // ── Botões de controlo no header ──────────────────────────────────────────
   adminActions: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: SPACING.sm,
     marginTop: SPACING.md,
     paddingHorizontal: SPACING.xs,
+    justifyContent: "center",
   },
 
   adminBtn: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: SPACING.xs + 2,
-    paddingVertical: SPACING.sm + 2,
+    gap: SPACING.xs,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.sm + 2,
     borderRadius: RADIUS.md,
     borderWidth: 1.5,
     borderColor: COLORS.primary,
@@ -29,7 +31,8 @@ export const adminStyles = StyleSheet.create({
   adminBtnText: {
     color: COLORS.primary,
     fontWeight: "700",
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.xs,
+    flexShrink: 1,
   },
 
   // ── Bottom sheet — base ───────────────────────────────────────────────────

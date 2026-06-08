@@ -5,17 +5,20 @@ import { COLORS } from "../theme/colors";
 import Ionicons from "@expo/vector-icons/build/Ionicons";
 import { usePlayers } from "../hooks/usePlayers";
 import { MatchEvent } from "../models/MatchEvent";
-import { useAuth } from "../contexts/AuthContext";
+import { formatMinute } from "../screens/Admin/AdminMatches/Components/AddEventModal";
+
 interface Props {
   event: MatchEvent;
   isOurs: boolean;
   onEdit?: (event: MatchEvent) => void;
   onDelete?: (event: MatchEvent) => void;
+  adminMode?: boolean;
 }
 
 const ICON: Record<string, string> = {
   goal: "⚽",
   substitution: "🔄",
+  penalty_shootout: "",
 };
 
 const CardIcon = ({ type }: { type: string }) => (
@@ -27,35 +30,37 @@ const CardIcon = ({ type }: { type: string }) => (
   />
 );
 
-export const EventRow = ({ event, isOurs, onEdit, onDelete }: Props) => {
+export const EventRow = ({ event, isOurs, onEdit, onDelete, adminMode }: Props) => {
   const icon = ICON[event.type];
   const isCard = event.type === "yellow_card" || event.type === "red_card";
   const isSub = event.type === "substitution";
+  const isPenaltyShootout = event.type === "penalty_shootout";
   const { players } = usePlayers();
-  const player = players.find((p) => p.id === event.playerId);
   const playerOut = players.find((p) => p.id === event.playerOutId);
   const playerIn = players.find((p) => p.id === event.playerInId);
 
   const playerName = (event: MatchEvent) => {
     if (event.isOwnGoal) return "Auto-golo";
     if (event.isOpponent) {
-      if(event.type === "red_card") {
-        return "Jogador Adversário";
-      }
+      if (event.type === "red_card") return "Jogador Adversário";
+      if (isPenaltyShootout) return "Adversário";
       return "Golo Adversário";
     }
     const player = players.find((p) => p.id === event.playerId);
     return player ? player.name : "Jogador";
-  }
+  };
 
   const eventWithNames = {
     ...event,
     player: playerName(event),
-    playerOut: playerOut ? playerOut.name : "Jogador Desconecido",
-    playerIn: playerIn ? playerIn.name : "Jogador Desconecido",
+    playerOut: playerOut ? playerOut.name : "Jogador Desconhecido",
+    playerIn: playerIn ? playerIn.name : "Jogador Desconhecido",
   };
-  const minute = event.minute >= 90 ? `90+'` : `${event.minute}'`;
-  const { adminMode } = useAuth();
+
+  // Penaltis da série: mostrar ✓ ou ✗ em vez do minuto
+  const minuteLabel = isPenaltyShootout
+    ? (event.penaltyScored ? "⚽" : "✗")
+    : formatMinute(event.minute, event.phase ?? (event.minute > 90 ? "2nd" : event.minute > 45 ? "2nd" : "1st"));
 
   if (isOurs) {
     return (
@@ -70,13 +75,18 @@ export const EventRow = ({ event, isOurs, onEdit, onDelete }: Props) => {
                   color={COLORS.primary}
                 />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => onDelete?.(event)} style={{}}>
+              <TouchableOpacity onPress={() => onDelete?.(event)}>
                 <Ionicons name="trash-outline" size={18} color={COLORS.error} />
               </TouchableOpacity>
             </View>
           )}
         </View>
-        <Text style={styles.eventIconText}>{minute}</Text>
+        <Text style={[
+          styles.eventIconText,
+          isPenaltyShootout && { color: event.penaltyScored ? COLORS.success : COLORS.error, fontWeight: "600" },
+        ]}>
+          {minuteLabel}
+        </Text>
         {icon && <Text style={styles.eventIconText}>{icon}</Text>}
         {isCard && <CardIcon type={event.type} />}
         {!isSub && (
@@ -106,7 +116,12 @@ export const EventRow = ({ event, isOurs, onEdit, onDelete }: Props) => {
       )}
       {icon && <Text style={styles.eventIconText}>{icon}</Text>}
       {isCard && <CardIcon type={event.type} />}
-      <Text style={styles.eventIconText}>{minute}</Text>
+      <Text style={[
+        styles.eventIconText,
+        isPenaltyShootout && { color: event.penaltyScored ? COLORS.success : COLORS.error, fontWeight: "600" },
+      ]}>
+        {minuteLabel}
+      </Text>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         {adminMode && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -117,7 +132,7 @@ export const EventRow = ({ event, isOurs, onEdit, onDelete }: Props) => {
                 color={COLORS.primary}
               />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => onDelete?.(event)} style={{}}>
+            <TouchableOpacity onPress={() => onDelete?.(event)}>
               <Ionicons name="trash-outline" size={18} color={COLORS.error} />
             </TouchableOpacity>
           </View>

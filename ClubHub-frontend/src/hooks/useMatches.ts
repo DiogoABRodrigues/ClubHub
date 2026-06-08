@@ -54,8 +54,15 @@ export const useMatches = () => {
     await updateMatch.mutateAsync({ id, data: { status: "halftime" } });
   };
 
-  const finishMatch = async (id: number, outcome: "V" | "D" | "E") => {
-    await updateMatch.mutateAsync({ id, data: { status: "finished", outcome } });
+  const finishMatch = async (
+    id: number,
+    outcome: "V" | "D" | "E",
+    decidedByPenalties = false,
+  ) => {
+    await updateMatch.mutateAsync({
+      id,
+      data: { status: "finished", outcome, ...(decidedByPenalties && { decidedByPenalties: true }) },
+    });
   };
 
   const addMatchEvent = async (id: number, event: MatchEvent) => {
@@ -72,12 +79,13 @@ export const useMatches = () => {
       old?.map((m) => (m.id === id ? { ...m, events: updatedEvents } : m)),
     );
 
-    const houseGame = match.homeOrAway === "C";
-    let result = match.result || "0-0";
-    let [goalsFor, goalsAgainst] = result.split("-").map(Number);
-
+    // Penaltis da série não alteram o marcador
     if (event.type === "goal") {
+      const houseGame = match.homeOrAway === "C";
+      let result = match.result || "0-0";
+      let [goalsFor, goalsAgainst] = result.split("-").map(Number);
       const isForUs = !event.isOpponent;
+
       if (isForUs && houseGame) goalsFor++;
       else if (isForUs && !houseGame) goalsAgainst++;
       else if (!isForUs && houseGame) goalsAgainst++;
@@ -106,6 +114,7 @@ export const useMatches = () => {
       old?.map((m) => (m.id === id ? { ...m, events: updatedEvents } : m)),
     );
 
+    // Penaltis da série não alteram o marcador
     if (event.type === "goal") {
       const houseGame = match.homeOrAway === "C";
       let result = match.result || "0-0";

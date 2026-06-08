@@ -126,9 +126,16 @@ export const CupMatchRow = React.memo(({ match, onPress }: Props) => {
         {/* Marcador / data */}
         <View style={styles.scoreBox}>
           {isFinished && homeScore !== null ? (
-            <Text style={styles.scoreText}>
-              {homeScore} - {awayScore}
-            </Text>
+            <>
+              <Text style={styles.scoreText}>
+                {homeScore} - {awayScore}
+              </Text>
+              {match.decidedByPenalties && (
+                <Text style={{ fontSize: 10, color: COLORS.textMuted, textAlign: "center" }}>
+                  após g.p.
+                </Text>
+              )}
+            </>
           ) : (
             <Text style={styles.dateText}>{shortDate}</Text>
           )}

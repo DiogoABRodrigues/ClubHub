@@ -22,8 +22,8 @@ export const HomeStack = () => (
     }}
   >
     <Stack.Screen name="Home" component={Home} />
-    <Stack.Screen name="MatchDetail" component={MatchDetail} />
     <Stack.Screen name="AdminMatchDetail" component={AdminMatchDetail} />
+    <Stack.Screen name="MatchDetail" component={MatchDetail} />
     <Stack.Screen name="NewsDetail" component={NewsDetail} />
   </Stack.Navigator>
 );

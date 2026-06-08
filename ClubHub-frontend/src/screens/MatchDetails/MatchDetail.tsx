@@ -172,7 +172,6 @@ export const MatchDetail = () => {
         </Text>
         {/* Score */}
         <View style={styles.scoreCard}>
-          {/* Home */}
           <View style={styles.teamContainer}>
             <View style={styles.teamLogo}>
               {homeLogo ? (
@@ -186,8 +185,7 @@ export const MatchDetail = () => {
             </View>
             <Text style={styles.teamName}>{homeTeamName}</Text>
           </View>
-
-          {/* Score */}
+          <View style={{ alignItems: "center", marginTop: 8 }}>
           <View style={styles.scoreContainer}>
             <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
               {match.result?.split("-")[0]}
@@ -197,8 +195,12 @@ export const MatchDetail = () => {
               {match.result?.split("-")[1]}
             </Text>
           </View>
-
-          {/* Away */}
+          {match.decidedByPenalties && (
+            <Text style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", marginTop: 2 }}>
+              após g.p.
+            </Text>
+          )}
+        </View>
           <View style={styles.teamContainer}>
             <View style={styles.teamLogo}>
               {awayLogo ? (
@@ -267,30 +269,27 @@ export const MatchDetail = () => {
             (match.events && match.events.length > 0 ? (
               (() => {
                 const sorted = [...match.events].sort((a, b) => {
-                  // primeiro ordena pelo minuto
-                  if (a.minute !== b.minute) {
-                    return a.minute - b.minute;
-                  }
-
-                  // se o minuto for igual, ordena pelo createdAt
+                  if (a.minute !== b.minute) return a.minute - b.minute;
                   return (
+                     // @ts-ignore
                     new Date(a.createdAt).getTime() -
+                    // @ts-ignore
                     new Date(b.createdAt).getTime()
                   );
                 });
 
-                // agrupa por 1ª/2ª parte
-                const firstHalf = sorted.filter((e) => e.minute <= 45);
-                const secondHalf = sorted.filter((e) => e.minute > 45);
+                const firstHalf = sorted.filter((e) => e.type !== "penalty_shootout" && (e.phase === "1st" || (!e.phase && e.minute <= 45)));
+                const secondHalf = sorted.filter((e) => e.type !== "penalty_shootout" && (e.phase === "2nd" || (!e.phase && e.minute > 45)));
+                const extraTime = sorted.filter((e) => e.type !== "penalty_shootout" && e.phase === "extra");
+                const penalties = sorted.filter((e) => e.type === "penalty_shootout");
 
                 return (
                   <>
-                    <View style={styles.halfHeader}>
-                      <Text style={styles.halfHeaderText}>1ª Parte</Text>
-                    </View>
                     {firstHalf.length > 0 && (
                       <>
-
+                        <View style={styles.halfHeader}>
+                          <Text style={styles.halfHeaderText}>1ª Parte</Text>
+                        </View>
                         {firstHalf.map((event: any) => (
                           <EventRow
                             key={event.id}
@@ -302,12 +301,11 @@ export const MatchDetail = () => {
                         ))}
                       </>
                     )}
-                    <View style={[styles.halfHeader]}>
-                      <Text style={styles.halfHeaderText}>2ª Parte</Text>
-                    </View>
                     {secondHalf.length > 0 && (
                       <>
-
+                        <View style={styles.halfHeader}>
+                          <Text style={styles.halfHeaderText}>2ª Parte</Text>
+                        </View>
                         {secondHalf.map((event: any) => (
                           <EventRow
                             key={event.id}
@@ -319,8 +317,39 @@ export const MatchDetail = () => {
                         ))}
                       </>
                     )}
-                    <View style={[styles.halfHeader]}>
-                    </View>
+                    {extraTime.length > 0 && (
+                      <>
+                        <View style={styles.halfHeader}>
+                          <Text style={styles.halfHeaderText}>Prolongamento</Text>
+                        </View>
+                        {extraTime.map((event: any) => (
+                          <EventRow
+                            key={event.id}
+                            event={event}
+                            isOurs={
+                              isHomeGame ? !event.isOpponent : event.isOpponent
+                            }
+                          />
+                        ))}
+                      </>
+                    )}
+                    {penalties.length > 0 && (
+                      <>
+                        <View style={styles.halfHeader}>
+                          <Text style={styles.halfHeaderText}>Penaltis</Text>
+                        </View>
+                        {penalties.map((event: any) => (
+                          <EventRow
+                            key={event.id}
+                            event={event}
+                            isOurs={
+                              isHomeGame ? !event.isOpponent : event.isOpponent
+                            }
+                          />
+                        ))}
+                      </>
+                    )}
+                    <View style={[styles.halfHeader]} />
                   </>
                 );
               })()

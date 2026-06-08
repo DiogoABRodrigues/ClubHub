@@ -20,5 +20,6 @@ export type Match = {
   location?: string;
   events?: MatchEvent[];
   statusTime?: "1st" | "interval" | "2nd" | "extra" | "penalties";
+  decidedByPenalties?: boolean;
   Lineups?: Lineup[];
 };

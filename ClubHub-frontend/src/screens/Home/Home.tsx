@@ -215,9 +215,7 @@ export const Home = ({ navigation }: any) => {
                 match={recentMatch}
                 homeLogo={getTeamLogo(getHomeTeam(recentMatch)) || ""}
                 awayLogo={getTeamLogo(getAwayTeam(recentMatch)) || ""}
-                onPress={() =>
-                  navigation.navigate("MatchDetail", { id: recentMatch.id })
-                }
+                onPress={() => navigateToMatchDetail(recentMatch.id)}
                 competition={competitions.find(
                   (c) => c.id === recentMatch.competitionId,
                 )}
