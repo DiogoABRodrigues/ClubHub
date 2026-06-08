@@ -20,6 +20,7 @@ class Match extends Model {
   public status!: "upcoming" | "live" | "finished";
   public location?: string;
   public statusTime!: "1st" | "interval" | "2nd" | "extra" | "penalties";
+  public decidedByPenalties!: boolean;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -94,6 +95,11 @@ Match.init(
     statusTime: {
       type: DataTypes.ENUM("1st", "interval", "2nd", "extra", "penalties"),
       allowNull: true,
+    },
+    decidedByPenalties: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
   },
   {

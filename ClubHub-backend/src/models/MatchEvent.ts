@@ -5,8 +5,9 @@ import { sequelize } from "../config/database";
 class MatchEvent extends Model {
   public id!: number;
   public matchId!: number;
-  public type!: "goal" | "yellow_card" | "red_card" | "substitution";
+  public type!: "goal" | "yellow_card" | "red_card" | "substitution" | "penalty_shootout";
   public minute!: number;
+  public phase?: "1st" | "2nd" | "extra" | "penalties" | null;
 
   public playerId?: number | null;
   public playerInId?: number | null;
@@ -14,6 +15,7 @@ class MatchEvent extends Model {
 
   public isOpponent!: boolean;
   public isOwnGoal?: boolean;
+  public penaltyScored?: boolean | null;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -38,13 +40,19 @@ MatchEvent.init(
     },
 
     type: {
-      type: DataTypes.ENUM("goal", "yellow_card", "red_card", "substitution"),
+      type: DataTypes.ENUM("goal", "yellow_card", "red_card", "substitution", "penalty_shootout"),
       allowNull: false,
     },
 
     minute: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 0,
+    },
+
+    phase: {
+      type: DataTypes.ENUM("1st", "2nd", "extra", "penalties"),
+      allowNull: true,
     },
 
     playerId: {
@@ -69,6 +77,10 @@ MatchEvent.init(
     isOwnGoal: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+    },
+    penaltyScored: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
     },
   },
   {

@@ -53,7 +53,9 @@ class MatchEventService {
     if (match?.seasonId != null) {
       await cache.del(CacheKeys.matches.bySeason(match.seasonId));
     }
-    await this.notify(event, "delete", match ?? undefined);
+    if (match?.status !== "finished") {
+      await this.notify(event, "delete", match ?? undefined);
+    }
     socketService.emitMatchEvent(event.matchId, event);
 
     return true;
