@@ -32,9 +32,12 @@ export function SeasonScreen() {
 
   const currentSeason = useMemo(() => {
     if (!seasons.length) return null;
-    return seasons.reduce((latest, season) =>
-      season.id > latest.id ? season : latest,
-    );
+    // Ordena pelo ano da época (ex: "2025/2026" → 2025) em vez do id
+    return seasons.reduce((latest, season) => {
+      const latestYear = parseInt(latest.year.split("/")?.[0] ?? "0");
+      const seasonYear = parseInt(season.year.split("/")?.[0] ?? "0");
+      return seasonYear > latestYear ? season : latest;
+    });
   }, [seasons]);
 
   const handleTabPress = useCallback((tab: SeasonTab) => {
