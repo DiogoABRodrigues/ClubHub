@@ -19,6 +19,7 @@ class Standing extends Model {
   public goalsFor!: number;
   public goalsAgainst!: number;
   public goalDiff!: number;
+  public rowColor!: string | null;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -91,6 +92,12 @@ Standing.init(
     goalDiff: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+
+    rowColor: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
     },
   },
   {

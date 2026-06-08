@@ -19,4 +19,17 @@ export default class CompetitionController {
     const data = await service.getByCurrentSeasonId();
     res.json(data);
   }
+
+  static async updateLegend(req: Request, res: Response) {
+    const competitionId = parseInt(String(req.params.competitionId));
+    const { legend } = req.body; // [{ color: "#47d406", label: "Promoção" }]
+
+    try {
+      const data = await service.updateLegend(competitionId, legend);
+      res.json(data);
+    } catch (err) {
+      console.error("Erro a atualizar legenda:", err);
+      res.status(500).json({ error: "Erro a atualizar legenda" });
+    }
+  }
 }

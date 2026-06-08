@@ -13,6 +13,33 @@ async function getOrCreateSeason() {
   return season;
 }
 
+/** Extrai o externalId de qualquer variante de URL do zerozero:
+ *  /jogador/nome/12345
+ *  /jogador/nome/12345?epoca_id=99
+ *  /jogador/nome/12345/stats
+ */
+function parsePlayerId(href: string): number | null {
+  const m = href.match(/\/jogador\/[^/]+\/(\d+)/);
+  return m ? parseInt(m[1]) : null;
+}
+
+function parseTrainerId(href: string): number | null {
+  const m = href.match(/\/treinador\/[^/]+\/(\d+)/);
+  return m ? parseInt(m[1]) : null;
+}
+
+function parseAge(el: cheerio.Cheerio<any>, $: cheerio.CheerioAPI): number | null {
+  const text = $(el).find("span").text().trim();
+  const m = text.match(/\d+/);
+  return m ? parseInt(m[0]) : null;
+}
+
+function parsePhoto(el: cheerio.Cheerio<any>, $: cheerio.CheerioAPI): string | null {
+  const style = $(el).find(".photo").attr("style") ?? "";
+  const m = style.match(/url\(['"]?(.*?)['"]?\)/);
+  return m ? m[1] : null;
+}
+
 export async function scrapeTeamPlayers() {
   const browser = await getSharedBrowser();
   const page = await browser.newPage();
@@ -42,88 +69,124 @@ export async function scrapeTeamPlayers() {
       });
     } catch {}
 
-    // Esperar pelo JS renderizar o conteúdo
+    // Espera por qualquer um dos seletores conhecidos
     try {
-      await page.waitForSelector("#team_squad .staff, #team_squad .innerbox", {
-        timeout: 30000,
-      });
+      await page.waitForSelector(
+        "#team_squad .staff, #team_squad .innerbox, .team-player, [class*='squad']",
+        { timeout: 30000 },
+      );
     } catch {
-      console.log("⚠️ #team_squad não encontrado, a ler HTML disponível...");
+      console.log("⚠️ Seletor principal não encontrado, a tentar continuar...");
     }
 
     const html = await page.content();
     const $ = cheerio.load(html);
     const players: any[] = [];
 
-    $("#team_squad .innerbox").each((_, box) => {
-      const position = $(box).find(".section").text().trim() || "Unknown";
+    // ── DEBUG: mostra os IDs e classes de topo para diagnóstico ──────────
+    const topIds = $("[id]")
+      .map((_, el) => $(el).attr("id"))
+      .get()
+      .filter(Boolean)
+      .slice(0, 30);
+    console.log("🔍 IDs encontrados na página:", topIds.join(", "));
 
-      $(box)
-        .find(".staff")
-        .each((_, el) => {
-          const numberText = $(el).find(".number").text().trim();
-          const number = numberText !== "-" ? parseInt(numberText) : null;
+    // ── JOGADORES ────────────────────────────────────────────────────────
+    // Tenta o seletor original primeiro, depois variantes
+    const squadBox = $("#team_squad .innerbox").length
+      ? $("#team_squad .innerbox")
+      : $(".team_squad .innerbox, [id*='squad'] .innerbox").length
+        ? $(".team_squad .innerbox, [id*='squad'] .innerbox")
+        : null;
 
-          const nameLink = $(el).find(".name a[href*='/jogador/']");
-          const name = nameLink.text().trim();
+    if (squadBox && squadBox.length > 0) {
+      console.log(`✅ Encontrou squad box com ${squadBox.length} grupos`);
 
-          let externalId = null;
-          const href = nameLink.attr("href");
-          if (href) {
-            const match = href.match(/\/jogador\/[^/]+\/(\d+)\?epoca_id=\d+/);
-            if (match) externalId = parseInt(match[1]);
-          }
+      squadBox.each((_, box) => {
+        const position = $(box).find(".section").text().trim() || "Unknown";
 
-          let age: number | null = null;
-          const ageText = $(el).find(".name span").text().trim();
-          if (ageText) {
-            const m = ageText.match(/\d+/);
-            if (m) age = parseInt(m[0]);
-          }
+        $(box)
+          .find(".staff")
+          .each((_, el) => {
+            const numberText = $(el).find(".number").text().trim();
+            const number =
+              numberText && numberText !== "-" ? parseInt(numberText) : null;
 
-          let photoUrl: string | null = null;
-          const style = $(el).find(".photo").attr("style");
-          if (style) {
-            const m = style.match(/url\(['"]?(.*?)['"]?\)/);
-            if (m) photoUrl = m[1];
-          }
+            // Tenta .name primeiro, depois .text (variante nova)
+            const nameLink =
+              $(el).find(".name a[href*='/jogador/']").length
+                ? $(el).find(".name a[href*='/jogador/']")
+                : $(el).find("a[href*='/jogador/']");
 
-          if (name && externalId) {
-            players.push({ externalId, name, number, position, age, photoUrl });
-          }
-        });
-    });
+            const name = nameLink.text().trim();
+            const href = nameLink.attr("href") ?? "";
+            const externalId = parsePlayerId(href);
 
-    // Equipa técnica
-    $("#team_staff .innerbox").each((_, box) => {
+            const age = parseAge($(el), $);
+            const photoUrl = parsePhoto($(el), $);
+
+            if (name && externalId) {
+              players.push({ externalId, name, number, position, age, photoUrl });
+            } else {
+              // Log para perceber o que está a falhar
+              if (name && !externalId) {
+                console.log(`⚠️ Jogador "${name}" sem externalId. href="${href}"`);
+              }
+            }
+          });
+      });
+    } else {
+      // Fallback: procura qualquer link de jogador na página
+      console.log("⚠️ squad box não encontrado — a tentar fallback genérico");
+
+      $("a[href*='/jogador/']").each((_, el) => {
+        const href = $(el).attr("href") ?? "";
+        const externalId = parsePlayerId(href);
+        const name = $(el).text().trim();
+
+        if (name && externalId && !players.find((p) => p.externalId === externalId)) {
+          // Sobe ao elemento pai para tentar apanhar número e posição
+          const row = $(el).closest(".staff, tr, li, [class*='player']");
+          const numberText = row.find(".number, [class*='number']").text().trim();
+          const number =
+            numberText && numberText !== "-" ? parseInt(numberText) : null;
+
+          const photoUrl = parsePhoto(row, $);
+
+          players.push({
+            externalId,
+            name,
+            number,
+            position: "Unknown",
+            age: null,
+            photoUrl,
+          });
+        }
+      });
+    }
+
+    // ── EQUIPA TÉCNICA ───────────────────────────────────────────────────
+    const staffBox = $("#team_staff .innerbox").length
+      ? $("#team_staff .innerbox")
+      : $(".team_staff .innerbox, [id*='staff'] .innerbox");
+
+    staffBox.each((_, box) => {
       const sectionRole = $(box).find(".section").text().trim() || "Staff";
 
       $(box)
         .find(".staff")
         .each((_, el) => {
-          const nameLink = $(el).find(".text a[href*='/treinador/']");
+          const nameLink =
+            $(el).find(".text a[href*='/treinador/']").length
+              ? $(el).find(".text a[href*='/treinador/']")
+              : $(el).find("a[href*='/treinador/']");
+
           const name = nameLink.text().trim();
+          const href = nameLink.attr("href") ?? "";
+          const externalId = parseTrainerId(href);
 
-          let externalId: number | null = null;
-          const href = nameLink.attr("href");
-          if (href) {
-            const match = href.match(/\/treinador\/[^/]+\/(\d+)/);
-            if (match) externalId = parseInt(match[1]);
-          }
-
-          let age: number | null = null;
-          const ageText = $(el).find("span").text().trim();
-          if (ageText) {
-            const m = ageText.match(/\d+/);
-            if (m) age = parseInt(m[0]);
-          }
-
-          let photoUrl: string | null = null;
-          const style = $(el).find(".photo").attr("style");
-          if (style) {
-            const m = style.match(/url\(['"]?(.*?)['"]?\)/);
-            if (m) photoUrl = m[1];
-          }
+          const age = parseAge($(el), $);
+          const photoUrl = parsePhoto($(el), $);
 
           if (name && externalId) {
             players.push({
@@ -138,14 +201,14 @@ export async function scrapeTeamPlayers() {
         });
     });
 
-    console.log(`✅ Jogadores encontrados: ${players.length}`);
-    if (players.length === 0) console.log("⚠️ Nenhum jogador encontrado");
+    console.log(`✅ Total encontrado: ${players.length} (jogadores + staff)`);
+    if (players.length === 0) {
+      console.log("⚠️ Nenhum jogador encontrado — verifica os IDs acima no log");
+    }
 
     const seasonName = teamConfig.currentSeason;
     let season = await Season.findOne({ where: { year: seasonName } });
-    if (!season) {
-      season = await Season.create({ year: seasonName });
-    }
+    if (!season) season = await Season.create({ year: seasonName });
 
     for (const p of players) {
       await Squad.upsert({
