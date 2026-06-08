@@ -42,30 +42,15 @@ const COLS = {
   points: 1,
 };
 
-const CUP_ROUND_ORDER = [
-  "final",
-  "meia-final",
-  "meias-finais",
-  "quartos-de-final",
-  "oitavos-de-final",
-  "dezasseis avos",
-  "trinta e dois avos",
-];
-
 function sortRounds(a: CupRound, b: CupRound): number {
-  const aIdx = CUP_ROUND_ORDER.findIndex((r) =>
-    a.round.toLowerCase().includes(r),
-  );
+  const aRound = a.round.trim().toUpperCase();
+  const bRound = b.round.trim().toUpperCase();
 
-  const bIdx = CUP_ROUND_ORDER.findIndex((r) =>
-    b.round.toLowerCase().includes(r),
-  );
+  const order = ["F", "MF", "QF", "1/8", "1/16"];
+  const aIdx = order.indexOf(aRound);
+  const bIdx = order.indexOf(bRound);
 
-  if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
-  if (aIdx !== -1) return -1;
-  if (bIdx !== -1) return 1;
-
-  return a.round.localeCompare(b.round);
+  return aIdx - bIdx;
 }
 
 export const Standings = React.memo(function Standings({ navigation }: any) {
