@@ -38,6 +38,12 @@ class MatchEventService {
     const event = await MatchEvent.findByPk(eventId);
     if (!event) return null;
     await event.update(data);
+
+    const match = await Match.findByPk(event.matchId);
+    if (match?.seasonId != null) {
+      await cache.del(CacheKeys.matches.bySeason(match.seasonId));
+    }
+
     socketService.emitMatchEvent(event.matchId, event);
     return event;
   }
