@@ -12,6 +12,13 @@ router.get("/current", PlayerController.getByCurrentSeasonId);
 router.get("/:playerId/allstats", PlayerController.getAllStatsByPlayerId);
 
 // ADMIN ONLY
+router.get(
+  "/admin/season/:seasonId",
+  authMiddleware,
+  authorizeRoles("admin"),
+  PlayerController.getAllBySeasonId,
+);
+
 router.put(
   "/:playerId",
   authMiddleware,

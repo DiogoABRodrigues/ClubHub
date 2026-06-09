@@ -26,6 +26,12 @@ export default class PlayerController {
     res.json(data);
   }
 
+  static async getAllBySeasonId(req: Request, res: Response) {
+    const seasonId = parseInt(String(req.params.seasonId));
+    const data = await service.getAllBySeasonId(seasonId);
+    res.json(data);
+  }
+
   static async getAllStatsByPlayerId(req: Request, res: Response) {
     const playerId = parseInt(String(req.params.playerId));
     const data = await service.getAllStatsByPlayerId(playerId);

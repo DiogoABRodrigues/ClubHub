@@ -55,6 +55,28 @@ export default class PlayerService {
     return this.getBySeasonId(season.id);
   }
 
+  /** Admin: devolve TODOS os jogadores da época, incluindo os marcados como "error". */
+  async getAllBySeasonId(seasonId: number) {
+    const squadEntries = await Squad.findAll({ where: { seasonId } });
+    const externalIds = squadEntries.map((s) => s.playerExternalId);
+
+    const players = await Player.findAll({
+      where: { externalId: externalIds },
+      include: [{ model: Stats, where: { seasonId }, required: false }],
+    });
+
+    const statusMap: Record<number, string> = {};
+    for (const entry of squadEntries) {
+      statusMap[entry.playerExternalId] = entry.status;
+    }
+
+    return players.map((p: any) => {
+      const plain = p.toJSON();
+      plain.squadStatus = statusMap[plain.externalId] ?? "active";
+      return plain;
+    });
+  }
+
   /** Devolve um jogador com TODAS as suas Stats (todas as épocas), ordenadas por época mais recente primeiro */
   async getAllStatsByPlayerId(playerId: number) {
     const key = `app:player:${playerId}:allstats`;
