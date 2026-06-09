@@ -14,7 +14,7 @@ import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { styles } from "../../MatchDetails/MatchDetail.styles";
 import { useMatches } from "../../../hooks/useMatches";
 import { useTeams } from "../../../hooks/useTeams";
-import { formatDateWithWeekdayPT } from "../../../utils/dateUtils";
+import { formatDateWithWeekdayPT, getPenaltyDisplayScore } from "../../../utils/dateUtils";
 import { adminStyles } from "./AdminMatchDetail.styles";
 import { COLORS } from "../../../theme/colors";
 import { LocationModal } from "./Components/LocationModal";
@@ -134,16 +134,9 @@ export const AdminMatchDetail = () => {
     try {
       if (editingEvent && editingEvent.id) {
         // EDIT: chamar API de update do evento
-        const updatedEvent = await MatchEventService.update(
-          editingEvent.id,
-          form,
-        );
-        // Atualiza localmente no match
-        const updatedEvents = (match.events || []).map((e: MatchEvent) =>
-          e.id === editingEvent.id ? updatedEvent : e,
-        );
-
-        setEditingEvent(null);
+        await MatchEventService.update(editingEvent.id, form);
+        // Força refresh para reflectir a mudança (Redis já foi invalidado no backend)
+        await refreshMatches();
       } else {
         // CREATE: adicionar na BD
         await addMatchEvent(match.id, form);
@@ -209,6 +202,26 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
 
     const isPenaltyDecided = match.statusTime === "penalties";
 
+    if (isPenaltyDecided) {
+      // Quando o jogo vai a penáltis, perguntar quem venceu
+      Alert.alert(
+        "Terminar jogo — Penáltis",
+        "Quem venceu a série de penáltis?",
+        [
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: match.teamName,
+            onPress: () => finishMatch(match.id, "V", true),
+          },
+          {
+            text: match.opponent,
+            onPress: () => finishMatch(match.id, "D", true),
+          },
+        ],
+      );
+      return;
+    }
+
     const outcome = match.result
       ? match.result.split("-")[0] === match.result.split("-")[1]
         ? "E"
@@ -226,7 +239,7 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
       {
         text: "Terminar",
         style: "destructive",
-        onPress: () => finishMatch(match.id, outcome, isPenaltyDecided),
+        onPress: () => finishMatch(match.id, outcome, false),
       },
     ]);
   }, [match, finishMatch]);
@@ -341,6 +354,14 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
       (c) => c.id === match.competitionId,
     ) as Competition;
   }, [match.competitionId, competitions]);
+
+  const penaltyDisplay = useMemo(() =>
+    getPenaltyDisplayScore(match.result, match.outcome, match.homeOrAway, match.decidedByPenalties),
+    [match.result, match.outcome, match.homeOrAway, match.decidedByPenalties],
+  );
+
+  const homeScoreDisplay = penaltyDisplay ? penaltyDisplay[0] : match.result?.split("-")[0];
+  const awayScoreDisplay = penaltyDisplay ? penaltyDisplay[1] : match.result?.split("-")[1];
 
   const timeline = useMemo(() => {
     const events = match.events;
@@ -513,11 +534,11 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
             <View style={{ alignItems: "center", marginTop: 8 }}>
             <View style={styles.scoreContainer}>
               <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
-                {match.result?.split("-")[0]}
+                {homeScoreDisplay}
               </Text>
               <Text style={styles.colon}>:</Text>
               <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
-                {match.result?.split("-")[1]}
+                {awayScoreDisplay}
               </Text>
             </View>
             {match.decidedByPenalties && (
@@ -845,6 +866,7 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
                               }
                               onEdit={handleEditEvent}
                               onDelete={() => handleDeleteEvent(event)}
+                              adminMode={adminMode}
                             />
                           ))}
                         </>
@@ -886,6 +908,7 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
                               }
                               onEdit={handleEditEvent}
                               onDelete={() => handleDeleteEvent(event)}
+                              adminMode={adminMode}
                             />
                           ))}
                         </>

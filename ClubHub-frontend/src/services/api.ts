@@ -3,7 +3,7 @@ import axios from "axios";
 import { refreshToken } from "./AuthService";
 import { teamConfig } from "../config/teamConfig";
 
-const BACKEND_URI = teamConfig.backend_URL;
+const BACKEND_URI = "http://10.73.3.45:3000"; //teamConfig.backend_URL; --- IGNORE ---
 let memoryToken: string | null = null;
 
 export function setMemoryToken(token: string | null) {

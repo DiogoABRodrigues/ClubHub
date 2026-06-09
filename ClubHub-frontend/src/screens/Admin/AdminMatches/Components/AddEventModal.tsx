@@ -39,9 +39,9 @@ const MAX_MINUTE: Record<string, number> = {
 };
 
 const MINUTE_PLACEHOLDER: Record<string, string> = {
-  "1st": "1–45+",
-  "2nd": "46–90+",
-  extra: "91–120+",
+  "1st": "1 até 45+",
+  "2nd": "46 até 90+",
+  extra: "91 até 120+",
 };
 
 export function formatMinute(minute: number, phase?: string): string {
@@ -433,8 +433,8 @@ export const AddEventModal = ({
                   value={form.minute ? String(form.minute) : ""}
                   onChangeText={handleMinuteChange}
                   keyboardType="number-pad"
-                  placeholder={MINUTE_PLACEHOLDER[form.phase ?? "1st"] ?? "1–45+"}
-                  placeholderTextColor={COLORS.textSecondary}
+                  placeholder={MINUTE_PLACEHOLDER[form.phase ?? "1st"] ?? "1 até 45+"}
+                  placeholderTextColor={COLORS.textMuted}
                 />
 
                 {/* Auto-golo */}

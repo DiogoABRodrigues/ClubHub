@@ -6,6 +6,7 @@ import { teamConfig } from "../config/teamConfig";
 import { Ionicons } from "@expo/vector-icons";
 import { useTeams } from "../hooks/useTeams";
 import { ZZImage } from "./ZZImage";
+import { getPenaltyDisplayScore } from "../utils/dateUtils";
 import { styles } from "./styles/CupMatchRow.styles";
 import { TouchableOpacity } from "react-native";
 
@@ -58,9 +59,16 @@ export const CupMatchRow = React.memo(({ match, onPress }: Props) => {
 
   const [homeScore, awayScore] = useMemo(() => {
     if (!match.result) return [null, null];
+    const penaltyDisplay = getPenaltyDisplayScore(
+      match.result,
+      match.outcome,
+      match.homeOrAway,
+      match.decidedByPenalties,
+    );
+    if (penaltyDisplay) return penaltyDisplay;
     const parts = match.result.split("-");
     return parts.length >= 2 ? [parts[0], parts[1]] : [null, null];
-  }, [match.result]);
+  }, [match.result, match.outcome, match.homeOrAway, match.decidedByPenalties]);
 
   const teamMap = useMemo(() => {
     const map: Record<string, any> = {};
@@ -80,14 +88,24 @@ export const CupMatchRow = React.memo(({ match, onPress }: Props) => {
 
   // Determina o vencedor para realçar o nome
   const homeWon = useMemo(() => {
-    if (!isFinished || homeScore === null || awayScore === null) return false;
+    if (!isFinished) return false;
+    if (match.decidedByPenalties && match.outcome) {
+      const weAreHome = match.homeOrAway === "C";
+      return match.outcome === "V" ? weAreHome : !weAreHome;
+    }
+    if (homeScore === null || awayScore === null) return false;
     return parseInt(homeScore) > parseInt(awayScore);
-  }, [isFinished, homeScore, awayScore]);
+  }, [isFinished, homeScore, awayScore, match.decidedByPenalties, match.outcome, match.homeOrAway]);
 
   const awayWon = useMemo(() => {
-    if (!isFinished || homeScore === null || awayScore === null) return false;
+    if (!isFinished) return false;
+    if (match.decidedByPenalties && match.outcome) {
+      const weAreHome = match.homeOrAway === "C";
+      return match.outcome === "V" ? !weAreHome : weAreHome;
+    }
+    if (homeScore === null || awayScore === null) return false;
     return parseInt(awayScore) > parseInt(homeScore);
-  }, [isFinished, homeScore, awayScore]);
+  }, [isFinished, homeScore, awayScore, match.decidedByPenalties, match.outcome, match.homeOrAway]);
 
   // Formata a data curta: "15 jun"
   const shortDate = useMemo(() => {

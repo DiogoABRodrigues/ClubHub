@@ -80,7 +80,7 @@ export const useMatches = () => {
     );
 
     // Penaltis da série não alteram o marcador
-    if (event.type === "goal") {
+    if (event.type === "goal" && event.phase !== "penalties") {
       const houseGame = match.homeOrAway === "C";
       let result = match.result || "0-0";
       let [goalsFor, goalsAgainst] = result.split("-").map(Number);
@@ -108,14 +108,14 @@ export const useMatches = () => {
     if (!match) return;
 
     await MatchEventService.delete(event.id);
-    const updatedEvents = match.events?.filter((e) => e.id !== event.id) ?? [];
 
+    const updatedEvents = match.events?.filter((e) => e.id !== event.id) ?? [];
     queryClient.setQueryData<Match[]>(["matches", currentSeasonId], (old) =>
       old?.map((m) => (m.id === id ? { ...m, events: updatedEvents } : m)),
     );
 
     // Penaltis da série não alteram o marcador
-    if (event.type === "goal") {
+    if (event.type === "goal" && event.phase !== "penalties") {
       const houseGame = match.homeOrAway === "C";
       let result = match.result || "0-0";
       let [goalsFor, goalsAgainst] = result.split("-").map(Number);

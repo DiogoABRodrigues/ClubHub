@@ -5,7 +5,7 @@ import { styles } from "./styles/MatchCard.styles";
 import { COLORS } from "../theme/colors";
 import { Match } from "../models/Match";
 import { LiveBadge } from "./LiveBadge";
-import { formatDateWithWeekdayPT } from "../utils/dateUtils";
+import { formatDateWithWeekdayPT, getPenaltyDisplayScore } from "../utils/dateUtils";
 import * as Clipboard from "expo-clipboard";
 import { Competition } from "../models/Competition";
 import { ZZImage } from "./ZZImage";
@@ -82,9 +82,16 @@ export const MatchCard = React.memo(
     const awayTeam = match.homeOrAway === "F" ? match.teamName : match.opponent;
     const [homeScore, awayScore] = useMemo(() => {
       if (!match.result) return [null, null];
+      const penaltyDisplay = getPenaltyDisplayScore(
+        match.result,
+        match.outcome,
+        match.homeOrAway,
+        match.decidedByPenalties,
+      );
+      if (penaltyDisplay) return penaltyDisplay;
       const parts = match.result.split("-");
       return parts.length >= 2 ? [parts[0], parts[1]] : [null, null];
-    }, [match.result]);
+    }, [match.result, match.outcome, match.homeOrAway, match.decidedByPenalties]);
 
     const formattedDate = useMemo(
       () => `${formatDateWithWeekdayPT(match.date)} · ${match.time}`,

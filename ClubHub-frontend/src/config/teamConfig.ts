@@ -14,6 +14,11 @@ export const teamConfig = {
   team_stadium: "Campo Costa do Monte, Arcos de Valdevez",
   instagram_URL: "https://www.instagram.com/adecasoficial/",
   backend_URL: "http://192.168.1.105:3000",
+  over19: true,
+  sub19: false,
+  sub17: false,
+  sub15: true,
+  sub13: false,
 };
 
 function getCurrentSeason() {

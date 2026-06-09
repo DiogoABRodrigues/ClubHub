@@ -7,7 +7,7 @@ import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { styles } from "./MatchDetail.styles";
 import { useMatches } from "../../hooks/useMatches";
 import { useTeams } from "../../hooks/useTeams";
-import { formatDateWithWeekdayPT } from "../../utils/dateUtils";
+import { formatDateWithWeekdayPT, getPenaltyDisplayScore } from "../../utils/dateUtils";
 import { usePlayers } from "../../hooks/usePlayers";
 import { EventRow } from "../../components/EventRow";
 import { Competition } from "../../models/Competition";
@@ -130,6 +130,14 @@ export const MatchDetail = () => {
     ) as Competition;
   }, [match.competitionId, competitions]);
 
+  const penaltyDisplay = useMemo(() =>
+    getPenaltyDisplayScore(match.result, match.outcome, match.homeOrAway, match.decidedByPenalties),
+    [match.result, match.outcome, match.homeOrAway, match.decidedByPenalties],
+  );
+
+  const homeScoreDisplay = penaltyDisplay ? penaltyDisplay[0] : match.result?.split("-")[0];
+  const awayScoreDisplay = penaltyDisplay ? penaltyDisplay[1] : match.result?.split("-")[1];
+
   return (
     <ScrollView
       style={styles.container}
@@ -188,11 +196,11 @@ export const MatchDetail = () => {
           <View style={{ alignItems: "center", marginTop: 8 }}>
           <View style={styles.scoreContainer}>
             <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
-              {match.result?.split("-")[0]}
+              {homeScoreDisplay}
             </Text>
             <Text style={styles.colon}>:</Text>
             <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
-              {match.result?.split("-")[1]}
+              {awayScoreDisplay}
             </Text>
           </View>
           {match.decidedByPenalties && (
