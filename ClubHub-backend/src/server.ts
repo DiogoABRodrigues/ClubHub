@@ -37,13 +37,12 @@ async function startServer() {
   try {
     await sequelize.authenticate();
     await connectRedis();
-    //await sequelize.sync({ alter: true });
-    //wait scrapeTeamStats();
-    //wait scrapeTeamMatches();
-    //wait scrapeStandings();
-    //wait scrapeTeamStats();
-    //wait scrapeTeamPlayers();
-    //wait scrapeAllTeams();
+    await sequelize.sync({ alter: true });
+    //await scrapeTeamPlayers();
+    //await scrapeTeamMatches();
+    //await scrapeStandings();
+    //await scrapeTeamStats();
+    //await scrapeAllTeams();
   
     //wait restartBrowser();
   
