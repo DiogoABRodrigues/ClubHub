@@ -10,6 +10,11 @@ export const PlayerService = {
     const { data } = await api.get(`/players/season/${seasonId}`);
     return data;
   },
+  /** Admin: inclui jogadores marcados como "error" */
+  getAllBySeasonId: async (seasonId: number): Promise<Player[]> => {
+    const { data } = await api.get(`/players/admin/season/${seasonId}`);
+    return data;
+  },
   getByCurrentSeasonId: async (): Promise<Player[]> => {
     const { data } = await api.get("/players/current");
     return data;
@@ -33,7 +38,7 @@ export const PlayerService = {
     status: "active" | "left" | "error",
   ): Promise<void> => {
     await api.patch(
-      `/squad/${playerExternalId}/season/${seasonId}/status`,
+      `/squads/${playerExternalId}/season/${seasonId}/status`,
       { status },
     );
   },

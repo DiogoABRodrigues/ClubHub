@@ -34,12 +34,6 @@ const STATUS_COLORS: Record<SquadStatus, string> = {
   error:  "#ef4444",
 };
 
-const NEXT_STATUS: Record<SquadStatus, SquadStatus> = {
-  active: "left",
-  left:   "error",
-  error:  "active",
-};
-
 /* ---------------- CARD MEMO ---------------- */
 const PlayerCard = React.memo(
   ({
@@ -47,12 +41,11 @@ const PlayerCard = React.memo(
     onChangeStatus,
   }: {
     player: Player;
-    onChangeStatus: (p: Player, next: SquadStatus) => void;
+    onChangeStatus: (p: Player) => void;
   }) => {
     const [firstName, ...rest] = player.name.split(" ");
     const lastName = rest.join(" ");
     const currentStatus: SquadStatus = player.squadStatus ?? "active";
-    const nextStatus = NEXT_STATUS[currentStatus];
 
     const isLeft  = currentStatus === "left";
     const isError = currentStatus === "error";
@@ -97,20 +90,20 @@ const PlayerCard = React.memo(
           {lastName}
         </Text>
 
-        {/* Botão para mudar para o próximo estado */}
+        {/* Botão para abrir picker de estado */}
         <TouchableOpacity
-          onPress={() => onChangeStatus(player, nextStatus)}
+          onPress={() => onChangeStatus(player)}
           style={{
             marginTop: 4,
             paddingHorizontal: 8,
             paddingVertical: 3,
             borderRadius: 6,
             borderWidth: 1,
-            borderColor: STATUS_COLORS[nextStatus],
+            borderColor: STATUS_COLORS[currentStatus],
           }}
         >
-          <Text style={{ fontSize: 9, color: STATUS_COLORS[nextStatus], fontWeight: "600" }}>
-            → {STATUS_LABELS[nextStatus]}
+          <Text style={{ fontSize: 9, color: STATUS_COLORS[currentStatus], fontWeight: "600" }}>
+            Mudar estado
           </Text>
         </TouchableOpacity>
       </View>
@@ -129,18 +122,18 @@ export function AdminSquadScreen() {
     );
   }
 
-  const { players, updateSquadStatus } = usePlayers();
+  const { allPlayers, updateSquadStatus } = usePlayers();
   const { selectedSeasonId } = useSelectedSeason();
 
   /* SORT ONCE — mostra TODOS (incluindo "error") para o admin */
   const sortedPlayers = useMemo(() => {
-    return [...players].sort((a, b) => {
+    return [...allPlayers].sort((a, b) => {
       const posA = getPositionOrder(a.Stats?.[0]?.position || "");
       const posB = getPositionOrder(b.Stats?.[0]?.position || "");
       if (posA !== posB) return posA - posB;
       return (a.Stats?.[0]?.number || 0) - (b.Stats?.[0]?.number || 0);
     });
-  }, [players]);
+  }, [allPlayers]);
 
   const groupedData = useMemo(() => {
     const groups: Record<string, Player[]> = {};
@@ -167,27 +160,26 @@ export function AdminSquadScreen() {
   }, [groupedData]);
 
   const handleChangeStatus = useCallback(
-    (player: Player, nextStatus: SquadStatus) => {
-      const labels: Record<SquadStatus, string> = {
-        active: "Ativo (aparece normalmente)",
-        left:   "Saiu (aparece a cinzento)",
-        error:  "Erro (não aparece)",
-      };
+    (player: Player) => {
+      const current: SquadStatus = player.squadStatus ?? "active";
+      const options: SquadStatus[] = (["active", "left", "error"] as SquadStatus[]).filter(
+        (s) => s !== current,
+      );
 
       Alert.alert(
-        "Alterar estado",
-        `${player.name}\n\n${STATUS_LABELS[player.squadStatus ?? "active"]} → ${labels[nextStatus]}`,
+        "Mudar estado",
+        `${player.name} — estado atual: ${STATUS_LABELS[current]}`,
         [
           { text: "Cancelar", style: "cancel" },
-          {
-            text: "Confirmar",
+          ...options.map((s) => ({
+            text: STATUS_LABELS[s],
             onPress: () =>
               updateSquadStatus({
                 playerExternalId: player.externalId,
                 seasonId: selectedSeasonId!,
-                status: nextStatus,
+                status: s,
               }),
-          },
+          })),
         ],
       );
     },

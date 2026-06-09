@@ -14,6 +14,13 @@ export const usePlayers = () => {
     select: (players: Player[]) => players,
   });
 
+  const allPlayersQuery = useQuery({
+    queryKey: ["players-all", currentSeasonId],
+    queryFn: () => PlayerService.getAllBySeasonId(currentSeasonId!),
+    enabled: !!currentSeasonId,
+    select: (players: Player[]) => players,
+  });
+
   const updatePlayerMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: Partial<Player> }) =>
       PlayerService.updatePlayer(id, data),
@@ -32,8 +39,28 @@ export const usePlayers = () => {
       seasonId: number;
       status: "active" | "left" | "error";
     }) => PlayerService.updateSquadStatus(playerExternalId, seasonId, status),
+    onMutate: async ({ playerExternalId, status }) => {
+      // Optimistic update em ambas as queries
+      await queryClient.cancelQueries({ queryKey: ["players", currentSeasonId] });
+      await queryClient.cancelQueries({ queryKey: ["players-all", currentSeasonId] });
+      queryClient.setQueryData<Player[]>(["players", currentSeasonId], (old) =>
+        old?.map((p) =>
+          p.externalId === playerExternalId ? { ...p, squadStatus: status } : p,
+        ),
+      );
+      queryClient.setQueryData<Player[]>(["players-all", currentSeasonId], (old) =>
+        old?.map((p) =>
+          p.externalId === playerExternalId ? { ...p, squadStatus: status } : p,
+        ),
+      );
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["players", currentSeasonId] });
+      queryClient.invalidateQueries({ queryKey: ["players-all", currentSeasonId] });
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ["players", currentSeasonId] });
+      queryClient.invalidateQueries({ queryKey: ["players-all", currentSeasonId] });
     },
   });
 
@@ -55,6 +82,7 @@ export const usePlayers = () => {
 
   return {
     players: playersQuery.data ?? [],
+    allPlayers: allPlayersQuery.data ?? [],
     loading: playersQuery.isLoading,
     refreshPlayers: playersQuery.refetch,
     updatePlayer: updatePlayerMutation.mutate,
