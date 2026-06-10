@@ -17,9 +17,14 @@ import { login as loginRequest } from "../../services/AuthService";
 import { Linking } from "react-native";
 import { teamConfig } from "../../config/teamConfig";
 import { useDevicePreferences } from "../../hooks/useDevicePreferences";
+import { useCategory, CATEGORY_LABELS, Category } from "../../contexts/CategoryContext";
 
 export const NotificationSettings = ({ navigation }: any) => {
   const { loginAsAdmin, setAdminMode } = useAuth();
+  const { selectedCategory, setSelectedCategory } = useCategory();
+
+  // Escalões activos definidos no teamConfig
+  const enabledCategories = teamConfig.categories.filter((c) => c.enabled);
 
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -44,7 +49,8 @@ export const NotificationSettings = ({ navigation }: any) => {
     goals: false,
     finalResult: false,
     newsAlerts: false,
-  }) as NonNullable<typeof preferences>;
+    subscribedCategories: null,
+  }) as NonNullable<typeof preferences> & { subscribedCategories: Category[] | null };
 
   const handleTitleTap = useCallback(() => {
     setTapCount((prev) => {
@@ -117,6 +123,103 @@ export const NotificationSettings = ({ navigation }: any) => {
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.content}>
+
+        {/* Selector de Escalão — só aparece se houver mais do que 1 activo */}
+        {enabledCategories.length > 1 && (
+          <View style={styles.section}>
+            <Text style={[styles.toggleTitle, { marginBottom: 10, paddingHorizontal: 4 }]}>
+              Escalão
+            </Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+              {enabledCategories.map((cfg) => {
+                const isSelected = selectedCategory === cfg.category;
+                return (
+                  <TouchableOpacity
+                    key={cfg.category}
+                    onPress={() => setSelectedCategory(cfg.category as Category)}
+                    style={{
+                      paddingHorizontal: 16,
+                      paddingVertical: 8,
+                      borderRadius: 20,
+                      borderWidth: 1.5,
+                      borderColor: isSelected ? COLORS.primary : COLORS.border,
+                      backgroundColor: isSelected ? COLORS.primary : "transparent",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: isSelected ? "#fff" : COLORS.textSecondary,
+                        fontWeight: isSelected ? "700" : "400",
+                        fontSize: 14,
+                      }}
+                    >
+                      {cfg.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        )}
+
+        {/* Notificações por escalão — só aparece se houver mais do que 1 activo */}
+        {enabledCategories.length > 1 && (
+          <View style={styles.section}>
+            <Text style={[styles.toggleTitle, { marginBottom: 4, paddingHorizontal: 4 }]}>
+              Notificações por escalão
+            </Text>
+            <Text style={[styles.toggleDescription, { marginBottom: 10, paddingHorizontal: 4 }]}>
+              Escolhe de que escalões queres receber notificações
+            </Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+              {enabledCategories.map((cfg) => {
+                const subscribed = safePreferences.subscribedCategories;
+                // null = todos subscritos
+                const isOn = subscribed === null || subscribed?.includes(cfg.category);
+                return (
+                  <TouchableOpacity
+                    key={cfg.category}
+                    onPress={() => {
+                      const current: Category[] = subscribed
+                        ? [...subscribed]
+                        : enabledCategories.map((c) => c.category as Category);
+
+                      const updated = isOn
+                        ? current.filter((c) => c !== cfg.category)
+                        : [...current, cfg.category as Category];
+
+                      // Se todos ficam seleccionados, guarda null (subscreve todos)
+                      const allSelected = updated.length === enabledCategories.length;
+                      updatePreferences({
+                        ...safePreferences,
+                        subscribedCategories: allSelected ? null : updated,
+                      });
+                    }}
+                    style={{
+                      paddingHorizontal: 16,
+                      paddingVertical: 8,
+                      borderRadius: 20,
+                      borderWidth: 1.5,
+                      borderColor: isOn ? COLORS.primary : COLORS.border,
+                      backgroundColor: isOn ? COLORS.primary : "transparent",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: isOn ? "#fff" : COLORS.textSecondary,
+                        fontWeight: isOn ? "700" : "400",
+                        fontSize: 14,
+                      }}
+                    >
+                      {cfg.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        )}
+
         {/* Notification Toggles */}
         <View style={styles.section}>
           {notificationTypes.map(({ key, icon, title, description, color }) => (

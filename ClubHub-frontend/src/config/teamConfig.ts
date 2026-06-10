@@ -1,34 +1,30 @@
+export type Category = "over19" | "sub19" | "sub17" | "sub15" | "sub13";
+
+export interface CategoryConfig {
+  category: Category;
+  label: string;
+  enabled: boolean;
+}
+
 export const teamConfig = {
-  players_url: "https://www.zerozero.pt/equipa/adecas/18231",
-  matches_url: "https://www.zerozero.pt/equipa/adecas/18231/jogos?grp=1",
   name: "Adecas",
-  updateSchedule: "0 2 * * 0",
-  teams1: "https://www.zerozero.pt/competicao/af-viana-do-castelo-1-divisao",
-  teams2: "https://www.zerozero.pt/competicao/af-viana-do-castelo-2-divisao",
-  standings_url:
-    "https://www.zerozero.pt/competicao/af-viana-do-castelo-2-divisao",
-  nr_teams: 16,
-  stats:
-    "https://www.zerozero.pt/equipa/adecas/18231/jogadores?epoca_stats_id=155&o=j",
-  currentSeason: getCurrentSeason(),
-  team_stadium: "Campo Costa do Monte, Arcos de Valdevez",
   instagram_URL: "https://www.instagram.com/adecasoficial/",
   backend_URL: "http://192.168.1.105:3000",
-  over19: true,
-  sub19: false,
-  sub17: false,
-  sub15: true,
-  sub13: false,
+
+  categories: [
+    {
+      category: "over19" as Category,
+      label: "Seniores",
+      enabled: true,
+    },
+    {
+      category: "sub15" as Category,
+      label: "Sub-15",
+      enabled: true,
+    },
+  ] as CategoryConfig[],
 };
 
-function getCurrentSeason() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1;
-
-  if (month >= 8) {
-    return `${year}/${year + 1}`;
-  } else {
-    return `${year - 1}/${year}`;
-  }
+export function getEnabledCategories(): CategoryConfig[] {
+  return teamConfig.categories.filter((c) => c.enabled);
 }
