@@ -8,6 +8,7 @@ class Player extends Model {
   declare name: string;
   declare photoUrl: string | null;
   declare age: number | null;
+  declare category: string;
   // Estatísticas da temporada
   declare gamesPlayed: number;
   declare goals: number;
@@ -19,16 +20,23 @@ class Player extends Model {
 Player.init(
   {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    externalId: { type: DataTypes.INTEGER, allowNull: false, unique: true },
+    externalId: { type: DataTypes.INTEGER, allowNull: false },
     name: { type: DataTypes.STRING, allowNull: false },
     photoUrl: { type: DataTypes.STRING, allowNull: true },
     age: { type: DataTypes.INTEGER, allowNull: true },
+    category: { type: DataTypes.STRING(10), allowNull: false, defaultValue: "over19" },
   },
   {
     sequelize,
     modelName: "Player",
     tableName: "players",
     timestamps: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ["externalId", "category"],
+      },
+    ],
   },
 );
 

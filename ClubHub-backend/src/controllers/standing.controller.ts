@@ -11,12 +11,14 @@ export default class StandingController {
 
   static async getBySeasonId(req: Request, res: Response) {
     const seasonId = parseInt(String(req.params.seasonId));
-    const data = await service.getBySeasonId(seasonId);
+    const category = String(req.query.category ?? "over19");
+    const data = await service.getBySeasonId(seasonId, category);
     res.json(data);
   }
 
   static async getByCurrentSeasonId(req: Request, res: Response) {
-    const data = await service.getByCurrentSeasonId();
+    const category = String(req.query.category ?? "over19");
+    const data = await service.getByCurrentSeasonId(category);
     res.json(data);
   }
 }

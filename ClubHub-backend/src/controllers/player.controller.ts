@@ -9,26 +9,23 @@ export default class PlayerController {
     res.json(data);
   }
 
-  static async getById(req: Request, res: Response) {
-    const seasonId = parseInt(String(req.params.seasonId));
-    const data = await service.getBySeasonId(seasonId);
-    res.json(data);
-  }
-
   static async getBySeasonId(req: Request, res: Response) {
     const seasonId = parseInt(String(req.params.seasonId));
-    const data = await service.getBySeasonId(seasonId);
+    const category = String(req.query.category ?? "over19");
+    const data = await service.getBySeasonId(seasonId, category);
     res.json(data);
   }
 
   static async getByCurrentSeasonId(req: Request, res: Response) {
-    const data = await service.getByCurrentSeasonId();
+    const category = String(req.query.category ?? "over19");
+    const data = await service.getByCurrentSeasonId(category);
     res.json(data);
   }
 
   static async getAllBySeasonId(req: Request, res: Response) {
     const seasonId = parseInt(String(req.params.seasonId));
-    const data = await service.getAllBySeasonId(seasonId);
+    const category = String(req.query.category ?? "over19");
+    const data = await service.getAllBySeasonId(seasonId, category);
     res.json(data);
   }
 
@@ -41,13 +38,10 @@ export default class PlayerController {
 
   static async updatePlayer(req: Request, res: Response) {
     const playerId = parseInt(String(req.params.playerId));
-    const updates = req.body;
-
     try {
-      const updatedPlayer = await service.updatePlayer(playerId, updates);
+      const updatedPlayer = await service.updatePlayer(playerId, req.body);
       res.json(updatedPlayer);
     } catch (err) {
-      console.error("Erro a atualizar jogador:", err);
       res.status(500).json({ error: "Erro a atualizar jogador" });
     }
   }

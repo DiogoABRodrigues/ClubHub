@@ -11,22 +11,21 @@ import { pushService } from "./push.service";
 import deviceService from "./device.service";
 import AppSettings from "../models/AppSettings";
 import { getNotificationsEnabled } from "../utils/getNotificationsEnabled";
+import { teamConfig } from "../config/teamConfig";
 
 export default class MatchService {
   async getAll() {
     return Match.findAll();
   }
 
-  async getBySeasonId(seasonId: number) {
-    const key = CacheKeys.matches.bySeason(seasonId);
+  async getBySeasonId(seasonId: number, category: string = "over19") {
+    const key = CacheKeys.matches.bySeason(seasonId, category);
 
     const cached = await cache.get(key);
-    if (cached) {
-      return cached;
-    }
+    if (cached) return cached;
 
     const matches = await Match.findAll({
-      where: { seasonId },
+      where: { seasonId, category },
       include: [
         {
           model: Lineup,
@@ -42,14 +41,13 @@ export default class MatchService {
     });
 
     await cache.set(key, matches);
-
     return matches;
   }
 
-  async getByCurrentSeasonId() {
+  async getByCurrentSeasonId(category: string = "over19") {
     const season = (await new SeasonService().getCurrentSeason()) as Season;
     if (!season) return [];
-    return this.getBySeasonId(season.id);
+    return this.getBySeasonId(season.id, category);
   }
 
   async create(data: any) {
@@ -117,30 +115,26 @@ export default class MatchService {
 
   private async notifyResult(match: Match) {
     const settings = await getNotificationsEnabled();
-
     if (!settings) return;
-    const devices = await deviceService.getDevicesForResults();
 
+    const category = (match as any).category ?? "over19";
+    const categoryLabel = this._getCategoryLabel(category);
+    const devices = await deviceService.getDevicesForResults(category);
     if (!devices.length) return;
 
-    const title = "Fim do jogo";
-    if (match.homeOrAway === "C") {
-      const body = `${match.teamName} ${match.result} ${match.opponent}`;
-      const response = await pushService.sendToDevices(devices, {
-        title,
-        body,
-      });
+    const title = `Fim do jogo ${categoryLabel}`.trim();
+    const body = match.homeOrAway === "C"
+      ? `${match.teamName} ${match.result} ${match.opponent}`
+      : `${match.opponent} ${match.result} ${match.teamName}`;
 
-      await pushService.handleReceipts(response);
-      return;
-    }
-    const body = `${match.opponent} ${match.result} ${match.teamName}`;
-
-    const response = await pushService.sendToDevices(devices, {
-      title,
-      body,
-    });
-
+    const response = await pushService.sendToDevices(devices, { title, body });
     await pushService.handleReceipts(response);
+  }
+
+  private _getCategoryLabel(category: string): string {
+    const enabled = (teamConfig.categories as any[]).filter((c) => c.enabled);
+    if (enabled.length <= 1) return "";
+    const cfg = enabled.find((c) => c.category === category);
+    return cfg ? `[${cfg.label}]` : "";
   }
 }

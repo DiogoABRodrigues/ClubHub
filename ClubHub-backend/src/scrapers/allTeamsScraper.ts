@@ -9,7 +9,9 @@ export interface ScrapedTeam {
   logoUrl?: string;
 }
 
-const competitions = [{ url: teamConfig.teams1 }, { url: teamConfig.teams2 }];
+// Usa as URLs de equipas do escalão over19
+const over19Config = teamConfig.categories.find((c) => c.category === "over19");
+const competitions = (over19Config?.teams_urls ?? []).map((url) => ({ url }));
 
 export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
   const browser = await getSharedBrowser();

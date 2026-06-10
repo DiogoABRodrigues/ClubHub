@@ -4,7 +4,7 @@ import deviceService from "../services/device.service";
 class DeviceController {
   async register(req: Request, res: Response) {
     try {
-      const { id, pushToken, platform, goals, matchday } = req.body;
+      const { id, pushToken, platform, goals, matchday, subscribedCategories } = req.body;
 
       if (!id || !pushToken || !platform) {
         return res.status(400).json({ error: "Missing fields" });
@@ -16,6 +16,7 @@ class DeviceController {
         platform,
         goals,
         matchday,
+        subscribedCategories: subscribedCategories ?? null,
       });
 
       return res.json(device);
@@ -28,17 +29,16 @@ class DeviceController {
     try {
       const rawId = req.params.id;
       const id = Array.isArray(rawId) ? rawId[0] : rawId;
-      const { goals, matchday, result, news } = req.body;
+      const { goals, matchday, result, news, subscribedCategories } = req.body;
 
-      if (!id) {
-        return res.status(400).json({ error: "Missing id" });
-      }
+      if (!id) return res.status(400).json({ error: "Missing id" });
 
       await deviceService.updatePreferences(id, {
         goals,
         matchday,
         result,
         news,
+        ...(subscribedCategories !== undefined && { subscribedCategories }),
       });
 
       return res.json({ success: true });
@@ -52,14 +52,10 @@ class DeviceController {
       const rawId = req.params.id;
       const id = Array.isArray(rawId) ? rawId[0] : rawId;
 
-      if (!id) {
-        return res.status(400).json({ error: "Missing id" });
-      }
+      if (!id) return res.status(400).json({ error: "Missing id" });
 
       const device = await deviceService.getDeviceById(id);
-      if (!device) {
-        return res.status(404).json({ error: "Device not found" });
-      }
+      if (!device) return res.status(404).json({ error: "Device not found" });
 
       return res.json(device);
     } catch (err) {

@@ -10,12 +10,10 @@ class DeviceService {
     matchday?: boolean;
     result?: boolean;
     news?: boolean;
+    subscribedCategories?: string[] | null;
   }) {
     await Device.upsert(data);
-
-    // invalidar cache global de devices
     await cacheDelPattern("devices:*");
-
     return await Device.findByPk(data.id);
   }
 
@@ -26,96 +24,74 @@ class DeviceService {
       matchday?: boolean;
       result?: boolean;
       news?: boolean;
+      subscribedCategories?: string[] | null;
     },
   ) {
-    const [updatedRows] = await Device.update(preferences, {
-      where: { id },
-    });
-
-    if (updatedRows === 0) {
-      console.log("❌ No rows updated for device:", id);
-    } else {
-      console.log("✅ Updated device:", id);
-    }
-
-    // 🔥 importantíssimo: invalidar cache
+    const [updatedRows] = await Device.update(preferences, { where: { id } });
     await cacheDelPattern("devices:*");
-
     return updatedRows;
   }
 
-  async getDevicesForGoals() {
-    const key = "devices:goals";
-
+  /** Devolve dispositivos com goals=true que subscrevem este escalão */
+  async getDevicesForGoals(category: string = "over19") {
+    const key = `devices:goals:${category}`;
     const cached = await cacheGet(key);
     if (cached) return cached;
 
-    const data = await Device.findAll({
-      where: { goals: true },
-    });
+    const allDevices = await Device.findAll({ where: { goals: true } });
+    const data = allDevices.filter((d) => this._subscribesCategory(d, category));
 
-    await cacheSet(key, data, 600); // 10 min ok
-
+    await cacheSet(key, data, 600);
     return data;
   }
 
-  async getDevicesForMatchday() {
-    const key = "devices:matchday";
-
+  async getDevicesForMatchday(category: string = "over19") {
+    const key = `devices:matchday:${category}`;
     const cached = await cacheGet(key);
     if (cached) return cached;
 
-    const data = await Device.findAll({
-      where: { matchday: true },
-    });
+    const allDevices = await Device.findAll({ where: { matchday: true } });
+    const data = allDevices.filter((d) => this._subscribesCategory(d, category));
 
     await cacheSet(key, data, 600);
-
     return data;
   }
 
-  async getDevicesForResults() {
-    const key = "devices:results";
-
+  async getDevicesForResults(category: string = "over19") {
+    const key = `devices:results:${category}`;
     const cached = await cacheGet(key);
     if (cached) return cached;
 
-    const data = await Device.findAll({
-      where: { result: true },
-    });
+    const allDevices = await Device.findAll({ where: { result: true } });
+    const data = allDevices.filter((d) => this._subscribesCategory(d, category));
 
     await cacheSet(key, data, 600);
-
     return data;
   }
 
   async getDevicesForNews() {
     const key = "devices:news";
-
     const cached = await cacheGet(key);
     if (cached) return cached;
 
-    const data = await Device.findAll({
-      where: { news: true },
-    });
-
+    const data = await Device.findAll({ where: { news: true } });
     await cacheSet(key, data, 600);
-
     return data;
   }
 
   async deleteByTokens(tokens: string[]) {
-    await Device.destroy({
-      where: {
-        pushToken: tokens,
-      },
-    });
-
+    await Device.destroy({ where: { pushToken: tokens } });
     await cacheDelPattern("devices:*");
   }
 
   async getDeviceById(id: string) {
     return Device.findByPk(id);
+  }
+
+  /** null = subscreve todos; array = apenas os escalões listados */
+  private _subscribesCategory(device: Device, category: string): boolean {
+    if (!device.subscribedCategories) return true;
+    return device.subscribedCategories.includes(category);
   }
 }
 

@@ -1,5 +1,5 @@
 import * as cheerio from "cheerio";
-import { teamConfig } from "../config/teamConfig";
+import { teamConfig, CategoryConfig } from "../config/teamConfig";
 import Team from "../models/Team";
 import Standing from "../models/Standing";
 import Season from "../models/Season";
@@ -58,7 +58,8 @@ function extractRowColor($: cheerio.CheerioAPI, posCell: any): string | null {
   return null;
 }
 
-export async function scrapeStandings(): Promise<StandingRow[]> {
+export async function scrapeStandings(cfg?: CategoryConfig): Promise<StandingRow[]> {
+  const config = cfg ?? teamConfig.categories.find((c) => c.category === "over19")!;
   const browser = await getSharedBrowser();
   const page = await browser.newPage();
   page.setDefaultTimeout(60000);
@@ -66,10 +67,10 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
   );
 
-  console.log(`🌐 A aceder a: ${teamConfig.standings_url}`);
+  console.log(`🌐 A aceder a: ${config.standings_url} [${config.category}]`);
 
   try {
-    await page.goto(teamConfig.standings_url, {
+    await page.goto(config.standings_url, {
       waitUntil: "domcontentloaded",
       timeout: 60000,
     });
@@ -175,12 +176,12 @@ export async function scrapeStandings(): Promise<StandingRow[]> {
     const season = await getOrCreateSeason(teamConfig.currentSeason);
 
     if (standings.length > 0) {
-      await saveStandings(standings, 1, season.id);
+      await saveStandings(standings, 1, season.id, config.category);
     }
 
     // Atualiza a legenda na Competition se a encontrámos
     if (legendItems.length > 0) {
-      const competition = await Competition.findOne({ where: { seasonId: season.id } });
+      const competition = await Competition.findOne({ where: { seasonId: season.id, category: config.category } });
       if (competition) {
         // Deduplica por cor
         const seen = new Set<string>();
@@ -208,6 +209,7 @@ export async function saveStandings(
   standings: StandingRow[],
   competitionId: number,
   seasonId: number,
+  category: string = "over19",
 ) {
   const data = [];
 
@@ -221,6 +223,7 @@ export async function saveStandings(
       teamName: team.name,
       competitionId,
       seasonId,
+      category,
       position: row.position,
       points: row.points,
       played: row.matchesPlayed,
@@ -234,8 +237,8 @@ export async function saveStandings(
     });
   }
 
-  await Standing.destroy({ where: { competitionId, seasonId } });
+  await Standing.destroy({ where: { competitionId, seasonId, category } });
   await Standing.bulkCreate(data);
 
-  console.log(`✅ Standings guardadas (competição ${competitionId}, season ${seasonId})`);
+  console.log(`✅ Standings guardadas (competição ${competitionId}, season ${seasonId}, ${category})`);
 }

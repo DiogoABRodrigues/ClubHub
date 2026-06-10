@@ -12,27 +12,23 @@ export default class PlayerService {
     return Player.findAll();
   }
 
-  async getBySeasonId(seasonId: number) {
-    const key = CacheKeys.players.bySeason(seasonId);
+  async getBySeasonId(seasonId: number, category: string = "over19") {
+    const key = CacheKeys.players.bySeason(seasonId, category);
 
     const cached = await cache.get(key);
     if (cached) return cached;
 
-    // Busca todos os registos de squad para esta época EXCEPTO os que
-    // estão marcados como "error" (entraram por erro da API).
     const squadEntries = await Squad.findAll({
-      where: { seasonId, status: { [Op.ne]: "error" } },
+      where: { seasonId, category, status: { [Op.ne]: "error" } },
     });
 
     const externalIds = squadEntries.map((s) => s.playerExternalId);
 
     const players = await Player.findAll({
-      where: { externalId: externalIds },
-      include: [{ model: Stats, where: { seasonId }, required: false }],
+      where: { externalId: externalIds, category },
+      include: [{ model: Stats, where: { seasonId, category }, required: false }],
     });
 
-    // Injeta o status do squad em cada jogador para o frontend poder
-    // distinguir "active" de "left" sem chamada extra.
     const statusMap: Record<number, string> = {};
     for (const entry of squadEntries) {
       statusMap[entry.playerExternalId] = entry.status;
@@ -45,24 +41,23 @@ export default class PlayerService {
     });
 
     await cache.set(key, enriched);
-
     return enriched;
   }
 
-  async getByCurrentSeasonId() {
+  async getByCurrentSeasonId(category: string = "over19") {
     const season = (await new SeasonService().getCurrentSeason()) as Season;
     if (!season) return [];
-    return this.getBySeasonId(season.id);
+    return this.getBySeasonId(season.id, category);
   }
 
-  /** Admin: devolve TODOS os jogadores da época, incluindo os marcados como "error". */
-  async getAllBySeasonId(seasonId: number) {
-    const squadEntries = await Squad.findAll({ where: { seasonId } });
+  /** Admin: devolve TODOS os jogadores (incluindo "error") de um escalão. */
+  async getAllBySeasonId(seasonId: number, category: string = "over19") {
+    const squadEntries = await Squad.findAll({ where: { seasonId, category } });
     const externalIds = squadEntries.map((s) => s.playerExternalId);
 
     const players = await Player.findAll({
-      where: { externalId: externalIds },
-      include: [{ model: Stats, where: { seasonId }, required: false }],
+      where: { externalId: externalIds, category },
+      include: [{ model: Stats, where: { seasonId, category }, required: false }],
     });
 
     const statusMap: Record<number, string> = {};
@@ -77,7 +72,6 @@ export default class PlayerService {
     });
   }
 
-  /** Devolve um jogador com TODAS as suas Stats (todas as épocas), ordenadas por época mais recente primeiro */
   async getAllStatsByPlayerId(playerId: number) {
     const key = `app:player:${playerId}:allstats`;
 
@@ -105,34 +99,29 @@ export default class PlayerService {
     (player as any).Stats = stats;
 
     await cache.set(key, player, 60 * 60);
-
     return player;
   }
 
   async updatePlayer(playerId: number, updates: Partial<Player>) {
     const player = await Player.findByPk(playerId);
     if (!player) throw new Error("Player not found");
-
     await player.update(updates);
-    await cache.del(CacheKeys.players.bySeason(player.seasonId as number));
-    await cache.del(CacheKeys.stats.bySeason(player.seasonId as number));
     return player;
   }
 
-  /** Atualiza o status de um jogador num squad específico (por época). */
   async updateSquadStatus(
     playerExternalId: number,
     seasonId: number,
     status: "active" | "left" | "error",
+    category: string = "over19",
   ) {
-    const entry = await Squad.findOne({ where: { playerExternalId, seasonId } });
+    const entry = await Squad.findOne({ where: { playerExternalId, seasonId, category } });
     if (!entry) throw new Error("Squad entry not found");
 
     await entry.update({ status });
 
-    // Invalida cache desta época
-    await cache.del(CacheKeys.players.bySeason(seasonId));
-    await cache.del(CacheKeys.squad.bySeason(seasonId));
+    await cache.del(CacheKeys.players.bySeason(seasonId, category));
+    await cache.del(CacheKeys.squad.bySeason(seasonId, category));
 
     return entry;
   }

@@ -1,42 +1,33 @@
 import * as cheerio from "cheerio";
 import Stats from "../models/Stats";
 import Season from "../models/Season";
-import { teamConfig } from "../config/teamConfig";
+import { teamConfig, CategoryConfig } from "../config/teamConfig";
 import { getSharedBrowser } from "../utils/browser";
 
 async function getOrCreateSeason() {
-  const [season] = await Season.findOrCreate({
-    where: { year: teamConfig.currentSeason },
-  });
+  const [season] = await Season.findOrCreate({ where: { year: teamConfig.currentSeason } });
   return season;
 }
 
-export async function scrapeTeamStats() {
+export async function scrapeTeamStats(cfg?: CategoryConfig) {
+  const config = cfg ?? teamConfig.categories.find((c) => c.category === "over19")!;
+
   const browser = await getSharedBrowser();
   const page = await browser.newPage();
 
   try {
-    await page.setUserAgent(
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
-    );
+    await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36");
     await page.setViewport({ width: 1920, height: 1080 });
 
-    await page.goto(teamConfig.stats, {
-      waitUntil: "domcontentloaded",
-      timeout: 90000,
-    });
+    await page.goto(config.stats_url, { waitUntil: "domcontentloaded", timeout: 90000 });
 
-    // Aceitar cookies
     try {
       await page.evaluate(() => {
-        const btn = Array.from(document.querySelectorAll("button")).find((b) =>
-          b.textContent?.includes("Aceitar"),
-        );
+        const btn = Array.from(document.querySelectorAll("button")).find((b) => b.textContent?.includes("Aceitar"));
         if (btn) (btn as HTMLElement).click();
       });
     } catch {}
 
-    // Esperar pelo JS renderizar a tabela
     await page.waitForSelector("tbody tr", { timeout: 30000 });
 
     const html = await page.content();
@@ -67,15 +58,7 @@ export async function scrapeTeamStats() {
       stats.push({ externalId, name, position, gamesPlayed, goals, minutesPlayed });
     });
 
-    console.log(`✅ Estatísticas encontradas: ${stats.length}`);
-    if (stats.length === 0) {
-      // debug: mostra quantas linhas existem e o HTML da primeira
-      const rowCount = $("tbody tr").length;
-      console.log(`⚠️ Linhas encontradas no tbody: ${rowCount}`);
-      if (rowCount > 0) {
-        console.log(`⚠️ HTML primeira linha: ${$("tbody tr").first().html()?.substring(0, 300)}`);
-      }
-    }
+    console.log(`✅ Estatísticas encontradas: ${stats.length} [${config.category}]`);
 
     const season = await getOrCreateSeason();
 
@@ -87,6 +70,7 @@ export async function scrapeTeamStats() {
         goals: s.goals,
         minutesPlayed: s.minutesPlayed,
         position: s.position,
+        category: config.category,
       });
     }
 

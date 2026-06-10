@@ -8,24 +8,22 @@ export default class StandingService {
     return Standing.findAll();
   }
 
-  async getBySeasonId(seasonId: number) {
-    return Standing.findAll({ where: { seasonId } });
+  async getBySeasonId(seasonId: number, category: string = "over19") {
+    return Standing.findAll({ where: { seasonId, category } });
   }
 
-  async getByCurrentSeasonId() {
+  async getByCurrentSeasonId(category: string = "over19") {
     const season = await new SeasonService().getCurrentSeason();
     if (!season || typeof season !== "object" || !("id" in season)) return [];
 
     const seasonId = (season as { id: number }).id;
-    const key = CacheKeys.standings.bySeason(seasonId);
+    const key = CacheKeys.standings.bySeason(seasonId, category);
 
     const cached = await cache.get(key);
     if (cached) return cached;
 
-    const data = await Standing.findAll({ where: { seasonId } });
-
+    const data = await Standing.findAll({ where: { seasonId, category } });
     await cache.set(key, data);
-
     return data;
   }
 }

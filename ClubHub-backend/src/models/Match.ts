@@ -21,6 +21,7 @@ class Match extends Model {
   public location?: string;
   public statusTime!: "1st" | "interval" | "2nd" | "extra" | "penalties";
   public decidedByPenalties!: boolean;
+  public category!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -100,6 +101,11 @@ Match.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+    },
+    category: {
+      type: DataTypes.STRING(10),
+      allowNull: false,
+      defaultValue: "over19",
     },
   },
   {

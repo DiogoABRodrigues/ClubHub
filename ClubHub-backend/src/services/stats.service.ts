@@ -2,29 +2,28 @@ import Stats from "../models/Stats";
 import SeasonService from "./season.service";
 import cache from "../services/cache.service";
 import { CacheKeys } from "../cache/keys";
+
 export default class StatsService {
   async getAll() {
     return Stats.findAll();
   }
 
-  async getBySeasonId(seasonId: number) {
-    return Stats.findAll({ where: { seasonId: seasonId } });
+  async getBySeasonId(seasonId: number, category: string = "over19") {
+    return Stats.findAll({ where: { seasonId, category } });
   }
 
-  async getByCurrentSeasonId() {
+  async getByCurrentSeasonId(category: string = "over19") {
     const season = await new SeasonService().getCurrentSeason();
     if (!season || typeof season !== "object" || !("id" in season)) return [];
 
     const seasonId = (season as { id: number }).id;
-    const key = CacheKeys.stats.bySeason(seasonId);
+    const key = CacheKeys.stats.bySeason(seasonId, category);
 
     const cached = await cache.get(key);
     if (cached) return cached;
 
-    const data = await Stats.findAll({ where: { seasonId } });
-
+    const data = await Stats.findAll({ where: { seasonId, category } });
     await cache.set(key, data);
-
     return data;
   }
 }

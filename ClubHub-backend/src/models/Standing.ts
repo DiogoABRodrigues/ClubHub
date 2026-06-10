@@ -8,6 +8,7 @@ class Standing extends Model {
   public teamName!: string;
   public competitionId!: number;
   public seasonId!: number;
+  public category!: string;
 
   public position!: number;
   public points!: number;
@@ -47,6 +48,12 @@ Standing.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: { model: Season, key: "id" }, // foreign key para seasons
+    },
+
+    category: {
+      type: DataTypes.STRING(10),
+      allowNull: false,
+      defaultValue: "over19",
     },
 
     position: {

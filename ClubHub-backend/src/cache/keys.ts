@@ -4,23 +4,28 @@ export const CacheKeys = {
   },
 
   matches: {
-    bySeason: (seasonId: number) => `app:matches:season:${seasonId}`,
+    bySeason: (seasonId: number, category: string = "over19") =>
+      `app:matches:season:${seasonId}:${category}`,
   },
 
   players: {
-    bySeason: (seasonId: number) => `app:players:season:${seasonId}`,
+    bySeason: (seasonId: number, category: string = "over19") =>
+      `app:players:season:${seasonId}:${category}`,
   },
 
   stats: {
-    bySeason: (seasonId: number) => `app:stats:season:${seasonId}`,
+    bySeason: (seasonId: number, category: string = "over19") =>
+      `app:stats:season:${seasonId}:${category}`,
   },
 
   standings: {
-    bySeason: (seasonId: number) => `app:standings:season:${seasonId}`,
+    bySeason: (seasonId: number, category: string = "over19") =>
+      `app:standings:season:${seasonId}:${category}`,
   },
 
   squad: {
-    bySeason: (seasonId: number) => `app:squad:season:${seasonId}`,
+    bySeason: (seasonId: number, category: string = "over19") =>
+      `app:squad:season:${seasonId}:${category}`,
   },
 
   news: {
