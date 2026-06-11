@@ -12,6 +12,7 @@ class Competition extends Model {
   declare seasonId: number;
   declare category: string;
   declare legend: LegendItem[] | null;
+  declare externalId: number | null;
 }
 
 Competition.init(
@@ -22,6 +23,11 @@ Competition.init(
     category: { type: DataTypes.STRING(10), allowNull: false, defaultValue: "over19" },
     legend: {
       type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: null,
+    },
+    externalId: {
+      type: DataTypes.INTEGER,
       allowNull: true,
       defaultValue: null,
     },

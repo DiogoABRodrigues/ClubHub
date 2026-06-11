@@ -1,13 +1,33 @@
 import Competition, { LegendItem } from "../models/Competition";
 import SeasonService from "./season.service";
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
 
 export default class CompetitionService {
   async getAll() {
-    return Competition.findAll();
+    const key = CacheKeys.competitions.all;
+
+    const cached = await cache.get(key);
+    if (cached) return cached;
+
+    const data = await Competition.findAll({
+      order: [["id", "ASC"]],
+    });
+    await cache.set(key, data);
+
+    return data;
   }
 
   async getBySeasonId(seasonId: number) {
-    return Competition.findAll({ where: { seasonId } });
+    const key = CacheKeys.competitions.bySeason(seasonId);
+
+    const cached = await cache.get(key);
+    if (cached) return cached;
+
+    const data = await Competition.findAll({ where: { seasonId } });
+    await cache.set(key, data);
+
+    return data;
   }
 
   async getByCurrentSeasonId() {
@@ -19,7 +39,12 @@ export default class CompetitionService {
   async updateLegend(competitionId: number, legend: LegendItem[]) {
     const competition = await Competition.findByPk(competitionId);
     if (!competition) throw new Error("Competição não encontrada");
+
     await competition.update({ legend });
+
+    // opcional: invalidar cache
+    await cache.del(CacheKeys.competitions.all);
+
     return competition;
   }
 }

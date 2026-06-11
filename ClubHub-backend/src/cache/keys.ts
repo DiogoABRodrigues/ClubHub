@@ -3,6 +3,12 @@ export const CacheKeys = {
     current: "app:season:current",
   },
 
+  competitions: {
+    all: "app:competitions:all",
+    bySeason: (seasonId: number) =>
+      `app:competitions:season:${seasonId}`,
+  },
+
   matches: {
     bySeason: (seasonId: number, category: string = "over19") =>
       `app:matches:season:${seasonId}:${category}`,
@@ -19,6 +25,7 @@ export const CacheKeys = {
   },
 
   standings: {
+    all: "app:standings:all",
     bySeason: (seasonId: number, category: string = "over19") =>
       `app:standings:season:${seasonId}:${category}`,
   },

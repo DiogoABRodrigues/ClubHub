@@ -10,7 +10,6 @@ export interface CategoryConfig {
   standings_url: string;
   stats_url: string;
   teams_urls: string[];
-  nr_teams: number;
 }
 
 export const teamConfig = {
@@ -33,22 +32,19 @@ export const teamConfig = {
         "https://www.zerozero.pt/competicao/af-viana-do-castelo-1-divisao",
         "https://www.zerozero.pt/competicao/af-viana-do-castelo-2-divisao",
       ],
-      nr_teams: 16,
     },
     {
       category: "sub15" as Category,
       label: "Sub-15",
       enabled: true,
-      teamName: "Adecas Sub-15",
-      // TODO: substituir pelas URLs reais do sub15 no zerozero
-      players_url: "https://www.zerozero.pt/equipa/adecas-sub15/XXXXX",
-      matches_url: "https://www.zerozero.pt/equipa/adecas-sub15/XXXXX/jogos?grp=1",
-      standings_url: "https://www.zerozero.pt/competicao/af-viana-sub15",
-      stats_url: "https://www.zerozero.pt/equipa/adecas-sub15/XXXXX/jogadores?epoca_stats_id=155&o=j",
+      teamName: "Adecas",
+      players_url: "https://www.zerozero.pt/equipa/adecas/32764?epoca_id=155",
+      matches_url: "https://www.zerozero.pt/equipa/adecas/32764/jogos?grp=1",
+      standings_url: "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764",
+      stats_url: "https://www.zerozero.pt/equipa/adecas/32764/jogadores?compet_id_jogos=0&pais=0&epoca_stats_id=155&pos=0&o=min",
       teams_urls: [
-        "https://www.zerozero.pt/competicao/af-viana-sub15",
+        "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764/equipas",
       ],
-      nr_teams: 10,
     },
   ] as CategoryConfig[],
 };

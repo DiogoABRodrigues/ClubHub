@@ -5,11 +5,27 @@ import { CacheKeys } from "../cache/keys";
 
 export default class StandingService {
   async getAll() {
-    return Standing.findAll();
+    const key = CacheKeys.standings.all;
+
+    const cached = await cache.get(key);
+    if (cached) return cached;
+
+    const data = await Standing.findAll();
+    await cache.set(key, data);
+
+    return data;
   }
 
   async getBySeasonId(seasonId: number, category: string = "over19") {
-    return Standing.findAll({ where: { seasonId, category } });
+    const key = CacheKeys.standings.bySeason(seasonId, category);
+
+    const cached = await cache.get(key);
+    if (cached) return cached;
+
+    const data = await Standing.findAll({ where: { seasonId, category } });
+    await cache.set(key, data);
+
+    return data;
   }
 
   async getByCurrentSeasonId(category: string = "over19") {
@@ -24,6 +40,7 @@ export default class StandingService {
 
     const data = await Standing.findAll({ where: { seasonId, category } });
     await cache.set(key, data);
+
     return data;
   }
 }

@@ -18,7 +18,7 @@ export interface StandingRow {
   goalsFor: number;
   goalsAgainst: number;
   goalDifference: number;
-  rowColor: string | null; // cor extraída do zerozero (ex: "rgba(106, 161, 33, 1)")
+  rowColor: string | null;
 }
 
 async function getOrCreateSeason(seasonName: string) {
@@ -40,26 +40,31 @@ function rgbaToHex(rgba: string): string | null {
   return `#${r}${g}${b}`;
 }
 
-/** Extrai a cor da célula da posição (border-right ou background-color) */
+/** Extrai a cor da célula da posição */
 function extractRowColor($: cheerio.CheerioAPI, posCell: any): string | null {
   const style = $(posCell).attr("style") ?? "";
-
-  // Tenta background-color
-  let match = style.match(/background-color:\s*(rgba?\([^)]+\)|#[0-9a-fA-F]+)/);
+  const match = style.match(/background-color:\s*(rgba?\([^)]+\)|#[0-9a-fA-F]+)/);
   if (match) {
     const raw = match[1];
-    // Ignora branco (#ffffff / rgba(234,239,244,...) — zona neutra)
     if (raw === "#ffffff" || raw.startsWith("rgba(234") || raw.startsWith("rgba(255")) {
       return null;
     }
     return raw.startsWith("#") ? raw : rgbaToHex(raw);
   }
-
   return null;
 }
 
+/** Extrai o ID numérico do zerozero do URL da standing
+ *  ex: "https://www.zerozero.pt/edicao/.../204764" → 204764
+ *  ex: "https://www.zerozero.pt/competicao/af-viana-1-divisao" → null (sem ID)
+ */
+function extractExternalId(url: string): number | null {
+  const m = url.match(/\/(\d+)(?:\/[^/]*)?$/);
+  return m ? parseInt(m[1]) : null;
+}
+
 export async function scrapeStandings(cfg?: CategoryConfig): Promise<StandingRow[]> {
-  const config = cfg ?? teamConfig.categories.find((c) => c.category === "over19")!;
+  const config = cfg ?? teamConfig.categories.find((c) => c.category === "sub15")!;
   const browser = await getSharedBrowser();
   const page = await browser.newPage();
   page.setDefaultTimeout(60000);
@@ -67,7 +72,8 @@ export async function scrapeStandings(cfg?: CategoryConfig): Promise<StandingRow
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
   );
 
-  console.log(`🌐 A aceder a: ${config.standings_url} [${config.category}]`);
+  const externalId = extractExternalId(config.standings_url);
+  console.log(`🌐 A aceder a: ${config.standings_url} [${config.category}] (externalId: ${externalId})`);
 
   try {
     await page.goto(config.standings_url, {
@@ -95,13 +101,12 @@ export async function scrapeStandings(cfg?: CategoryConfig): Promise<StandingRow
     const $ = cheerio.load(html);
     const standings: StandingRow[] = [];
 
-    // Tenta DataTable primeiro, depois qualquer tabela
     let tableRows =
       $("table#DataTables_Table_0 tbody tr").toArray().length > 0
         ? $("table#DataTables_Table_0 tbody tr").toArray()
         : $("table tbody tr").toArray();
 
-    // Extrai a legenda do HTML do zerozero (se existir)
+    // Extrai a legenda
     const legendItems: { color: string; label: string }[] = [];
     $(".legend table tr").each((_, row) => {
       const tdStyle = $(row).find("td").first().attr("style") ?? "";
@@ -126,10 +131,8 @@ export async function scrapeStandings(cfg?: CategoryConfig): Promise<StandingRow
       const position = parseInt(firstCellText);
       if (isNaN(position)) continue;
 
-      // Extrai a cor desta linha
       const rowColor = extractRowColor($, cells[0]);
 
-      // Encontra o link da equipa
       let teamName = "";
       let teamUrl: string | undefined;
       let teamNameCellIndex = 1;
@@ -175,24 +178,49 @@ export async function scrapeStandings(cfg?: CategoryConfig): Promise<StandingRow
 
     const season = await getOrCreateSeason(teamConfig.currentSeason);
 
-    if (standings.length > 0) {
-      await saveStandings(standings, 1, season.id, config.category);
+    // ── Encontra ou cria a Competition pelo externalId (estável entre seasons) ──
+    // Se o URL não tiver ID numérico, faz fallback por seasonId + category + name
+    const competitionName =
+      $("h1").first().text().trim() ||
+      $("title").text().trim().split("|")[0].trim() ||
+      config.standings_url;
+
+    let competition: Competition | null = null;
+
+    if (externalId) {
+      competition = await Competition.findOne({ where: { externalId } });
     }
 
-    // Atualiza a legenda na Competition se a encontrámos
+    if (!competition) {
+      console.log(`🆕 Nova competition: ${competitionName}`);
+      competition = await Competition.create({
+        name: competitionName,
+        seasonId: season.id,
+        category: config.category,
+        externalId,
+      });
+    } else {
+      // Atualiza seasonId e category caso tenham mudado (nova season, mesmo externalId)
+      await competition.update({
+        seasonId: season.id,
+        category: config.category,
+      });
+    }
+
+    if (standings.length > 0) {
+      await saveStandings(standings, competition.id, season.id, config.category);
+    }
+
+    // ── Guarda a legenda na Competition correta ──
     if (legendItems.length > 0) {
-      const competition = await Competition.findOne({ where: { seasonId: season.id, category: config.category } });
-      if (competition) {
-        // Deduplica por cor
-        const seen = new Set<string>();
-        const dedupedLegend = legendItems.filter((item) => {
-          if (seen.has(item.color)) return false;
-          seen.add(item.color);
-          return true;
-        });
-        await competition.update({ legend: dedupedLegend });
-        console.log(`📋 Legenda guardada na competição (${dedupedLegend.length} entradas)`);
-      }
+      const seen = new Set<string>();
+      const dedupedLegend = legendItems.filter((item) => {
+        if (seen.has(item.color)) return false;
+        seen.add(item.color);
+        return true;
+      });
+      await competition.update({ legend: dedupedLegend });
+      console.log(`📋 Legenda guardada em "${competition.name}" (${dedupedLegend.length} entradas)`);
     }
 
     return standings;
@@ -209,7 +237,7 @@ export async function saveStandings(
   standings: StandingRow[],
   competitionId: number,
   seasonId: number,
-  category: string = "over19",
+  category: string = "sub15",
 ) {
   const data = [];
 
