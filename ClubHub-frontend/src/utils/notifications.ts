@@ -6,7 +6,6 @@ import { DeviceService } from "../services/DeviceService";
 
 export async function registerForPushNotifications() {
   try {
-    // Android 13+ precisa de pedir POST_NOTIFICATIONS explicitamente
     if (Platform.OS === "android") {
       const { status } = await ExpoNotifications.requestPermissionsAsync();
       if (status !== "granted") {
@@ -15,13 +14,11 @@ export async function registerForPushNotifications() {
       }
     }
 
-    // iOS — pede permissão via Firebase
     if (Platform.OS === "ios") {
       const authStatus = await messaging().requestPermission();
       const enabled =
         authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
         authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
       if (!enabled) {
         console.log("Push permission not granted (iOS)");
         return;
@@ -36,14 +33,27 @@ export async function registerForPushNotifications() {
       await AsyncStorage.setItem("deviceId", deviceId);
     }
 
+    // over19 tudo true por defeito; restantes categorias tudo false
     await DeviceService.register({
       id: deviceId,
       pushToken: token,
       platform: Platform.OS,
-      goals: true,
-      matchday: true,
-      result: true,
-      news: false,
+      news:            true,
+      over19_goals:    true,
+      over19_matchday: true,
+      over19_result:   true,
+      sub19_goals:     false,
+      sub19_matchday:  false,
+      sub19_result:    false,
+      sub17_goals:     false,
+      sub17_matchday:  false,
+      sub17_result:    false,
+      sub15_goals:     false,
+      sub15_matchday:  false,
+      sub15_result:    false,
+      sub13_goals:     false,
+      sub13_matchday:  false,
+      sub13_result:    false,
     });
   } catch (err) {
     console.log("Push registration error:", err);

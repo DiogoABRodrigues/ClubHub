@@ -33,8 +33,8 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <QueryClientProvider client={queryClient}>
-        <SelectedSeasonProvider>
         <CategoryProvider>
+        <SelectedSeasonProvider>
         <AuthProvider>
           <SocketProvider>
             {!splashDone ? (
@@ -44,8 +44,8 @@ export default function App() {
             )}
           </SocketProvider>
         </AuthProvider>
-        </CategoryProvider>
         </SelectedSeasonProvider>
+        </CategoryProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

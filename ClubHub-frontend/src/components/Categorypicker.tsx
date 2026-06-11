@@ -1,54 +1,47 @@
 import React, { useState } from "react";
-import {
-  View, Text, TouchableOpacity, Modal, FlatList,
-} from "react-native";
+import { View, Text, TouchableOpacity, Modal, FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useSelectedSeason } from "../contexts/Selectedseasoncontext";
+import { useCategory } from "../contexts/CategoryContext";
+import { teamConfig } from "../config/teamConfig";
 import { COLORS } from "../theme/colors";
-import { Season } from "../models/Season";
 import { styles } from "./styles/Seasonpicker.styles";
+import type { Category } from "../contexts/CategoryContext";
 
-export const SeasonPicker: React.FC = () => {
-  const { selectedSeason, setSelectedSeason, availableSeasons } = useSelectedSeason();
+export const CategoryPicker: React.FC = () => {
+  const { selectedCategory, setSelectedCategory } = useCategory();
+  const enabledCategories = teamConfig.categories.filter((c) => c.enabled);
   const [open, setOpen] = useState(false);
 
-  // Ordena da mais recente para a mais antiga
-  const sorted = [...availableSeasons].sort((a, b) => {
-    const aYear = parseInt(a.year.split("/")?.[0] ?? "0");
-    const bYear = parseInt(b.year.split("/")?.[0] ?? "0");
-    return bYear - aYear;
-  });
-
-  const handleSelect = (season: Season) => {
-    setSelectedSeason(season);
-    setOpen(false);
-  };
-
-  const onlyOne = sorted.length <= 1;
+  const onlyOne = enabledCategories.length <= 1;
+  const current = enabledCategories.find((c) => c.category === selectedCategory);
 
   return (
     <>
       <TouchableOpacity style={styles.trigger} onPress={() => !onlyOne && setOpen(true)} activeOpacity={onlyOne ? 1 : 0.7}>
-        <Text style={styles.triggerText}>{selectedSeason?.year ?? "—"}</Text>
+        <Text style={styles.triggerText}>{current?.label ?? selectedCategory}</Text>
         {!onlyOne && <Ionicons name="chevron-down" size={14} color={COLORS.textSecondary} />}
       </TouchableOpacity>
 
-      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+      {!onlyOne && (
+        <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
         <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={() => setOpen(false)}>
           <View style={styles.sheet}>
-            <Text style={styles.sheetTitle}>Escolher Época</Text>
+            <Text style={styles.sheetTitle}>Escolher Escalão</Text>
             <FlatList
-              data={sorted}
-              keyExtractor={(item) => String(item.id)}
+              data={enabledCategories}
+              keyExtractor={(item) => item.category}
               renderItem={({ item }) => {
-                const isSelected = item.id === selectedSeason?.id;
+                const isSelected = item.category === selectedCategory;
                 return (
                   <TouchableOpacity
                     style={[styles.option, isSelected && styles.optionSelected]}
-                    onPress={() => handleSelect(item)}
+                    onPress={() => {
+                      setSelectedCategory(item.category as Category);
+                      setOpen(false);
+                    }}
                   >
                     <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
-                      {item.year}
+                      {item.label}
                     </Text>
                     {isSelected && (
                       <Ionicons name="checkmark" size={18} color={COLORS.primary} />
@@ -60,6 +53,7 @@ export const SeasonPicker: React.FC = () => {
           </View>
         </TouchableOpacity>
       </Modal>
+      )}
     </>
   );
 };

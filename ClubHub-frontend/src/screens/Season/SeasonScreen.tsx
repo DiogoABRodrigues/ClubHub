@@ -9,6 +9,7 @@ import { COLORS } from "../../theme/colors";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSelectedSeason } from "../../contexts/Selectedseasoncontext";
 import { SeasonPicker } from "../../components/Seasonpicker";
+import { CategoryPicker } from "../../components/Categorypicker";
 import { AdminSquadScreen } from "../Admin/AdminSquad/SquadAdmin";
 
 type SeasonTab = "standings" | "squad" | "stats";
@@ -44,7 +45,10 @@ export function SeasonScreen({ navigation }: any) {
             <Text style={styles.eyebrow}> </Text>
             <Text style={styles.headerTitle}>Época {currentSeason?.year}</Text>
           </View>
-          <SeasonPicker />
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <CategoryPicker />
+            <SeasonPicker />
+          </View>
         </View>
       </View>
 

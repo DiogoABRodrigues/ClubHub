@@ -1,117 +1,208 @@
 import React, {
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Modal, Pressable, Keyboard } from "react-native";
+import {
+  View, Text, ScrollView, TouchableOpacity,
+  Modal, Pressable, Keyboard, TextInput, LayoutAnimation, Platform,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Switch } from "../../components/Switch";
 import { styles } from "./NotificationSettings.styles";
-import { COLORS } from "../../theme/colors";
+import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TextInput } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
 import { login as loginRequest } from "../../services/AuthService";
 import { Linking } from "react-native";
 import { teamConfig } from "../../config/teamConfig";
-import { useDevicePreferences } from "../../hooks/useDevicePreferences";
-import { useCategory, CATEGORY_LABELS, Category } from "../../contexts/CategoryContext";
+import { useDevicePreferences, DevicePreferences } from "../../hooks/useDevicePreferences";
+
+type CategoryKey = "over19" | "sub19" | "sub17" | "sub15" | "sub13";
+
+const NOTIFICATION_ROWS: { key: keyof DevicePreferences; icon: string; label: string; desc: string }[] = [
+  { key: "matchday" as any, icon: "calendar-outline",        label: "Alerta de jogo",  desc: "Notificação no dia do jogo" },
+  { key: "goals"    as any, icon: "football-outline",        label: "Golos",            desc: "Quando há um golo" },
+  { key: "result"   as any, icon: "checkmark-done-outline",  label: "Resultado final",  desc: "Quando o jogo termina" },
+];
+
+function categoryPrefKey(cat: CategoryKey, type: "goals" | "matchday" | "result"): keyof DevicePreferences {
+  return `${cat}_${type}` as keyof DevicePreferences;
+}
+
+function EscalaoSection({
+  cfg,
+  preferences,
+  updatePreferences,
+  defaultOpen,
+}: {
+  cfg: { category: string; label: string; enabled: boolean };
+  preferences: DevicePreferences;
+  updatePreferences: (p: Partial<DevicePreferences>) => void;
+  defaultOpen: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  const cat = cfg.category as CategoryKey;
+
+  const toggle = () => {
+    if (Platform.OS !== "web") LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setOpen((v) => !v);
+  };
+
+  return (
+    <View style={{
+      backgroundColor: COLORS.backgroundWhite,
+      borderRadius: RADIUS.lg,
+      borderWidth: 1,
+      borderColor: COLORS.primary,
+      marginBottom: SPACING.sm,
+      overflow: "hidden",
+    }}>
+      {/* Header colapsável */}
+      <TouchableOpacity
+        onPress={toggle}
+        activeOpacity={0.7}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingHorizontal: SPACING.md,
+          paddingVertical: SPACING.md,
+          gap: SPACING.sm,
+          backgroundColor: COLORS.backgroundWhite,
+        }}
+      >
+        <View style={{
+          width: 36,
+          height: 36,
+          borderRadius: 18,
+          borderWidth: 1.5,
+          borderColor: defaultOpen ? COLORS.primary : "#d1d5db",
+          backgroundColor: defaultOpen ? "#fff1f1" : "#f9fafb",
+          justifyContent: "center",
+          alignItems: "center",
+        }}>
+          <Ionicons
+            name="trophy-outline"
+            size={16}
+            color={defaultOpen ? COLORS.primary : "#6b7280"}
+          />
+        </View>
+        <Text style={{
+          flex: 1,
+          fontSize: FONT_SIZE.md,
+          fontWeight: "600",
+          color: "#111827",
+        }}>{cfg.label}</Text>
+        <Ionicons
+          name={open ? "chevron-up" : "chevron-down"}
+          size={18}
+          color="#9ca3af"
+        />
+      </TouchableOpacity>
+
+      {/* Rows de toggles */}
+      {open && (
+        <View style={{ borderTopWidth: 1, borderTopColor: "#f3f4f6" }}>
+          {/* Label da secção */}
+          <View style={{
+            paddingHorizontal: SPACING.md,
+            paddingTop: SPACING.sm,
+            paddingBottom: SPACING.xs,
+            backgroundColor: "#f9fafb",
+            borderBottomWidth: 1,
+            borderBottomColor: "#f3f4f6",
+          }}>
+            <Text style={{
+              fontSize: FONT_SIZE.xs,
+              fontWeight: "600",
+              color: "#9ca3af",
+              textTransform: "uppercase",
+              letterSpacing: 0.5,
+            }}>Jogos</Text>
+          </View>
+
+          {NOTIFICATION_ROWS.map(({ key: _key, icon, label, desc }, i) => {
+            const prefKey = categoryPrefKey(cat, _key as "goals" | "matchday" | "result");
+            const value = preferences[prefKey] as boolean;
+            return (
+              <View
+                key={prefKey}
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  paddingHorizontal: SPACING.md,
+                  paddingVertical: SPACING.sm + 2,
+                  backgroundColor: COLORS.backgroundWhite,
+                  borderTopWidth: i > 0 ? 1 : 0,
+                  borderTopColor: "#f3f4f6",
+                }}
+              >
+                <View style={{ flex: 1, paddingRight: SPACING.md }}>
+                  <Text style={{
+                    fontSize: FONT_SIZE.sm,
+                    fontWeight: "600",
+                    color: "#111827",
+                    marginBottom: 2,
+                  }}>{label}</Text>
+                  <Text style={{
+                    fontSize: FONT_SIZE.xs,
+                    color: "#9ca3af",
+                    lineHeight: 16,
+                  }}>{desc}</Text>
+                </View>
+                <Switch
+                  value={value}
+                  onValueChange={() => updatePreferences({ [prefKey]: !value })}
+                />
+              </View>
+            );
+          })}
+        </View>
+      )}
+    </View>
+  );
+}
 
 export const NotificationSettings = ({ navigation }: any) => {
   const { loginAsAdmin, setAdminMode } = useAuth();
-  const { selectedCategory, setSelectedCategory } = useCategory();
-
-  // Escalões activos definidos no teamConfig
   const enabledCategories = teamConfig.categories.filter((c) => c.enabled);
 
+  const [deviceId, setDeviceId] = useState<string | null>(null);
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const [deviceId, setDeviceId] = useState<string | null>(null);
-  const [pushToken, setPushToken] = useState<string | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [tapCount, setTapCount] = useState(0);
   const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const loadDeviceId = async () => {
-    const storedDeviceId = await AsyncStorage.getItem("deviceId");
-    setDeviceId(storedDeviceId);
-  };
   useEffect(() => {
-    loadDeviceId();
+    AsyncStorage.getItem("deviceId").then(setDeviceId);
   }, []);
 
-  const { preferences, loading, updatePreferences } =
-    useDevicePreferences(deviceId);
-  const safePreferences = (preferences ?? {
-    gameDayAlerts: false,
-    goals: false,
-    finalResult: false,
-    newsAlerts: false,
-    subscribedCategories: null,
-  }) as NonNullable<typeof preferences> & { subscribedCategories: Category[] | null };
+  const { preferences, loading, updatePreferences } = useDevicePreferences(deviceId);
+
+  const safePrefs: DevicePreferences = preferences ?? {
+    news: true,
+    over19_goals: true,    over19_matchday: true,   over19_result: true,
+    sub19_goals: false,    sub19_matchday: false,   sub19_result: false,
+    sub17_goals: false,    sub17_matchday: false,   sub17_result: false,
+    sub15_goals: false,    sub15_matchday: false,   sub15_result: false,
+    sub13_goals: false,    sub13_matchday: false,   sub13_result: false,
+  };
 
   const handleTitleTap = useCallback(() => {
     setTapCount((prev) => {
       const next = prev + 1;
       if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
-      if (next >= 5) {
-        setShowLoginModal(true);
-        return 0;
-      }
+      if (next >= 5) { setShowLoginModal(true); return 0; }
       tapTimerRef.current = setTimeout(() => setTapCount(0), 1500);
       return next;
     });
   }, []);
 
-  const notificationTypes = useMemo(
-    () => [
-      {
-        key: "gameDayAlerts" as const,
-        icon: "calendar-outline",
-        title: "Alertas de Jogo",
-        description:
-          "Recebe notificações no dia dos jogos para não perderes nenhum momento importante",
-        color: COLORS.textPrimary,
-      },
-      {
-        key: "goals" as const,
-        icon: "football-outline",
-        title: "Golos",
-        description: "Recebe alertas instantâneos quando há um golo",
-        color: COLORS.textPrimary,
-      },
-      {
-        key: "finalResult" as const,
-        icon: "checkmark-done-outline",
-        title: "Resultado Final",
-        description: "Recebe notificação quando um jogo termina",
-        color: COLORS.textPrimary,
-      },
-      {
-        key: "newsAlerts" as const,
-        icon: "newspaper-outline",
-        title: "Alertas de Notícias",
-        description: "Mantém-te atualizado com as últimas notícias do clube",
-        color: COLORS.textPrimary,
-      },
-    ],
-    [],
-  );
-
-  const togglePreference = (key: keyof NonNullable<typeof preferences>) => {
-    const newPrefs = {
-      ...safePreferences,
-      [key]: !safePreferences[key],
-    };
-
-    updatePreferences(newPrefs);
-  };
-
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View>
@@ -122,159 +213,73 @@ export const NotificationSettings = ({ navigation }: any) => {
           </View>
         </View>
       </View>
+
       <ScrollView contentContainerStyle={styles.content}>
 
-        {/* Selector de Escalão — só aparece se houver mais do que 1 activo */}
-        {enabledCategories.length > 1 && (
-          <View style={styles.section}>
-            <Text style={[styles.toggleTitle, { marginBottom: 10, paddingHorizontal: 4 }]}>
-              Escalão
-            </Text>
-            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-              {enabledCategories.map((cfg) => {
-                const isSelected = selectedCategory === cfg.category;
-                return (
-                  <TouchableOpacity
-                    key={cfg.category}
-                    onPress={() => setSelectedCategory(cfg.category as Category)}
-                    style={{
-                      paddingHorizontal: 16,
-                      paddingVertical: 8,
-                      borderRadius: 20,
-                      borderWidth: 1.5,
-                      borderColor: isSelected ? COLORS.primary : COLORS.border,
-                      backgroundColor: isSelected ? COLORS.primary : "transparent",
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: isSelected ? "#fff" : COLORS.textSecondary,
-                        fontWeight: isSelected ? "700" : "400",
-                        fontSize: 14,
-                      }}
-                    >
-                      {cfg.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
+        {/* ── Notícias (global) ── */}
+        <Text style={{ fontSize: FONT_SIZE.xs, fontWeight: "600", color: COLORS.textSecondary, textTransform: "uppercase", letterSpacing: 0.5, paddingHorizontal: 4, marginBottom: SPACING.sm }}>
+          Notícias
+        </Text>
+        <View style={[styles.toggleCard, { marginBottom: SPACING.lg, backgroundColor: COLORS.backgroundWhite, borderColor: COLORS.primary }]}>
+          <View style={styles.toggleLeft}>
+            <View style={{
+              width: 40, height: 40, borderRadius: 20,
+              borderWidth: 1.5, borderColor: COLORS.primary,
+              backgroundColor: "#f9fafb",
+              justifyContent: "center", alignItems: "center",
+            }}>
+              <Ionicons name="newspaper-outline" size={20} color="#6b7280" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: FONT_SIZE.md, fontWeight: "600", color: "#111827", marginBottom: 2 }}>Alertas de Notícias</Text>
+              <Text style={{ fontSize: FONT_SIZE.xs, color: "#9ca3af", lineHeight: 17, paddingRight: SPACING.md }}>
+                Notificações de novas notícias.
+              </Text>
             </View>
           </View>
-        )}
-
-        {/* Notificações por escalão — só aparece se houver mais do que 1 activo */}
-        {enabledCategories.length > 1 && (
-          <View style={styles.section}>
-            <Text style={[styles.toggleTitle, { marginBottom: 4, paddingHorizontal: 4 }]}>
-              Notificações por escalão
-            </Text>
-            <Text style={[styles.toggleDescription, { marginBottom: 10, paddingHorizontal: 4 }]}>
-              Escolhe de que escalões queres receber notificações
-            </Text>
-            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-              {enabledCategories.map((cfg) => {
-                const subscribed = safePreferences.subscribedCategories;
-                // null = todos subscritos
-                const isOn = subscribed === null || subscribed?.includes(cfg.category);
-                return (
-                  <TouchableOpacity
-                    key={cfg.category}
-                    onPress={() => {
-                      const current: Category[] = subscribed
-                        ? [...subscribed]
-                        : enabledCategories.map((c) => c.category as Category);
-
-                      const updated = isOn
-                        ? current.filter((c) => c !== cfg.category)
-                        : [...current, cfg.category as Category];
-
-                      // Se todos ficam seleccionados, guarda null (subscreve todos)
-                      const allSelected = updated.length === enabledCategories.length;
-                      updatePreferences({
-                        ...safePreferences,
-                        subscribedCategories: allSelected ? null : updated,
-                      });
-                    }}
-                    style={{
-                      paddingHorizontal: 16,
-                      paddingVertical: 8,
-                      borderRadius: 20,
-                      borderWidth: 1.5,
-                      borderColor: isOn ? COLORS.primary : COLORS.border,
-                      backgroundColor: isOn ? COLORS.primary : "transparent",
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: isOn ? "#fff" : COLORS.textSecondary,
-                        fontWeight: isOn ? "700" : "400",
-                        fontSize: 14,
-                      }}
-                    >
-                      {cfg.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          </View>
-        )}
-
-        {/* Notification Toggles */}
-        <View style={styles.section}>
-          {notificationTypes.map(({ key, icon, title, description, color }) => (
-            <View key={key} style={styles.toggleCard}>
-              <View style={styles.toggleLeft}>
-                <View style={[styles.iconCircle]}>
-                  <Ionicons name={icon as any} size={20} color={color} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.toggleTitle}>{title}</Text>
-                  <Text style={styles.toggleDescription}>{description}</Text>
-                </View>
-              </View>
-              <Switch
-                value={safePreferences[key]}
-                onValueChange={() => {
-                  togglePreference(key);
-                }}
-              />
-            </View>
-          ))}
-          <TouchableOpacity
-            style={styles.instagramBtn}
-            onPress={() => Linking.openURL(teamConfig.instagram_URL)}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="logo-instagram" size={20} color="#FFFFFF" />
-            <Text style={styles.instagramBtnText}>Instagram</Text>
-          </TouchableOpacity>
+          <Switch
+            value={safePrefs.news}
+            onValueChange={() => updatePreferences({ news: !safePrefs.news })}
+          />
         </View>
-      </ScrollView>
-      <View style={{ marginBottom: 15 }}></View>
-      <Modal visible={showLoginModal} transparent animationType="slide">
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={Keyboard.dismiss}
+
+        {/* ── Notificações por escalão ── */}
+        <Text style={{ fontSize: FONT_SIZE.xs, fontWeight: "600", color: COLORS.textSecondary, textTransform: "uppercase", letterSpacing: 0.5, paddingHorizontal: 4, marginBottom: SPACING.sm }}>
+          Notificações por escalão
+        </Text>
+        {enabledCategories.map((cfg) => (
+          <EscalaoSection
+            key={cfg.category}
+            cfg={cfg}
+            preferences={safePrefs}
+            updatePreferences={updatePreferences}
+            defaultOpen={cfg.category === "over19"}
+          />
+        ))}
+
+        <TouchableOpacity
+          style={[styles.instagramBtn, { marginTop: SPACING.lg }]}
+          onPress={() => Linking.openURL(teamConfig.instagram_URL)}
+          activeOpacity={0.8}
         >
+          <Ionicons name="logo-instagram" size={20} color="#FFFFFF" />
+          <Text style={styles.instagramBtnText}>Instagram</Text>
+        </TouchableOpacity>
+      </ScrollView>
+
+      {/* ── Modal Admin ── */}
+      <Modal visible={showLoginModal} transparent animationType="slide">
+        <Pressable style={styles.modalOverlay} onPress={Keyboard.dismiss}>
           <Pressable style={styles.modalCard}>
             <Text style={styles.modalTitle}>Acesso Admin</Text>
-
             <TextInput
-              placeholder="Username"
-              value={userName}
-              onChangeText={setUserName}
-              autoCapitalize="none"
-              style={styles.input}
+              placeholder="Username" value={userName}
+              onChangeText={setUserName} autoCapitalize="none" style={styles.input}
             />
             <TextInput
-              placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              style={styles.input}
+              placeholder="Password" value={password}
+              onChangeText={setPassword} secureTextEntry style={styles.input}
             />
-
             <TouchableOpacity
               style={styles.loginBtn}
               onPress={async () => {
@@ -290,7 +295,6 @@ export const NotificationSettings = ({ navigation }: any) => {
             >
               <Text style={styles.loginBtnText}>Entrar</Text>
             </TouchableOpacity>
-
             <TouchableOpacity onPress={() => setShowLoginModal(false)}>
               <Text style={styles.cancelText}>Cancelar</Text>
             </TouchableOpacity>

@@ -1,13 +1,21 @@
 import { api } from "./api";
 
+export interface CategoryPrefs {
+  goals: boolean;
+  matchday: boolean;
+  result: boolean;
+}
+
 export interface DevicePayload {
   id: string;
   pushToken: string;
   platform: string;
-  goals: boolean;
-  matchday: boolean;
-  result: boolean;
   news: boolean;
+  over19_goals: boolean;    over19_matchday: boolean;   over19_result: boolean;
+  sub19_goals: boolean;     sub19_matchday: boolean;    sub19_result: boolean;
+  sub17_goals: boolean;     sub17_matchday: boolean;    sub17_result: boolean;
+  sub15_goals: boolean;     sub15_matchday: boolean;    sub15_result: boolean;
+  sub13_goals: boolean;     sub13_matchday: boolean;    sub13_result: boolean;
 }
 
 export const DeviceService = {
@@ -15,7 +23,7 @@ export const DeviceService = {
     await api.post("/device", payload);
   },
 
-  updatePreferences: async (id: string, payload: any) => {
+  updatePreferences: async (id: string, payload: Partial<Omit<DevicePayload, "id" | "pushToken" | "platform">>) => {
     await api.patch(`/device/${id}`, payload);
   },
 
