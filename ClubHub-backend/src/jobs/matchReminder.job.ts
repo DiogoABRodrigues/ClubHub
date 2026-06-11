@@ -37,10 +37,9 @@ export const startMatchReminderJob = () => {
           const devices = await deviceService.getDevicesForMatchday(cfg.category);
           if (!devices.length) continue;
 
-          const enabledCount = enabledCategories.filter((c) => c.enabled).length;
-          const prefix = enabledCount > 1 ? `[${cfg.label}] ` : "";
-
-          const title = `${prefix}Dia de jogo!`;
+          const title = cfg.category === "over19"
+            ? "Dia de jogo!"
+            : `Dia de jogo, ${cfg.label}!`;
           const body = `Hoje é dia de jogo! Não te esqueças de apoiar o ${cfg.teamName}!`;
 
           const response = await pushService.sendToDevices(devices, { title, body });

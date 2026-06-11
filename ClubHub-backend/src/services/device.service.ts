@@ -1,70 +1,59 @@
+import { Op } from "sequelize";
 import Device from "../models/Device";
 import { cacheGet, cacheSet, cacheDelPattern } from "../utils/cache";
+
+export type NotificationType = "goals" | "matchday" | "result";
+export type CategoryKey = "over19" | "sub19" | "sub17" | "sub15" | "sub13";
 
 class DeviceService {
   async upsertDevice(data: {
     id: string;
     pushToken: string;
     platform: "android" | "ios";
-    goals?: boolean;
-    matchday?: boolean;
-    result?: boolean;
     news?: boolean;
-    subscribedCategories?: string[] | null;
+    over19_goals?: boolean;   over19_matchday?: boolean;   over19_result?: boolean;
+    sub19_goals?: boolean;    sub19_matchday?: boolean;    sub19_result?: boolean;
+    sub17_goals?: boolean;    sub17_matchday?: boolean;    sub17_result?: boolean;
+    sub15_goals?: boolean;    sub15_matchday?: boolean;    sub15_result?: boolean;
+    sub13_goals?: boolean;    sub13_matchday?: boolean;    sub13_result?: boolean;
   }) {
     await Device.upsert(data);
     await cacheDelPattern("devices:*");
     return await Device.findByPk(data.id);
   }
 
-  async updatePreferences(
-    id: string,
-    preferences: {
-      goals?: boolean;
-      matchday?: boolean;
-      result?: boolean;
-      news?: boolean;
-      subscribedCategories?: string[] | null;
-    },
-  ) {
+  async updatePreferences(id: string, preferences: Partial<Omit<Device, "id" | "pushToken" | "platform">>) {
     const [updatedRows] = await Device.update(preferences, { where: { id } });
     await cacheDelPattern("devices:*");
     return updatedRows;
   }
 
-  /** Devolve dispositivos com goals=true que subscrevem este escalão */
-  async getDevicesForGoals(category: string = "over19") {
+  async getDevicesForGoals(category: CategoryKey = "over19") {
+    const col = `${category}_goals` as keyof Device;
     const key = `devices:goals:${category}`;
     const cached = await cacheGet(key);
     if (cached) return cached;
-
-    const allDevices = await Device.findAll({ where: { goals: true } });
-    const data = allDevices.filter((d) => this._subscribesCategory(d, category));
-
+    const data = await Device.findAll({ where: { [col]: true } });
     await cacheSet(key, data, 600);
     return data;
   }
 
-  async getDevicesForMatchday(category: string = "over19") {
+  async getDevicesForMatchday(category: CategoryKey = "over19") {
+    const col = `${category}_matchday` as keyof Device;
     const key = `devices:matchday:${category}`;
     const cached = await cacheGet(key);
     if (cached) return cached;
-
-    const allDevices = await Device.findAll({ where: { matchday: true } });
-    const data = allDevices.filter((d) => this._subscribesCategory(d, category));
-
+    const data = await Device.findAll({ where: { [col]: true } });
     await cacheSet(key, data, 600);
     return data;
   }
 
-  async getDevicesForResults(category: string = "over19") {
+  async getDevicesForResults(category: CategoryKey = "over19") {
+    const col = `${category}_result` as keyof Device;
     const key = `devices:results:${category}`;
     const cached = await cacheGet(key);
     if (cached) return cached;
-
-    const allDevices = await Device.findAll({ where: { result: true } });
-    const data = allDevices.filter((d) => this._subscribesCategory(d, category));
-
+    const data = await Device.findAll({ where: { [col]: true } });
     await cacheSet(key, data, 600);
     return data;
   }
@@ -73,7 +62,6 @@ class DeviceService {
     const key = "devices:news";
     const cached = await cacheGet(key);
     if (cached) return cached;
-
     const data = await Device.findAll({ where: { news: true } });
     await cacheSet(key, data, 600);
     return data;
@@ -86,12 +74,6 @@ class DeviceService {
 
   async getDeviceById(id: string) {
     return Device.findByPk(id);
-  }
-
-  /** null = subscreve todos; array = apenas os escalões listados */
-  private _subscribesCategory(device: Device, category: string): boolean {
-    if (!device.subscribedCategories) return true;
-    return device.subscribedCategories.includes(category);
   }
 }
 

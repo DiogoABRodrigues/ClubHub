@@ -1,6 +1,8 @@
+import { Op } from "sequelize";
 import cache from "../services/cache.service";
 import { CacheKeys } from "../cache/keys";
 import Season from "../models/Season";
+import Match from "../models/Match";
 
 export default class SeasonService {
   async getAll() {
@@ -17,23 +19,44 @@ export default class SeasonService {
     const cached = await cache.get(key);
     if (cached) return cached;
 
-    // Determina o ano da época atual pela data (mês >= 8 → nova época)
     const now = new Date();
     const year = now.getFullYear();
-    const month = now.getMonth() + 1; // 1–12
+    const month = now.getMonth() + 1;
     const currentYear =
       month >= 8 ? `${year}/${year + 1}` : `${year - 1}/${year}`;
 
-    // Procura a época pelo year calculado
     let season = await Season.findOne({ where: { year: currentYear } });
-
-    // Fallback: se ainda não existir na BD, pega na mais recente por id
     if (!season) {
       season = await Season.findOne({ order: [["id", "DESC"]] });
     }
 
     await cache.set(key, season, 60 * 60 * 24);
-
     return season;
+  }
+
+  /** Seasons que têm pelo menos 1 jogo na categoria dada */
+  async getByCategory(category: string): Promise<Season[]> {
+    const key = `app:seasons:category:${category}`;
+
+    const cached = await cache.get(key);
+    if (cached) return cached as Season[];
+
+    const rows = await Match.findAll({
+      attributes: ["seasonId"],
+      where: { category, seasonId: { [Op.ne]: null } },
+      group: ["seasonId"],
+      raw: true,
+    }) as any[];
+
+    const seasonIds = rows.map((r: any) => r.seasonId).filter(Boolean);
+    if (!seasonIds.length) return [];
+
+    const seasons = await Season.findAll({
+      where: { id: seasonIds },
+      order: [["id", "ASC"]],
+    });
+
+    await cache.set(key, seasons, 60 * 60 * 6); // 6h
+    return seasons;
   }
 }

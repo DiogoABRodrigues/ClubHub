@@ -19,4 +19,11 @@ export default class SeasonController {
     const data = await service.getCurrentSeason();
     res.json(data);
   }
+
+  static async getByCategory(req: Request, res: Response) {
+    const { category } = req.params as { category: string };
+    if (!category) return res.status(400).json({ error: "Missing category" });
+    const data = await service.getByCategory(category);
+    res.json(data);
+  }
 }

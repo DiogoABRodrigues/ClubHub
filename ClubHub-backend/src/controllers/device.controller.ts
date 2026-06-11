@@ -4,19 +4,28 @@ import deviceService from "../services/device.service";
 class DeviceController {
   async register(req: Request, res: Response) {
     try {
-      const { id, pushToken, platform, goals, matchday, subscribedCategories } = req.body;
+      const {
+        id, pushToken, platform,
+        news,
+        over19_goals, over19_matchday, over19_result,
+        sub19_goals,  sub19_matchday,  sub19_result,
+        sub17_goals,  sub17_matchday,  sub17_result,
+        sub15_goals,  sub15_matchday,  sub15_result,
+        sub13_goals,  sub13_matchday,  sub13_result,
+      } = req.body;
 
       if (!id || !pushToken || !platform) {
         return res.status(400).json({ error: "Missing fields" });
       }
 
       const device = await deviceService.upsertDevice({
-        id,
-        pushToken,
-        platform,
-        goals,
-        matchday,
-        subscribedCategories: subscribedCategories ?? null,
+        id, pushToken, platform,
+        news,
+        over19_goals, over19_matchday, over19_result,
+        sub19_goals,  sub19_matchday,  sub19_result,
+        sub17_goals,  sub17_matchday,  sub17_result,
+        sub15_goals,  sub15_matchday,  sub15_result,
+        sub13_goals,  sub13_matchday,  sub13_result,
       });
 
       return res.json(device);
@@ -29,16 +38,24 @@ class DeviceController {
     try {
       const rawId = req.params.id;
       const id = Array.isArray(rawId) ? rawId[0] : rawId;
-      const { goals, matchday, result, news, subscribedCategories } = req.body;
-
       if (!id) return res.status(400).json({ error: "Missing id" });
 
-      await deviceService.updatePreferences(id, {
-        goals,
-        matchday,
-        result,
+      const {
         news,
-        ...(subscribedCategories !== undefined && { subscribedCategories }),
+        over19_goals, over19_matchday, over19_result,
+        sub19_goals,  sub19_matchday,  sub19_result,
+        sub17_goals,  sub17_matchday,  sub17_result,
+        sub15_goals,  sub15_matchday,  sub15_result,
+        sub13_goals,  sub13_matchday,  sub13_result,
+      } = req.body;
+
+      await deviceService.updatePreferences(id, {
+        news,
+        over19_goals, over19_matchday, over19_result,
+        sub19_goals,  sub19_matchday,  sub19_result,
+        sub17_goals,  sub17_matchday,  sub17_result,
+        sub15_goals,  sub15_matchday,  sub15_result,
+        sub13_goals,  sub13_matchday,  sub13_result,
       });
 
       return res.json({ success: true });
@@ -51,7 +68,6 @@ class DeviceController {
     try {
       const rawId = req.params.id;
       const id = Array.isArray(rawId) ? rawId[0] : rawId;
-
       if (!id) return res.status(400).json({ error: "Missing id" });
 
       const device = await deviceService.getDeviceById(id);

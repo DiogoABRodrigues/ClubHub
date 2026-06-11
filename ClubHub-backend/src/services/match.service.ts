@@ -122,7 +122,9 @@ export default class MatchService {
     const devices = await deviceService.getDevicesForResults(category);
     if (!devices.length) return;
 
-    const title = `Fim do jogo ${categoryLabel}`.trim();
+    const title = category === "over19"
+      ? "Fim do jogo!"
+      : `Fim do jogo, ${categoryLabel}!`;
     const body = match.homeOrAway === "C"
       ? `${match.teamName} ${match.result} ${match.opponent}`
       : `${match.opponent} ${match.result} ${match.teamName}`;
@@ -131,10 +133,10 @@ export default class MatchService {
     await pushService.handleReceipts(response);
   }
 
+  /** Label do escalão para usar no título — vazio para over19 */
   private _getCategoryLabel(category: string): string {
-    const enabled = (teamConfig.categories as any[]).filter((c) => c.enabled);
-    if (enabled.length <= 1) return "";
-    const cfg = enabled.find((c) => c.category === category);
-    return cfg ? `[${cfg.label}]` : "";
+    if (category === "over19") return "";
+    const cfg = (teamConfig.categories as any[]).find((c) => c.category === category);
+    return cfg ? cfg.label : category;
   }
 }

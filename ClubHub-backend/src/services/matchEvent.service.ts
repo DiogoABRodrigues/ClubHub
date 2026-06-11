@@ -89,13 +89,13 @@ class MatchEventService {
 
       switch (event.type) {
         case "goal":
-          title = `Golo! ${categoryLabel}`;
+          title = category === "over19" ? "Golo!" : `Golo, ${categoryLabel}!`;
           const freshMatch = match?.id ? await Match.findByPk(match.id) : match;
           const result = freshMatch?.result ? `\n[${freshMatch.result}]` : "";
           body = `${playerName} - ${event.minute}'${result}`;
           break;
         case "red_card":
-          title = `Vermelho 🟥 ${categoryLabel}`;
+          title = category === "over19" ? "Vermelho 🟥" : `Vermelho 🟥, ${categoryLabel}!`;
           body = `${playerName} - ${event.minute}'`;
           break;
         default:
@@ -108,12 +108,11 @@ class MatchEventService {
     await pushService.handleReceipts(response);
   }
 
-  /** Prefixo para o título quando há mais do que 1 escalão activo */
+  /** Label do escalão para usar no título — vazio para over19 */
   private _getCategoryLabel(category: string): string {
-    const enabled = teamConfig.categories.filter((c) => c.enabled);
-    if (enabled.length <= 1) return "";
-    const cfg = enabled.find((c) => c.category === category);
-    return cfg ? `[${cfg.label}] ` : "";
+    if (category === "over19") return "";
+    const cfg = teamConfig.categories.find((c) => c.category === category);
+    return cfg ? cfg.label : category;
   }
 }
 
