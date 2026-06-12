@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-  StyleSheet,
 } from "react-native";
 import { Player } from "../models/Player";
 import { Stats } from "../models/Stats";
@@ -21,7 +20,7 @@ const defaultPlayerImage = require("../../assets/player.jpg");
 //  Linha de stat individual
 const StatRow = ({ season, stats }: { season: string; stats: Stats }) => (
   <View style={styles.statRow}>
-    <Text style={styles.seasonLabel}>{season}</Text>
+    <Text style={styles.seasonLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{season}</Text>
 
     <View style={styles.statCell}>
       <Text style={styles.statValue}>{stats.gamesPlayed ?? 0}</Text>
@@ -35,7 +34,7 @@ const StatRow = ({ season, stats }: { season: string; stats: Stats }) => (
 
     <View style={styles.statCell}>
       <Text style={styles.statValue}>
-        {(stats.minutesPlayed ?? 0)}
+        {stats.minutesPlayed ?? 0}
       </Text>
     </View>
   </View>
@@ -137,7 +136,7 @@ export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
               ) : (
                 <>
                   <View style={styles.statsHeader}>
-                    <Text style={[styles.statLabel, { flex: 2 }]}>Época</Text>
+                    <Text style={[styles.statLabel, { flex: 1 }]}>Época</Text>
                     <Text style={[styles.statLabel, styles.colCenter]}>J</Text>
                     <Text style={[styles.statLabel, styles.colCenter]}>G</Text>
                     <Text style={[styles.statLabel, styles.colCenter]}>Min</Text>

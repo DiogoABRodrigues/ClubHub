@@ -5,13 +5,13 @@ export const styles = StyleSheet.create({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: "#F4F4F6",
   },
 
   // ── Header ───────────────────────────────────────────────────────────────
   header: {
     backgroundColor: COLORS.surface,
-    paddingTop: SPACING.xl + 8, // espaço para status bar
+    paddingTop: SPACING.xl + 8,
     paddingBottom: SPACING.md,
     paddingHorizontal: SPACING.md,
   },
@@ -51,8 +51,6 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.xl,
-    alignContent: "center",
-    justifyContent: "center",
   },
 
   // ── Banner informativo ────────────────────────────────────────────────────
@@ -60,9 +58,9 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     gap: SPACING.sm,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: "rgba(128,0,0,0.08)",
     borderWidth: 1,
-    borderColor: COLORS.primary + "30",
+    borderColor: "rgba(128,0,0,0.15)",
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     marginBottom: SPACING.lg,
@@ -71,13 +69,13 @@ export const styles = StyleSheet.create({
   infoTitle: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "700",
-    color: COLORS.primaryDark,
+    color: COLORS.primary,
     marginBottom: 3,
   },
 
   infoDescription: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
+    color: "#6B7280",
     lineHeight: 17,
   },
 
@@ -87,25 +85,31 @@ export const styles = StyleSheet.create({
   },
 
   sectionTitle: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: 11,
     fontWeight: "700",
-    color: COLORS.textMuted,
+    color: "#9CA3AF",
     textTransform: "uppercase",
-    letterSpacing: 0.6,
+    letterSpacing: 0.7,
     marginBottom: SPACING.sm,
+    paddingHorizontal: 4,
   },
 
-  // ── Toggle cards (notificações, preferências) ─────────────────────────────
+  // ── Toggle cards ─────────────────────────────────────────────────────────
   toggleCard: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: COLORS.surface,
+    backgroundColor: "#FFFFFF",
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     marginBottom: SPACING.sm,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: "#E5E7EB",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 1,
   },
 
   toggleLeft: {
@@ -120,7 +124,7 @@ export const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: COLORS.textPrimary,
+    borderColor: COLORS.primary,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -128,24 +132,24 @@ export const styles = StyleSheet.create({
   toggleTitle: {
     fontSize: FONT_SIZE.md,
     fontWeight: "600",
-    color: COLORS.textPrimary,
+    color: "#111827",
     marginBottom: 2,
   },
 
   toggleDescription: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textPrimary,
+    color: "#6B7280",
     lineHeight: 17,
     paddingRight: SPACING.md,
   },
 
   // ── Card de equipa ────────────────────────────────────────────────────────
   teamCard: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: "#FFFFFF",
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: "#E5E7EB",
   },
 
   teamRow: {
@@ -158,15 +162,14 @@ export const styles = StyleSheet.create({
   teamTitle: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: COLORS.textPrimary,
+    color: "#111827",
   },
 
   teamSubtitle: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
+    color: "#6B7280",
   },
 
-  // ── Botão de guardar ──────────────────────────────────────────────────────
   saveButton: {
     backgroundColor: COLORS.primary,
     borderRadius: RADIUS.lg,
@@ -181,6 +184,8 @@ export const styles = StyleSheet.create({
     fontSize: FONT_SIZE.md,
     letterSpacing: 0.2,
   },
+
+  // ── Modal Admin ───────────────────────────────────────────────────────────
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -196,26 +201,32 @@ export const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: "700",
+    color: "#111827",
     marginBottom: 8,
   },
   input: {
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "#F3F4F6",
     padding: 12,
     borderRadius: 10,
+    fontSize: FONT_SIZE.sm,
+    color: "#111827",
   },
   loginBtn: {
-    backgroundColor: "#111",
+    backgroundColor: COLORS.primary,
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
     marginTop: 4,
   },
-  loginBtnText: { color: "#fff", fontWeight: "600" },
+  loginBtnText: { color: "#fff", fontWeight: "700", fontSize: FONT_SIZE.sm },
   cancelText: {
     textAlign: "center",
-    color: "#888",
+    color: "#9CA3AF",
     paddingVertical: 8,
+    fontSize: FONT_SIZE.sm,
   },
+
+  // ── Instagram btn ─────────────────────────────────────────────────────────
   instagramBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -236,5 +247,4 @@ export const styles = StyleSheet.create({
     fontSize: FONT_SIZE.md,
     letterSpacing: 0.3,
   },
-  
 });

@@ -18,6 +18,8 @@ import { login as loginRequest } from "../../services/AuthService";
 import { Linking } from "react-native";
 import { teamConfig } from "../../config/teamConfig";
 import { useDevicePreferences, DevicePreferences } from "../../hooks/useDevicePreferences";
+import { SeasonPicker } from "../../components/Seasonpicker";
+import { CategoryPicker } from "../../components/Categorypicker";
 
 type CategoryKey = "over19" | "sub19" | "sub17" | "sub15" | "sub13";
 
@@ -52,12 +54,17 @@ function EscalaoSection({
 
   return (
     <View style={{
-      backgroundColor: COLORS.backgroundWhite,
+      backgroundColor: "#FFFFFF",
       borderRadius: RADIUS.lg,
       borderWidth: 1,
-      borderColor: COLORS.primary,
+      borderColor: "#E5E7EB",
       marginBottom: SPACING.sm,
       overflow: "hidden",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.04,
+      shadowRadius: 3,
+      elevation: 1,
     }}>
       {/* Header colapsável */}
       <TouchableOpacity
@@ -69,23 +76,21 @@ function EscalaoSection({
           paddingHorizontal: SPACING.md,
           paddingVertical: SPACING.md,
           gap: SPACING.sm,
-          backgroundColor: COLORS.backgroundWhite,
+          backgroundColor: "#FFFFFF",
         }}
       >
         <View style={{
           width: 36,
           height: 36,
           borderRadius: 18,
-          borderWidth: 1.5,
-          borderColor: defaultOpen ? COLORS.primary : "#d1d5db",
-          backgroundColor: defaultOpen ? "#fff1f1" : "#f9fafb",
+          backgroundColor: open ? "rgba(128,0,0,0.08)" : "#F3F4F6",
           justifyContent: "center",
           alignItems: "center",
         }}>
           <Ionicons
             name="trophy-outline"
             size={16}
-            color={defaultOpen ? COLORS.primary : "#6b7280"}
+            color={open ? COLORS.primary : "#9CA3AF"}
           />
         </View>
         <Text style={{
@@ -103,22 +108,22 @@ function EscalaoSection({
 
       {/* Rows de toggles */}
       {open && (
-        <View style={{ borderTopWidth: 1, borderTopColor: "#f3f4f6" }}>
+        <View style={{ borderTopWidth: 1, borderTopColor: "#F3F4F6" }}>
           {/* Label da secção */}
           <View style={{
             paddingHorizontal: SPACING.md,
             paddingTop: SPACING.sm,
             paddingBottom: SPACING.xs,
-            backgroundColor: "#f9fafb",
+            backgroundColor: "#FAFAFA",
             borderBottomWidth: 1,
-            borderBottomColor: "#f3f4f6",
+            borderBottomColor: "#F3F4F6",
           }}>
             <Text style={{
-              fontSize: FONT_SIZE.xs,
-              fontWeight: "600",
-              color: "#9ca3af",
+              fontSize: 10,
+              fontWeight: "700",
+              color: "#9CA3AF",
               textTransform: "uppercase",
-              letterSpacing: 0.5,
+              letterSpacing: 0.7,
             }}>Jogos</Text>
           </View>
 
@@ -134,23 +139,35 @@ function EscalaoSection({
                   alignItems: "center",
                   paddingHorizontal: SPACING.md,
                   paddingVertical: SPACING.sm + 2,
-                  backgroundColor: COLORS.backgroundWhite,
+                  backgroundColor: "#FFFFFF",
                   borderTopWidth: i > 0 ? 1 : 0,
-                  borderTopColor: "#f3f4f6",
+                  borderTopColor: "#F3F4F6",
                 }}
               >
-                <View style={{ flex: 1, paddingRight: SPACING.md }}>
-                  <Text style={{
-                    fontSize: FONT_SIZE.sm,
-                    fontWeight: "600",
-                    color: "#111827",
-                    marginBottom: 2,
-                  }}>{label}</Text>
-                  <Text style={{
-                    fontSize: FONT_SIZE.xs,
-                    color: "#9ca3af",
-                    lineHeight: 16,
-                  }}>{desc}</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", flex: 1, gap: SPACING.sm }}>
+                  <View style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    backgroundColor: value ? "rgba(128,0,0,0.08)" : "#F3F4F6",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}>
+                    <Ionicons name={icon as any} size={15} color={value ? COLORS.primary : "#9CA3AF"} />
+                  </View>
+                  <View style={{ flex: 1, paddingRight: SPACING.sm }}>
+                    <Text style={{
+                      fontSize: FONT_SIZE.sm,
+                      fontWeight: "600",
+                      color: "#111827",
+                      marginBottom: 1,
+                    }}>{label}</Text>
+                    <Text style={{
+                      fontSize: 11,
+                      color: "#9CA3AF",
+                      lineHeight: 15,
+                    }}>{desc}</Text>
+                  </View>
                 </View>
                 <Switch
                   value={value}
@@ -216,23 +233,41 @@ export const NotificationSettings = ({ navigation }: any) => {
 
       <ScrollView contentContainerStyle={styles.content}>
 
+        {/* ── Pickers de escalão e época ── */}
+        <View style={{
+          backgroundColor: "#FFFFFF",
+          borderRadius: RADIUS.lg,
+          padding: SPACING.md,
+          marginBottom: SPACING.lg,
+          borderWidth: 1,
+          borderColor: "#E5E7EB",
+        }}>
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 11, color: "#9CA3AF", marginBottom: 4 }}>Escalão</Text>
+              <CategoryPicker />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 11, color: "#9CA3AF", marginBottom: 4 }}>Época</Text>
+              <SeasonPicker />
+            </View>
+          </View>
+        </View>
+
         {/* ── Notícias (global) ── */}
-        <Text style={{ fontSize: FONT_SIZE.xs, fontWeight: "600", color: COLORS.textSecondary, textTransform: "uppercase", letterSpacing: 0.5, paddingHorizontal: 4, marginBottom: SPACING.sm }}>
-          Notícias
-        </Text>
-        <View style={[styles.toggleCard, { marginBottom: SPACING.lg, backgroundColor: COLORS.backgroundWhite, borderColor: COLORS.primary }]}>
+        <Text style={styles.sectionTitle}>Notícias</Text>
+        <View style={[styles.toggleCard, { marginBottom: SPACING.lg }]}>
           <View style={styles.toggleLeft}>
             <View style={{
               width: 40, height: 40, borderRadius: 20,
-              borderWidth: 1.5, borderColor: COLORS.primary,
-              backgroundColor: "#f9fafb",
+              backgroundColor: safePrefs.news ? "rgba(128,0,0,0.08)" : "#F3F4F6",
               justifyContent: "center", alignItems: "center",
             }}>
-              <Ionicons name="newspaper-outline" size={20} color="#6b7280" />
+              <Ionicons name="newspaper-outline" size={20} color={safePrefs.news ? COLORS.primary : "#9CA3AF"} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: FONT_SIZE.md, fontWeight: "600", color: "#111827", marginBottom: 2 }}>Alertas de Notícias</Text>
-              <Text style={{ fontSize: FONT_SIZE.xs, color: "#9ca3af", lineHeight: 17, paddingRight: SPACING.md }}>
+              <Text style={styles.toggleTitle}>Alertas de Notícias</Text>
+              <Text style={styles.toggleDescription}>
                 Notificações de novas notícias.
               </Text>
             </View>
@@ -244,9 +279,7 @@ export const NotificationSettings = ({ navigation }: any) => {
         </View>
 
         {/* ── Notificações por escalão ── */}
-        <Text style={{ fontSize: FONT_SIZE.xs, fontWeight: "600", color: COLORS.textSecondary, textTransform: "uppercase", letterSpacing: 0.5, paddingHorizontal: 4, marginBottom: SPACING.sm }}>
-          Notificações por escalão
-        </Text>
+        <Text style={styles.sectionTitle}>Por escalão</Text>
         {enabledCategories.map((cfg) => (
           <EscalaoSection
             key={cfg.category}

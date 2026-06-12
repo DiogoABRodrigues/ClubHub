@@ -1,8 +1,12 @@
-import { StyleSheet, Platform } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
 
+const SCREEN_W = Dimensions.get("window").width;
+// Em ecrãs pequenos (<380px) a foto fica mais pequena
+const PHOTO_COL_W = SCREEN_W < 380 ? 100 : 115;
+
 export const styles = StyleSheet.create({
-overlay: {
+  overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.72)",
     justifyContent: "center",
@@ -17,12 +21,10 @@ overlay: {
     borderRadius: RADIUS.lg + 4,
     padding: SPACING.md,
     paddingTop: SPACING.lg,
-    // sombra iOS
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.25,
     shadowRadius: 16,
-    // sombra Android
     elevation: 12,
   },
 
@@ -48,12 +50,12 @@ overlay: {
   // ── Layout ──
   body: {
     flexDirection: "row",
-    gap: SPACING.md,
+    gap: SPACING.sm,
   },
 
   // ── Coluna foto ──
   photoCol: {
-    width: 120,
+    width: PHOTO_COL_W,
     alignItems: "center",
   },
 
@@ -63,9 +65,9 @@ overlay: {
     right: 4,
     zIndex: 5,
     backgroundColor: COLORS.primary,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -77,7 +79,7 @@ overlay: {
   },
 
   photo: {
-    width: 110,
+    width: PHOTO_COL_W - 10,
     aspectRatio: 1,
     borderRadius: RADIUS.md,
     backgroundColor: COLORS.surfaceLight,
@@ -85,14 +87,14 @@ overlay: {
   },
 
   firstName: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.xs + 1,
     fontWeight: "600",
     color: COLORS.textSecondary,
     textAlign: "center",
   },
 
   lastName: {
-    fontSize: FONT_SIZE.md,
+    fontSize: FONT_SIZE.sm,
     fontWeight: "700",
     color: COLORS.textSecondary,
     textAlign: "center",
@@ -104,6 +106,7 @@ overlay: {
     paddingHorizontal: SPACING.xs + 2,
     paddingVertical: 3,
     borderRadius: RADIUS.sm,
+    marginTop: 2,
   },
 
   positionText: {
@@ -115,10 +118,11 @@ overlay: {
   // ── Coluna stats ──
   statsCol: {
     flex: 1,
+    minWidth: 0, // permite shrink em ecrãs pequenos
   },
 
   statsTitle: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.xs + 1,
     fontWeight: "700",
     color: COLORS.textSecondary,
     textTransform: "uppercase",
@@ -128,6 +132,7 @@ overlay: {
 
   statsHeader: {
     flexDirection: "row",
+    alignItems: "center",
     paddingBottom: SPACING.xs,
     borderBottomWidth: 1,
     borderColor: COLORS.border,
@@ -137,25 +142,28 @@ overlay: {
   statRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: SPACING.xs + 2,
+    paddingVertical: SPACING.xs + 1,
     borderBottomWidth: 0.5,
     borderColor: COLORS.border,
   },
 
+  // Época — ocupa o espaço restante e permite wrap
   seasonLabel: {
-    flex: 2,
-    fontSize: FONT_SIZE.xs,
+    flex: 1,
+    fontSize: 11,
     fontWeight: "600",
     color: COLORS.textSecondary,
+    flexWrap: "nowrap",
   },
 
+  // Células numéricas — largura fixa mais pequena
   statCell: {
     alignItems: "center",
-    width: 44,
+    width: 36,
   },
 
   statValue: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.xs + 1,
     fontWeight: "700",
     color: COLORS.textSecondary,
   },
@@ -169,10 +177,12 @@ overlay: {
     color: "#9CA3AF",
     textTransform: "uppercase",
     letterSpacing: 0.3,
+    textAlign: "center",
   },
 
+  // Header label para colunas numéricas
   colCenter: {
-    width: 44,
+    width: 36,
     textAlign: "center",
   },
 
