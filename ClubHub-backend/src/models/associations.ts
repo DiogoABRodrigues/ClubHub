@@ -2,6 +2,7 @@ import Lineup from "./Lineup";
 import Match from "./Match";
 import Player from "./Player";
 import Stats from "./Stats";
+import Feedback from "./Feedback";
 
 export const initAssociations = () => {
   Lineup.belongsTo(Match, { foreignKey: "matchId" });

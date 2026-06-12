@@ -9,7 +9,7 @@ router.get("/", SquadController.getAll);
 router.get("/season/:seasonId", SquadController.getBySeasonId);
 router.get("/current", SquadController.getByCurrentSeasonId);
 
-// Admin only — atualiza o status do jogador no squad daquela época
+// Admin only - atualiza o status do jogador no squad daquela época
 router.patch(
   "/:playerExternalId/season/:seasonId/status",
   authMiddleware,

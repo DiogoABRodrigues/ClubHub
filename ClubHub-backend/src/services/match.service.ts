@@ -80,36 +80,71 @@ export default class MatchService {
     }
 
     await match.update(updates);
+
     if (updates.status === "finished") {
       await this.notifyResult(match);
     }
-    await cache.del(CacheKeys.matches.bySeason(match.seasonId as number));
-    await cache.del(CacheKeys.standings.bySeason(match.seasonId as number));
+
+    const category = (match as any).category ?? "over19";
+
+    await cache.del(
+      CacheKeys.matches.bySeason(
+        match.seasonId as number,
+        category,
+      ),
+    );
+
+    await cache.del(
+      CacheKeys.standings.bySeason(
+        match.seasonId as number,
+        category,
+      ),
+    );
+
     socketService.emitMatchUpdate(match);
+
     return match;
   }
 
   async updateDateTime(id: number, date: string, time: string) {
+    const match = await Match.findByPk(id);
+    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number));
+    socketService.emitMatchUpdate(match);
     return this.update(id, { date, time });
   }
 
   async updateScore(id: number, result: string) {
+    const match = await Match.findByPk(id);
+    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number));
+    socketService.emitMatchUpdate(match);
     return this.update(id, { result });
   }
 
   async updateLocation(id: number, location: string) {
+    const match = await Match.findByPk(id);
+    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number));
+    socketService.emitMatchUpdate(match);
     return this.update(id, { location });
   }
 
   async updateEvents(id: number, events: any[]) {
+    const match = await Match.findByPk(id);
+    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number));
+    socketService.emitMatchUpdate(match);
     return this.update(id, { events });
   }
 
   async updateStatus(id: number, status: string) {
+    const match = await Match.findByPk(id);
+    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number));
+    socketService.emitMatchUpdate(match);
     return this.update(id, { status });
   }
 
   async updateOutcome(id: number, outcome: string) {
+    const match = await Match.findByPk(id);
+    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number));
+    socketService.emitMatchUpdate(match);
     return this.update(id, { outcome });
   }
 
@@ -133,7 +168,7 @@ export default class MatchService {
     await pushService.handleReceipts(response);
   }
 
-  /** Label do escalão para usar no título — vazio para over19 */
+  /** Label do escalão para usar no título - vazio para over19 */
   private _getCategoryLabel(category: string): string {
     if (category === "over19") return "";
     const cfg = (teamConfig.categories as any[]).find((c) => c.category === category);

@@ -20,6 +20,7 @@ import deviceRoutes from "./routes/device.routes";
 import authRoutes from "./routes/auth.routes";
 import appSettingsRoutes from "./routes/appSettings.routes";
 import notificationsRoutes from "./routes/notification.routes";
+import feedbackRoutes from "./routes/feedback.routes";
 import rateLimit from "express-rate-limit";
 import compression from "compression";
 
@@ -119,5 +120,6 @@ app.use("/api/statements", statementRoutes);
 app.use("/api/match-events", matchEventRoutes);
 app.use("/api/app-settings", appSettingsRoutes);
 app.use("/api/notifications", notificationsRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
 export default app;
