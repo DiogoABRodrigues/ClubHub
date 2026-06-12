@@ -3,7 +3,7 @@ import axios from "axios";
 import { refreshToken } from "./AuthService";
 import { teamConfig } from "../config/teamConfig";
 
-const BACKEND_URI = "http://https://clubhub-c8u0.onrender.com:3000"; 
+const BACKEND_URI = teamConfig.backend_URL; 
 let memoryToken: string | null = null;
 
 export function setMemoryToken(token: string | null) {
