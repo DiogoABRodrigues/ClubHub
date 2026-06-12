@@ -242,6 +242,9 @@ export const NotificationSettings = ({ navigation }: any) => {
           borderWidth: 1,
           borderColor: "#E5E7EB",
         }}>
+          <Text style={{ fontSize: 11, fontWeight: "700", color: "#9CA3AF", textTransform: "uppercase", letterSpacing: 0.7, marginBottom: SPACING.sm }}>
+            Histórico e escalões
+          </Text>
           <View style={{ flexDirection: "row", gap: 8 }}>
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 11, color: "#9CA3AF", marginBottom: 4 }}>Escalão</Text>
