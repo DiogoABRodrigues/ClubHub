@@ -1,31 +1,36 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { View, Text, ScrollView } from "react-native";
+import { RefreshControl } from "react-native";
 import { styles } from "./News.styles";
 import { NewsCard } from "../../components/NewsCard";
+import { EmptyState } from "../../components/EmptyState";
 import { useNews } from "../../hooks/useNews";
+import { COLORS } from "../../theme/colors";
 
 export const News = ({ navigation }: any) => {
-  const { news, loading } = useNews();
+  const { news, loading, refreshNews } = useNews();
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Memoiza a lista de notícias
-  const newsList = news;
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refreshNews();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refreshNews]);
 
   const goToNewsDetail = useCallback(
-    (id: number) => {
-      navigation.navigate("NewsDetail", { id });
-    },
+    (id: number) => navigation.navigate("NewsDetail", { id }),
     [navigation],
   );
 
-  const renderedNews = useMemo(() => {
-    return newsList.map((item) => (
-      <NewsCard
-        key={item.id}
-        news={item}
-        onPress={() => goToNewsDetail(item.id)}
-      />
-    ));
-  }, [newsList, goToNewsDetail]);
+  const renderedNews = useMemo(
+    () => news.map((item) => (
+      <NewsCard key={item.id} news={item} onPress={() => goToNewsDetail(item.id)} />
+    )),
+    [news, goToNewsDetail],
+  );
 
   return (
     <View style={styles.container}>
@@ -40,22 +45,26 @@ export const News = ({ navigation }: any) => {
       </View>
 
       {/* CONTENT */}
-      <ScrollView contentContainerStyle={styles.content}>
-        {loading ? (
-          <Text style={{ textAlign: "center", marginTop: 50 }}>
-            A carregar notícias...
-          </Text>
-        ) : newsList.length > 0 ? (
-          <View style={styles.newsList}>{renderedNews}</View>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+          />
+        }
+      >
+        {!loading && news.length === 0 ? (
+          <EmptyState
+            title="Não foi possível encontrar informação"
+            message="Por favor tenta novamente mais tarde."
+            onRetry={onRefresh}
+            retryLabel="Atualizar"
+          />
         ) : (
-          <View style={styles.noNews}>
-            <View style={styles.logoCircle}>
-              <Text style={styles.logoEmoji}>📰</Text>
-            </View>
-            <Text style={styles.noNewsText}>
-              Não foram encontradas notícias
-            </Text>
-          </View>
+          <View style={styles.newsList}>{renderedNews}</View>
         )}
       </ScrollView>
     </View>

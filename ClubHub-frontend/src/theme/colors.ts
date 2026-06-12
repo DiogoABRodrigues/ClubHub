@@ -1,37 +1,37 @@
 // ─────────────────────────────────────────────
-//  theme/colors.ts  —  Paleta atualizada
+//  theme/colors.ts  -  Paleta atualizada
 // ─────────────────────────────────────────────
 
 export const COLORS = {
   // ── Identidade principal ──────────────────
-  primary: "#800000", // Royal Blue — botões, ações, tabs ativas
-  primaryDark: "#000000", // Deep Blue  — header do MatchDetail
+  primary: "#800000", // Royal Blue - botões, ações, tabs ativas
+  primaryDark: "#000000", // Deep Blue  - header do MatchDetail
   primaryLight: "#e4d54e",
-  secondaryLight: "#8000004b", // Blue Tint  — fundos de seleção / hover / badges
-  tercearyLight: "#80000031", // Coral      — ícones de secção inativa, detalhes menores
+  secondaryLight: "#8000004b", // Blue Tint  - fundos de seleção / hover / badges
+  tercearyLight: "#80000031", // Coral      - ícones de secção inativa, detalhes menores
 
   // ── Superfícies ───────────────────────────
   background: "#FFFFFFE6",
-  backgroundWhite: "#ffffff", // Off-white  — fundo geral das screens
-  surface: "#800000", // Branco     — cards, modais
-  surfaceLight: "#F1F5F9", // Cinza suave — header Home, fundos alt
+  backgroundWhite: "#ffffff", // Off-white  - fundo geral das screens
+  surface: "#800000", // Branco     - cards, modais
+  surfaceLight: "#F1F5F9", // Cinza suave - header Home, fundos alt
 
   // ── Texto ─────────────────────────────────
-  textPrimary: "#ffffffe6", // Slate 900  — texto principal
-  textSecondary: "#0c0c0ce6", // Gray 500   — texto secundário / labels
-  textMuted: "#e6e2e2e6", // Gray 400   — hints, placeholders, minutagem
+  textPrimary: "#ffffffe6", // Slate 900  - texto principal
+  textSecondary: "#0c0c0ce6", // Gray 500   - texto secundário / labels
+  textMuted: "#e6e2e2e6", // Gray 400   - hints, placeholders, minutagem
 
   // ── Bordas ────────────────────────────────
   border: "#f7d7ca87", // Bordas e divisórias
   muted: "#E2E6EA", // alias (manter compatibilidade)
 
   // ── Status semânticos ─────────────────────
-  success: "#16A34A", // Verde      — golos, vitória, promoção
-  successLight: "#DCFCE7", // Verde claro — fundo linhas de promoção
-  error: "#DC2626", // Vermelho   — descida, derrota, erro
-  errorLight: "#FEE2E2", // Verm. claro — fundo linhas de descida
-  warning: "#EAB308", // Âmbar      — cartões amarelos
-  warningLight: "#FEF3C7", // Âmbar claro — fundo avisos
+  success: "#16A34A", // Verde      - golos, vitória, promoção
+  successLight: "#DCFCE7", // Verde claro - fundo linhas de promoção
+  error: "#DC2626", // Vermelho   - descida, derrota, erro
+  errorLight: "#FEE2E2", // Verm. claro - fundo linhas de descida
+  warning: "#EAB308", // Âmbar      - cartões amarelos
+  warningLight: "#FEF3C7", // Âmbar claro - fundo avisos
   destructive: "#fd0101", // alias error (manter compatibilidade)
 
   // ── Charts / Extras ───────────────────────
@@ -39,7 +39,7 @@ export const COLORS = {
   chart3: "#EAB308", // Âmbar (cartões)
 
   // ── Accent secundário (uso pontual) ───────
-  secondary: "#800000", // Azul médio — ícones de secção
+  secondary: "#800000", // Azul médio - ícones de secção
 };
 
 export const SPACING = {

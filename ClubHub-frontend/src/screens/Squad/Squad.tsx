@@ -6,6 +6,7 @@ import { Player } from "../../models/Player";
 import { styles as globalStyles } from "./Squad.styles";
 import { getPositionOrder, mapToMainPosition } from "../../utils/playerPositionUtils";
 import { PlayerCardModal } from "../../components/PlayerCardModal";
+import { EmptyState } from "../../components/EmptyState";
 
 const defaultPlayerImage = require("../../../assets/player.jpg");
 
@@ -152,8 +153,15 @@ export const SquadScreen = React.memo(function SquadScreen() {
     [handlePlayerPress],
   );
 
+  const isEmpty = visiblePlayers.length === 0;
   return (
     <>
+          {isEmpty && (
+                <EmptyState
+                  title="Não foi possível encontrar informação"
+                  message="Por favor tenta novamente mais tarde."
+                />
+          )}
       <FlashList
         data={data}
         renderItem={renderItem}

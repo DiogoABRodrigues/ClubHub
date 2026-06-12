@@ -10,7 +10,7 @@ export const useCurrentSeason = () => {
   const query = useQuery<Season>({
     queryKey: ["season", "current"],
     queryFn: SeasonService.getByCurrentSeasonId,
-    staleTime: 1000 * 60 * 60, // 1h — a época não muda durante o dia
+    staleTime: 1000 * 60 * 60, // 1h - a época não muda durante o dia
   });
 
   return {

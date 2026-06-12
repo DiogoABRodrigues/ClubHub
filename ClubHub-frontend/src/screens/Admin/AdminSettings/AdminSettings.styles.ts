@@ -57,9 +57,9 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 2,
   },
 
-  // ── Card — fundo branco/neutro, sem primary ───────────────────────────────
+  // ── Card - fundo branco/neutro, sem primary ───────────────────────────────
   card: {
-    backgroundColor: "#ffffff", // branco — não primary
+    backgroundColor: "#ffffff", // branco - não primary
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     borderWidth: 1,
@@ -90,7 +90,7 @@ export const styles = StyleSheet.create({
   cardTitle: {
     fontSize: FONT_SIZE.md,
     fontWeight: "700",
-    color: "#111827", // quase preto — legível sobre branco
+    color: "#111827", // quase preto - legível sobre branco
     letterSpacing: -0.2,
   },
   cardDescription: {
@@ -104,7 +104,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 6,
-    backgroundColor: "#fef9c3", // amarelo suave — informativo neutro
+    backgroundColor: "#fef9c3", // amarelo suave - informativo neutro
     borderRadius: RADIUS.md,
     padding: SPACING.sm,
     borderWidth: 1,
@@ -112,7 +112,7 @@ export const styles = StyleSheet.create({
   },
   infoBannerText: {
     fontSize: 12,
-    color: "#78350f", // castanho âmbar — contrasta no amarelo
+    color: "#78350f", // castanho âmbar - contrasta no amarelo
     flex: 1,
     lineHeight: 17,
   },

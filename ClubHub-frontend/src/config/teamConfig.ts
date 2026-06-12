@@ -9,7 +9,7 @@ export interface CategoryConfig {
 export const teamConfig = {
   name: "Adecas",
   instagram_URL: "https://www.instagram.com/adecasoficial/",
-  backend_URL: "http://192.168.1.105:3000",
+  backend_URL: "http://https://clubhub-c8u0.onrender.com:3000",
 
   categories: [
     {

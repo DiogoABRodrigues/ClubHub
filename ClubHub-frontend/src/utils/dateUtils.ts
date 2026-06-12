@@ -53,7 +53,7 @@ export const formatToTimeStr = (date: Date): string => {
  * @param outcome "V" = a nossa equipa ganhou, "D" = perdeu
  * @param homeOrAway "C" = casa, "F" = fora
  * @param decidedByPenalties true se o jogo foi a penáltis
- * @returns [homeDisplay, awayDisplay] — strings para mostrar no marcador
+ * @returns [homeDisplay, awayDisplay] - strings para mostrar no marcador
  */
 export function getPenaltyDisplayScore(
   result: string | null | undefined,

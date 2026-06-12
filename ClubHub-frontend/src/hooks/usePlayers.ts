@@ -66,14 +66,14 @@ export const usePlayers = () => {
     },
   });
 
-  // Apenas jogadores ativos — para o ecrã público do plantel
+  // Apenas jogadores ativos - para o ecrã público do plantel
   const getActivePlayers = (): Player[] => {
     return (
       playersQuery.data?.filter((p) => (p.squadStatus ?? "active") === "active") ?? []
     );
   };
 
-  // Ativos + quem saiu ("left") — não inclui erros
+  // Ativos + quem saiu ("left") - não inclui erros
   const getVisiblePlayers = (): Player[] => {
     return (
       playersQuery.data?.filter(

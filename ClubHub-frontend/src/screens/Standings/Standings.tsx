@@ -10,6 +10,7 @@ import { LegendItem } from "../../models/Competition";
 import { useSelectedSeason } from "../../contexts/Selectedseasoncontext";
 import { Match } from "../../models/Match";
 import { useAuth } from "../../contexts/AuthContext";
+import { EmptyState } from "../../components/EmptyState";
 
 type LeagueSection = {
   type: "league";
@@ -285,17 +286,15 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
     [],
   );
 
-  if (standingsLoading || competitionsLoading) {
+  const isLoading = standingsLoading || competitionsLoading;
+
+  if (!isLoading && sections.length === 0) {
     return (
-      <View style={styles.container}>
-        <Text
-          style={{
-            textAlign: "center",
-            marginTop: 50,
-          }}
-        >
-          A carregar classificações...
-        </Text>
+      <View style={[styles.container, { justifyContent: "center" }]}>
+        <EmptyState
+          title="Não foi possível encontrar informação"
+          message="Por favor tenta novamente mais tarde."
+        />
       </View>
     );
   }

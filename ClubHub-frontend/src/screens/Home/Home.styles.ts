@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
   },
 
   // ── Header ───────────────────────────────────────────────────────────────
-  // O header agora tem só padding — o layout interno (eyebrow + logo)
+  // O header agora tem só padding - o layout interno (eyebrow + logo)
   // é feito com localStyles em Home.tsx para não poluir este ficheiro.
   header: {
     backgroundColor: COLORS.surface,

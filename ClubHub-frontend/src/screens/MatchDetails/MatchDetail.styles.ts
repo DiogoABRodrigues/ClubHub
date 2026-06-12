@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
     fontSize: FONT_SIZE.md,
   },
 
-  // ── Header  (fundo azul escuro — dá identidade ao ecrã) ──────────────────
+  // ── Header  (fundo azul escuro - dá identidade ao ecrã) ──────────────────
   header: {
     backgroundColor: COLORS.primary,
     paddingTop: SPACING.xl + 8,

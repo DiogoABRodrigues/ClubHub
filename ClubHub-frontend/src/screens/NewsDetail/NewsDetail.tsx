@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./NewsDetail.styles";
@@ -6,10 +6,11 @@ import { COLORS } from "../../theme/colors";
 import { useNews } from "../../hooks/useNews";
 import { formatDatePT } from "../../utils/dateUtils";
 import { useAuth } from "../../contexts/AuthContext";
+import { EmptyState } from "../../components/EmptyState";
 
 export const NewsDetail = ({ route, navigation }: any) => {
   const { id } = route.params;
-  const { news } = useNews();
+  const { news, refreshNews } = useNews();
   const { adminMode } = useAuth();
 
   const newsMap = useMemo(() => {
@@ -54,6 +55,21 @@ export const NewsDetail = ({ route, navigation }: any) => {
   }
   const formatDate = formatDatePT;
 
+  const isEmpty = news.length === 0;
+
+  const [refreshing, setRefreshing] = useState(false);
+  
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([
+        refreshNews(),
+      ]);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refreshNews]);
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -71,6 +87,12 @@ export const NewsDetail = ({ route, navigation }: any) => {
           </View>
         </View>
       </View>
+      {isEmpty && (
+            <EmptyState
+              title="Não foi possível encontrar informação"
+              message="Por favor tenta novamente mais tarde."
+            />
+      )}
 
       <ScrollView contentContainerStyle={styles.content}>
         {/* Featured Image */}
@@ -120,7 +142,7 @@ export const NewsDetail = ({ route, navigation }: any) => {
                       : require("../../../assets/player.jpg")
                   }
                   style={styles.relatedImage}
-                  resizeMode="contain"
+                  resizeMode="cover"
                 />
                 <View style={styles.relatedTextContainer}>
                   <Text style={styles.relatedNewsTitle} numberOfLines={2}>

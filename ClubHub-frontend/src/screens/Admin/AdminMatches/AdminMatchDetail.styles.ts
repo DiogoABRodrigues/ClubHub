@@ -35,7 +35,7 @@ export const adminStyles = StyleSheet.create({
     flexShrink: 1,
   },
 
-  // ── Bottom sheet — base ───────────────────────────────────────────────────
+  // ── Bottom sheet - base ───────────────────────────────────────────────────
   overlay: {
     flex: 1,
   },

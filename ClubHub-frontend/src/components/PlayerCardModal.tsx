@@ -79,7 +79,7 @@ export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
 
   // Posição e número da época mais recente
   const currentStat = display.Stats?.[0];
-  const position = currentStat?.position ?? "—";
+  const position = currentStat?.position ?? "-";
   const number = currentStat?.number;
 
   // Já chegam ordenadas do backend (season year DESC)
@@ -101,7 +101,7 @@ export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
 
           {/* Corpo em duas colunas */}
           <View style={styles.body}>
-            {/* Coluna esquerda — foto */}
+            {/* Coluna esquerda - foto */}
             <View style={styles.photoCol}>
               {number !== undefined && (
                 <View style={styles.numberBadge}>
@@ -124,7 +124,7 @@ export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
               </View>
             </View>
 
-            {/* Coluna direita — stats */}
+            {/* Coluna direita - stats */}
             <View style={styles.statsCol}>
               <Text style={styles.statsTitle}>Estatísticas</Text>
 

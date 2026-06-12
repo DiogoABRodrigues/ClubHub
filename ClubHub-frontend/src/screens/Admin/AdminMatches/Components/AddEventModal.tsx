@@ -410,7 +410,7 @@ export const AddEventModal = ({
                   </View>
                 )}
 
-                {/* Fase — bloqueada pelo statusTime */}
+                {/* Fase - bloqueada pelo statusTime */}
                 <View style={adminStyles.switchRow}>
                   <Text style={adminStyles.fieldLabel}>Fase</Text>
                   <View
@@ -426,7 +426,7 @@ export const AddEventModal = ({
 
                 {/* Minuto */}
                 <Text style={adminStyles.fieldLabel}>
-                  Minuto{minutePreview ? ` — aparece como ${minutePreview}` : ""}
+                  Minuto{minutePreview ? ` - aparece como ${minutePreview}` : ""}
                 </Text>
                 <TextInput
                   style={adminStyles.input}

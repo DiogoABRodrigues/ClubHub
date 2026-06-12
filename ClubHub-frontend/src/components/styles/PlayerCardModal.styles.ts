@@ -147,7 +147,7 @@ export const styles = StyleSheet.create({
     borderColor: COLORS.border,
   },
 
-  // Época — ocupa o espaço restante e permite wrap
+  // Época - ocupa o espaço restante e permite wrap
   seasonLabel: {
     flex: 1,
     fontSize: 11,
@@ -156,7 +156,7 @@ export const styles = StyleSheet.create({
     flexWrap: "nowrap",
   },
 
-  // Células numéricas — largura fixa mais pequena
+  // Células numéricas - largura fixa mais pequena
   statCell: {
     alignItems: "center",
     width: 36,

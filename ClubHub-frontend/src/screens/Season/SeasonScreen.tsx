@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Trophy, Users, BarChart3 } from "lucide-react-native";
 import { styles } from "./Season.styles";
@@ -27,12 +27,10 @@ const TABS: Tab[] = [
 export function SeasonScreen({ navigation }: any) {
   const { adminMode } = useAuth();
   const [activeTab, setActiveTab] = useState<SeasonTab>("standings");
-  const [visited, setVisited] = useState<Set<SeasonTab>>(new Set(["standings"]));
   const { selectedSeason: currentSeason } = useSelectedSeason();
 
   const handleTabPress = useCallback((tab: SeasonTab) => {
     setActiveTab(tab);
-    setVisited((prev) => new Set(prev).add(tab));
   }, []);
 
   return (
@@ -58,25 +56,22 @@ export function SeasonScreen({ navigation }: any) {
         ))}
       </View>
 
-      {visited.has("standings") && (
-        <View style={{ flex: 1, display: activeTab === "standings" ? "flex" : "none" }}>
-          <Standings
-            navigation={navigation}
-          />
-        </View>
-      )}
+      {/*
+       * Todas as tabs são sempre montadas (pre-warm).
+       * display:"none" / display:"flex" esconde/mostra sem desmontar,
+       * por isso os componentes ficam construídos e não há jank ao trocar de tab.
+       */}
+      <View style={{ flex: 1, display: activeTab === "standings" ? "flex" : "none" }}>
+        <Standings navigation={navigation} />
+      </View>
 
-      {visited.has("squad") && (
-        <View style={{ flex: 1, display: activeTab === "squad" ? "flex" : "none" }}>
-          {adminMode ? <AdminSquadScreen /> : <SquadScreen />}
-        </View>
-      )}
+      <View style={{ flex: 1, display: activeTab === "squad" ? "flex" : "none" }}>
+        {adminMode ? <AdminSquadScreen /> : <SquadScreen />}
+      </View>
 
-      {visited.has("stats") && (
-        <View style={{ flex: 1, display: activeTab === "stats" ? "flex" : "none" }}>
-          <SquadStats />
-        </View>
-      )}
+      <View style={{ flex: 1, display: activeTab === "stats" ? "flex" : "none" }}>
+        <SquadStats />
+      </View>
     </View>
   );
 }

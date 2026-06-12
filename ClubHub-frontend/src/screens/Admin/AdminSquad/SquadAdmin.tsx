@@ -125,7 +125,7 @@ export function AdminSquadScreen() {
   const { allPlayers, updateSquadStatus } = usePlayers();
   const { selectedSeasonId } = useSelectedSeason();
 
-  /* SORT ONCE — mostra TODOS (incluindo "error") para o admin */
+  /* SORT ONCE - mostra TODOS (incluindo "error") para o admin */
   const sortedPlayers = useMemo(() => {
     return [...allPlayers].sort((a, b) => {
       const posA = getPositionOrder(a.Stats?.[0]?.position || "");
@@ -168,7 +168,7 @@ export function AdminSquadScreen() {
 
       Alert.alert(
         "Mudar estado",
-        `${player.name} — estado atual: ${STATUS_LABELS[current]}`,
+        `${player.name} - estado atual: ${STATUS_LABELS[current]}`,
         [
           { text: "Cancelar", style: "cancel" },
           ...options.map((s) => ({

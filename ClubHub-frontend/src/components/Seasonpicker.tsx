@@ -29,7 +29,7 @@ export const SeasonPicker: React.FC = () => {
   return (
     <>
       <TouchableOpacity style={styles.trigger} onPress={() => !onlyOne && setOpen(true)} activeOpacity={onlyOne ? 1 : 0.7}>
-        <Text style={styles.triggerText}>{selectedSeason?.year ?? "—"}</Text>
+        <Text style={styles.triggerText}>{selectedSeason?.year ?? "-"}</Text>
         {!onlyOne && <Ionicons name="chevron-down" size={14} color={COLORS.textSecondary} />}
       </TouchableOpacity>
 

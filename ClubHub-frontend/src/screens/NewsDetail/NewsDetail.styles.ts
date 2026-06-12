@@ -177,7 +177,7 @@ export const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: RADIUS.md,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: "#ffffff",
     justifyContent: "center",
     alignItems: "center",
     overflow: "hidden",

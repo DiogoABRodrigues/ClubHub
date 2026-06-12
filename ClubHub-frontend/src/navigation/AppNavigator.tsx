@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
@@ -9,11 +9,13 @@ import { HomeStack } from "./HomeStack";
 import { SeasonStack } from "./SeasonStack";
 import { MatchesStack } from "./MatchesStack";
 import { NewsStack } from "./NewsStack";
-import { SeasonScreen } from "../screens/Season/SeasonScreen";
 import { NotificationSettings } from "../screens/NotificationSettings/NotificationSettings";
 import { AdminNewsStack } from "../navigation/AdminNewsStack";
 import { AdminSettings } from "../screens/Admin/AdminSettings/AdminSettings";
 import { useAuth } from "../contexts/AuthContext";
+import { useCategory } from "../contexts/CategoryContext";
+import { useCategoryTransition } from "../hooks/useCategoryTransition";
+import { CategoryTransitionOverlay } from "../components/CategoryTransitionOverlay";
 
 const Tab = createBottomTabNavigator();
 
@@ -27,11 +29,18 @@ const ICON_MAP: Record<string, string> = {
   Notificações: "notifications-outline",
 };
 
-export const AppNavigator = () => {
+/** Componente interno que vive dentro do NavigationContainer e dos providers */
+const AppContent = () => {
   const { isAdmin, adminMode, setAdminMode } = useAuth();
+  const { isCategoryChanging } = useCategory();
+
+  // Activa o mecanismo que esconde o overlay quando os dados ficam prontos
+  useCategoryTransition();
+
   const EmptyScreen = () => null;
+
   return (
-    <NavigationContainer key={adminMode ? "admin-root" : "user-root"}>
+    <View style={styles.container}>
       <Tab.Navigator
         key={adminMode ? "admin" : "user"}
         screenOptions={({ route }) => ({
@@ -51,8 +60,6 @@ export const AppNavigator = () => {
         })}
       >
         <Tab.Screen name="Início" component={HomeStack} />
-
-        {/* Troca automática de stack conforme o modo */}
         <Tab.Screen name="Jogos" component={MatchesStack} />
         <Tab.Screen name="Época" component={SeasonStack} />
         <Tab.Screen
@@ -64,14 +71,13 @@ export const AppNavigator = () => {
           component={adminMode ? AdminSettings : NotificationSettings}
         />
 
-        {/* Botão Admin — só visível para admins */}
         {isAdmin && (
           <Tab.Screen
             name="Admin"
-            component={EmptyScreen} // continua necessário, mas agora limpo
+            component={EmptyScreen}
             listeners={{
               tabPress: (e) => {
-                e.preventDefault(); // impede navegação
+                e.preventDefault();
                 setAdminMode(!adminMode);
               },
             }}
@@ -87,6 +93,24 @@ export const AppNavigator = () => {
           />
         )}
       </Tab.Navigator>
+
+      {/* Overlay de transição - aparece por cima de tudo quando muda escalão/season */}
+      <CategoryTransitionOverlay visible={isCategoryChanging} />
+    </View>
+  );
+};
+
+export const AppNavigator = () => {
+  const { adminMode } = useAuth();
+  return (
+    <NavigationContainer key={adminMode ? "admin-root" : "user-root"}>
+      <AppContent />
     </NavigationContainer>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

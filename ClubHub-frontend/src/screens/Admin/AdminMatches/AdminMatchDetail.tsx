@@ -205,7 +205,7 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
     if (isPenaltyDecided) {
       // Quando o jogo vai a penáltis, perguntar quem venceu
       Alert.alert(
-        "Terminar jogo — Penáltis",
+        "Terminar jogo - Penáltis",
         "Quem venceu a série de penáltis?",
         [
           { text: "Cancelar", style: "cancel" },
@@ -597,7 +597,7 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
             </View>
           </View>
 
-          {/* Controlo — upcoming */}
+          {/* Controlo - upcoming */}
           {isUpcoming && gameIsToday && (
             <View style={adminStyles.adminActions}>
               <TouchableOpacity
@@ -786,7 +786,7 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
             </View>
           )}
 
-          {/* Controlo — halftime */}
+          {/* Controlo - halftime */}
           {isHalftime && (
             <View style={adminStyles.adminActions}>
               <TouchableOpacity

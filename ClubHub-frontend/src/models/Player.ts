@@ -1,6 +1,6 @@
 import { Stats } from "./Stats";
 
-// Reflete o campo "status" do Squad — por época, não global.
+// Reflete o campo "status" do Squad - por época, não global.
 export type SquadStatus = "active" | "left" | "error";
 
 export type Player = {
