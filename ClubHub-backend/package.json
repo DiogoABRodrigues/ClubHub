@@ -24,7 +24,6 @@
     "compression": "^1.8.1",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
-    "expo-notifications": "^55.0.15-canary-20260327-0789fbc",
     "express": "^5.2.1",
     "express-rate-limit": "^8.4.1",
     "firebase-admin": "^13.7.0",
@@ -57,6 +56,6 @@
     "@types/ws": "^8.0.0",
     "prisma": "^7.5.0",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^6.0.2"
+    "typescript": "~5.9.2"
   }
 }
