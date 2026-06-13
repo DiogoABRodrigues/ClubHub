@@ -5,13 +5,25 @@ class DeviceController {
   async register(req: Request, res: Response) {
     try {
       const {
-        id, pushToken, platform,
+        id,
+        pushToken,
+        platform,
         news,
-        over19_goals, over19_matchday, over19_result,
-        sub19_goals,  sub19_matchday,  sub19_result,
-        sub17_goals,  sub17_matchday,  sub17_result,
-        sub15_goals,  sub15_matchday,  sub15_result,
-        sub13_goals,  sub13_matchday,  sub13_result,
+        over19_goals,
+        over19_matchday,
+        over19_result,
+        sub19_goals,
+        sub19_matchday,
+        sub19_result,
+        sub17_goals,
+        sub17_matchday,
+        sub17_result,
+        sub15_goals,
+        sub15_matchday,
+        sub15_result,
+        sub13_goals,
+        sub13_matchday,
+        sub13_result,
       } = req.body;
 
       if (!id || !pushToken || !platform) {
@@ -19,13 +31,25 @@ class DeviceController {
       }
 
       const device = await deviceService.upsertDevice({
-        id, pushToken, platform,
+        id,
+        pushToken,
+        platform,
         news,
-        over19_goals, over19_matchday, over19_result,
-        sub19_goals,  sub19_matchday,  sub19_result,
-        sub17_goals,  sub17_matchday,  sub17_result,
-        sub15_goals,  sub15_matchday,  sub15_result,
-        sub13_goals,  sub13_matchday,  sub13_result,
+        over19_goals,
+        over19_matchday,
+        over19_result,
+        sub19_goals,
+        sub19_matchday,
+        sub19_result,
+        sub17_goals,
+        sub17_matchday,
+        sub17_result,
+        sub15_goals,
+        sub15_matchday,
+        sub15_result,
+        sub13_goals,
+        sub13_matchday,
+        sub13_result,
       });
 
       return res.json(device);
@@ -42,20 +66,40 @@ class DeviceController {
 
       const {
         news,
-        over19_goals, over19_matchday, over19_result,
-        sub19_goals,  sub19_matchday,  sub19_result,
-        sub17_goals,  sub17_matchday,  sub17_result,
-        sub15_goals,  sub15_matchday,  sub15_result,
-        sub13_goals,  sub13_matchday,  sub13_result,
+        over19_goals,
+        over19_matchday,
+        over19_result,
+        sub19_goals,
+        sub19_matchday,
+        sub19_result,
+        sub17_goals,
+        sub17_matchday,
+        sub17_result,
+        sub15_goals,
+        sub15_matchday,
+        sub15_result,
+        sub13_goals,
+        sub13_matchday,
+        sub13_result,
       } = req.body;
 
       await deviceService.updatePreferences(id, {
         news,
-        over19_goals, over19_matchday, over19_result,
-        sub19_goals,  sub19_matchday,  sub19_result,
-        sub17_goals,  sub17_matchday,  sub17_result,
-        sub15_goals,  sub15_matchday,  sub15_result,
-        sub13_goals,  sub13_matchday,  sub13_result,
+        over19_goals,
+        over19_matchday,
+        over19_result,
+        sub19_goals,
+        sub19_matchday,
+        sub19_result,
+        sub17_goals,
+        sub17_matchday,
+        sub17_result,
+        sub15_goals,
+        sub15_matchday,
+        sub15_result,
+        sub13_goals,
+        sub13_matchday,
+        sub13_result,
       });
 
       return res.json({ success: true });

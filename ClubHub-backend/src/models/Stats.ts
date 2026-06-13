@@ -19,7 +19,11 @@ Stats.init(
   {
     playerExternalId: { type: DataTypes.INTEGER, allowNull: false },
     seasonId: { type: DataTypes.INTEGER, allowNull: false },
-    category: { type: DataTypes.STRING(10), allowNull: false, defaultValue: "over19" },
+    category: {
+      type: DataTypes.STRING(10),
+      allowNull: false,
+      defaultValue: "over19",
+    },
     gamesPlayed: { type: DataTypes.INTEGER, defaultValue: 0 },
     goals: { type: DataTypes.INTEGER, defaultValue: 0 },
     minutesPlayed: { type: DataTypes.INTEGER, defaultValue: 0 },

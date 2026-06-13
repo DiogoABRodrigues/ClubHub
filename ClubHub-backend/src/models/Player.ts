@@ -24,7 +24,11 @@ Player.init(
     name: { type: DataTypes.STRING, allowNull: false },
     photoUrl: { type: DataTypes.STRING, allowNull: true },
     age: { type: DataTypes.INTEGER, allowNull: true },
-    category: { type: DataTypes.STRING(10), allowNull: false, defaultValue: "over19" },
+    category: {
+      type: DataTypes.STRING(10),
+      allowNull: false,
+      defaultValue: "over19",
+    },
   },
   {
     sequelize,

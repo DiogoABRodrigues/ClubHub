@@ -37,10 +37,8 @@ class CacheService {
       if (keys.length) {
         await redis.del(keys);
       }
-
     } while (cursor !== "0");
   }
-  
 }
 
 export default new CacheService();

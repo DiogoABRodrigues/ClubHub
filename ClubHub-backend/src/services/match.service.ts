@@ -88,17 +88,11 @@ export default class MatchService {
     const category = (match as any).category ?? "over19";
 
     await cache.del(
-      CacheKeys.matches.bySeason(
-        match.seasonId as number,
-        category,
-      ),
+      CacheKeys.matches.bySeason(match.seasonId as number, category),
     );
 
     await cache.del(
-      CacheKeys.standings.bySeason(
-        match.seasonId as number,
-        category,
-      ),
+      CacheKeys.standings.bySeason(match.seasonId as number, category),
     );
 
     socketService.emitMatchUpdate(match);
@@ -157,12 +151,12 @@ export default class MatchService {
     const devices = await deviceService.getDevicesForResults(category);
     if (!devices.length) return;
 
-    const title = category === "over19"
-      ? "Fim do jogo!"
-      : `Fim do jogo, ${categoryLabel}!`;
-    const body = match.homeOrAway === "C"
-      ? `${match.teamName} ${match.result} ${match.opponent}`
-      : `${match.opponent} ${match.result} ${match.teamName}`;
+    const title =
+      category === "over19" ? "Fim do jogo!" : `Fim do jogo, ${categoryLabel}!`;
+    const body =
+      match.homeOrAway === "C"
+        ? `${match.teamName} ${match.result} ${match.opponent}`
+        : `${match.opponent} ${match.result} ${match.teamName}`;
 
     const response = await pushService.sendToDevices(devices, { title, body });
     await pushService.handleReceipts(response);
@@ -171,7 +165,9 @@ export default class MatchService {
   /** Label do escalão para usar no título - vazio para over19 */
   private _getCategoryLabel(category: string): string {
     if (category === "over19") return "";
-    const cfg = (teamConfig.categories as any[]).find((c) => c.category === category);
+    const cfg = (teamConfig.categories as any[]).find(
+      (c) => c.category === category,
+    );
     return cfg ? cfg.label : category;
   }
 }

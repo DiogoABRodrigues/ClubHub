@@ -28,11 +28,18 @@ export default class SquadController {
     const { status, category = "over19" } = req.body;
 
     if (!["active", "left", "error"].includes(status)) {
-      res.status(400).json({ error: "Status inválido. Use: active | left | error" });
+      res
+        .status(400)
+        .json({ error: "Status inválido. Use: active | left | error" });
       return;
     }
 
-    const entry = await service.updateStatus(playerExternalId, seasonId, status, category);
+    const entry = await service.updateStatus(
+      playerExternalId,
+      seasonId,
+      status,
+      category,
+    );
     res.json(entry);
   }
 }

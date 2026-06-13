@@ -17,7 +17,10 @@ export interface ScrapedMatch {
   outcome: "V" | "E" | "D" | null;
 }
 
-function parseCompetition(competitionStr: string): { name: string; season: string } {
+function parseCompetition(competitionStr: string): {
+  name: string;
+  season: string;
+} {
   const match = competitionStr.match(/(.+?)\s+(\d{4}\/\d{4}|\d{2}\/\d{2})$/);
   if (match) {
     let season = match[2];
@@ -39,25 +42,41 @@ async function getOrCreateSeason(seasonName: string) {
   return season;
 }
 
-async function getOrCreateCompetition(competitionStr: string, category: string) {
+async function getOrCreateCompetition(
+  competitionStr: string,
+  category: string,
+) {
   const { name, season: seasonName } = parseCompetition(competitionStr);
   const season = await getOrCreateSeason(seasonName);
 
-  let competition = await Competition.findOne({ where: { name, seasonId: season.id, category } });
+  let competition = await Competition.findOne({
+    where: { name, seasonId: season.id, category },
+  });
   if (!competition) {
     console.log(`   🆕 Nova competição: ${name} (${seasonName}) [${category}]`);
-    competition = await Competition.create({ name, seasonId: season.id, category });
+    competition = await Competition.create({
+      name,
+      seasonId: season.id,
+      category,
+    });
   }
   return competition;
 }
 
-export async function saveMatches(teamName: string, scrapedMatches: ScrapedMatch[], category: string) {
+export async function saveMatches(
+  teamName: string,
+  scrapedMatches: ScrapedMatch[],
+  category: string,
+) {
   for (const match of scrapedMatches) {
     let competitionId: number | null = null;
     let seasonId: number | null = null;
 
     if (match.competition) {
-      const competition = await getOrCreateCompetition(match.competition, category);
+      const competition = await getOrCreateCompetition(
+        match.competition,
+        category,
+      );
       competitionId = competition.id;
       seasonId = competition.seasonId;
     }
@@ -80,11 +99,16 @@ export async function saveMatches(teamName: string, scrapedMatches: ScrapedMatch
       category,
     });
   }
-  console.log(`✅ ${scrapedMatches.length} jogos guardados para ${teamName} [${category}]`);
+  console.log(
+    `✅ ${scrapedMatches.length} jogos guardados para ${teamName} [${category}]`,
+  );
 }
 
-export async function scrapeTeamMatches(cfg?: CategoryConfig): Promise<ScrapedMatch[]> {
-  const config = cfg ?? teamConfig.categories.find((c) => c.category === "over19")!;
+export async function scrapeTeamMatches(
+  cfg?: CategoryConfig,
+): Promise<ScrapedMatch[]> {
+  const config =
+    cfg ?? teamConfig.categories.find((c) => c.category === "over19")!;
 
   const browser = await getSharedBrowser();
   const page = await browser.newPage();
@@ -94,7 +118,10 @@ export async function scrapeTeamMatches(cfg?: CategoryConfig): Promise<ScrapedMa
   );
 
   console.log(`🌐 A aceder a: ${config.matches_url} [${config.category}]`);
-  await page.goto(config.matches_url, { waitUntil: "domcontentloaded", timeout: 60000 });
+  await page.goto(config.matches_url, {
+    waitUntil: "domcontentloaded",
+    timeout: 60000,
+  });
 
   try {
     await page.waitForSelector("button", { timeout: 5000 });
@@ -130,15 +157,18 @@ export async function scrapeTeamMatches(cfg?: CategoryConfig): Promise<ScrapedMa
 
     const date = $(cells[1]).text().trim();
     const time = $(cells[2]).text().trim();
-    const homeOrAway: "C" | "F" = $(cells[3]).text().trim() === "(F)" ? "F" : "C";
+    const homeOrAway: "C" | "F" =
+      $(cells[3]).text().trim() === "(F)" ? "F" : "C";
 
-    let opponent = $(cells[5]).find("a").text().trim() || $(cells[5]).text().trim();
+    let opponent =
+      $(cells[5]).find("a").text().trim() || $(cells[5]).text().trim();
     opponent = opponent.replace(/\s+B$/, "").trim();
 
     let result = $(cells[6]).text().trim() || null;
     if (result === "-" || result === "") result = null;
 
-    const competition = $(cells[7]).find("a").text().trim() || $(cells[7]).text().trim();
+    const competition =
+      $(cells[7]).find("a").text().trim() || $(cells[7]).text().trim();
 
     let round = $(cells[8]).text().trim();
     if (!round) {
@@ -148,10 +178,22 @@ export async function scrapeTeamMatches(cfg?: CategoryConfig): Promise<ScrapedMa
 
     if (!date || !opponent) return;
 
-    scrapedMatches.push({ date, time, homeOrAway, opponent, result, competition, round, outcome, seasonId: 0 });
+    scrapedMatches.push({
+      date,
+      time,
+      homeOrAway,
+      opponent,
+      result,
+      competition,
+      round,
+      outcome,
+      seasonId: 0,
+    });
   });
 
-  console.log(`📊 Total de jogos encontrados: ${scrapedMatches.length} [${config.category}]`);
+  console.log(
+    `📊 Total de jogos encontrados: ${scrapedMatches.length} [${config.category}]`,
+  );
 
   if (scrapedMatches.length > 0) {
     await saveMatches(config.teamName, scrapedMatches, config.category);

@@ -41,12 +41,12 @@ export default class SeasonService {
     const cached = await cache.get(key);
     if (cached) return cached as Season[];
 
-    const rows = await Match.findAll({
+    const rows = (await Match.findAll({
       attributes: ["seasonId"],
       where: { category, seasonId: { [Op.ne]: null } },
       group: ["seasonId"],
       raw: true,
-    }) as any[];
+    })) as any[];
 
     const seasonIds = rows.map((r: any) => r.seasonId).filter(Boolean);
     if (!seasonIds.length) return [];

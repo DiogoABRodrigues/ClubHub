@@ -36,10 +36,16 @@ class FeedbackController {
       const { type, message, deviceId } = req.body;
 
       if (!type || !["suggestion", "bug"].includes(type)) {
-        return res.status(400).json({ message: "Campo 'type' inválido. Use 'suggestion' ou 'bug'." });
+        return res
+          .status(400)
+          .json({
+            message: "Campo 'type' inválido. Use 'suggestion' ou 'bug'.",
+          });
       }
       if (!message || typeof message !== "string" || !message.trim()) {
-        return res.status(400).json({ message: "Campo 'message' é obrigatório." });
+        return res
+          .status(400)
+          .json({ message: "Campo 'message' é obrigatório." });
       }
 
       const imageUrl = await uploadFeedbackImage(req, type);
@@ -54,7 +60,9 @@ class FeedbackController {
       return res.status(201).json(feedback);
     } catch (error) {
       console.error("Erro ao guardar feedback:", error);
-      return res.status(500).json({ message: "Erro interno ao guardar feedback." });
+      return res
+        .status(500)
+        .json({ message: "Erro interno ao guardar feedback." });
     }
   }
 
@@ -65,7 +73,9 @@ class FeedbackController {
       return res.json(feedbacks);
     } catch (error) {
       console.error("Erro ao listar feedback:", error);
-      return res.status(500).json({ message: "Erro interno ao listar feedback." });
+      return res
+        .status(500)
+        .json({ message: "Erro interno ao listar feedback." });
     }
   }
 }

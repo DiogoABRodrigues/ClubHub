@@ -5,8 +5,7 @@ export const CacheKeys = {
 
   competitions: {
     all: "app:competitions:all",
-    bySeason: (seasonId: number) =>
-      `app:competitions:season:${seasonId}`,
+    bySeason: (seasonId: number) => `app:competitions:season:${seasonId}`,
   },
 
   matches: {

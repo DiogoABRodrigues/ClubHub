@@ -2,8 +2,8 @@ import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
 
 export type LegendItem = {
-  color: string;  // hex, ex: "#47d406"
-  label: string;  // ex: "Promoção à 1ª Divisão"
+  color: string; // hex, ex: "#47d406"
+  label: string; // ex: "Promoção à 1ª Divisão"
 };
 
 class Competition extends Model {
@@ -20,7 +20,11 @@ Competition.init(
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     name: { type: DataTypes.STRING, allowNull: false },
     seasonId: { type: DataTypes.INTEGER, allowNull: false },
-    category: { type: DataTypes.STRING(10), allowNull: false, defaultValue: "over19" },
+    category: {
+      type: DataTypes.STRING(10),
+      allowNull: false,
+      defaultValue: "over19",
+    },
     legend: {
       type: DataTypes.JSON,
       allowNull: true,

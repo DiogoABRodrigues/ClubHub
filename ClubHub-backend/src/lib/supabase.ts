@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
-import ws from 'ws'
+import { createClient } from "@supabase/supabase-js";
+import ws from "ws";
 
 export const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -8,5 +8,5 @@ export const supabase = createClient(
     realtime: {
       transport: ws as any,
     },
-  }
-)
+  },
+);

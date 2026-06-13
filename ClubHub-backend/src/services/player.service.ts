@@ -26,7 +26,9 @@ export default class PlayerService {
 
     const players = await Player.findAll({
       where: { externalId: externalIds, category },
-      include: [{ model: Stats, where: { seasonId, category }, required: false }],
+      include: [
+        { model: Stats, where: { seasonId, category }, required: false },
+      ],
     });
 
     const statusMap: Record<number, string> = {};
@@ -57,7 +59,9 @@ export default class PlayerService {
 
     const players = await Player.findAll({
       where: { externalId: externalIds, category },
-      include: [{ model: Stats, where: { seasonId, category }, required: false }],
+      include: [
+        { model: Stats, where: { seasonId, category }, required: false },
+      ],
     });
 
     const statusMap: Record<number, string> = {};
@@ -115,7 +119,9 @@ export default class PlayerService {
     status: "active" | "left" | "error",
     category: string = "over19",
   ) {
-    const entry = await Squad.findOne({ where: { playerExternalId, seasonId, category } });
+    const entry = await Squad.findOne({
+      where: { playerExternalId, seasonId, category },
+    });
     if (!entry) throw new Error("Squad entry not found");
 
     await entry.update({ status });

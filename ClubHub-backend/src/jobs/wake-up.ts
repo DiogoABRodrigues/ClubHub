@@ -10,5 +10,4 @@ export const wakeUpBackend = () => {
       .then((res) => console.log(`Wake-up ping enviado: ${res.status}`))
       .catch((err) => console.log("Erro ao enviar wake-up ping:", err));
   });
-
-}
+};

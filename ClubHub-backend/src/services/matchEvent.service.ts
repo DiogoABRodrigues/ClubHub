@@ -30,10 +30,7 @@ class MatchEventService {
 
     if (match?.seasonId != null) {
       await cache.del(
-        CacheKeys.matches.bySeason(
-          match.seasonId,
-          match.category ?? "over19"
-        )
+        CacheKeys.matches.bySeason(match.seasonId, match.category ?? "over19"),
       );
     }
 
@@ -83,10 +80,7 @@ class MatchEventService {
 
     if (match?.seasonId != null) {
       await cache.del(
-        CacheKeys.matches.bySeason(
-          match.seasonId,
-          match.category ?? "over19"
-        )
+        CacheKeys.matches.bySeason(match.seasonId, match.category ?? "over19"),
       );
     }
 
@@ -105,10 +99,7 @@ class MatchEventService {
 
     if (match?.seasonId != null) {
       await cache.del(
-        CacheKeys.matches.bySeason(
-          match.seasonId,
-          match.category ?? "over19"
-        )
+        CacheKeys.matches.bySeason(match.seasonId, match.category ?? "over19"),
       );
     }
 
@@ -153,17 +144,12 @@ class MatchEventService {
 
       switch (event.type) {
         case "goal":
-          title =
-            category === "over19"
-              ? "Golo!"
-              : `Golo, ${categoryLabel}!`;
+          title = category === "over19" ? "Golo!" : `Golo, ${categoryLabel}!`;
 
           // 🔥 AGORA o match já tem o resultado atualizado
           const freshMatch = await Match.findByPk(match!.id);
 
-          const result = freshMatch?.result
-            ? `\n[${freshMatch.result}]`
-            : "";
+          const result = freshMatch?.result ? `\n[${freshMatch.result}]` : "";
 
           body = `${playerName} - ${event.minute}'${result}`;
           break;
@@ -195,9 +181,7 @@ class MatchEventService {
   private _getCategoryLabel(category: string): string {
     if (category === "over19") return "";
 
-    const cfg = teamConfig.categories.find(
-      (c) => c.category === category
-    );
+    const cfg = teamConfig.categories.find((c) => c.category === category);
 
     return cfg ? cfg.label : category;
   }

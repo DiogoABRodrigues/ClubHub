@@ -8,8 +8,8 @@ class FeedbackService {
     deviceId?: string | null;
   }): Promise<Feedback> {
     return Feedback.create({
-      type:     data.type,
-      message:  data.message,
+      type: data.type,
+      message: data.message,
       imageUrl: data.imageUrl ?? null,
       deviceId: data.deviceId ?? null,
     });

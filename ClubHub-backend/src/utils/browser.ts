@@ -26,7 +26,7 @@ async function createBrowser(): Promise<Browser> {
   return puppeteer.launch({
     args: [
       ...chromium.args,
-      "--disable-dev-shm-usage",   // evita crashes por falta de memória partilhada
+      "--disable-dev-shm-usage", // evita crashes por falta de memória partilhada
       "--disable-gpu",
       "--no-sandbox",
       "--disable-setuid-sandbox",

@@ -34,15 +34,21 @@ export const startMatchReminderJob = () => {
           );
           if (!categoryMatches.length) continue;
 
-          const devices = await deviceService.getDevicesForMatchday(cfg.category);
+          const devices = await deviceService.getDevicesForMatchday(
+            cfg.category,
+          );
           if (!devices.length) continue;
 
-          const title = cfg.category === "over19"
-            ? "Dia de jogo!"
-            : `Dia de jogo, ${cfg.label}!`;
+          const title =
+            cfg.category === "over19"
+              ? "Dia de jogo!"
+              : `Dia de jogo, ${cfg.label}!`;
           const body = `Hoje é dia de jogo! Não te esqueças de apoiar o ${cfg.teamName}!`;
 
-          const response = await pushService.sendToDevices(devices, { title, body });
+          const response = await pushService.sendToDevices(devices, {
+            title,
+            body,
+          });
           await pushService.handleReceipts(response);
           console.log(`✅ Notificação de jogo enviada para ${cfg.label}`);
         }

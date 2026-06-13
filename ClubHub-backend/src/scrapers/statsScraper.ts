@@ -5,25 +5,35 @@ import { teamConfig, CategoryConfig } from "../config/teamConfig";
 import { getSharedBrowser } from "../utils/browser";
 
 async function getOrCreateSeason() {
-  const [season] = await Season.findOrCreate({ where: { year: teamConfig.currentSeason } });
+  const [season] = await Season.findOrCreate({
+    where: { year: teamConfig.currentSeason },
+  });
   return season;
 }
 
 export async function scrapeTeamStats(cfg?: CategoryConfig) {
-  const config = cfg ?? teamConfig.categories.find((c) => c.category === "over19")!;
+  const config =
+    cfg ?? teamConfig.categories.find((c) => c.category === "over19")!;
 
   const browser = await getSharedBrowser();
   const page = await browser.newPage();
 
   try {
-    await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36");
+    await page.setUserAgent(
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+    );
     await page.setViewport({ width: 1920, height: 1080 });
 
-    await page.goto(config.stats_url, { waitUntil: "domcontentloaded", timeout: 90000 });
+    await page.goto(config.stats_url, {
+      waitUntil: "domcontentloaded",
+      timeout: 90000,
+    });
 
     try {
       await page.evaluate(() => {
-        const btn = Array.from(document.querySelectorAll("button")).find((b) => b.textContent?.includes("Aceitar"));
+        const btn = Array.from(document.querySelectorAll("button")).find((b) =>
+          b.textContent?.includes("Aceitar"),
+        );
         if (btn) (btn as HTMLElement).click();
       });
     } catch {}
@@ -55,10 +65,19 @@ export async function scrapeTeamStats(cfg?: CategoryConfig) {
       const goals = parseInt($(tds[5]).text().trim()) || 0;
       const minutesPlayed = parseInt($(tds[9]).text().trim()) || 0;
 
-      stats.push({ externalId, name, position, gamesPlayed, goals, minutesPlayed });
+      stats.push({
+        externalId,
+        name,
+        position,
+        gamesPlayed,
+        goals,
+        minutesPlayed,
+      });
     });
 
-    console.log(`✅ Estatísticas encontradas: ${stats.length} [${config.category}]`);
+    console.log(
+      `✅ Estatísticas encontradas: ${stats.length} [${config.category}]`,
+    );
 
     const season = await getOrCreateSeason();
 

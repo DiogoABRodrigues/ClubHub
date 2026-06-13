@@ -5,10 +5,10 @@ export const sequelize = new Sequelize(process.env.DATABASE_URL!, {
   dialect: "postgres",
   logging: false,
   pool: {
-    max: 10,      // máximo de ligações
-    min: 2,       // mantém algumas abertas
+    max: 10, // máximo de ligações
+    min: 2, // mantém algumas abertas
     acquire: 30000, // tempo para tentar obter ligação
-    idle: 10000,    // fecha ligação inativa
+    idle: 10000, // fecha ligação inativa
   },
   dialectOptions: {
     ssl:

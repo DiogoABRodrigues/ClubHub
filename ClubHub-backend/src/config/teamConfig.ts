@@ -26,8 +26,10 @@ export const teamConfig = {
       teamName: "Adecas",
       players_url: "https://www.zerozero.pt/equipa/adecas/18231",
       matches_url: "https://www.zerozero.pt/equipa/adecas/18231/jogos?grp=1",
-      standings_url: "https://www.zerozero.pt/competicao/af-viana-do-castelo-2-divisao",
-      stats_url: "https://www.zerozero.pt/equipa/adecas/18231/jogadores?epoca_stats_id=155&o=j",
+      standings_url:
+        "https://www.zerozero.pt/competicao/af-viana-do-castelo-2-divisao",
+      stats_url:
+        "https://www.zerozero.pt/equipa/adecas/18231/jogadores?epoca_stats_id=155&o=j",
       teams_urls: [
         "https://www.zerozero.pt/competicao/af-viana-do-castelo-1-divisao",
         "https://www.zerozero.pt/competicao/af-viana-do-castelo-2-divisao",
@@ -40,8 +42,10 @@ export const teamConfig = {
       teamName: "Adecas",
       players_url: "https://www.zerozero.pt/equipa/adecas/32764?epoca_id=155",
       matches_url: "https://www.zerozero.pt/equipa/adecas/32764/jogos?grp=1",
-      standings_url: "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764",
-      stats_url: "https://www.zerozero.pt/equipa/adecas/32764/jogadores?compet_id_jogos=0&pais=0&epoca_stats_id=155&pos=0&o=min",
+      standings_url:
+        "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764",
+      stats_url:
+        "https://www.zerozero.pt/equipa/adecas/32764/jogadores?compet_id_jogos=0&pais=0&epoca_stats_id=155&pos=0&o=min",
       teams_urls: [
         "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764/equipas",
       ],
@@ -53,8 +57,10 @@ export const teamConfig = {
       teamName: "Adecas",
       players_url: "https://www.zerozero.pt/equipa/adecas/333884?epoca_id=155",
       matches_url: "https://www.zerozero.pt/equipa/adecas/333884/jogos",
-      standings_url: "https://www.zerozero.pt/edicao/af-viana-castelo-jun-d-fut9-2-f-serie-b-2025-26/212701",
-      stats_url: "https://www.zerozero.pt/equipa/adecas/32764/jogadores?compet_id_jogos=0&pais=0&epoca_stats_id=155&pos=0&o=min",
+      standings_url:
+        "https://www.zerozero.pt/edicao/af-viana-castelo-jun-d-fut9-2-f-serie-b-2025-26/212701",
+      stats_url:
+        "https://www.zerozero.pt/equipa/adecas/32764/jogadores?compet_id_jogos=0&pais=0&epoca_stats_id=155&pos=0&o=min",
       teams_urls: [
         "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764/equipas",
       ],
@@ -66,7 +72,9 @@ export function getEnabledCategories(): CategoryConfig[] {
   return teamConfig.categories.filter((c) => c.enabled);
 }
 
-export function getCategoryConfig(category: Category): CategoryConfig | undefined {
+export function getCategoryConfig(
+  category: Category,
+): CategoryConfig | undefined {
   return teamConfig.categories.find((c) => c.category === category);
 }
 

@@ -11,18 +11,31 @@ class DeviceService {
     pushToken: string;
     platform: "android" | "ios";
     news?: boolean;
-    over19_goals?: boolean;   over19_matchday?: boolean;   over19_result?: boolean;
-    sub19_goals?: boolean;    sub19_matchday?: boolean;    sub19_result?: boolean;
-    sub17_goals?: boolean;    sub17_matchday?: boolean;    sub17_result?: boolean;
-    sub15_goals?: boolean;    sub15_matchday?: boolean;    sub15_result?: boolean;
-    sub13_goals?: boolean;    sub13_matchday?: boolean;    sub13_result?: boolean;
+    over19_goals?: boolean;
+    over19_matchday?: boolean;
+    over19_result?: boolean;
+    sub19_goals?: boolean;
+    sub19_matchday?: boolean;
+    sub19_result?: boolean;
+    sub17_goals?: boolean;
+    sub17_matchday?: boolean;
+    sub17_result?: boolean;
+    sub15_goals?: boolean;
+    sub15_matchday?: boolean;
+    sub15_result?: boolean;
+    sub13_goals?: boolean;
+    sub13_matchday?: boolean;
+    sub13_result?: boolean;
   }) {
     await Device.upsert(data);
     await cacheDelPattern("devices:*");
     return await Device.findByPk(data.id);
   }
 
-  async updatePreferences(id: string, preferences: Partial<Omit<Device, "id" | "pushToken" | "platform">>) {
+  async updatePreferences(
+    id: string,
+    preferences: Partial<Omit<Device, "id" | "pushToken" | "platform">>,
+  ) {
     const [updatedRows] = await Device.update(preferences, { where: { id } });
     await cacheDelPattern("devices:*");
     return updatedRows;

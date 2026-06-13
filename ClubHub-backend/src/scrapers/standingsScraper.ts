@@ -43,10 +43,16 @@ function rgbaToHex(rgba: string): string | null {
 /** Extrai a cor da célula da posição */
 function extractRowColor($: cheerio.CheerioAPI, posCell: any): string | null {
   const style = $(posCell).attr("style") ?? "";
-  const match = style.match(/background-color:\s*(rgba?\([^)]+\)|#[0-9a-fA-F]+)/);
+  const match = style.match(
+    /background-color:\s*(rgba?\([^)]+\)|#[0-9a-fA-F]+)/,
+  );
   if (match) {
     const raw = match[1];
-    if (raw === "#ffffff" || raw.startsWith("rgba(234") || raw.startsWith("rgba(255")) {
+    if (
+      raw === "#ffffff" ||
+      raw.startsWith("rgba(234") ||
+      raw.startsWith("rgba(255")
+    ) {
       return null;
     }
     return raw.startsWith("#") ? raw : rgbaToHex(raw);
@@ -63,8 +69,11 @@ function extractExternalId(url: string): number | null {
   return m ? parseInt(m[1]) : null;
 }
 
-export async function scrapeStandings(cfg?: CategoryConfig): Promise<StandingRow[]> {
-  const config = cfg ?? teamConfig.categories.find((c) => c.category === "sub15")!;
+export async function scrapeStandings(
+  cfg?: CategoryConfig,
+): Promise<StandingRow[]> {
+  const config =
+    cfg ?? teamConfig.categories.find((c) => c.category === "sub15")!;
   const browser = await getSharedBrowser();
   const page = await browser.newPage();
   page.setDefaultTimeout(60000);
@@ -73,7 +82,9 @@ export async function scrapeStandings(cfg?: CategoryConfig): Promise<StandingRow
   );
 
   const externalId = extractExternalId(config.standings_url);
-  console.log(`🌐 A aceder a: ${config.standings_url} [${config.category}] (externalId: ${externalId})`);
+  console.log(
+    `🌐 A aceder a: ${config.standings_url} [${config.category}] (externalId: ${externalId})`,
+  );
 
   try {
     await page.goto(config.standings_url, {
@@ -85,7 +96,9 @@ export async function scrapeStandings(cfg?: CategoryConfig): Promise<StandingRow
       await page.evaluate(() => {
         const btns = Array.from(document.querySelectorAll("button"));
         const btn = btns.find(
-          (b) => b.textContent?.includes("Aceitar") || b.textContent?.includes("Accept"),
+          (b) =>
+            b.textContent?.includes("Aceitar") ||
+            b.textContent?.includes("Accept"),
         );
         if (btn) (btn as HTMLElement).click();
       });
@@ -111,7 +124,9 @@ export async function scrapeStandings(cfg?: CategoryConfig): Promise<StandingRow
     $(".legend table tr").each((_, row) => {
       const tdStyle = $(row).find("td").first().attr("style") ?? "";
       const labelText = $(row).find("td").last().text().trim();
-      const match = tdStyle.match(/background-color:\s*(rgba?\([^)]+\)|#[0-9a-fA-F]+)/);
+      const match = tdStyle.match(
+        /background-color:\s*(rgba?\([^)]+\)|#[0-9a-fA-F]+)/,
+      );
       if (match && labelText) {
         const hex = match[1].startsWith("#") ? match[1] : rgbaToHex(match[1]);
         if (hex) legendItems.push({ color: hex, label: labelText });
@@ -146,7 +161,9 @@ export async function scrapeStandings(cfg?: CategoryConfig): Promise<StandingRow
             teamNameCellIndex = i;
             const href = link.attr("href");
             if (href) {
-              teamUrl = href.startsWith("http") ? href : `https://www.zerozero.pt${href}`;
+              teamUrl = href.startsWith("http")
+                ? href
+                : `https://www.zerozero.pt${href}`;
             }
             break;
           }
@@ -156,20 +173,66 @@ export async function scrapeStandings(cfg?: CategoryConfig): Promise<StandingRow
       if (!teamName) continue;
 
       const n = teamNameCellIndex;
-      const points        = parseInt($(cells[n + 1]).text().trim()) || 0;
-      const matchesPlayed = parseInt($(cells[n + 2]).text().trim()) || 0;
-      const wins          = parseInt($(cells[n + 3]).text().trim()) || 0;
-      const draws         = parseInt($(cells[n + 4]).text().trim()) || 0;
-      const losses        = parseInt($(cells[n + 5]).text().trim()) || 0;
-      const goalsFor      = parseInt($(cells[n + 6]).text().trim()) || 0;
-      const goalsAgainst  = parseInt($(cells[n + 7]).text().trim()) || 0;
-      const gdText        = $(cells[n + 8]).text().trim();
-      const goalDifference = parseInt(gdText.replace(/[^0-9-]/g, "")) || goalsFor - goalsAgainst;
+      const points =
+        parseInt(
+          $(cells[n + 1])
+            .text()
+            .trim(),
+        ) || 0;
+      const matchesPlayed =
+        parseInt(
+          $(cells[n + 2])
+            .text()
+            .trim(),
+        ) || 0;
+      const wins =
+        parseInt(
+          $(cells[n + 3])
+            .text()
+            .trim(),
+        ) || 0;
+      const draws =
+        parseInt(
+          $(cells[n + 4])
+            .text()
+            .trim(),
+        ) || 0;
+      const losses =
+        parseInt(
+          $(cells[n + 5])
+            .text()
+            .trim(),
+        ) || 0;
+      const goalsFor =
+        parseInt(
+          $(cells[n + 6])
+            .text()
+            .trim(),
+        ) || 0;
+      const goalsAgainst =
+        parseInt(
+          $(cells[n + 7])
+            .text()
+            .trim(),
+        ) || 0;
+      const gdText = $(cells[n + 8])
+        .text()
+        .trim();
+      const goalDifference =
+        parseInt(gdText.replace(/[^0-9-]/g, "")) || goalsFor - goalsAgainst;
 
       standings.push({
-        position, teamName, teamUrl,
-        points, matchesPlayed, wins, draws, losses,
-        goalsFor, goalsAgainst, goalDifference,
+        position,
+        teamName,
+        teamUrl,
+        points,
+        matchesPlayed,
+        wins,
+        draws,
+        losses,
+        goalsFor,
+        goalsAgainst,
+        goalDifference,
         rowColor,
       });
     }
@@ -208,7 +271,12 @@ export async function scrapeStandings(cfg?: CategoryConfig): Promise<StandingRow
     }
 
     if (standings.length > 0) {
-      await saveStandings(standings, competition.id, season.id, config.category);
+      await saveStandings(
+        standings,
+        competition.id,
+        season.id,
+        config.category,
+      );
     }
 
     // ── Guarda a legenda na Competition correta ──
@@ -220,13 +288,17 @@ export async function scrapeStandings(cfg?: CategoryConfig): Promise<StandingRow
         return true;
       });
       await competition.update({ legend: dedupedLegend });
-      console.log(`📋 Legenda guardada em "${competition.name}" (${dedupedLegend.length} entradas)`);
+      console.log(
+        `📋 Legenda guardada em "${competition.name}" (${dedupedLegend.length} entradas)`,
+      );
     }
 
     return standings;
   } catch (error) {
     console.error("❌ Erro durante o scraping:", error);
-    try { await page.screenshot({ path: "error-screenshot.png" }); } catch {}
+    try {
+      await page.screenshot({ path: "error-screenshot.png" });
+    } catch {}
     throw error;
   } finally {
     await page.close();
@@ -244,7 +316,10 @@ export async function saveStandings(
   for (const row of standings) {
     let team = await Team.findOne({ where: { name: row.teamName } });
     if (!team) {
-      team = await Team.create({ name: row.teamName, externalUrl: row.teamUrl });
+      team = await Team.create({
+        name: row.teamName,
+        externalUrl: row.teamUrl,
+      });
     }
 
     data.push({
@@ -268,5 +343,7 @@ export async function saveStandings(
   await Standing.destroy({ where: { competitionId, seasonId, category } });
   await Standing.bulkCreate(data);
 
-  console.log(`✅ Standings guardadas (competição ${competitionId}, season ${seasonId}, ${category})`);
+  console.log(
+    `✅ Standings guardadas (competição ${competitionId}, season ${seasonId}, ${category})`,
+  );
 }

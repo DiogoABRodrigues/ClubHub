@@ -32,7 +32,9 @@ export default class SquadService {
     status: "active" | "left" | "error",
     category: string = "over19",
   ) {
-    const entry = await Squad.findOne({ where: { playerExternalId, seasonId, category } });
+    const entry = await Squad.findOne({
+      where: { playerExternalId, seasonId, category },
+    });
     if (!entry) throw new Error("Squad entry not found");
 
     await entry.update({ status });

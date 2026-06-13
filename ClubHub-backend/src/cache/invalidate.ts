@@ -23,7 +23,9 @@ class CacheInvalidator {
         break;
 
       case "standings":
-        await cache.del(CacheKeys.standings.bySeason(params.seasonId, category));
+        await cache.del(
+          CacheKeys.standings.bySeason(params.seasonId, category),
+        );
         break;
 
       case "squad":

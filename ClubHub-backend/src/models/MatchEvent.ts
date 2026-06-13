@@ -5,7 +5,12 @@ import { sequelize } from "../config/database";
 class MatchEvent extends Model {
   public id!: number;
   public matchId!: number;
-  public type!: "goal" | "yellow_card" | "red_card" | "substitution" | "penalty_shootout";
+  public type!:
+    | "goal"
+    | "yellow_card"
+    | "red_card"
+    | "substitution"
+    | "penalty_shootout";
   public minute!: number;
   public phase?: "1st" | "2nd" | "extra" | "penalties" | null;
 
@@ -40,7 +45,13 @@ MatchEvent.init(
     },
 
     type: {
-      type: DataTypes.ENUM("goal", "yellow_card", "red_card", "substitution", "penalty_shootout"),
+      type: DataTypes.ENUM(
+        "goal",
+        "yellow_card",
+        "red_card",
+        "substitution",
+        "penalty_shootout",
+      ),
       allowNull: false,
     },
 

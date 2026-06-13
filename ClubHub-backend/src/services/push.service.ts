@@ -5,12 +5,12 @@ import Device from "../models/Device";
 class PushService {
   async sendToDevices(
     devices: any[],
-    payload: { 
-      title: string; 
-      body: string; 
-      imageUrl?: string
-      mainTeamLogoUrl?: string
-      otherTeamLogoUrl?: string
+    payload: {
+      title: string;
+      body: string;
+      imageUrl?: string;
+      mainTeamLogoUrl?: string;
+      otherTeamLogoUrl?: string;
     },
   ) {
     const tokens = devices

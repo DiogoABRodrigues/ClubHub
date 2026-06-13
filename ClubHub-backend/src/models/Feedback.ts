@@ -12,13 +12,18 @@ class Feedback extends Model {
 
 Feedback.init(
   {
-    id:       { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    type:     { type: DataTypes.ENUM("suggestion", "bug"), allowNull: false },
-    message:  { type: DataTypes.TEXT, allowNull: false },
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    type: { type: DataTypes.ENUM("suggestion", "bug"), allowNull: false },
+    message: { type: DataTypes.TEXT, allowNull: false },
     imageUrl: { type: DataTypes.STRING, allowNull: true },
     deviceId: { type: DataTypes.STRING, allowNull: true },
   },
-  { sequelize, modelName: "Feedback", tableName: "feedbacks", timestamps: true },
+  {
+    sequelize,
+    modelName: "Feedback",
+    tableName: "feedbacks",
+    timestamps: true,
+  },
 );
 
 export default Feedback;

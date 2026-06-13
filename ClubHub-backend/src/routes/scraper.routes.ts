@@ -28,7 +28,9 @@ router.post(
       const results: any = {};
 
       for (const cfg of categories) {
-        console.log(`\n🏃 A fazer scrape do escalão: ${cfg.label} (${cfg.category})`);
+        console.log(
+          `\n🏃 A fazer scrape do escalão: ${cfg.label} (${cfg.category})`,
+        );
 
         const matches = await scrapeTeamMatches(cfg);
         const standings = await scrapeStandings(cfg);
@@ -60,7 +62,9 @@ router.post(
       });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: "Erro ao executar scraper" });
+      res
+        .status(500)
+        .json({ success: false, message: "Erro ao executar scraper" });
     } finally {
       await closeSharedBrowser();
     }
@@ -78,7 +82,12 @@ router.post(
     const cfg = categories.find((c) => c.category === category);
 
     if (!cfg) {
-      res.status(404).json({ success: false, message: `Escalão "${category}" não encontrado ou desactivado` });
+      res
+        .status(404)
+        .json({
+          success: false,
+          message: `Escalão "${category}" não encontrado ou desactivado`,
+        });
       return;
     }
 
@@ -107,7 +116,9 @@ router.post(
       });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: "Erro ao executar scraper" });
+      res
+        .status(500)
+        .json({ success: false, message: "Erro ao executar scraper" });
     } finally {
       await closeSharedBrowser();
     }

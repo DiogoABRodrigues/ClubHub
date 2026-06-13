@@ -20,7 +20,10 @@ async function restartBrowser() {
   await new Promise((r) => setTimeout(r, 2000));
 }
 
-if (!process.env.JWT_ACCESS_SECRET || process.env.JWT_ACCESS_SECRET.length < 32) {
+if (
+  !process.env.JWT_ACCESS_SECRET ||
+  process.env.JWT_ACCESS_SECRET.length < 32
+) {
   throw new Error("JWT_ACCESS_SECRET fraco ou ausente");
 }
 
@@ -43,9 +46,9 @@ async function startServer() {
     //await scrapeStandings();
     //await scrapeTeamStats();
     //await scrapeAllTeams();
-  
+
     //wait restartBrowser();
-  
+
     await redis.flushDb();
     console.log("DB ligada");
 
