@@ -154,12 +154,13 @@ export const Home = ({ navigation }: any) => {
         )}
 
         {/* PRÓXIMO JOGO */}
-        {nextMatch && (
+        {(
           <View style={styles.section}>
             <View style={styles.sectionTitleRow}>
               <Ionicons name="calendar-outline" size={16} color={COLORS.secondary} />
               <Text style={styles.sectionTitle}>Próximo Jogo</Text>
             </View>
+            {nextMatch && 
             <MatchCard
               match={nextMatch}
               homeLogo={getTeamLogo(getHomeTeam(nextMatch)) || ""}
@@ -167,6 +168,12 @@ export const Home = ({ navigation }: any) => {
               onPress={() => navigateToMatchDetail(nextMatch.id)}
               competition={competitions.find((c) => c.id === nextMatch.competitionId)}
             />
+              || (
+              <EmptyState
+                title="Sem jogos agendados"
+                message="Volta mais tarde para veres os próximos jogos."
+              />
+            )}
           </View>
         )}
 

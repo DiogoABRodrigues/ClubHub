@@ -41,7 +41,7 @@ const MatchesSection = React.memo(
     getHomeTeam,
     getAwayTeam,
   }: MatchesSectionProps) => {
-    const limitedMatches = showAll ? matches : matches.slice(0, 3);
+    const limitedMatches = showAll ? matches : matches.slice(0, 4);
     const { adminMode } = useAuth();
     const { competitions } = useCompetitions();
     const competitionsMap = useMemo(() => {
@@ -57,27 +57,34 @@ const MatchesSection = React.memo(
     };
 
     return (
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          {isLive ? (
-            <View style={styles.livePill}>
-              <View style={styles.liveDot} />
-              <Text style={styles.livePillText}>{title}</Text>
-            </View>
-          ) : (
-            <Text style={styles.sectionTitle}>{title}</Text>
-          )}
-
-          {matches.length > 3 && (
-            <TouchableOpacity onPress={toggleShowAll}>
-              <Text style={styles.showMoreInline}>
-                {showAll ? "Ver menos" : "Ver todos"}
-              </Text>
-            </TouchableOpacity>
-          )}
+  <View style={styles.section}>
+    <View style={styles.sectionHeader}>
+      {isLive ? (
+        <View style={styles.livePill}>
+          <View style={styles.liveDot} />
+          <Text style={styles.livePillText}>{title}</Text>
         </View>
+      ) : (
+        <Text style={styles.sectionTitle}>{title}</Text>
+      )}
+      {matches.length > 4 && (
+        <TouchableOpacity onPress={toggleShowAll}>
+          <Text style={styles.showMoreInline}>
+            {showAll ? "Ver menos" : "Ver todos"}
+          </Text>
+        </TouchableOpacity>
+      )}
+    </View>
 
-        {limitedMatches.map((match) => (
+    {/* EmptyState FORA do sectionHeader */}
+    {matches.length < 1 && (
+      <EmptyState
+        title="Sem jogos agendados"
+        message="Volta mais tarde para veres os próximos jogos."
+      />
+    )}
+
+    {limitedMatches.map((match) => (
           <MatchCard
             key={match.id}
             match={match}
@@ -183,7 +190,7 @@ export const Matches = ({ navigation }: any) => {
         />
       )}
 
-      {showUpcoming && upcomingMatches.length > 0 && (
+      {showUpcoming && (
         <MatchesSection
           title="Próximos jogos"
           matches={upcomingMatches}
@@ -194,8 +201,8 @@ export const Matches = ({ navigation }: any) => {
           getHomeTeam={getHomeTeam}
           getAwayTeam={getAwayTeam}
         />
-      )}
-
+      )
+      }
       {showFinished && finishedMatches.length > 0 && (
         <MatchesSection
           title="Últimos Resultados"
