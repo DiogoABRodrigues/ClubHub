@@ -1,6 +1,9 @@
-const { withDangerousMod, withAndroidManifest } = require('@expo/config-plugins');
-const fs = require('fs');
-const path = require('path');
+const {
+  withDangerousMod,
+  withAndroidManifest,
+} = require("@expo/config-plugins");
+const fs = require("fs");
+const path = require("path");
 
 const COLORS = `<?xml version="1.0" encoding="utf-8"?>
 <resources>
@@ -35,30 +38,36 @@ const NETWORK_SECURITY_CONFIG = `<?xml version="1.0" encoding="utf-8"?>
 // Passo 1: escreve os ficheiros XML em res/
 const withNightModeFiles = (config) => {
   return withDangerousMod(config, [
-    'android',
+    "android",
     async (config) => {
       const resDir = path.join(
         config.modRequest.platformProjectRoot,
-        'app', 'src', 'main', 'res'
+        "app",
+        "src",
+        "main",
+        "res",
       );
 
       // values-night/colors.xml
-      const nightColorsDir = path.join(resDir, 'values-night');
+      const nightColorsDir = path.join(resDir, "values-night");
       fs.mkdirSync(nightColorsDir, { recursive: true });
-      fs.writeFileSync(path.join(nightColorsDir, 'colors.xml'), COLORS);
+      fs.writeFileSync(path.join(nightColorsDir, "colors.xml"), COLORS);
 
       // values-night/styles.xml
-      fs.writeFileSync(path.join(nightColorsDir, 'styles.xml'), STYLES);
+      fs.writeFileSync(path.join(nightColorsDir, "styles.xml"), STYLES);
 
       // values-v31/colors.xml (Android 12+)
-      const v31Dir = path.join(resDir, 'values-v31');
+      const v31Dir = path.join(resDir, "values-v31");
       fs.mkdirSync(v31Dir, { recursive: true });
-      fs.writeFileSync(path.join(v31Dir, 'colors.xml'), COLORS);
+      fs.writeFileSync(path.join(v31Dir, "colors.xml"), COLORS);
 
       // res/xml/network_security_config.xml
-      const xmlDir = path.join(resDir, 'xml');
+      const xmlDir = path.join(resDir, "xml");
       fs.mkdirSync(xmlDir, { recursive: true });
-      fs.writeFileSync(path.join(xmlDir, 'network_security_config.xml'), NETWORK_SECURITY_CONFIG);
+      fs.writeFileSync(
+        path.join(xmlDir, "network_security_config.xml"),
+        NETWORK_SECURITY_CONFIG,
+      );
 
       return config;
     },
@@ -69,7 +78,8 @@ const withNightModeFiles = (config) => {
 const withNetworkSecurityManifest = (config) => {
   return withAndroidManifest(config, (config) => {
     const application = config.modResults.manifest.application[0];
-    application.$['android:networkSecurityConfig'] = '@xml/network_security_config';
+    application.$["android:networkSecurityConfig"] =
+      "@xml/network_security_config";
     return config;
   });
 };

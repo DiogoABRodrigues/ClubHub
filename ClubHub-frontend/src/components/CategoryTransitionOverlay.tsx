@@ -11,9 +11,9 @@ interface CategoryTransitionOverlayProps {
  * Faz fade-in rápido quando `visible=true` e fade-out quando volta a false.
  * Impede que o utilizador veja os flashes de re-render dos dados.
  */
-export const CategoryTransitionOverlay: React.FC<CategoryTransitionOverlayProps> = ({
-  visible,
-}) => {
+export const CategoryTransitionOverlay: React.FC<
+  CategoryTransitionOverlayProps
+> = ({ visible }) => {
   const opacity = useRef(new Animated.Value(0)).current;
   const pointerRef = useRef<"none" | "box-none">("none");
 

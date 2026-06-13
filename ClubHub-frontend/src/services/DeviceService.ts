@@ -11,11 +11,21 @@ export interface DevicePayload {
   pushToken: string;
   platform: string;
   news: boolean;
-  over19_goals: boolean;    over19_matchday: boolean;   over19_result: boolean;
-  sub19_goals: boolean;     sub19_matchday: boolean;    sub19_result: boolean;
-  sub17_goals: boolean;     sub17_matchday: boolean;    sub17_result: boolean;
-  sub15_goals: boolean;     sub15_matchday: boolean;    sub15_result: boolean;
-  sub13_goals: boolean;     sub13_matchday: boolean;    sub13_result: boolean;
+  over19_goals: boolean;
+  over19_matchday: boolean;
+  over19_result: boolean;
+  sub19_goals: boolean;
+  sub19_matchday: boolean;
+  sub19_result: boolean;
+  sub17_goals: boolean;
+  sub17_matchday: boolean;
+  sub17_result: boolean;
+  sub15_goals: boolean;
+  sub15_matchday: boolean;
+  sub15_result: boolean;
+  sub13_goals: boolean;
+  sub13_matchday: boolean;
+  sub13_result: boolean;
 }
 
 export const DeviceService = {
@@ -23,7 +33,10 @@ export const DeviceService = {
     await api.post("/device", payload);
   },
 
-  updatePreferences: async (id: string, payload: Partial<Omit<DevicePayload, "id" | "pushToken" | "platform">>) => {
+  updatePreferences: async (
+    id: string,
+    payload: Partial<Omit<DevicePayload, "id" | "pushToken" | "platform">>,
+  ) => {
     await api.patch(`/device/${id}`, payload);
   },
 

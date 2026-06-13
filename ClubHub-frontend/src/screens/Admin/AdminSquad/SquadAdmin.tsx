@@ -30,8 +30,8 @@ const STATUS_LABELS: Record<SquadStatus, string> = {
 
 const STATUS_COLORS: Record<SquadStatus, string> = {
   active: "#22c55e",
-  left:   "#f59e0b",
-  error:  "#ef4444",
+  left: "#f59e0b",
+  error: "#ef4444",
 };
 
 /* ---------------- CARD MEMO ---------------- */
@@ -47,14 +47,14 @@ const PlayerCard = React.memo(
     const lastName = rest.join(" ");
     const currentStatus: SquadStatus = player.squadStatus ?? "active";
 
-    const isLeft  = currentStatus === "left";
+    const isLeft = currentStatus === "left";
     const isError = currentStatus === "error";
 
     return (
       <View
         style={[
           styles.playerCard,
-          isLeft  && { opacity: 0.55 },
+          isLeft && { opacity: 0.55 },
           isError && { opacity: 0.25 },
         ]}
       >
@@ -102,7 +102,13 @@ const PlayerCard = React.memo(
             borderColor: STATUS_COLORS[currentStatus],
           }}
         >
-          <Text style={{ fontSize: 9, color: STATUS_COLORS[currentStatus], fontWeight: "600" }}>
+          <Text
+            style={{
+              fontSize: 9,
+              color: STATUS_COLORS[currentStatus],
+              fontWeight: "600",
+            }}
+          >
             Mudar estado
           </Text>
         </TouchableOpacity>
@@ -162,9 +168,9 @@ export function AdminSquadScreen() {
   const handleChangeStatus = useCallback(
     (player: Player) => {
       const current: SquadStatus = player.squadStatus ?? "active";
-      const options: SquadStatus[] = (["active", "left", "error"] as SquadStatus[]).filter(
-        (s) => s !== current,
-      );
+      const options: SquadStatus[] = (
+        ["active", "left", "error"] as SquadStatus[]
+      ).filter((s) => s !== current);
 
       Alert.alert(
         "Mudar estado",

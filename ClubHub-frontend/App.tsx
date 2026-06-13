@@ -34,17 +34,17 @@ export default function App() {
     <GestureHandlerRootView style={styles.container}>
       <QueryClientProvider client={queryClient}>
         <CategoryProvider>
-        <SelectedSeasonProvider>
-        <AuthProvider>
-          <SocketProvider>
-            {!splashDone ? (
-              <SplashScreenComponent onFinish={handleSplashFinish} />
-            ) : (
-              <AppNavigator />
-            )}
-          </SocketProvider>
-        </AuthProvider>
-        </SelectedSeasonProvider>
+          <SelectedSeasonProvider>
+            <AuthProvider>
+              <SocketProvider>
+                {!splashDone ? (
+                  <SplashScreenComponent onFinish={handleSplashFinish} />
+                ) : (
+                  <AppNavigator />
+                )}
+              </SocketProvider>
+            </AuthProvider>
+          </SelectedSeasonProvider>
         </CategoryProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>

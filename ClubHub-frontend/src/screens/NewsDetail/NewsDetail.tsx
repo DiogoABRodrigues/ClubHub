@@ -58,13 +58,11 @@ export const NewsDetail = ({ route, navigation }: any) => {
   const isEmpty = news.length === 0;
 
   const [refreshing, setRefreshing] = useState(false);
-  
+
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await Promise.all([
-        refreshNews(),
-      ]);
+      await Promise.all([refreshNews()]);
     } finally {
       setRefreshing(false);
     }
@@ -75,12 +73,12 @@ export const NewsDetail = ({ route, navigation }: any) => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
+          </TouchableOpacity>
 
           <View style={styles.titleContainer}>
             <Text style={styles.headerTitle}>News</Text>
@@ -88,10 +86,10 @@ export const NewsDetail = ({ route, navigation }: any) => {
         </View>
       </View>
       {isEmpty && (
-            <EmptyState
-              title="Não foi possível encontrar informação"
-              message="Por favor tenta novamente mais tarde."
-            />
+        <EmptyState
+          title="Não foi possível encontrar informação"
+          message="Por favor tenta novamente mais tarde."
+        />
       )}
 
       <ScrollView contentContainerStyle={styles.content}>

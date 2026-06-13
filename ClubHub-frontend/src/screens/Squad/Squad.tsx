@@ -4,7 +4,10 @@ import { FlashList } from "@shopify/flash-list";
 import { usePlayers } from "../../hooks/usePlayers";
 import { Player } from "../../models/Player";
 import { styles as globalStyles } from "./Squad.styles";
-import { getPositionOrder, mapToMainPosition } from "../../utils/playerPositionUtils";
+import {
+  getPositionOrder,
+  mapToMainPosition,
+} from "../../utils/playerPositionUtils";
 import { PlayerCardModal } from "../../components/PlayerCardModal";
 import { EmptyState } from "../../components/EmptyState";
 
@@ -48,25 +51,19 @@ const PlayerCard = React.memo(
           }
           style={[
             globalStyles.playerImage,
-            hasLeft && { tintColor: undefined }, 
+            hasLeft && { tintColor: undefined },
           ]}
           resizeMode="contain"
         />
         <Text
-          style={[
-            globalStyles.playerName,
-            hasLeft && { color: "#888" },
-          ]}
+          style={[globalStyles.playerName, hasLeft && { color: "#888" }]}
           numberOfLines={1}
         >
           {firstName}
         </Text>
 
         <Text
-          style={[
-            globalStyles.playerName,
-            hasLeft && { color: "#888" },
-          ]}
+          style={[globalStyles.playerName, hasLeft && { color: "#888" }]}
           numberOfLines={1}
         >
           {lastName}
@@ -135,9 +132,7 @@ export const SquadScreen = React.memo(function SquadScreen() {
       if (item.type === "header") {
         return (
           <View style={globalStyles.positionHeader}>
-            <Text style={globalStyles.positionHeaderText}>
-              {item.position}
-            </Text>
+            <Text style={globalStyles.positionHeaderText}>{item.position}</Text>
           </View>
         );
       }
@@ -156,12 +151,12 @@ export const SquadScreen = React.memo(function SquadScreen() {
   const isEmpty = visiblePlayers.length === 0;
   return (
     <>
-          {isEmpty && (
-                <EmptyState
-                  title="Não foi possível encontrar informação"
-                  message="Por favor tenta novamente mais tarde."
-                />
-          )}
+      {isEmpty && (
+        <EmptyState
+          title="Não foi possível encontrar informação"
+          message="Por favor tenta novamente mais tarde."
+        />
+      )}
       <FlashList
         data={data}
         renderItem={renderItem}

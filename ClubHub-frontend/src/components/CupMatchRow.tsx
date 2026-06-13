@@ -41,11 +41,7 @@ const TeamLogo = ({ uri }: { uri?: string }) => {
         },
       ]}
     >
-      <Ionicons
-        name="shield-outline"
-        size={14}
-        color={COLORS.textMuted}
-      />
+      <Ionicons name="shield-outline" size={14} color={COLORS.textMuted} />
     </View>
   );
 };
@@ -74,11 +70,11 @@ export const CupMatchRow = React.memo(({ match, onPress }: Props) => {
     const map: Record<string, any> = {};
 
     teams.forEach((t) => {
-        map[t.name.trim().toLowerCase()] = t;
+      map[t.name.trim().toLowerCase()] = t;
     });
 
     return map;
-    }, [teams]);
+  }, [teams]);
 
   const homeLogo = teamMap[homeTeam.trim().toLowerCase()]?.logoUrl;
 
@@ -95,7 +91,14 @@ export const CupMatchRow = React.memo(({ match, onPress }: Props) => {
     }
     if (homeScore === null || awayScore === null) return false;
     return parseInt(homeScore) > parseInt(awayScore);
-  }, [isFinished, homeScore, awayScore, match.decidedByPenalties, match.outcome, match.homeOrAway]);
+  }, [
+    isFinished,
+    homeScore,
+    awayScore,
+    match.decidedByPenalties,
+    match.outcome,
+    match.homeOrAway,
+  ]);
 
   const awayWon = useMemo(() => {
     if (!isFinished) return false;
@@ -105,7 +108,14 @@ export const CupMatchRow = React.memo(({ match, onPress }: Props) => {
     }
     if (homeScore === null || awayScore === null) return false;
     return parseInt(awayScore) > parseInt(homeScore);
-  }, [isFinished, homeScore, awayScore, match.decidedByPenalties, match.outcome, match.homeOrAway]);
+  }, [
+    isFinished,
+    homeScore,
+    awayScore,
+    match.decidedByPenalties,
+    match.outcome,
+    match.homeOrAway,
+  ]);
 
   // Formata a data curta: "15 jun"
   const shortDate = useMemo(() => {
@@ -118,27 +128,23 @@ export const CupMatchRow = React.memo(({ match, onPress }: Props) => {
   const isAwayAppTeam = awayTeam.trim().toLowerCase() === appTeamName;
 
   return (
-    <TouchableOpacity
-    style={styles.card}
-    activeOpacity={0.8}
-    onPress={onPress}
-  >
+    <TouchableOpacity style={styles.card} activeOpacity={0.8} onPress={onPress}>
       <View style={styles.row}>
         {/* Casa */}
         <View style={styles.teamContainer}>
-        <TeamLogo uri={homeLogo} />
+          <TeamLogo uri={homeLogo} />
 
-        <Text
+          <Text
             style={[
-            styles.teamName,
-            homeWon && styles.winner,
-            !homeWon && isFinished && styles.loser,
-            isHomeAppTeam && styles.appTeam,
+              styles.teamName,
+              homeWon && styles.winner,
+              !homeWon && isFinished && styles.loser,
+              isHomeAppTeam && styles.appTeam,
             ]}
             numberOfLines={1}
-        >
+          >
             {homeTeam}
-        </Text>
+          </Text>
         </View>
 
         {/* Marcador / data */}
@@ -149,7 +155,13 @@ export const CupMatchRow = React.memo(({ match, onPress }: Props) => {
                 {homeScore} - {awayScore}
               </Text>
               {match.decidedByPenalties && (
-                <Text style={{ fontSize: 10, color: COLORS.textMuted, textAlign: "center" }}>
+                <Text
+                  style={{
+                    fontSize: 10,
+                    color: COLORS.textMuted,
+                    textAlign: "center",
+                  }}
+                >
                   após g.p.
                 </Text>
               )}
@@ -161,20 +173,20 @@ export const CupMatchRow = React.memo(({ match, onPress }: Props) => {
 
         {/* Fora */}
         <View style={styles.teamContainerRight}>
-        <Text
+          <Text
             style={[
-            styles.teamName,
-            styles.teamNameRight,
-            awayWon && styles.winner,
-            !awayWon && isFinished && styles.loser,
-            isAwayAppTeam && styles.appTeam,
+              styles.teamName,
+              styles.teamNameRight,
+              awayWon && styles.winner,
+              !awayWon && isFinished && styles.loser,
+              isAwayAppTeam && styles.appTeam,
             ]}
             numberOfLines={1}
-        >
+          >
             {awayTeam}
-        </Text>
+          </Text>
 
-        <TeamLogo uri={awayLogo} />
+          <TeamLogo uri={awayLogo} />
         </View>
       </View>
 

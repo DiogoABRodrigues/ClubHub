@@ -62,10 +62,10 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
   const { selectedSeason: currentSeason } = useSelectedSeason();
 
   const navigateToMatchDetail = (matchId: number) => {
-      navigation.navigate(adminMode ? "AdminMatchDetail" : "MatchDetail", {
-        id: matchId,
-      });
-    };
+    navigation.navigate(adminMode ? "AdminMatchDetail" : "MatchDetail", {
+      id: matchId,
+    });
+  };
 
   const sections = useMemo<Section[]>(() => {
     if (!currentSeason || !competitions.length) return [];
@@ -102,9 +102,7 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
           .map(([round, roundMatches]) => ({
             round,
             matches: roundMatches.sort(
-              (a, b) =>
-                new Date(b.date).getTime() -
-                new Date(a.date).getTime(),
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
             ),
           }))
           .sort(sortRounds);
@@ -134,62 +132,42 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
     }
 
     return result;
-  }, [
-    competitions,
-    standings,
-    matches,
-    currentSeason,
-  ]);
+  }, [competitions, standings, matches, currentSeason]);
 
-  const renderItem = 
-    ({ item, section }: { item: any; section: Section }) => {
-      if (section.type === "league") {
-        return <LeagueTableRow standing={item} />;
-      }
-
-      const round = item as CupRound;
-
-      return (
-        <View style={styles.cupRoundBlock}>
-          <Text style={styles.roundLabel}>
-            {round.round}
-          </Text>
-
-          {round.matches.map((match) => (
-            <CupMatchRow
-              onPress={() => navigateToMatchDetail(match.id)}
-              key={match.id}
-              match={match}
-            />
-          ))}
-        </View>
-      );
+  const renderItem = ({ item, section }: { item: any; section: Section }) => {
+    if (section.type === "league") {
+      return <LeagueTableRow standing={item} />;
     }
+
+    const round = item as CupRound;
+
+    return (
+      <View style={styles.cupRoundBlock}>
+        <Text style={styles.roundLabel}>{round.round}</Text>
+
+        {round.matches.map((match) => (
+          <CupMatchRow
+            onPress={() => navigateToMatchDetail(match.id)}
+            key={match.id}
+            match={match}
+          />
+        ))}
+      </View>
+    );
+  };
 
   const renderSectionHeader = useCallback(
     ({ section }: { section: Section }) => (
       <View>
-        <Text style={styles.sectionTitle}>
-          {section.competitionName}
-        </Text>
+        <Text style={styles.sectionTitle}>{section.competitionName}</Text>
 
         {section.type === "league" && (
           <View style={styles.tableHeader}>
-            <View
-              style={[
-                styles.headerCell,
-                { flex: COLS.position },
-              ]}
-            >
+            <View style={[styles.headerCell, { flex: COLS.position }]}>
               <Text style={styles.headerText}></Text>
             </View>
 
-            <View
-              style={[
-                styles.headerCell,
-                { flex: COLS.team },
-              ]}
-            >
+            <View style={[styles.headerCell, { flex: COLS.team }]}>
               <Text style={styles.headerText}></Text>
             </View>
 
@@ -237,38 +215,27 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
 
   const renderSectionFooter = useCallback(
     ({ section }: { section: Section }) => {
-      if (
-        section.type !== "league" ||
-        section.legend.length === 0
-      ) {
+      if (section.type !== "league" || section.legend.length === 0) {
         return null;
       }
 
       return (
         <View style={styles.legend}>
-          <Text style={styles.legendTitle}>
-            Legenda
-          </Text>
+          <Text style={styles.legendTitle}>Legenda</Text>
 
           <View style={styles.legendItems}>
             {section.legend.map((item, index) => (
-              <View
-                key={index}
-                style={styles.legendItem}
-              >
+              <View key={index} style={styles.legendItem}>
                 <View
                   style={[
                     styles.legendColor,
                     {
-                      backgroundColor:
-                        item.color,
+                      backgroundColor: item.color,
                     },
                   ]}
                 />
 
-                <Text style={styles.legendText}>
-                  {item.label}
-                </Text>
+                <Text style={styles.legendText}>{item.label}</Text>
               </View>
             ))}
           </View>
@@ -281,9 +248,7 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
 
   const keyExtractor = useCallback(
     (item: any, index: number) =>
-      item?.id?.toString() ??
-      item?.round ??
-      String(index),
+      item?.id?.toString() ?? item?.round ?? String(index),
     [],
   );
 

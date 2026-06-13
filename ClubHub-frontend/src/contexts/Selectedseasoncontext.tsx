@@ -25,9 +25,9 @@ const SelectedSeasonContext = createContext<SelectedSeasonContextType>({
   availableSeasons: [],
 });
 
-export const SelectedSeasonProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const SelectedSeasonProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
   const { selectedCategory, acknowledgeCategoryChange } = useCategory();
   const { seasons } = useSeasonsByCategory(selectedCategory);
   const [selectedSeason, setSelectedSeason] = useState<Season | null>(null);

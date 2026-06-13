@@ -1,5 +1,5 @@
 import { api } from "./api";
-import { CategoryConfig,  } from "../models/Category";
+import { CategoryConfig } from "../models/Category";
 
 export const HelperService = {
   getAllCategoriesAvailable: async (): Promise<CategoryConfig[]> => {

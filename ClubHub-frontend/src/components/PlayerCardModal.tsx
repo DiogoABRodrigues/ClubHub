@@ -12,7 +12,7 @@ import { Player } from "../models/Player";
 import { Stats } from "../models/Stats";
 import { PlayerService } from "../services/PlayerService";
 import { useSeasons } from "../hooks/useSeasons";
-import { COLORS, SPACING} from "../theme/colors";
+import { COLORS, SPACING } from "../theme/colors";
 import { styles } from "./styles/PlayerCardModal.styles";
 
 const defaultPlayerImage = require("../../assets/player.jpg");
@@ -20,22 +20,25 @@ const defaultPlayerImage = require("../../assets/player.jpg");
 //  Linha de stat individual
 const StatRow = ({ season, stats }: { season: string; stats: Stats }) => (
   <View style={styles.statRow}>
-    <Text style={styles.seasonLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{season}</Text>
+    <Text
+      style={styles.seasonLabel}
+      numberOfLines={1}
+      adjustsFontSizeToFit
+      minimumFontScale={0.8}
+    >
+      {season}
+    </Text>
 
     <View style={styles.statCell}>
       <Text style={styles.statValue}>{stats.gamesPlayed ?? 0}</Text>
     </View>
 
     <View style={styles.statCell}>
-      <Text style={[styles.statValue]}>
-        {stats.goals ?? 0}
-      </Text>
+      <Text style={[styles.statValue]}>{stats.goals ?? 0}</Text>
     </View>
 
     <View style={styles.statCell}>
-      <Text style={styles.statValue}>
-        {stats.minutesPlayed ?? 0}
-      </Text>
+      <Text style={styles.statValue}>{stats.minutesPlayed ?? 0}</Text>
     </View>
   </View>
 );
@@ -95,7 +98,11 @@ export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
       <View style={styles.overlay}>
         <View style={styles.card}>
           {/* Botão fechar */}
-          <TouchableOpacity style={styles.closeBtn} onPress={onClose} hitSlop={12}>
+          <TouchableOpacity
+            style={styles.closeBtn}
+            onPress={onClose}
+            hitSlop={12}
+          >
             <Text style={styles.closeBtnText}>✕</Text>
           </TouchableOpacity>
 
@@ -118,7 +125,9 @@ export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
                 resizeMode="contain"
               />
               <Text style={styles.firstName}>{firstName}</Text>
-              <Text style={styles.firstName} numberOfLines={1}>{lastName}</Text>
+              <Text style={styles.firstName} numberOfLines={1}>
+                {lastName}
+              </Text>
               <View style={styles.positionBadge}>
                 <Text style={styles.positionText}>{position}</Text>
               </View>
@@ -139,7 +148,9 @@ export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
                     <Text style={[styles.statLabel, { flex: 1 }]}>Época</Text>
                     <Text style={[styles.statLabel, styles.colCenter]}>J</Text>
                     <Text style={[styles.statLabel, styles.colCenter]}>G</Text>
-                    <Text style={[styles.statLabel, styles.colCenter]}>Min</Text>
+                    <Text style={[styles.statLabel, styles.colCenter]}>
+                      Min
+                    </Text>
                   </View>
 
                   {sortedStats.length === 0 ? (

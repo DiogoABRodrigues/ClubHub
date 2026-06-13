@@ -11,7 +11,8 @@ import { useSelectedSeason } from "../contexts/Selectedseasoncontext";
  * (ex: dentro do AppNavigator ou num wrapper no App.tsx).
  */
 export function useCategoryTransition() {
-  const { selectedCategory, isCategoryChanging, acknowledgeCategoryChange } = useCategory();
+  const { selectedCategory, isCategoryChanging, acknowledgeCategoryChange } =
+    useCategory();
   const { selectedSeasonId } = useSelectedSeason();
   const queryClient = useQueryClient();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -46,7 +47,8 @@ export function useCategoryTransition() {
       const matchesReady =
         matchState?.status === "success" || matchState?.status === "error";
       const standingsReady =
-        standingsState?.status === "success" || standingsState?.status === "error";
+        standingsState?.status === "success" ||
+        standingsState?.status === "error";
 
       // Basta um dos dois estar pronto para esconder
       if (matchesReady || standingsReady) {

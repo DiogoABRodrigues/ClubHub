@@ -179,7 +179,9 @@ export const AddEventModal = ({
       : {
           ...EMPTY_FORM,
           phase: currentPhase ?? "1st",
-          type: (currentPhase === "penalties" ? "penalty_shootout" : "goal") as MatchEventType,
+          type: (currentPhase === "penalties"
+            ? "penalty_shootout"
+            : "goal") as MatchEventType,
         };
     setForm(base);
   }, [visible, eventToEdit, currentPhase]);
@@ -218,13 +220,19 @@ export const AddEventModal = ({
       }
       const minAllowed = MIN_MINUTE[form.phase ?? "1st"] ?? 1;
       if (form.minute < minAllowed) {
-        Alert.alert("Atenção", `O minuto mínimo para esta fase é ${minAllowed}.`);
+        Alert.alert(
+          "Atenção",
+          `O minuto mínimo para esta fase é ${minAllowed}.`,
+        );
         return;
       }
       if (!isOpponent) {
         if (isSubstitution) {
           if (!form.playerInId || !form.playerOutId) {
-            Alert.alert("Atenção", "Seleciona o jogador que sai e o que entra.");
+            Alert.alert(
+              "Atenção",
+              "Seleciona o jogador que sai e o que entra.",
+            );
             return;
           }
         } else if (!form.isOwnGoal && !form.playerId) {
@@ -244,11 +252,22 @@ export const AddEventModal = ({
     } finally {
       setSaving(false);
     }
-  }, [form, onSave, onClose, isOpponent, isSubstitution, isPenaltyShootout, saving]);
+  }, [
+    form,
+    onSave,
+    onClose,
+    isOpponent,
+    isSubstitution,
+    isPenaltyShootout,
+    saving,
+  ]);
 
   const handleMinuteChange = (v: string) => {
     const numeric = v.replace(/\D/g, "");
-    if (numeric === "") { setField("minute", 0); return; }
+    if (numeric === "") {
+      setField("minute", 0);
+      return;
+    }
     let minute = Number(numeric);
     if (Number.isNaN(minute)) minute = 0;
     const max = MAX_MINUTE[form.phase ?? "1st"] ?? 130;
@@ -257,7 +276,8 @@ export const AddEventModal = ({
   };
 
   const minutePreview = useMemo(
-    () => form.minute > 0 ? formatMinute(form.minute, form.phase ?? "1st") : "",
+    () =>
+      form.minute > 0 ? formatMinute(form.minute, form.phase ?? "1st") : "",
     [form.minute, form.phase],
   );
 
@@ -298,7 +318,7 @@ export const AddEventModal = ({
               {EVENT_TYPES.filter((et) =>
                 currentPhase === "penalties"
                   ? et.key === "penalty_shootout"
-                  : et.key !== "penalty_shootout"
+                  : et.key !== "penalty_shootout",
               ).map((et) => (
                 <TouchableOpacity
                   key={et.key}
@@ -357,7 +377,8 @@ export const AddEventModal = ({
                     <Text
                       style={[
                         adminStyles.chipText,
-                        form.penaltyScored === true && adminStyles.chipTextActive,
+                        form.penaltyScored === true &&
+                          adminStyles.chipTextActive,
                       ]}
                     >
                       Golo
@@ -374,7 +395,8 @@ export const AddEventModal = ({
                     <Text
                       style={[
                         adminStyles.chipText,
-                        form.penaltyScored === false && adminStyles.chipTextActive,
+                        form.penaltyScored === false &&
+                          adminStyles.chipTextActive,
                       ]}
                     >
                       Falhado
@@ -400,7 +422,9 @@ export const AddEventModal = ({
                 {/* Equipa adversária */}
                 {supportsOpponent && (
                   <View style={adminStyles.switchRow}>
-                    <Text style={adminStyles.fieldLabel}>Equipa adversária</Text>
+                    <Text style={adminStyles.fieldLabel}>
+                      Equipa adversária
+                    </Text>
                     <Switch
                       value={isOpponent}
                       onValueChange={(val) =>
@@ -426,14 +450,17 @@ export const AddEventModal = ({
 
                 {/* Minuto */}
                 <Text style={adminStyles.fieldLabel}>
-                  Minuto{minutePreview ? ` - aparece como ${minutePreview}` : ""}
+                  Minuto
+                  {minutePreview ? ` - aparece como ${minutePreview}` : ""}
                 </Text>
                 <TextInput
                   style={adminStyles.input}
                   value={form.minute ? String(form.minute) : ""}
                   onChangeText={handleMinuteChange}
                   keyboardType="number-pad"
-                  placeholder={MINUTE_PLACEHOLDER[form.phase ?? "1st"] ?? "1 até 45+"}
+                  placeholder={
+                    MINUTE_PLACEHOLDER[form.phase ?? "1st"] ?? "1 até 45+"
+                  }
                   placeholderTextColor={COLORS.textMuted}
                 />
 
@@ -479,7 +506,10 @@ export const AddEventModal = ({
             )}
 
             <TouchableOpacity
-              style={[adminStyles.saveBtn, saving && adminStyles.saveBtnDisabled]}
+              style={[
+                adminStyles.saveBtn,
+                saving && adminStyles.saveBtnDisabled,
+              ]}
               onPress={handleSave}
               disabled={saving}
             >

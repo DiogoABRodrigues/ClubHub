@@ -93,7 +93,7 @@ export const LeagueTableRow = React.memo(
         return standing.rowColor + "4D";
       }
       return COLORS.background;
-    }, [standing.rowColor, /*isAppTeam*/]);
+    }, [standing.rowColor /*isAppTeam*/]);
 
     return (
       <TouchableOpacity activeOpacity={0.8} onPress={toggleExpand}>

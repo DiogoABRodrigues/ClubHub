@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import {
-  View, Text, TouchableOpacity, Modal, FlatList,
-} from "react-native";
+import { View, Text, TouchableOpacity, Modal, FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSelectedSeason } from "../contexts/Selectedseasoncontext";
 import { COLORS } from "../theme/colors";
@@ -9,7 +7,8 @@ import { Season } from "../models/Season";
 import { styles } from "./styles/Seasonpicker.styles";
 
 export const SeasonPicker: React.FC = () => {
-  const { selectedSeason, setSelectedSeason, availableSeasons } = useSelectedSeason();
+  const { selectedSeason, setSelectedSeason, availableSeasons } =
+    useSelectedSeason();
   const [open, setOpen] = useState(false);
 
   // Ordena da mais recente para a mais antiga
@@ -28,13 +27,32 @@ export const SeasonPicker: React.FC = () => {
 
   return (
     <>
-      <TouchableOpacity style={styles.trigger} onPress={() => !onlyOne && setOpen(true)} activeOpacity={onlyOne ? 1 : 0.7}>
+      <TouchableOpacity
+        style={styles.trigger}
+        onPress={() => !onlyOne && setOpen(true)}
+        activeOpacity={onlyOne ? 1 : 0.7}
+      >
         <Text style={styles.triggerText}>{selectedSeason?.year ?? "-"}</Text>
-        {!onlyOne && <Ionicons name="chevron-down" size={14} color={COLORS.textSecondary} />}
+        {!onlyOne && (
+          <Ionicons
+            name="chevron-down"
+            size={14}
+            color={COLORS.textSecondary}
+          />
+        )}
       </TouchableOpacity>
 
-      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-        <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={() => setOpen(false)}>
+      <Modal
+        visible={open}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOpen(false)}
+      >
+        <TouchableOpacity
+          style={styles.overlay}
+          activeOpacity={1}
+          onPress={() => setOpen(false)}
+        >
           <View style={styles.sheet}>
             <Text style={styles.sheetTitle}>Escolher Época</Text>
             <FlatList
@@ -47,11 +65,20 @@ export const SeasonPicker: React.FC = () => {
                     style={[styles.option, isSelected && styles.optionSelected]}
                     onPress={() => handleSelect(item)}
                   >
-                    <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
+                    <Text
+                      style={[
+                        styles.optionText,
+                        isSelected && styles.optionTextSelected,
+                      ]}
+                    >
                       {item.year}
                     </Text>
                     {isSelected && (
-                      <Ionicons name="checkmark" size={18} color={COLORS.primary} />
+                      <Ionicons
+                        name="checkmark"
+                        size={18}
+                        color={COLORS.primary}
+                      />
                     )}
                   </TouchableOpacity>
                 );

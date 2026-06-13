@@ -61,15 +61,24 @@ export function SeasonScreen({ navigation }: any) {
        * display:"none" / display:"flex" esconde/mostra sem desmontar,
        * por isso os componentes ficam construídos e não há jank ao trocar de tab.
        */}
-      <View style={{ flex: 1, display: activeTab === "standings" ? "flex" : "none" }}>
+      <View
+        style={{
+          flex: 1,
+          display: activeTab === "standings" ? "flex" : "none",
+        }}
+      >
         <Standings navigation={navigation} />
       </View>
 
-      <View style={{ flex: 1, display: activeTab === "squad" ? "flex" : "none" }}>
+      <View
+        style={{ flex: 1, display: activeTab === "squad" ? "flex" : "none" }}
+      >
         {adminMode ? <AdminSquadScreen /> : <SquadScreen />}
       </View>
 
-      <View style={{ flex: 1, display: activeTab === "stats" ? "flex" : "none" }}>
+      <View
+        style={{ flex: 1, display: activeTab === "stats" ? "flex" : "none" }}
+      >
         <SquadStats />
       </View>
     </View>

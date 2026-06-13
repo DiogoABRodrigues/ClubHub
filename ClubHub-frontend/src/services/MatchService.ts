@@ -6,12 +6,21 @@ export const MatchService = {
     const { data } = await api.get("/matches");
     return data;
   },
-  getBySeasonId: async (seasonId: number, category: string = "over19"): Promise<Match[]> => {
-    const { data } = await api.get(`/matches/season/${seasonId}`, { params: { category } });
+  getBySeasonId: async (
+    seasonId: number,
+    category: string = "over19",
+  ): Promise<Match[]> => {
+    const { data } = await api.get(`/matches/season/${seasonId}`, {
+      params: { category },
+    });
     return data;
   },
-  getByCurrentSeasonId: async (category: string = "over19"): Promise<Match[]> => {
-    const { data } = await api.get("/matches/current", { params: { category } });
+  getByCurrentSeasonId: async (
+    category: string = "over19",
+  ): Promise<Match[]> => {
+    const { data } = await api.get("/matches/current", {
+      params: { category },
+    });
     return data;
   },
   create: async (match: Partial<Match>): Promise<Match> => {

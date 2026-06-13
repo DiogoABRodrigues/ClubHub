@@ -15,46 +15,81 @@ export const CategoryPicker: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   const onlyOne = enabledCategories.length <= 1;
-  const current = enabledCategories.find((c) => c.category === selectedCategory);
+  const current = enabledCategories.find(
+    (c) => c.category === selectedCategory,
+  );
 
   return (
     <>
-      <TouchableOpacity style={styles.trigger} onPress={() => !onlyOne && setOpen(true)} activeOpacity={onlyOne ? 1 : 0.7}>
-        <Text style={styles.triggerText}>{current?.label ?? selectedCategory}</Text>
-        {!onlyOne && <Ionicons name="chevron-down" size={14} color={COLORS.textSecondary} />}
+      <TouchableOpacity
+        style={styles.trigger}
+        onPress={() => !onlyOne && setOpen(true)}
+        activeOpacity={onlyOne ? 1 : 0.7}
+      >
+        <Text style={styles.triggerText}>
+          {current?.label ?? selectedCategory}
+        </Text>
+        {!onlyOne && (
+          <Ionicons
+            name="chevron-down"
+            size={14}
+            color={COLORS.textSecondary}
+          />
+        )}
       </TouchableOpacity>
 
       {!onlyOne && (
-        <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-        <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={() => setOpen(false)}>
-          <View style={styles.sheet}>
-            <Text style={styles.sheetTitle}>Escolher Escalão</Text>
-            <FlatList
-              data={enabledCategories}
-              keyExtractor={(item) => item.category}
-              renderItem={({ item }) => {
-                const isSelected = item.category === selectedCategory;
-                return (
-                  <TouchableOpacity
-                    style={[styles.option, isSelected && styles.optionSelected]}
-                    onPress={() => {
-                      setSelectedCategory(item.category as Category);
-                      setOpen(false);
-                    }}
-                  >
-                    <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
-                      {item.label}
-                    </Text>
-                    {isSelected && (
-                      <Ionicons name="checkmark" size={18} color={COLORS.primary} />
-                    )}
-                  </TouchableOpacity>
-                );
-              }}
-            />
-          </View>
-        </TouchableOpacity>
-      </Modal>
+        <Modal
+          visible={open}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setOpen(false)}
+        >
+          <TouchableOpacity
+            style={styles.overlay}
+            activeOpacity={1}
+            onPress={() => setOpen(false)}
+          >
+            <View style={styles.sheet}>
+              <Text style={styles.sheetTitle}>Escolher Escalão</Text>
+              <FlatList
+                data={enabledCategories}
+                keyExtractor={(item) => item.category}
+                renderItem={({ item }) => {
+                  const isSelected = item.category === selectedCategory;
+                  return (
+                    <TouchableOpacity
+                      style={[
+                        styles.option,
+                        isSelected && styles.optionSelected,
+                      ]}
+                      onPress={() => {
+                        setSelectedCategory(item.category as Category);
+                        setOpen(false);
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.optionText,
+                          isSelected && styles.optionTextSelected,
+                        ]}
+                      >
+                        {item.label}
+                      </Text>
+                      {isSelected && (
+                        <Ionicons
+                          name="checkmark"
+                          size={18}
+                          color={COLORS.primary}
+                        />
+                      )}
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            </View>
+          </TouchableOpacity>
+        </Modal>
       )}
     </>
   );

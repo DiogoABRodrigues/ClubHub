@@ -25,8 +25,8 @@ export const SocketProvider = ({ children }: any) => {
           if (m.id !== matchId) return m;
           const exists = m.events?.some((e: any) => e.id === event.id);
           const updatedEvents = exists
-            ? m.events.map((e: any) => (e.id === event.id ? event : e)) 
-            : [...(m.events ?? []), event]; 
+            ? m.events.map((e: any) => (e.id === event.id ? event : e))
+            : [...(m.events ?? []), event];
           return { ...m, events: updatedEvents };
         }),
       );

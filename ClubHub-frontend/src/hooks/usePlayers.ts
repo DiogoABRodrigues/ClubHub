@@ -11,14 +11,16 @@ export const usePlayers = () => {
 
   const playersQuery = useQuery({
     queryKey: ["players", currentSeasonId, selectedCategory],
-    queryFn: () => PlayerService.getBySeasonId(currentSeasonId!, selectedCategory),
+    queryFn: () =>
+      PlayerService.getBySeasonId(currentSeasonId!, selectedCategory),
     enabled: !!currentSeasonId,
     select: (players: Player[]) => players,
   });
 
   const allPlayersQuery = useQuery({
     queryKey: ["players-all", currentSeasonId, selectedCategory],
-    queryFn: () => PlayerService.getAllBySeasonId(currentSeasonId!, selectedCategory),
+    queryFn: () =>
+      PlayerService.getAllBySeasonId(currentSeasonId!, selectedCategory),
     enabled: !!currentSeasonId,
     select: (players: Player[]) => players,
   });
@@ -27,7 +29,9 @@ export const usePlayers = () => {
     mutationFn: ({ id, data }: { id: number; data: Partial<Player> }) =>
       PlayerService.updatePlayer(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["players", currentSeasonId, selectedCategory] });
+      queryClient.invalidateQueries({
+        queryKey: ["players", currentSeasonId, selectedCategory],
+      });
     },
   });
 
@@ -40,36 +44,64 @@ export const usePlayers = () => {
       playerExternalId: number;
       seasonId: number;
       status: "active" | "left" | "error";
-    }) => PlayerService.updateSquadStatus(playerExternalId, seasonId, status, selectedCategory),
+    }) =>
+      PlayerService.updateSquadStatus(
+        playerExternalId,
+        seasonId,
+        status,
+        selectedCategory,
+      ),
     onMutate: async ({ playerExternalId, status }) => {
       // Optimistic update em ambas as queries
-      await queryClient.cancelQueries({ queryKey: ["players", currentSeasonId, selectedCategory] });
-      await queryClient.cancelQueries({ queryKey: ["players-all", currentSeasonId, selectedCategory] });
-      queryClient.setQueryData<Player[]>(["players", currentSeasonId, selectedCategory], (old) =>
-        old?.map((p) =>
-          p.externalId === playerExternalId ? { ...p, squadStatus: status } : p,
-        ),
+      await queryClient.cancelQueries({
+        queryKey: ["players", currentSeasonId, selectedCategory],
+      });
+      await queryClient.cancelQueries({
+        queryKey: ["players-all", currentSeasonId, selectedCategory],
+      });
+      queryClient.setQueryData<Player[]>(
+        ["players", currentSeasonId, selectedCategory],
+        (old) =>
+          old?.map((p) =>
+            p.externalId === playerExternalId
+              ? { ...p, squadStatus: status }
+              : p,
+          ),
       );
-      queryClient.setQueryData<Player[]>(["players-all", currentSeasonId, selectedCategory], (old) =>
-        old?.map((p) =>
-          p.externalId === playerExternalId ? { ...p, squadStatus: status } : p,
-        ),
+      queryClient.setQueryData<Player[]>(
+        ["players-all", currentSeasonId, selectedCategory],
+        (old) =>
+          old?.map((p) =>
+            p.externalId === playerExternalId
+              ? { ...p, squadStatus: status }
+              : p,
+          ),
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["players", currentSeasonId, selectedCategory] });
-      queryClient.invalidateQueries({ queryKey: ["players-all", currentSeasonId, selectedCategory] });
+      queryClient.invalidateQueries({
+        queryKey: ["players", currentSeasonId, selectedCategory],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["players-all", currentSeasonId, selectedCategory],
+      });
     },
     onError: () => {
-      queryClient.invalidateQueries({ queryKey: ["players", currentSeasonId, selectedCategory] });
-      queryClient.invalidateQueries({ queryKey: ["players-all", currentSeasonId, selectedCategory] });
+      queryClient.invalidateQueries({
+        queryKey: ["players", currentSeasonId, selectedCategory],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["players-all", currentSeasonId, selectedCategory],
+      });
     },
   });
 
   // Apenas jogadores ativos - para o ecrã público do plantel
   const getActivePlayers = (): Player[] => {
     return (
-      playersQuery.data?.filter((p) => (p.squadStatus ?? "active") === "active") ?? []
+      playersQuery.data?.filter(
+        (p) => (p.squadStatus ?? "active") === "active",
+      ) ?? []
     );
   };
 

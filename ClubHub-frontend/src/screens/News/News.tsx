@@ -26,9 +26,14 @@ export const News = ({ navigation }: any) => {
   );
 
   const renderedNews = useMemo(
-    () => news.map((item) => (
-      <NewsCard key={item.id} news={item} onPress={() => goToNewsDetail(item.id)} />
-    )),
+    () =>
+      news.map((item) => (
+        <NewsCard
+          key={item.id}
+          news={item}
+          onPress={() => goToNewsDetail(item.id)}
+        />
+      )),
     [news, goToNewsDetail],
   );
 

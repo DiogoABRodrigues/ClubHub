@@ -35,18 +35,26 @@ export const Home = ({ navigation }: any) => {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await Promise.all([refreshMatches(), refreshCompetitions(), refreshNews()]);
+      await Promise.all([
+        refreshMatches(),
+        refreshCompetitions(),
+        refreshNews(),
+      ]);
     } finally {
       setRefreshing(false);
     }
   }, [refreshMatches, refreshCompetitions, refreshNews]);
 
-  const liveMatches = useMemo(() => matches.filter((m) => m.status === "live"), [matches]);
+  const liveMatches = useMemo(
+    () => matches.filter((m) => m.status === "live"),
+    [matches],
+  );
   const { teams } = useTeams();
 
   const teamsMap = useMemo(() => {
     const map = new Map<string, string>();
-    for (const t of teams) map.set(t.name.trim().toLowerCase(), t.logoUrl || "");
+    for (const t of teams)
+      map.set(t.name.trim().toLowerCase(), t.logoUrl || "");
     return map;
   }, [teams]);
 
@@ -66,19 +74,23 @@ export const Home = ({ navigation }: any) => {
   );
 
   const getHomeTeam = useCallback(
-    (match: any) => (match.homeOrAway === "C" ? match.teamName : match.opponent),
+    (match: any) =>
+      match.homeOrAway === "C" ? match.teamName : match.opponent,
     [],
   );
 
   const getAwayTeam = useCallback(
-    (match: any) => (match.homeOrAway === "F" ? match.teamName : match.opponent),
+    (match: any) =>
+      match.homeOrAway === "F" ? match.teamName : match.opponent,
     [],
   );
 
   const appTeamLogo = require("../../../assets/icon.png");
 
   const navigateToMatchDetail = (matchId: number) => {
-    navigation.navigate(adminMode ? "AdminMatchDetail" : "MatchDetail", { id: matchId });
+    navigation.navigate(adminMode ? "AdminMatchDetail" : "MatchDetail", {
+      id: matchId,
+    });
   };
 
   const loading = matchesLoading || newsLoading;
@@ -114,10 +126,16 @@ export const Home = ({ navigation }: any) => {
         {activeStatement && (
           <View style={styles.statementBanner}>
             <View style={styles.statementIconRow}>
-              <Ionicons name="megaphone-outline" size={16} color={COLORS.primary} />
+              <Ionicons
+                name="megaphone-outline"
+                size={16}
+                color={COLORS.primary}
+              />
               <Text style={styles.statementTitle}>{activeStatement.title}</Text>
             </View>
-            <Text style={styles.statementMessage}>{activeStatement.message}</Text>
+            <Text style={styles.statementMessage}>
+              {activeStatement.message}
+            </Text>
           </View>
         )}
 
@@ -154,34 +172,44 @@ export const Home = ({ navigation }: any) => {
         )}
 
         {/* PRÓXIMO JOGO */}
-        {(
+        {
           <View style={styles.section}>
             <View style={styles.sectionTitleRow}>
-              <Ionicons name="calendar-outline" size={16} color={COLORS.secondary} />
+              <Ionicons
+                name="calendar-outline"
+                size={16}
+                color={COLORS.secondary}
+              />
               <Text style={styles.sectionTitle}>Próximo Jogo</Text>
             </View>
-            {nextMatch && 
-            <MatchCard
-              match={nextMatch}
-              homeLogo={getTeamLogo(getHomeTeam(nextMatch)) || ""}
-              awayLogo={getTeamLogo(getAwayTeam(nextMatch)) || ""}
-              onPress={() => navigateToMatchDetail(nextMatch.id)}
-              competition={competitions.find((c) => c.id === nextMatch.competitionId)}
-            />
-              || (
+            {(nextMatch && (
+              <MatchCard
+                match={nextMatch}
+                homeLogo={getTeamLogo(getHomeTeam(nextMatch)) || ""}
+                awayLogo={getTeamLogo(getAwayTeam(nextMatch)) || ""}
+                onPress={() => navigateToMatchDetail(nextMatch.id)}
+                competition={competitions.find(
+                  (c) => c.id === nextMatch.competitionId,
+                )}
+              />
+            )) || (
               <EmptyState
                 title="Sem jogos agendados"
                 message="Volta mais tarde para veres os próximos jogos."
               />
             )}
           </View>
-        )}
+        }
 
         {/* ÚLTIMO JOGO */}
         {recentMatch && (
           <View style={styles.section}>
             <View style={styles.sectionTitleRow}>
-              <Ionicons name="time-outline" size={16} color={COLORS.secondary} />
+              <Ionicons
+                name="time-outline"
+                size={16}
+                color={COLORS.secondary}
+              />
               <Text style={styles.sectionTitle}>Último Jogo</Text>
             </View>
             <MatchCard
@@ -189,7 +217,9 @@ export const Home = ({ navigation }: any) => {
               homeLogo={getTeamLogo(getHomeTeam(recentMatch)) || ""}
               awayLogo={getTeamLogo(getAwayTeam(recentMatch)) || ""}
               onPress={() => navigateToMatchDetail(recentMatch.id)}
-              competition={competitions.find((c) => c.id === recentMatch.competitionId)}
+              competition={competitions.find(
+                (c) => c.id === recentMatch.competitionId,
+              )}
             />
           </View>
         )}
@@ -198,7 +228,11 @@ export const Home = ({ navigation }: any) => {
         {!loading && recentNews.length > 0 && (
           <View style={styles.section}>
             <View style={styles.sectionTitleRow}>
-              <Ionicons name="newspaper-outline" size={16} color={COLORS.secondary} />
+              <Ionicons
+                name="newspaper-outline"
+                size={16}
+                color={COLORS.secondary}
+              />
               <Text style={styles.sectionTitle}>Últimas Notícias</Text>
             </View>
 
@@ -212,7 +246,9 @@ export const Home = ({ navigation }: any) => {
                 <TouchableOpacity
                   key={item.id}
                   style={styles.newsCard}
-                  onPress={() => navigation.navigate("NewsDetail", { id: item.id })}
+                  onPress={() =>
+                    navigation.navigate("NewsDetail", { id: item.id })
+                  }
                   activeOpacity={0.7}
                 >
                   <View style={styles.relatedImage}>
@@ -224,7 +260,10 @@ export const Home = ({ navigation }: any) => {
                       />
                     ) : (
                       <View
-                        style={[styles.relatedImage, { justifyContent: "center", alignItems: "center" }]}
+                        style={[
+                          styles.relatedImage,
+                          { justifyContent: "center", alignItems: "center" },
+                        ]}
                       >
                         <Text style={styles.logoEmoji}>⚽</Text>
                       </View>
@@ -233,7 +272,9 @@ export const Home = ({ navigation }: any) => {
                   <View style={styles.newsContent}>
                     <Text style={styles.newsTitle}>{item.title}</Text>
                     <Text style={styles.newsExcerpt}>{item.excerpt}</Text>
-                    <Text style={styles.relatedDate}>{formatDatePT(item.createdAt)}</Text>
+                    <Text style={styles.relatedDate}>
+                      {formatDatePT(item.createdAt)}
+                    </Text>
                   </View>
                 </TouchableOpacity>
               ))

@@ -21,6 +21,8 @@ export const useStats = () => {
     stats: statsQuery.data ?? [],
     loading: statsQuery.isLoading,
     refreshStats: () =>
-      queryClient.invalidateQueries({ queryKey: ["stats", currentSeasonId, selectedCategory] }),
+      queryClient.invalidateQueries({
+        queryKey: ["stats", currentSeasonId, selectedCategory],
+      }),
   };
 };

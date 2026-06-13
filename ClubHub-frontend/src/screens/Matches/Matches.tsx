@@ -57,33 +57,33 @@ const MatchesSection = React.memo(
     };
 
     return (
-  <View style={styles.section}>
-    <View style={styles.sectionHeader}>
-      {isLive ? (
-        <View style={styles.livePill}>
-          <View style={styles.liveDot} />
-          <Text style={styles.livePillText}>{title}</Text>
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          {isLive ? (
+            <View style={styles.livePill}>
+              <View style={styles.liveDot} />
+              <Text style={styles.livePillText}>{title}</Text>
+            </View>
+          ) : (
+            <Text style={styles.sectionTitle}>{title}</Text>
+          )}
+          {matches.length > 4 && (
+            <TouchableOpacity onPress={toggleShowAll}>
+              <Text style={styles.showMoreInline}>
+                {showAll ? "Ver menos" : "Ver todos"}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
-      ) : (
-        <Text style={styles.sectionTitle}>{title}</Text>
-      )}
-      {matches.length > 4 && (
-        <TouchableOpacity onPress={toggleShowAll}>
-          <Text style={styles.showMoreInline}>
-            {showAll ? "Ver menos" : "Ver todos"}
-          </Text>
-        </TouchableOpacity>
-      )}
-    </View>
 
-    {matches.length < 1 && (
-      <EmptyState
-        title="Sem jogos agendados"
-        message="Volta mais tarde para veres os próximos jogos."
-      />
-    )}
+        {matches.length < 1 && (
+          <EmptyState
+            title="Sem jogos agendados"
+            message="Volta mais tarde para veres os próximos jogos."
+          />
+        )}
 
-    {limitedMatches.map((match) => (
+        {limitedMatches.map((match) => (
           <MatchCard
             key={match.id}
             match={match}
@@ -200,8 +200,7 @@ export const Matches = ({ navigation }: any) => {
           getHomeTeam={getHomeTeam}
           getAwayTeam={getAwayTeam}
         />
-      )
-      }
+      )}
       {showFinished && finishedMatches.length > 0 && (
         <MatchesSection
           title="Últimos Resultados"
@@ -215,15 +214,14 @@ export const Matches = ({ navigation }: any) => {
         />
       )}
 
-    {isEmpty && (
-      <EmptyState
-        title="Não foi possível encontrar informação"
-        message="Por favor tenta novamente mais tarde."
-        onRetry={onRefresh}
-        retryLabel="Atualizar"
-      />
-    )}
-      
+      {isEmpty && (
+        <EmptyState
+          title="Não foi possível encontrar informação"
+          message="Por favor tenta novamente mais tarde."
+          onRetry={onRefresh}
+          retryLabel="Atualizar"
+        />
+      )}
     </View>
   );
 

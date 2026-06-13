@@ -6,12 +6,21 @@ export const StandingService = {
     const { data } = await api.get("/standings");
     return data;
   },
-  getBySeasonId: async (seasonId: number, category: string = "over19"): Promise<Standing[]> => {
-    const { data } = await api.get(`/standings/season/${seasonId}`, { params: { category } });
+  getBySeasonId: async (
+    seasonId: number,
+    category: string = "over19",
+  ): Promise<Standing[]> => {
+    const { data } = await api.get(`/standings/season/${seasonId}`, {
+      params: { category },
+    });
     return data;
   },
-  getByCurrentSeasonId: async (category: string = "over19"): Promise<Standing[]> => {
-    const { data } = await api.get("/standings/current", { params: { category } });
+  getByCurrentSeasonId: async (
+    category: string = "over19",
+  ): Promise<Standing[]> => {
+    const { data } = await api.get("/standings/current", {
+      params: { category },
+    });
     return data;
   },
 };

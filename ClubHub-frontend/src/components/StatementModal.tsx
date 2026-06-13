@@ -47,7 +47,11 @@ export const StatementModal = ({ visible, onClose }: Props) => {
   }, [visible]);
 
   const formatDate = (date: Date) =>
-    date.toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit", year: "numeric" });
+    date.toLocaleDateString("pt-PT", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
 
   const formatTime = (date: Date) =>
     date.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" });
@@ -59,7 +63,10 @@ export const StatementModal = ({ visible, onClose }: Props) => {
     }
     try {
       if (activeStatement) {
-        await updateStatement({ id: activeStatement.id, updates: { title, message: content, dateToExpire } });
+        await updateStatement({
+          id: activeStatement.id,
+          updates: { title, message: content, dateToExpire },
+        });
       } else {
         await createStatement({ title, message: content, dateToExpire });
       }
@@ -76,7 +83,10 @@ export const StatementModal = ({ visible, onClose }: Props) => {
         text: "Eliminar",
         style: "destructive",
         onPress: async () => {
-          await deleteStatement({ id: activeStatement.id, updates: { dateToExpire: new Date(Date.now() - 1) } });
+          await deleteStatement({
+            id: activeStatement.id,
+            updates: { dateToExpire: new Date(Date.now() - 1) },
+          });
           onClose();
         },
       },
@@ -130,8 +140,15 @@ export const StatementModal = ({ visible, onClose }: Props) => {
             />
 
             <Text style={adminStyles.fieldLabel}>Expira em</Text>
-            <TouchableOpacity style={adminStyles.input} onPress={() => setPickerVisible(true)}>
-              <Text style={{ color: dateToExpire ? COLORS.textPrimary : COLORS.muted }}>
+            <TouchableOpacity
+              style={adminStyles.input}
+              onPress={() => setPickerVisible(true)}
+            >
+              <Text
+                style={{
+                  color: dateToExpire ? COLORS.textPrimary : COLORS.muted,
+                }}
+              >
                 {dateToExpire
                   ? `${formatDate(dateToExpire)} às ${formatTime(dateToExpire)}`
                   : "Selecionar data de expiração"}
@@ -146,7 +163,10 @@ export const StatementModal = ({ visible, onClose }: Props) => {
 
             {activeStatement && (
               <TouchableOpacity
-                style={[adminStyles.saveBtn, { backgroundColor: "#e53935", marginTop: 10 }]}
+                style={[
+                  adminStyles.saveBtn,
+                  { backgroundColor: "#e53935", marginTop: 10 },
+                ]}
                 onPress={handleDelete}
               >
                 <Text style={adminStyles.saveBtnText}>Eliminar Comunicado</Text>
@@ -158,8 +178,14 @@ export const StatementModal = ({ visible, onClose }: Props) => {
 
       <DateTimePickerModal
         visible={pickerVisible}
-        initialDate={dateToExpire ? dateToExpire.toISOString().split("T")[0] : new Date().toISOString().split("T")[0]}
-        initialTime={dateToExpire ? dateToExpire.toTimeString().slice(0, 5) : "12:00"}
+        initialDate={
+          dateToExpire
+            ? dateToExpire.toISOString().split("T")[0]
+            : new Date().toISOString().split("T")[0]
+        }
+        initialTime={
+          dateToExpire ? dateToExpire.toTimeString().slice(0, 5) : "12:00"
+        }
         onClose={() => setPickerVisible(false)}
         onSave={async (date, time) => {
           const [year, month, day] = date.split("-").map(Number);

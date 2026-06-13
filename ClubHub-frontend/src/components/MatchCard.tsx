@@ -5,7 +5,10 @@ import { styles } from "./styles/MatchCard.styles";
 import { COLORS } from "../theme/colors";
 import { Match } from "../models/Match";
 import { LiveBadge } from "./LiveBadge";
-import { formatDateWithWeekdayPT, getPenaltyDisplayScore } from "../utils/dateUtils";
+import {
+  formatDateWithWeekdayPT,
+  getPenaltyDisplayScore,
+} from "../utils/dateUtils";
 import * as Clipboard from "expo-clipboard";
 import { Competition } from "../models/Competition";
 import { ZZImage } from "./ZZImage";
@@ -20,7 +23,13 @@ interface MatchCardProps {
 
 // ─── Logo helper ─────────────────────────────────────────────────────────────
 
-const TeamLogo = ({ uri, variant }: { uri: string; variant: "dark" | "light" }) => {
+const TeamLogo = ({
+  uri,
+  variant,
+}: {
+  uri: string;
+  variant: "dark" | "light";
+}) => {
   const [failed, setFailed] = useState(false);
   const logoStyle = variant === "dark" ? styles.logoDark : styles.logoLight;
 
@@ -46,9 +55,7 @@ const TeamLogo = ({ uri, variant }: { uri: string; variant: "dark" | "light" }) 
           alignItems: "center",
           justifyContent: "center",
           backgroundColor:
-            variant === "dark"
-              ? "rgba(0,0,0,0.08)"
-              : "rgba(255,255,255,0.12)",
+            variant === "dark" ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.12)",
           borderRadius: 4,
         },
       ]}
@@ -91,7 +98,12 @@ export const MatchCard = React.memo(
       if (penaltyDisplay) return penaltyDisplay;
       const parts = match.result.split("-");
       return parts.length >= 2 ? [parts[0], parts[1]] : [null, null];
-    }, [match.result, match.outcome, match.homeOrAway, match.decidedByPenalties]);
+    }, [
+      match.result,
+      match.outcome,
+      match.homeOrAway,
+      match.decidedByPenalties,
+    ]);
 
     const formattedDate = useMemo(
       () => `${formatDateWithWeekdayPT(match.date)} · ${match.time}`,
@@ -266,7 +278,14 @@ export const MatchCard = React.memo(
               {homeScore ?? "–"} – {awayScore ?? "–"}
             </Text>
             {match.decidedByPenalties && (
-              <Text style={{ fontSize: 10, color: COLORS.textMuted, textAlign: "center", marginTop: 1 }}>
+              <Text
+                style={{
+                  fontSize: 10,
+                  color: COLORS.textMuted,
+                  textAlign: "center",
+                  marginTop: 1,
+                }}
+              >
                 após g.p.
               </Text>
             )}

@@ -37,7 +37,8 @@ const CategoryContext = createContext<CategoryContextValue>({
 });
 
 export function CategoryProvider({ children }: { children: ReactNode }) {
-  const [selectedCategory, setSelectedCategoryState] = useState<Category>("over19");
+  const [selectedCategory, setSelectedCategoryState] =
+    useState<Category>("over19");
   const [isCategoryChanging, setIsCategoryChanging] = useState(false);
   const minTimeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingHide = useRef(false);

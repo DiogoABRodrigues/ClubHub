@@ -10,7 +10,8 @@ export const useStandings = () => {
 
   const standingsQuery = useQuery({
     queryKey: ["standings", currentSeasonId, selectedCategory],
-    queryFn: () => StandingService.getBySeasonId(currentSeasonId!, selectedCategory),
+    queryFn: () =>
+      StandingService.getBySeasonId(currentSeasonId!, selectedCategory),
     enabled: !!currentSeasonId,
     staleTime: 1000 * 60 * 10,
   });
@@ -19,6 +20,8 @@ export const useStandings = () => {
     standings: standingsQuery.data ?? [],
     loading: standingsQuery.isLoading,
     refreshStandings: () =>
-      queryClient.invalidateQueries({ queryKey: ["standings", currentSeasonId, selectedCategory] }),
+      queryClient.invalidateQueries({
+        queryKey: ["standings", currentSeasonId, selectedCategory],
+      }),
   };
 };

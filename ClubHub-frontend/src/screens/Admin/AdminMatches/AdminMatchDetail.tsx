@@ -14,7 +14,10 @@ import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { styles } from "../../MatchDetails/MatchDetail.styles";
 import { useMatches } from "../../../hooks/useMatches";
 import { useTeams } from "../../../hooks/useTeams";
-import { formatDateWithWeekdayPT, getPenaltyDisplayScore } from "../../../utils/dateUtils";
+import {
+  formatDateWithWeekdayPT,
+  getPenaltyDisplayScore,
+} from "../../../utils/dateUtils";
 import { adminStyles } from "./AdminMatchDetail.styles";
 import { COLORS } from "../../../theme/colors";
 import { LocationModal } from "./Components/LocationModal";
@@ -172,10 +175,10 @@ export const AdminMatchDetail = () => {
 
   const [editingEvent, setEditingEvent] = useState<MatchEvent | null>(null);
 
-const handleEditEvent = useCallback((event: MatchEvent) => {
-  setEditingEvent(event);
-  setShowEventModal(true);
-}, []);
+  const handleEditEvent = useCallback((event: MatchEvent) => {
+    setEditingEvent(event);
+    setShowEventModal(true);
+  }, []);
 
   const handleSaveDateTime = useCallback(
     async (date: string, time: string) => {
@@ -355,13 +358,23 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
     ) as Competition;
   }, [match.competitionId, competitions]);
 
-  const penaltyDisplay = useMemo(() =>
-    getPenaltyDisplayScore(match.result, match.outcome, match.homeOrAway, match.decidedByPenalties),
+  const penaltyDisplay = useMemo(
+    () =>
+      getPenaltyDisplayScore(
+        match.result,
+        match.outcome,
+        match.homeOrAway,
+        match.decidedByPenalties,
+      ),
     [match.result, match.outcome, match.homeOrAway, match.decidedByPenalties],
   );
 
-  const homeScoreDisplay = penaltyDisplay ? penaltyDisplay[0] : match.result?.split("-")[0];
-  const awayScoreDisplay = penaltyDisplay ? penaltyDisplay[1] : match.result?.split("-")[1];
+  const homeScoreDisplay = penaltyDisplay
+    ? penaltyDisplay[0]
+    : match.result?.split("-")[0];
+  const awayScoreDisplay = penaltyDisplay
+    ? penaltyDisplay[1]
+    : match.result?.split("-")[1];
 
   const timeline = useMemo(() => {
     const events = match.events;
@@ -384,16 +397,16 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
       }
     }
 
-  const byMinute = (a: MatchEvent, b: MatchEvent) => {
-    if (a.minute !== b.minute) return a.minute - b.minute;
-    // @ts-ignore
-    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-  };
+    const byMinute = (a: MatchEvent, b: MatchEvent) => {
+      if (a.minute !== b.minute) return a.minute - b.minute;
+      // @ts-ignore
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    };
 
     firstHalf.sort(byMinute);
     secondHalf.sort(byMinute);
     extra.sort(byMinute);
-    penalties.sort(byMinute)
+    penalties.sort(byMinute);
     return { firstHalf, secondHalf, extra, penalties };
   }, [match.events]);
 
@@ -472,7 +485,10 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
       {
         text: "Confirmar",
         onPress: async () => {
-          await updateMatch({ id: match.id, data: { statusTime: "penalties" } });
+          await updateMatch({
+            id: match.id,
+            data: { statusTime: "penalties" },
+          });
         },
       },
     ]);
@@ -532,21 +548,27 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
               <Text style={styles.teamName}>{homeTeamName}</Text>
             </View>
             <View style={{ alignItems: "center", marginTop: 8 }}>
-            <View style={styles.scoreContainer}>
-              <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
-                {homeScoreDisplay}
-              </Text>
-              <Text style={styles.colon}>:</Text>
-              <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
-                {awayScoreDisplay}
-              </Text>
+              <View style={styles.scoreContainer}>
+                <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
+                  {homeScoreDisplay}
+                </Text>
+                <Text style={styles.colon}>:</Text>
+                <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
+                  {awayScoreDisplay}
+                </Text>
+              </View>
+              {match.decidedByPenalties && (
+                <Text
+                  style={{
+                    fontSize: 11,
+                    color: "rgba(255,255,255,0.7)",
+                    marginTop: 2,
+                  }}
+                >
+                  após g.p.
+                </Text>
+              )}
             </View>
-            {match.decidedByPenalties && (
-              <Text style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", marginTop: 2 }}>
-                após g.p.
-              </Text>
-            )}
-          </View>
             <View style={styles.teamContainer}>
               <View style={styles.teamLogo}>
                 {awayLogo ? (
@@ -720,7 +742,10 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
                       color={COLORS.error}
                     />
                     <Text
-                      style={[adminStyles.adminBtnText, { color: COLORS.error }]}
+                      style={[
+                        adminStyles.adminBtnText,
+                        { color: COLORS.error },
+                      ]}
                     >
                       Terminar
                     </Text>
@@ -758,7 +783,10 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
                       color={COLORS.error}
                     />
                     <Text
-                      style={[adminStyles.adminBtnText, { color: COLORS.error }]}
+                      style={[
+                        adminStyles.adminBtnText,
+                        { color: COLORS.error },
+                      ]}
                     >
                       Terminar
                     </Text>
@@ -887,7 +915,7 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
                               }
                               onEdit={handleEditEvent}
                               onDelete={() => handleDeleteEvent(event)}
-                              adminMode= {adminMode}
+                              adminMode={adminMode}
                             />
                           ))}
                         </>
@@ -895,7 +923,9 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
                       {extraTime.length > 0 && (
                         <>
                           <View style={[styles.halfHeader, { marginTop: 4 }]}>
-                            <Text style={styles.halfHeaderText}>Prolongamento</Text>
+                            <Text style={styles.halfHeaderText}>
+                              Prolongamento
+                            </Text>
                           </View>
                           {extraTime.map((event: MatchEvent) => (
                             <EventRow
@@ -929,7 +959,7 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
                               }
                               onEdit={handleEditEvent}
                               onDelete={() => handleDeleteEvent(event)}
-                              adminMode= {adminMode}
+                              adminMode={adminMode}
                             />
                           ))}
                         </>
@@ -1056,9 +1086,13 @@ const handleEditEvent = useCallback((event: MatchEvent) => {
         substitutePlayers={substitutePlayers}
         eventToEdit={editingEvent || undefined}
         currentPhase={
-          match.statusTime === "penalties" ? "penalties" :
-          match.statusTime === "extra" ? "extra" :
-          match.statusTime === "2nd" ? "2nd" : "1st"
+          match.statusTime === "penalties"
+            ? "penalties"
+            : match.statusTime === "extra"
+              ? "extra"
+              : match.statusTime === "2nd"
+                ? "2nd"
+                : "1st"
         }
       />
       <AddLineupModal

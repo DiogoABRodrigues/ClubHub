@@ -30,7 +30,13 @@ const CardIcon = ({ type }: { type: string }) => (
   />
 );
 
-export const EventRow = ({ event, isOurs, onEdit, onDelete, adminMode }: Props) => {
+export const EventRow = ({
+  event,
+  isOurs,
+  onEdit,
+  onDelete,
+  adminMode,
+}: Props) => {
   const icon = ICON[event.type];
   const isCard = event.type === "yellow_card" || event.type === "red_card";
   const isSub = event.type === "substitution";
@@ -59,8 +65,14 @@ export const EventRow = ({ event, isOurs, onEdit, onDelete, adminMode }: Props) 
 
   // Penaltis da série: mostrar ✓ ou ✗ em vez do minuto
   const minuteLabel = isPenaltyShootout
-    ? (event.penaltyScored ? "⚽" : "✗")
-    : formatMinute(event.minute, event.phase ?? (event.minute > 90 ? "2nd" : event.minute > 45 ? "2nd" : "1st"));
+    ? event.penaltyScored
+      ? "⚽"
+      : "✗"
+    : formatMinute(
+        event.minute,
+        event.phase ??
+          (event.minute > 90 ? "2nd" : event.minute > 45 ? "2nd" : "1st"),
+      );
 
   if (isOurs) {
     return (
@@ -81,10 +93,15 @@ export const EventRow = ({ event, isOurs, onEdit, onDelete, adminMode }: Props) 
             </View>
           )}
         </View>
-        <Text style={[
-          styles.eventIconText,
-          isPenaltyShootout && { color: event.penaltyScored ? COLORS.success : COLORS.error, fontWeight: "600" },
-        ]}>
+        <Text
+          style={[
+            styles.eventIconText,
+            isPenaltyShootout && {
+              color: event.penaltyScored ? COLORS.success : COLORS.error,
+              fontWeight: "600",
+            },
+          ]}
+        >
           {minuteLabel}
         </Text>
         {icon && <Text style={styles.eventIconText}>{icon}</Text>}
@@ -116,10 +133,15 @@ export const EventRow = ({ event, isOurs, onEdit, onDelete, adminMode }: Props) 
       )}
       {icon && <Text style={styles.eventIconText}>{icon}</Text>}
       {isCard && <CardIcon type={event.type} />}
-      <Text style={[
-        styles.eventIconText,
-        isPenaltyShootout && { color: event.penaltyScored ? COLORS.success : COLORS.error, fontWeight: "600" },
-      ]}>
+      <Text
+        style={[
+          styles.eventIconText,
+          isPenaltyShootout && {
+            color: event.penaltyScored ? COLORS.success : COLORS.error,
+            fontWeight: "600",
+          },
+        ]}
+      >
         {minuteLabel}
       </Text>
       <View style={{ flexDirection: "row", alignItems: "center" }}>

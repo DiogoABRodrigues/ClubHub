@@ -79,19 +79,18 @@ export const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    margin: 10, 
+    margin: 10,
   },
   teamContainer: {
-  flex: 1,
-  flexDirection: "row",
-  alignItems: "center",
-},
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+  },
 
-teamContainerRight: {
-  flex: 1,
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "flex-end",
-},
-
+  teamContainerRight: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
 });

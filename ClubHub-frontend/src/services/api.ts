@@ -3,7 +3,7 @@ import axios from "axios";
 import { refreshToken } from "./AuthService";
 import { teamConfig } from "../config/teamConfig";
 
-const BACKEND_URI = teamConfig.backend_URL; 
+const BACKEND_URI = teamConfig.backend_URL;
 let memoryToken: string | null = null;
 
 export function setMemoryToken(token: string | null) {
@@ -21,8 +21,7 @@ export const scrapperApi = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
-
-  const token = memoryToken ?? await AsyncStorage.getItem("accessToken");
+  const token = memoryToken ?? (await AsyncStorage.getItem("accessToken"));
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -32,7 +31,7 @@ api.interceptors.request.use(async (config) => {
 });
 
 scrapperApi.interceptors.request.use(async (config) => {
-  const token = memoryToken ?? await AsyncStorage.getItem("accessToken");
+  const token = memoryToken ?? (await AsyncStorage.getItem("accessToken"));
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -88,5 +87,5 @@ scrapperApi.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );

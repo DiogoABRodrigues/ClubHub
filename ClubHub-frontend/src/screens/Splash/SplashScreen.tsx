@@ -115,7 +115,13 @@ export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
        * tab pela primeira vez, os componentes já estão aquecidos - render instantâneo.
        */}
       <View
-        style={{ position: "absolute", opacity: 0, width: 0, height: 0, overflow: "hidden" }}
+        style={{
+          position: "absolute",
+          opacity: 0,
+          width: 0,
+          height: 0,
+          overflow: "hidden",
+        }}
         pointerEvents="none"
         accessibilityElementsHidden={true}
         importantForAccessibility="no-hide-descendants"

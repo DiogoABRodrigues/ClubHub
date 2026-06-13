@@ -107,7 +107,7 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
       Alert.alert(
         "Campos obrigatórios",
         `Por favor preenche os seguintes campos:\n\n• ${missing.join("\n• ")}`,
-        [{ text: "OK" }]
+        [{ text: "OK" }],
       );
       return false;
     }
@@ -156,7 +156,7 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
   const pickImage = async () => {
     // Pedir permissão
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-console.log(status);
+    console.log(status);
     if (status !== "granted") {
       Alert.alert("Permissão negada", "Precisas de permitir acesso às fotos.");
       return;

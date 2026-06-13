@@ -7,7 +7,10 @@ import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { styles } from "./MatchDetail.styles";
 import { useMatches } from "../../hooks/useMatches";
 import { useTeams } from "../../hooks/useTeams";
-import { formatDateWithWeekdayPT, getPenaltyDisplayScore } from "../../utils/dateUtils";
+import {
+  formatDateWithWeekdayPT,
+  getPenaltyDisplayScore,
+} from "../../utils/dateUtils";
 import { usePlayers } from "../../hooks/usePlayers";
 import { EventRow } from "../../components/EventRow";
 import { Competition } from "../../models/Competition";
@@ -130,13 +133,23 @@ export const MatchDetail = () => {
     ) as Competition;
   }, [match.competitionId, competitions]);
 
-  const penaltyDisplay = useMemo(() =>
-    getPenaltyDisplayScore(match.result, match.outcome, match.homeOrAway, match.decidedByPenalties),
+  const penaltyDisplay = useMemo(
+    () =>
+      getPenaltyDisplayScore(
+        match.result,
+        match.outcome,
+        match.homeOrAway,
+        match.decidedByPenalties,
+      ),
     [match.result, match.outcome, match.homeOrAway, match.decidedByPenalties],
   );
 
-  const homeScoreDisplay = penaltyDisplay ? penaltyDisplay[0] : match.result?.split("-")[0];
-  const awayScoreDisplay = penaltyDisplay ? penaltyDisplay[1] : match.result?.split("-")[1];
+  const homeScoreDisplay = penaltyDisplay
+    ? penaltyDisplay[0]
+    : match.result?.split("-")[0];
+  const awayScoreDisplay = penaltyDisplay
+    ? penaltyDisplay[1]
+    : match.result?.split("-")[1];
 
   return (
     <ScrollView
@@ -194,21 +207,27 @@ export const MatchDetail = () => {
             <Text style={styles.teamName}>{homeTeamName}</Text>
           </View>
           <View style={{ alignItems: "center", marginTop: 8 }}>
-          <View style={styles.scoreContainer}>
-            <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
-              {homeScoreDisplay}
-            </Text>
-            <Text style={styles.colon}>:</Text>
-            <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
-              {awayScoreDisplay}
-            </Text>
+            <View style={styles.scoreContainer}>
+              <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
+                {homeScoreDisplay}
+              </Text>
+              <Text style={styles.colon}>:</Text>
+              <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
+                {awayScoreDisplay}
+              </Text>
+            </View>
+            {match.decidedByPenalties && (
+              <Text
+                style={{
+                  fontSize: 11,
+                  color: "rgba(255,255,255,0.7)",
+                  marginTop: 2,
+                }}
+              >
+                após g.p.
+              </Text>
+            )}
           </View>
-          {match.decidedByPenalties && (
-            <Text style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", marginTop: 2 }}>
-              após g.p.
-            </Text>
-          )}
-        </View>
           <View style={styles.teamContainer}>
             <View style={styles.teamLogo}>
               {awayLogo ? (
@@ -279,17 +298,29 @@ export const MatchDetail = () => {
                 const sorted = [...match.events].sort((a, b) => {
                   if (a.minute !== b.minute) return a.minute - b.minute;
                   return (
-                     // @ts-ignore
+                    // @ts-ignore
                     new Date(a.createdAt).getTime() -
                     // @ts-ignore
                     new Date(b.createdAt).getTime()
                   );
                 });
 
-                const firstHalf = sorted.filter((e) => e.type !== "penalty_shootout" && (e.phase === "1st" || (!e.phase && e.minute <= 45)));
-                const secondHalf = sorted.filter((e) => e.type !== "penalty_shootout" && (e.phase === "2nd" || (!e.phase && e.minute > 45)));
-                const extraTime = sorted.filter((e) => e.type !== "penalty_shootout" && e.phase === "extra");
-                const penalties = sorted.filter((e) => e.type === "penalty_shootout");
+                const firstHalf = sorted.filter(
+                  (e) =>
+                    e.type !== "penalty_shootout" &&
+                    (e.phase === "1st" || (!e.phase && e.minute <= 45)),
+                );
+                const secondHalf = sorted.filter(
+                  (e) =>
+                    e.type !== "penalty_shootout" &&
+                    (e.phase === "2nd" || (!e.phase && e.minute > 45)),
+                );
+                const extraTime = sorted.filter(
+                  (e) => e.type !== "penalty_shootout" && e.phase === "extra",
+                );
+                const penalties = sorted.filter(
+                  (e) => e.type === "penalty_shootout",
+                );
 
                 return (
                   <>
@@ -328,7 +359,9 @@ export const MatchDetail = () => {
                     {extraTime.length > 0 && (
                       <>
                         <View style={styles.halfHeader}>
-                          <Text style={styles.halfHeaderText}>Prolongamento</Text>
+                          <Text style={styles.halfHeaderText}>
+                            Prolongamento
+                          </Text>
                         </View>
                         {extraTime.map((event: any) => (
                           <EventRow

@@ -61,18 +61,19 @@ export function getPenaltyDisplayScore(
   homeOrAway: "C" | "F",
   decidedByPenalties: boolean | undefined,
 ): [string, string] | null {
-  if (!result || !decidedByPenalties || outcome === "E" || !outcome) return null;
- 
+  if (!result || !decidedByPenalties || outcome === "E" || !outcome)
+    return null;
+
   const parts = result.split("-");
   if (parts.length < 2) return null;
- 
+
   let home = parseInt(parts[0], 10);
   let away = parseInt(parts[1], 10);
- 
+
   // "V" significa que a nossa equipa ganhou nos penáltis
   const ourTeamWon = outcome === "V";
   const weAreHome = homeOrAway === "C";
- 
+
   if (ourTeamWon && weAreHome) {
     return [`${home + 1}*`, `${away}`];
   } else if (ourTeamWon && !weAreHome) {
@@ -83,4 +84,3 @@ export function getPenaltyDisplayScore(
     return [`${home + 1}*`, `${away}`];
   }
 }
- 

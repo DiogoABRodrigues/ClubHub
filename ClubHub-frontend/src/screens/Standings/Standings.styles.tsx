@@ -182,9 +182,9 @@ export const styles = StyleSheet.create({
     opacity: 0.6,
   },
   sectionSeparator: {
-  height: 1,
-  backgroundColor: COLORS.primary,
-  marginTop: SPACING.xl,
-  marginHorizontal: -SPACING.md, // vai de ponta a ponta
-},
+    height: 1,
+    backgroundColor: COLORS.primary,
+    marginTop: SPACING.xl,
+    marginHorizontal: -SPACING.md, // vai de ponta a ponta
+  },
 });

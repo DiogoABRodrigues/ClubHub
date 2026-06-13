@@ -4,8 +4,8 @@ import { MatchDetail } from "../screens/MatchDetails/MatchDetail";
 import { AdminMatchDetail } from "../screens/Admin/AdminMatches/AdminMatchDetail";
 
 export type MatchesStackParamList = {
-  Matches: undefined; 
-  MatchDetail: { id: string }; 
+  Matches: undefined;
+  MatchDetail: { id: string };
   AdminMatchDetail: { id: string };
 };
 
