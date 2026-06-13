@@ -34,10 +34,12 @@ export default class PlayerService {
     const statusMap: Record<number, string> = {};
     const positionMap: Record<number, string | null> = {};
     const numberMap: Record<number, number | null> = {};
+    const isFieldPlayerMap: Record<number, boolean> = {};
     for (const entry of squadEntries) {
       statusMap[entry.playerExternalId] = entry.status;
       positionMap[entry.playerExternalId] = entry.position;
       numberMap[entry.playerExternalId] = entry.number;
+      isFieldPlayerMap[entry.playerExternalId] = entry.isFieldPlayer ?? false;
     }
 
     const enriched = players.map((p: any) => {
@@ -45,6 +47,7 @@ export default class PlayerService {
       plain.squadStatus = statusMap[plain.externalId] ?? "active";
       plain.position = positionMap[plain.externalId] ?? null;
       plain.number = numberMap[plain.externalId] ?? null;
+      plain.isFieldPlayer = isFieldPlayerMap[plain.externalId] ?? false;
       return plain;
     });
 
@@ -73,10 +76,12 @@ export default class PlayerService {
     const statusMap: Record<number, string> = {};
     const positionMap: Record<number, string | null> = {};
     const numberMap: Record<number, number | null> = {};
+    const isFieldPlayerMap: Record<number, boolean> = {};
     for (const entry of squadEntries) {
       statusMap[entry.playerExternalId] = entry.status;
       positionMap[entry.playerExternalId] = entry.position;
       numberMap[entry.playerExternalId] = entry.number;
+      isFieldPlayerMap[entry.playerExternalId] = entry.isFieldPlayer ?? false;
     }
 
     return players.map((p: any) => {
@@ -84,6 +89,7 @@ export default class PlayerService {
       plain.squadStatus = statusMap[plain.externalId] ?? "active";
       plain.position = positionMap[plain.externalId] ?? null;
       plain.number = numberMap[plain.externalId] ?? null;
+      plain.isFieldPlayer = isFieldPlayerMap[plain.externalId] ?? false;
       return plain;
     });
   }

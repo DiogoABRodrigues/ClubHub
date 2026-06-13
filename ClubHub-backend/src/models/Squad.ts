@@ -16,6 +16,7 @@ class Squad extends Model {
   declare number: number | null;
   declare position: string | null;
   declare status: SquadStatus;
+  declare isFieldPlayer: boolean;
 }
 
 Squad.init(
@@ -45,6 +46,10 @@ Squad.init(
       type: DataTypes.ENUM("active", "left", "error"),
       allowNull: false,
       defaultValue: "active",
+    },
+    isFieldPlayer: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
     },
   },
   {
