@@ -21,10 +21,6 @@
         "monochromeImage": "./assets/mono.png"
       },
       "softwareKeyboardLayoutMode": "pan",
-      "notification": {
-        "icon": "./assets/mono.png",
-        "color": "#800000"
-      },
       "googleServicesFile": "./google-services.json",
       "predictiveBackGestureEnabled": false,
       "package": "com.x13dean13.A.D.E.C.A.S",
