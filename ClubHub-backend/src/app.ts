@@ -14,7 +14,7 @@ import standingRoutes from "./routes/standing.routes";
 import squadRoutes from "./routes/squad.routes";
 import newsRoutes from "./routes/news.routes";
 import statementRoutes from "./routes/statement.routes";
-import scraperRoutes from "./routes/scraperRoutes";
+import scraperRoutes from "./routes/scraper.routes";
 import matchEventRoutes from "./routes/matchEvent.routes";
 import deviceRoutes from "./routes/device.routes";
 import authRoutes from "./routes/auth.routes";
@@ -23,6 +23,7 @@ import notificationsRoutes from "./routes/notification.routes";
 import feedbackRoutes from "./routes/feedback.routes";
 import rateLimit from "express-rate-limit";
 import compression from "compression";
+import helperRoutes from "./routes/helper.routes";
 
 // ─── Logger ───────────────────────────────────────────────────────────────────
 export const logger = pino({
@@ -116,5 +117,6 @@ app.use("/api/match-events", matchEventRoutes);
 app.use("/api/app-settings", appSettingsRoutes);
 app.use("/api/notifications", notificationsRoutes);
 app.use("/api/feedback", feedbackRoutes);
+app.use("/api/helper", helperRoutes);
 
 export default app;
