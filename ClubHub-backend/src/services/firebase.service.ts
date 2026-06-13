@@ -1,4 +1,4 @@
-import admin from "firebase-admin";
+/*import admin from "firebase-admin";
 import fs from "fs";
 
 const serviceAccount = JSON.parse(
@@ -11,10 +11,9 @@ if (!admin.apps.length) {
   });
 }
 
-export default admin;
+export default admin;*/
 
-
-/*import admin from "firebase-admin";
+import admin from "firebase-admin";
 import serviceAccount from "../config/adecas-70555-firebase-adminsdk-fbsvc-bf0ae60726.json";
 
 if (!admin.apps.length) {
@@ -23,4 +22,4 @@ if (!admin.apps.length) {
   });
 }
 
-export default admin;*/
+export default admin;
