@@ -76,7 +76,6 @@ const MatchesSection = React.memo(
       )}
     </View>
 
-    {/* EmptyState FORA do sectionHeader */}
     {matches.length < 1 && (
       <EmptyState
         title="Sem jogos agendados"
