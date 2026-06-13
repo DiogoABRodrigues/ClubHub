@@ -24,8 +24,10 @@ export default class PlayerService {
 
     const externalIds = squadEntries.map((s) => s.playerExternalId);
 
+    // Não filtra por category — um jogador existe uma única vez na tabela players
+    // O escalão é determinado pelo Squad
     const players = await Player.findAll({
-      where: { externalId: externalIds, category },
+      where: { externalId: externalIds },
       include: [
         { model: Stats, where: { seasonId, category }, required: false },
       ],
@@ -58,7 +60,7 @@ export default class PlayerService {
     const externalIds = squadEntries.map((s) => s.playerExternalId);
 
     const players = await Player.findAll({
-      where: { externalId: externalIds, category },
+      where: { externalId: externalIds },
       include: [
         { model: Stats, where: { seasonId, category }, required: false },
       ],

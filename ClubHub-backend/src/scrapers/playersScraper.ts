@@ -196,7 +196,7 @@ export async function savePlayersAndSquad(
       name: p.name,
       photoUrl: p.photoUrl,
       age: p.age,
-      category,
+      // category removida — jogador existe uma única vez, escalão fica no Squad
     });
 
     await Squad.upsert({
