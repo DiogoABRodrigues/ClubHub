@@ -24,8 +24,6 @@ export default class PlayerService {
 
     const externalIds = squadEntries.map((s) => s.playerExternalId);
 
-    // Não filtra por category — um jogador existe uma única vez na tabela players
-    // O escalão é determinado pelo Squad
     const players = await Player.findAll({
       where: { externalId: externalIds },
       include: [
@@ -34,13 +32,19 @@ export default class PlayerService {
     });
 
     const statusMap: Record<number, string> = {};
+    const positionMap: Record<number, string | null> = {};
+    const numberMap: Record<number, number | null> = {};
     for (const entry of squadEntries) {
       statusMap[entry.playerExternalId] = entry.status;
+      positionMap[entry.playerExternalId] = entry.position;
+      numberMap[entry.playerExternalId] = entry.number;
     }
 
     const enriched = players.map((p: any) => {
       const plain = p.toJSON();
       plain.squadStatus = statusMap[plain.externalId] ?? "active";
+      plain.position = positionMap[plain.externalId] ?? null;
+      plain.number = numberMap[plain.externalId] ?? null;
       return plain;
     });
 
@@ -67,13 +71,19 @@ export default class PlayerService {
     });
 
     const statusMap: Record<number, string> = {};
+    const positionMap: Record<number, string | null> = {};
+    const numberMap: Record<number, number | null> = {};
     for (const entry of squadEntries) {
       statusMap[entry.playerExternalId] = entry.status;
+      positionMap[entry.playerExternalId] = entry.position;
+      numberMap[entry.playerExternalId] = entry.number;
     }
 
     return players.map((p: any) => {
       const plain = p.toJSON();
       plain.squadStatus = statusMap[plain.externalId] ?? "active";
+      plain.position = positionMap[plain.externalId] ?? null;
+      plain.number = numberMap[plain.externalId] ?? null;
       return plain;
     });
   }
