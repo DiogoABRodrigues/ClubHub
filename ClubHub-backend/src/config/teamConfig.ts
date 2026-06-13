@@ -46,6 +46,19 @@ export const teamConfig = {
         "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764/equipas",
       ],
     },
+    {
+      category: "sub13" as Category,
+      label: "Sub-13",
+      enabled: false,
+      teamName: "Adecas",
+      players_url: "https://www.zerozero.pt/equipa/adecas/333884?epoca_id=155",
+      matches_url: "https://www.zerozero.pt/equipa/adecas/333884/jogos",
+      standings_url: "https://www.zerozero.pt/edicao/af-viana-castelo-jun-d-fut9-2-f-serie-b-2025-26/212701",
+      stats_url: "https://www.zerozero.pt/equipa/adecas/32764/jogadores?compet_id_jogos=0&pais=0&epoca_stats_id=155&pos=0&o=min",
+      teams_urls: [
+        "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764/equipas",
+      ],
+    },
   ] as CategoryConfig[],
 };
 
