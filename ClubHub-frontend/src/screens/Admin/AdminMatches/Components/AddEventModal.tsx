@@ -33,9 +33,9 @@ const MIN_MINUTE: Record<string, number> = {
 };
 
 const MAX_MINUTE: Record<string, number> = {
-  "1st": 60,
-  "2nd": 105,
-  extra: 130,
+  "1st": 45,
+  "2nd": 90,
+  extra: 120,
 };
 
 const MINUTE_PLACEHOLDER: Record<string, string> = {
@@ -47,7 +47,7 @@ const MINUTE_PLACEHOLDER: Record<string, string> = {
 export function formatMinute(minute: number, phase?: string): string {
   if (!phase || phase === "penalties") return `${minute}'`;
   const base = PHASE_BASE[phase];
-  if (base !== undefined && minute > base) return `${base}+${minute - base}'`;
+  if (base !== undefined && minute >= base) return `${base}+'`;
   return `${minute}'`;
 }
 
