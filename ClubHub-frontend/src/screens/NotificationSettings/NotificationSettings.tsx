@@ -23,6 +23,8 @@ import { teamConfig } from "../../config/teamConfig";
 import { useDevicePreferences, DevicePreferences } from "../../hooks/useDevicePreferences";
 import { SeasonPicker } from "../../components/Seasonpicker";
 import { CategoryPicker } from "../../components/Categorypicker";
+import useHelper from "../../hooks/useHelper";
+import { CategoryConfig } from "../../models/Category";
 
 type CategoryKey = "over19" | "sub19" | "sub17" | "sub15" | "sub13";
 
@@ -316,9 +318,9 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
 }
 
 // ── NotificationSettings ──────────────────────────────────────────────────────
-export const NotificationSettings = ({ navigation }: any) => {
+export const NotificationSettings = () => {
   const { loginAsAdmin, setAdminMode } = useAuth();
-  const enabledCategories = teamConfig.categories.filter((c) => c.enabled);
+  const { categories } = useHelper();
 
   const [deviceId, setDeviceId] = useState<string | null>(null);
   const [userName, setUserName] = useState("");
@@ -407,7 +409,7 @@ export const NotificationSettings = ({ navigation }: any) => {
 
         {/* Por escalão */}
         <Text style={styles.sectionTitle}>Notificações Por escalão</Text>
-        {enabledCategories.map((cfg) => (
+        {categories?.map((cfg: CategoryConfig) => (
           <EscalaoSection
             key={cfg.category}
             cfg={cfg}

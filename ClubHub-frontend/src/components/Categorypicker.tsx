@@ -6,10 +6,12 @@ import { teamConfig } from "../config/teamConfig";
 import { COLORS } from "../theme/colors";
 import { styles } from "./styles/Seasonpicker.styles";
 import type { Category } from "../contexts/CategoryContext";
+import useHelper from "../hooks/useHelper";
 
 export const CategoryPicker: React.FC = () => {
   const { selectedCategory, setSelectedCategory } = useCategory();
-  const enabledCategories = teamConfig.categories.filter((c) => c.enabled);
+  const { categories } = useHelper();
+  const enabledCategories = categories?.filter((c) => c.enabled) || [];
   const [open, setOpen] = useState(false);
 
   const onlyOne = enabledCategories.length <= 1;
