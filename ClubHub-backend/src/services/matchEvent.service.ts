@@ -146,7 +146,6 @@ class MatchEventService {
         case "goal":
           title = category === "over19" ? "Golo!" : `Golo, ${categoryLabel}!`;
 
-          // 🔥 AGORA o match já tem o resultado atualizado
           const freshMatch = await Match.findByPk(match!.id);
 
           const result = freshMatch?.result ? `\n[${freshMatch.result}]` : "";

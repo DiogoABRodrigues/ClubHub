@@ -9,7 +9,6 @@ import Season from "../models/Season";
 import socketService from "./socket.service";
 import { pushService } from "./push.service";
 import deviceService from "./device.service";
-import AppSettings from "../models/AppSettings";
 import { getNotificationsEnabled } from "../utils/getNotificationsEnabled";
 import { teamConfig } from "../config/teamConfig";
 
@@ -89,10 +88,6 @@ export default class MatchService {
 
     await cache.del(
       CacheKeys.matches.bySeason(match.seasonId as number, category),
-    );
-
-    await cache.del(
-      CacheKeys.standings.bySeason(match.seasonId as number, category),
     );
 
     socketService.emitMatchUpdate(match);
