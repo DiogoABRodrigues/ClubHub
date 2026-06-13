@@ -23,7 +23,7 @@ export default class StatsService {
     if (cached) return cached;
 
     const data = await Stats.findAll({ where: { seasonId, category } });
-    await cache.set(key, data);
+    await cache.setPermanent(key, data);
     return data;
   }
 }

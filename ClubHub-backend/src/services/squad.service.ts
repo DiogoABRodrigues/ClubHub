@@ -22,7 +22,7 @@ export default class SquadService {
     if (cached) return cached;
 
     const data = await Squad.findAll({ where: { seasonId, category } });
-    await cache.set(key, data);
+    await cache.setPermanent(key, data);
     return data;
   }
 

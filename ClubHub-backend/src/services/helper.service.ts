@@ -8,7 +8,9 @@ export default class HelperService {
     if (cached) return cached;
 
     const enabledCategories = teamConfig.categories.filter((c) => c.enabled);
-    await cache.set(CacheKeys.categories.enabled, enabledCategories);
+
+    // Config estática — 24h de TTL é suficiente, renova no arranque
+    await cache.set(CacheKeys.categories.enabled, enabledCategories, 60 * 60 * 24);
 
     return enabledCategories;
   }

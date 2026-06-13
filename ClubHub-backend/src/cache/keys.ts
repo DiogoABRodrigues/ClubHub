@@ -1,6 +1,7 @@
 export const CacheKeys = {
   season: {
     current: "app:season:current",
+    byCategory: (category: string) => `app:seasons:category:${category}`,
   },
 
   competitions: {
@@ -16,6 +17,8 @@ export const CacheKeys = {
   players: {
     bySeason: (seasonId: number, category: string = "over19") =>
       `app:players:season:${seasonId}:${category}`,
+    allStatsByPlayer: (playerId: number) =>
+      `app:player:${playerId}:allstats`,
   },
 
   stats: {
@@ -40,5 +43,9 @@ export const CacheKeys = {
 
   categories: {
     enabled: "app:categories:enabled",
+  },
+
+  teams: {
+    all: "app:teams:all",
   },
 };

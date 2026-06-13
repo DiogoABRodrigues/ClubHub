@@ -13,7 +13,7 @@ export default class CompetitionService {
     const data = await Competition.findAll({
       order: [["id", "ASC"]],
     });
-    await cache.set(key, data);
+    await cache.setPermanent(key, data);
 
     return data;
   }
@@ -25,7 +25,7 @@ export default class CompetitionService {
     if (cached) return cached;
 
     const data = await Competition.findAll({ where: { seasonId } });
-    await cache.set(key, data);
+    await cache.setPermanent(key, data);
 
     return data;
   }
@@ -42,8 +42,11 @@ export default class CompetitionService {
 
     await competition.update({ legend });
 
-    // opcional: invalidar cache
-    await cache.del(CacheKeys.competitions.all);
+    // Invalida ambas as chaves
+    await Promise.all([
+      cache.del(CacheKeys.competitions.all),
+      cache.del(CacheKeys.competitions.bySeason(competition.seasonId)),
+    ]);
 
     return competition;
   }

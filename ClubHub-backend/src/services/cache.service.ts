@@ -1,17 +1,23 @@
 import { redis } from "../config/redis";
 
 class CacheService {
-  private defaultTTL = 60 * 60; // 1h
+  private defaultTTL = 60 * 60 * 24; // 24h (apenas para dados com expiração temporal, ex: season.current)
 
   async get<T>(key: string): Promise<T | null> {
     const data = await redis.get(key);
     return data ? (JSON.parse(data) as T) : null;
   }
 
+  /** Guarda com TTL (segundos). Usar apenas quando a expiração temporal faz sentido. */
   async set(key: string, value: any, ttl = this.defaultTTL) {
     await redis.set(key, JSON.stringify(value), {
       EX: ttl,
     });
+  }
+
+  /** Guarda sem TTL — persiste até invalidação manual (scrapper ou mutação). */
+  async setPermanent(key: string, value: any) {
+    await redis.set(key, JSON.stringify(value));
   }
 
   async del(key: string) {

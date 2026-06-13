@@ -9,6 +9,7 @@ import Season from "../models/Season";
 import socketService from "./socket.service";
 import { pushService } from "./push.service";
 import deviceService from "./device.service";
+import AppSettings from "../models/AppSettings";
 import { getNotificationsEnabled } from "../utils/getNotificationsEnabled";
 import { teamConfig } from "../config/teamConfig";
 
@@ -39,7 +40,7 @@ export default class MatchService {
       ],
     });
 
-    await cache.set(key, matches);
+    await cache.setPermanent(key, matches);
     return matches;
   }
 
@@ -86,6 +87,7 @@ export default class MatchService {
 
     const category = (match as any).category ?? "over19";
 
+    // Só invalida os matches — standings são geridas pelo scrapper
     await cache.del(
       CacheKeys.matches.bySeason(match.seasonId as number, category),
     );
@@ -97,42 +99,48 @@ export default class MatchService {
 
   async updateDateTime(id: number, date: string, time: string) {
     const match = await Match.findByPk(id);
-    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number));
+    const category = (match as any)?.category ?? "over19";
+    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number, category));
     socketService.emitMatchUpdate(match);
     return this.update(id, { date, time });
   }
 
   async updateScore(id: number, result: string) {
     const match = await Match.findByPk(id);
-    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number));
+    const category = (match as any)?.category ?? "over19";
+    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number, category));
     socketService.emitMatchUpdate(match);
     return this.update(id, { result });
   }
 
   async updateLocation(id: number, location: string) {
     const match = await Match.findByPk(id);
-    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number));
+    const category = (match as any)?.category ?? "over19";
+    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number, category));
     socketService.emitMatchUpdate(match);
     return this.update(id, { location });
   }
 
   async updateEvents(id: number, events: any[]) {
     const match = await Match.findByPk(id);
-    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number));
+    const category = (match as any)?.category ?? "over19";
+    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number, category));
     socketService.emitMatchUpdate(match);
     return this.update(id, { events });
   }
 
   async updateStatus(id: number, status: string) {
     const match = await Match.findByPk(id);
-    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number));
+    const category = (match as any)?.category ?? "over19";
+    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number, category));
     socketService.emitMatchUpdate(match);
     return this.update(id, { status });
   }
 
   async updateOutcome(id: number, outcome: string) {
     const match = await Match.findByPk(id);
-    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number));
+    const category = (match as any)?.category ?? "over19";
+    await cache.del(CacheKeys.matches.bySeason(match?.seasonId as number, category));
     socketService.emitMatchUpdate(match);
     return this.update(id, { outcome });
   }
@@ -157,7 +165,6 @@ export default class MatchService {
     await pushService.handleReceipts(response);
   }
 
-  /** Label do escalão para usar no título - vazio para over19 */
   private _getCategoryLabel(category: string): string {
     if (category === "over19") return "";
     const cfg = (teamConfig.categories as any[]).find(

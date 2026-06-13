@@ -42,7 +42,7 @@ export default class PlayerService {
       return plain;
     });
 
-    await cache.set(key, enriched);
+    await cache.setPermanent(key, enriched);
     return enriched;
   }
 
@@ -77,7 +77,7 @@ export default class PlayerService {
   }
 
   async getAllStatsByPlayerId(playerId: number) {
-    const key = `app:player:${playerId}:allstats`;
+    const key = CacheKeys.players.allStatsByPlayer(playerId);
 
     const cached = await cache.get(key);
     if (cached) return cached;
@@ -102,7 +102,7 @@ export default class PlayerService {
     });
     (player as any).Stats = stats;
 
-    await cache.set(key, player, 60 * 60);
+    await cache.setPermanent(key, player);
     return player;
   }
 

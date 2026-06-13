@@ -11,7 +11,7 @@ export default class StandingService {
     if (cached) return cached;
 
     const data = await Standing.findAll();
-    await cache.set(key, data);
+    await cache.setPermanent(key, data);
 
     return data;
   }
@@ -23,7 +23,7 @@ export default class StandingService {
     if (cached) return cached;
 
     const data = await Standing.findAll({ where: { seasonId, category } });
-    await cache.set(key, data);
+    await cache.setPermanent(key, data);
 
     return data;
   }
@@ -39,7 +39,7 @@ export default class StandingService {
     if (cached) return cached;
 
     const data = await Standing.findAll({ where: { seasonId, category } });
-    await cache.set(key, data);
+    await cache.setPermanent(key, data);
 
     return data;
   }

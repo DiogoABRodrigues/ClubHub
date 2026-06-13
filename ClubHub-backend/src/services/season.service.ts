@@ -30,13 +30,14 @@ export default class SeasonService {
       season = await Season.findOne({ order: [["id", "DESC"]] });
     }
 
+    // 24h — muda automaticamente com a data, sem trigger manual
     await cache.set(key, season, 60 * 60 * 24);
     return season;
   }
 
   /** Seasons que têm pelo menos 1 jogo na categoria dada */
   async getByCategory(category: string): Promise<Season[]> {
-    const key = `app:seasons:category:${category}`;
+    const key = CacheKeys.season.byCategory(category);
 
     const cached = await cache.get(key);
     if (cached) return cached as Season[];
@@ -56,7 +57,8 @@ export default class SeasonService {
       order: [["id", "ASC"]],
     });
 
-    await cache.set(key, seasons, 60 * 60 * 6); // 6h
+    // Persiste sem TTL — só muda quando o scrapper corre e adiciona jogos de nova época
+    await cache.setPermanent(key, seasons);
     return seasons;
   }
 }

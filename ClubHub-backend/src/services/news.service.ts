@@ -3,26 +3,21 @@ import cache from "../services/cache.service";
 import { CacheKeys } from "../cache/keys";
 import { pushService } from "./push.service";
 import deviceService from "./device.service";
-import AppSettings from "../models/AppSettings";
 import { getNotificationsEnabled } from "../utils/getNotificationsEnabled";
 
 class NewsService {
   async create(data: any) {
     const news = await News.create(data);
-
     await cache.del(CacheKeys.news.last10);
-
     await this.notify(news);
-
     return news;
   }
 
   private async notify(news: any) {
     const settings = await getNotificationsEnabled();
-
     if (!settings) return;
-    const devices = await deviceService.getDevicesForNews();
 
+    const devices = await deviceService.getDevicesForNews();
     if (!devices.length) return;
 
     const title = "Foi publicada uma nova notícia!";
@@ -54,7 +49,8 @@ class NewsService {
       limit: 10,
     });
 
-    await cache.set(key, news, 60 * 5); // 5 min
+    // Persiste sem TTL — invalida em create/update/delete
+    await cache.setPermanent(key, news);
 
     return news;
   }
