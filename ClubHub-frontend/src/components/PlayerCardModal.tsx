@@ -80,10 +80,10 @@ export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
   const [firstName, ...rest] = display.name.split(" ");
   const lastName = rest.join(" ");
 
-  // Posição e número da época mais recente
-  const currentStat = display.Stats?.[0];
-  const position = currentStat?.position ?? "-";
-  const number = currentStat?.number;
+  // Posição e número vêm do Squad (injetados pelo backend para o escalão correto)
+  // Fallback para Stats?.[0] caso seja o modal de histórico completo (getAllStats)
+  const position = player.position ?? display.Stats?.[0]?.position ?? "-";
+  const number = player.number ?? display.Stats?.[0]?.number;
 
   // Já chegam ordenadas do backend (season year DESC)
   const sortedStats = display.Stats ?? [];

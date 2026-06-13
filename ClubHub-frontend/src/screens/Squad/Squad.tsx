@@ -86,10 +86,10 @@ export const SquadScreen = React.memo(function SquadScreen() {
   /* SORT ONCE */
   const sortedPlayers = useMemo(() => {
     return [...visiblePlayers].sort((a, b) => {
-      const posA = getPositionOrder(a.Stats?.[0]?.position || "");
-      const posB = getPositionOrder(b.Stats?.[0]?.position || "");
+      const posA = getPositionOrder(a.position || "");
+      const posB = getPositionOrder(b.position || "");
       if (posA !== posB) return posA - posB;
-      return (a.Stats?.[0]?.number || 0) - (b.Stats?.[0]?.number || 0);
+      return (a.number || 0) - (b.number || 0);
     });
   }, [visiblePlayers]);
 
@@ -97,7 +97,7 @@ export const SquadScreen = React.memo(function SquadScreen() {
   const grouped = useMemo(() => {
     const groups: Record<string, Player[]> = {};
     for (const p of sortedPlayers) {
-      const key = mapToMainPosition(p.Stats?.[0]?.position || "");
+      const key = mapToMainPosition(p.position || "");
       if (!groups[key]) groups[key] = [];
       groups[key].push(p);
     }

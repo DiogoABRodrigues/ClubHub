@@ -27,7 +27,6 @@ import { AddLineupModal } from "./Components/AddLineupModal";
 import { AddEventModal } from "./Components/AddEventModal";
 
 import { usePlayers } from "../../../hooks/usePlayers";
-import { isFieldPlayer } from "../../../utils/playerPositionUtils";
 import { Player } from "../../../models/Player";
 import { EventRow } from "../../../components/EventRow";
 import { useCompetitions } from "../../../hooks/useCompetitions";
@@ -62,7 +61,7 @@ export const AdminMatchDetail = () => {
   const { getActivePlayers, refreshPlayers } = usePlayers();
 
   const players = useMemo(() => {
-    return getActivePlayers().filter(isFieldPlayer);
+    return getActivePlayers().filter((p) => p.isFieldPlayer);
   }, [getActivePlayers, refreshPlayers]);
 
   const playersMap = useMemo(() => {

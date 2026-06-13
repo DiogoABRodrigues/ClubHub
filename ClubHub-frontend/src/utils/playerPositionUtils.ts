@@ -23,21 +23,3 @@ export function mapToMainPosition(position: string): string {
 export function getPositionOrder(position: string): number {
   return POSITION_ORDER[mapToMainPosition(position)] ?? 99;
 }
-
-export const isFieldPlayer = (player: Player) => {
-  const pos = mapToMainPosition(player.Stats?.[0]?.position || "");
-
-  return (
-    player.squadStatus === "active" &&
-    ["Guarda Redes", "Defesa", "Médio", "Avançado"].includes(pos)
-  );
-};
-
-export const isFieldPlayer4Stats = (player: Player) => {
-  const pos = mapToMainPosition(player.Stats?.[0]?.position || "");
-
-  return (
-    (player.squadStatus === "active" || player.squadStatus === "left") &&
-    ["Guarda Redes", "Defesa", "Médio", "Avançado"].includes(pos)
-  );
-};

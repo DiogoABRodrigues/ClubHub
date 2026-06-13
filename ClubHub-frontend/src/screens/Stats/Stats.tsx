@@ -17,7 +17,6 @@ import { ArrowUp, ArrowDown } from "lucide-react-native";
 import { usePlayers } from "../../hooks/usePlayers";
 import { Player } from "../../models/Player";
 import { styles as globalStyles } from "./Stats.styles";
-import { isFieldPlayer4Stats } from "../../utils/playerPositionUtils";
 
 type SortField = "games" | "minutes" | "goals";
 type SortOrder = "asc" | "desc";
@@ -48,7 +47,7 @@ export const SquadStats = React.memo(function SquadStats() {
 
   // Filtra apenas jogadores, ignora staff
   const statsPlayersOnly = useMemo(
-    () => players.filter(isFieldPlayer4Stats),
+    () => players.filter((p) => p.isFieldPlayer),
     [players],
   );
 

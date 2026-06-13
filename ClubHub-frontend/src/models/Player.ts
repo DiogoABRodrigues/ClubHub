@@ -11,5 +11,10 @@ export type Player = {
   age: number | null;
   /** Status deste jogador nesta época específica, injetado pelo backend */
   squadStatus?: SquadStatus;
+  /** Posição do jogador neste escalão específico (vem do Squad, não das Stats) */
+  position?: string | null;
+  isFieldPlayer?: boolean;
+  /** Número do jogador neste escalão específico (vem do Squad, não das Stats) */
+  number?: number | null;
   Stats?: Stats[];
 };
