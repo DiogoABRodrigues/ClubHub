@@ -48,7 +48,6 @@ export const styles = StyleSheet.create({
     borderColor: COLORS.border,
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
-    marginTop: SPACING.md,
   },
 
   legendTitle: {
@@ -182,4 +181,10 @@ export const styles = StyleSheet.create({
     marginTop: SPACING.xs,
     opacity: 0.6,
   },
+  sectionSeparator: {
+  height: 1,
+  backgroundColor: COLORS.primary,
+  marginTop: SPACING.xl,
+  marginHorizontal: -SPACING.md, // vai de ponta a ponta
+},
 });

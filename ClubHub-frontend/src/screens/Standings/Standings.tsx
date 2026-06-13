@@ -272,6 +272,7 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
               </View>
             ))}
           </View>
+          <View style={styles.sectionSeparator} />
         </View>
       );
     },
