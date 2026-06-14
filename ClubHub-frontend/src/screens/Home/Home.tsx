@@ -58,10 +58,10 @@ export const Home = ({ navigation }: any) => {
     return map;
   }, [teams]);
 
-  const nextMatch = useMemo(
-    () => matches.filter((m) => m.status === "upcoming").toReversed()[0],
-    [matches],
-  );
+  const nextMatch = useMemo(() => {
+    const upcoming = matches.filter((m) => m.status === "upcoming");
+    return upcoming.at(-1);
+  }, [matches]);
 
   const recentMatch = useMemo(
     () => matches.filter((m) => m.status === "finished")[0],
@@ -188,9 +188,7 @@ export const Home = ({ navigation }: any) => {
                 homeLogo={getTeamLogo(getHomeTeam(nextMatch)) || ""}
                 awayLogo={getTeamLogo(getAwayTeam(nextMatch)) || ""}
                 onPress={() => navigateToMatchDetail(nextMatch.id)}
-                competition={competitions.find(
-                  (c) => c.id === nextMatch.competitionId,
-                )}
+                competition={competitionsMap.get(nextMatch.competitionId)}
               />
             )) || (
               <EmptyState
@@ -217,9 +215,7 @@ export const Home = ({ navigation }: any) => {
               homeLogo={getTeamLogo(getHomeTeam(recentMatch)) || ""}
               awayLogo={getTeamLogo(getAwayTeam(recentMatch)) || ""}
               onPress={() => navigateToMatchDetail(recentMatch.id)}
-              competition={competitions.find(
-                (c) => c.id === recentMatch.competitionId,
-              )}
+              competition={competitionsMap.get(recentMatch.competitionId)}
             />
           </View>
         )}

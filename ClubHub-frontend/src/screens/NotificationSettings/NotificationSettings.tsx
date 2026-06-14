@@ -33,7 +33,6 @@ import { SeasonPicker } from "../../components/Seasonpicker";
 import { CategoryPicker } from "../../components/Categorypicker";
 import useHelper from "../../hooks/useHelper";
 import { CategoryConfig } from "../../models/Category";
-
 type CategoryKey = "over19" | "sub19" | "sub17" | "sub15" | "sub13";
 
 const NOTIFICATION_ROWS: {
@@ -285,7 +284,7 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
     try {
       await FeedbackService.send({
         type,
-        message: message.trim(),
+        message: teamConfig.name + ": " + message.trim(),
         imageUri: imageUri ?? undefined,
         deviceId: deviceId ?? undefined,
       });

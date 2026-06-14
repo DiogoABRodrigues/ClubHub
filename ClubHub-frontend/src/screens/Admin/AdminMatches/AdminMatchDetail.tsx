@@ -73,6 +73,8 @@ export const AdminMatchDetail = () => {
   }, [players]);
   const match = useMemo(() => matches.find((m) => m.id === id), [matches, id]);
 
+  const { competitions, refreshCompetitions } = useCompetitions();
+
   if (!match) {
     return (
       <View
@@ -85,8 +87,6 @@ export const AdminMatchDetail = () => {
       </View>
     );
   }
-
-  const { competitions, refreshCompetitions } = useCompetitions();
 
   const [activeTab, setActiveTab] = useState<"timeline" | "lineup">("timeline");
   const [showEventModal, setShowEventModal] = useState(false);
@@ -245,22 +245,6 @@ export const AdminMatchDetail = () => {
       },
     ]);
   }, [match, finishMatch]);
-
-  if (!match) {
-    return (
-      <View
-        style={[
-          styles.container,
-          { justifyContent: "center", alignItems: "center" },
-        ]}
-      >
-        <Text style={styles.mutedText}>Jogo não encontrado</Text>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={[styles.primaryText, { marginTop: 8 }]}>Voltar</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
 
   const homeTeamName =
     match.homeOrAway === "C" ? match.teamName : match.opponent;

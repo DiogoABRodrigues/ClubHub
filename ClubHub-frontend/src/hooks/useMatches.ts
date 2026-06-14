@@ -94,23 +94,8 @@ export const useMatches = () => {
         old?.map((m) => (m.id === id ? { ...m, events: updatedEvents } : m)),
     );
 
-    // Penaltis da série não alteram o marcador
-    if (event.type === "goal" && event.phase !== "penalties") {
-      const houseGame = match.homeOrAway === "C";
-      let result = match.result || "0-0";
-      let [goalsFor, goalsAgainst] = result.split("-").map(Number);
-      const isForUs = !event.isOpponent;
-
-      if (isForUs && houseGame) goalsFor++;
-      else if (isForUs && !houseGame) goalsAgainst++;
-      else if (!isForUs && houseGame) goalsAgainst++;
-      else goalsFor++;
-
-      await updateMatch.mutateAsync({
-        id,
-        data: { result: `${goalsFor}-${goalsAgainst}` },
-      });
-    }
+    // O backend recalcula e actualiza o score via socket match:update.
+    // Não calculamos o resultado aqui para evitar race condition com o backend.
   };
 
   const deleteMatchEvent = async (id: number, event: MatchEvent) => {
@@ -131,23 +116,8 @@ export const useMatches = () => {
         old?.map((m) => (m.id === id ? { ...m, events: updatedEvents } : m)),
     );
 
-    // Penaltis da série não alteram o marcador
-    if (event.type === "goal" && event.phase !== "penalties") {
-      const houseGame = match.homeOrAway === "C";
-      let result = match.result || "0-0";
-      let [goalsFor, goalsAgainst] = result.split("-").map(Number);
-      const isForUs = !event.isOpponent;
-
-      if (isForUs && houseGame) goalsFor--;
-      else if (isForUs && !houseGame) goalsAgainst--;
-      else if (!isForUs && houseGame) goalsAgainst--;
-      else goalsFor--;
-
-      await updateMatch.mutateAsync({
-        id,
-        data: { result: `${goalsFor}-${goalsAgainst}` },
-      });
-    }
+    // O backend recalcula e actualiza o score via socket match:update.
+    // Não calculamos o resultado aqui para evitar race condition com o backend.
   };
 
   const saveLineup = async (

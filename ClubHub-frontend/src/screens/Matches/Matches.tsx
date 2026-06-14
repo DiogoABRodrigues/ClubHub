@@ -27,6 +27,7 @@ interface MatchesSectionProps {
   navigation: any;
   getHomeTeam: (match: any) => string;
   getAwayTeam: (match: any) => string;
+  competitionsMap: Map<any, any>;
 }
 
 const MatchesSection = React.memo(
@@ -40,15 +41,10 @@ const MatchesSection = React.memo(
     navigation,
     getHomeTeam,
     getAwayTeam,
+    competitionsMap,
   }: MatchesSectionProps) => {
     const limitedMatches = showAll ? matches : matches.slice(0, 4);
     const { adminMode } = useAuth();
-    const { competitions } = useCompetitions();
-    const competitionsMap = useMemo(() => {
-      const map = new Map();
-      for (const c of competitions) map.set(c.id, c);
-      return map;
-    }, [competitions]);
 
     const navigateToMatchDetail = (matchId: string) => {
       navigation.navigate(adminMode ? "AdminMatchDetail" : "MatchDetail", {
@@ -101,13 +97,19 @@ const MatchesSection = React.memo(
 export const Matches = ({ navigation }: any) => {
   const { matches, refreshMatches } = useMatches();
   const { teams, refreshTeams } = useTeams();
-  const { refreshCompetitions } = useCompetitions();
+  const { competitions, refreshCompetitions } = useCompetitions();
 
   const teamsMap = useMemo(() => {
     const map = new Map();
     for (const t of teams) map.set(t.name.trim().toLowerCase(), t.logoUrl);
     return map;
   }, [teams]);
+
+  const competitionsMap = useMemo(() => {
+    const map = new Map();
+    for (const c of competitions) map.set(c.id, c);
+    return map;
+  }, [competitions]);
 
   const [activeTab] = useState<TabKey>("all");
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
@@ -186,6 +188,7 @@ export const Matches = ({ navigation }: any) => {
           navigation={navigation}
           getHomeTeam={getHomeTeam}
           getAwayTeam={getAwayTeam}
+          competitionsMap={competitionsMap}
         />
       )}
 
@@ -199,6 +202,7 @@ export const Matches = ({ navigation }: any) => {
           navigation={navigation}
           getHomeTeam={getHomeTeam}
           getAwayTeam={getAwayTeam}
+          competitionsMap={competitionsMap}
         />
       )}
       {showFinished && finishedMatches.length > 0 && (
@@ -211,6 +215,7 @@ export const Matches = ({ navigation }: any) => {
           navigation={navigation}
           getHomeTeam={getHomeTeam}
           getAwayTeam={getAwayTeam}
+          competitionsMap={competitionsMap}
         />
       )}
 

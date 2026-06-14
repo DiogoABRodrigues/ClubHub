@@ -11,9 +11,8 @@ export const useStats = () => {
   const statsQuery = useQuery({
     queryKey: ["stats", currentSeasonId, selectedCategory],
     queryFn: () =>
-      currentSeasonId
-        ? StatsService.getBySeasonId(currentSeasonId, selectedCategory)
-        : StatsService.getAll(),
+      StatsService.getBySeasonId(currentSeasonId!, selectedCategory),
+    enabled: !!currentSeasonId,
     staleTime: 1000 * 60 * 10,
   });
 

@@ -26,7 +26,7 @@ export const MatchDetail = () => {
 
   const { competitions, refreshCompetitions } = useCompetitions();
   const { getActivePlayers, refreshPlayers } = usePlayers();
-  const players = getActivePlayers();
+  const players = useMemo(() => getActivePlayers(), [getActivePlayers]);
   const playersMap = useMemo(() => {
     const map = new Map<number, any>();
     for (const p of players) {
@@ -295,30 +295,22 @@ export const MatchDetail = () => {
           {activeTab === "timeline" &&
             (match.events && match.events.length > 0 ? (
               (() => {
-                const sorted = [...match.events].sort((a, b) => {
-                  if (a.minute !== b.minute) return a.minute - b.minute;
-                  return (
-                    // @ts-ignore
-                    new Date(a.createdAt).getTime() -
-                    // @ts-ignore
-                    new Date(b.createdAt).getTime()
-                  );
-                });
+                const events = match.events;
 
-                const firstHalf = sorted.filter(
+                const firstHalf = events.filter(
                   (e) =>
                     e.type !== "penalty_shootout" &&
                     (e.phase === "1st" || (!e.phase && e.minute <= 45)),
                 );
-                const secondHalf = sorted.filter(
+                const secondHalf = events.filter(
                   (e) =>
                     e.type !== "penalty_shootout" &&
                     (e.phase === "2nd" || (!e.phase && e.minute > 45)),
                 );
-                const extraTime = sorted.filter(
+                const extraTime = events.filter(
                   (e) => e.type !== "penalty_shootout" && e.phase === "extra",
                 );
-                const penalties = sorted.filter(
+                const penalties = events.filter(
                   (e) => e.type === "penalty_shootout",
                 );
 

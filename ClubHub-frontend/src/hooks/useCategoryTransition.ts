@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCategory } from "../contexts/CategoryContext";
 import { useSelectedSeason } from "../contexts/Selectedseasoncontext";
@@ -15,34 +15,33 @@ export function useCategoryTransition() {
     useCategory();
   const { selectedSeasonId } = useSelectedSeason();
   const queryClient = useQueryClient();
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const maxTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!isCategoryChanging || !selectedSeasonId) return;
 
-    const clear = () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
+    const matchesKey = ["matches", selectedSeasonId, selectedCategory];
+    const standingsKey = ["standings", selectedSeasonId, selectedCategory];
+
+    let settled = false;
+    let unsubscribe = () => {};
+    let maxTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      unsubscribe();
+      if (maxTimeout) {
+        clearTimeout(maxTimeout);
+        maxTimeout = null;
       }
-      if (maxTimeoutRef.current) {
-        clearTimeout(maxTimeoutRef.current);
-        maxTimeoutRef.current = null;
-      }
+      acknowledgeCategoryChange();
     };
 
     const checkReady = () => {
-      const matchState = queryClient.getQueryState([
-        "matches",
-        selectedSeasonId,
-        selectedCategory,
-      ]);
-      const standingsState = queryClient.getQueryState([
-        "standings",
-        selectedSeasonId,
-        selectedCategory,
-      ]);
+      if (settled) return;
+
+      const matchState = queryClient.getQueryState(matchesKey);
+      const standingsState = queryClient.getQueryState(standingsKey);
 
       const matchesReady =
         matchState?.status === "success" || matchState?.status === "error";
@@ -52,20 +51,33 @@ export function useCategoryTransition() {
 
       // Basta um dos dois estar pronto para esconder
       if (matchesReady || standingsReady) {
-        clear();
-        acknowledgeCategoryChange();
+        finish();
       }
     };
 
-    // Polling a cada 80ms
-    intervalRef.current = setInterval(checkReady, 80);
+    // Verifica logo de início - os dados podem já estar em cache (cache hit).
+    checkReady();
+
+    // Reage a eventos da query cache em vez de fazer polling.
+    if (!settled) {
+      unsubscribe = queryClient.getQueryCache().subscribe(() => {
+        checkReady();
+      });
+    }
 
     // Fallback: esconde sempre depois de 2.5s no máximo
-    maxTimeoutRef.current = setTimeout(() => {
-      clear();
-      acknowledgeCategoryChange();
-    }, 2500);
+    maxTimeout = setTimeout(finish, 2500);
 
-    return clear;
-  }, [isCategoryChanging, selectedSeasonId, selectedCategory]);
+    return () => {
+      settled = true;
+      unsubscribe();
+      if (maxTimeout) clearTimeout(maxTimeout);
+    };
+  }, [
+    isCategoryChanging,
+    selectedSeasonId,
+    selectedCategory,
+    queryClient,
+    acknowledgeCategoryChange,
+  ]);
 }

@@ -27,6 +27,16 @@ interface CategoryContextValue {
   isCategoryChanging: boolean;
   /** Chamado por quem sabe que os dados já estão prontos */
   acknowledgeCategoryChange: () => void;
+  /**
+   * true assim que a leitura inicial do AsyncStorage terminou.
+   * Enquanto for false, `selectedCategory` ainda pode ser apenas o valor
+   * por defeito ("over19") e não o valor persistido pelo utilizador.
+   * Consumidores que disparam pedidos à API com base na categoria (ex.
+   * pre-warm do SplashScreen) devem esperar por isReady === true antes
+   * de montar/disparar essas queries, para evitar pedidos desnecessários
+   * com a categoria errada.
+   */
+  isReady: boolean;
 }
 
 const CategoryContext = createContext<CategoryContextValue>({
@@ -34,21 +44,27 @@ const CategoryContext = createContext<CategoryContextValue>({
   setSelectedCategory: async () => {},
   isCategoryChanging: false,
   acknowledgeCategoryChange: () => {},
+  isReady: false,
 });
 
 export function CategoryProvider({ children }: { children: ReactNode }) {
   const [selectedCategory, setSelectedCategoryState] =
     useState<Category>("over19");
   const [isCategoryChanging, setIsCategoryChanging] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const minTimeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingHide = useRef(false);
   const isFirstLoad = useRef(true);
 
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY).then((stored) => {
-      if (stored) setSelectedCategoryState(stored as Category);
-      isFirstLoad.current = false;
-    });
+    AsyncStorage.getItem(STORAGE_KEY)
+      .then((stored) => {
+        if (stored) setSelectedCategoryState(stored as Category);
+        isFirstLoad.current = false;
+      })
+      .finally(() => {
+        setIsReady(true);
+      });
   }, []);
 
   const setSelectedCategory = async (category: Category) => {
@@ -87,6 +103,7 @@ export function CategoryProvider({ children }: { children: ReactNode }) {
         setSelectedCategory,
         isCategoryChanging,
         acknowledgeCategoryChange,
+        isReady,
       }}
     >
       {children}

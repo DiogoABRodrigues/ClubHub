@@ -31,9 +31,10 @@ export function useAppSetting(key: string) {
   const toggle = async (newValue: boolean) => {
     setValue(newValue);
     try {
-      await AppSettingsService.toggle(newValue);
-      const fresh = await AppSettingsService.get(key as any);
-      setValue(fresh);
+      // O endpoint de toggle já devolve o novo valor confirmado,
+      // não é preciso fazer um GET extra a seguir.
+      const confirmed = await AppSettingsService.toggle(newValue);
+      setValue(confirmed);
     } catch {
       setValue(!newValue); // rollback
     }

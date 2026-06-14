@@ -3,8 +3,10 @@ import { PlayerService } from "../services/PlayerService";
 import { Player } from "../models/Player";
 import { useSelectedSeason } from "../contexts/Selectedseasoncontext";
 import { useCategory } from "../contexts/CategoryContext";
+import { useAuth } from "../contexts/AuthContext";
 
 export const usePlayers = () => {
+  const { isAdmin } = useAuth();
   const queryClient = useQueryClient();
   const { selectedSeasonId: currentSeasonId } = useSelectedSeason();
   const { selectedCategory } = useCategory();
@@ -21,7 +23,7 @@ export const usePlayers = () => {
     queryKey: ["players-all", currentSeasonId, selectedCategory],
     queryFn: () =>
       PlayerService.getAllBySeasonId(currentSeasonId!, selectedCategory),
-    enabled: !!currentSeasonId,
+    enabled: !!currentSeasonId && isAdmin,
     select: (players: Player[]) => players,
   });
 

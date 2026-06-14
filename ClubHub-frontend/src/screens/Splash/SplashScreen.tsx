@@ -19,6 +19,7 @@ import { usePlayers } from "../../hooks/usePlayers";
 import { useSeasons } from "../../hooks/useSeasons";
 import { useStatements } from "../../hooks/useStatements";
 import { useStats } from "../../hooks/useStats";
+import { useCategory } from "../../contexts/CategoryContext";
 import { styles } from "./Splash.styles";
 
 interface SplashScreenProps {
@@ -46,16 +47,18 @@ const noopNavigation = {
 };
 
 /**
- * SplashScreen com pre-warming duplo:
+ * PreWarm: dispara os pedidos de dados e monta os screens principais
+ * com opacity:0 / width:height:0.
  *
- * 1. DATA PRE-FETCH: todos os hooks de dados disparam os pedidos à API
- *    enquanto o splash está visível.
- *
- * 2. COMPONENT PRE-WARM: todos os screens principais são renderizados com
- *    opacity:0 e width/height:0, forçando o React Native a construir e
- *    montar os componentes antes do utilizador os ver.
+ * Isto só é montado depois de `CategoryContext` ter terminado de ler a
+ * categoria persistida no AsyncStorage (isReady === true). Caso contrário,
+ * hooks como useMatches/useStandings/usePlayers/useStats e
+ * useSeasonsByCategory (usado pelo SelectedSeasonContext) disparariam um
+ * primeiro pedido com a categoria por defeito ("over19") e, segundos
+ * depois, um segundo pedido já com a categoria real do utilizador -
+ * criando pedidos à API duplicados e desnecessários.
  */
-export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
+const PreWarm = () => {
   // ── Data pre-fetch ────────────────────────────────────────────────────────
   useMatches();
   useTeams();
@@ -67,6 +70,53 @@ export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
   useStatements();
   useStats();
   useAppSetting("notifications_enabled");
+
+  return (
+    <View
+      style={{
+        position: "absolute",
+        opacity: 0,
+        width: 0,
+        height: 0,
+        overflow: "hidden",
+      }}
+      pointerEvents="none"
+      accessibilityElementsHidden={true}
+      importantForAccessibility="no-hide-descendants"
+    >
+      <View style={{ width: 390, height: 844 }}>
+        <Home navigation={noopNavigation as any} />
+      </View>
+      <View style={{ width: 390, height: 844 }}>
+        <Matches navigation={noopNavigation as any} />
+      </View>
+      <View style={{ width: 390, height: 844 }}>
+        <SeasonScreen navigation={noopNavigation as any} />
+      </View>
+      <View style={{ width: 390, height: 844 }}>
+        <News navigation={noopNavigation as any} />
+      </View>
+      <View style={{ width: 390, height: 844 }}>
+        <NotificationSettings />
+      </View>
+    </View>
+  );
+};
+/**
+ * SplashScreen com pre-warming duplo:
+ *
+ * 1. DATA PRE-FETCH: todos os hooks de dados disparam os pedidos à API
+ *    enquanto o splash está visível.
+ *
+ * 2. COMPONENT PRE-WARM: todos os screens principais são renderizados com
+ *    opacity:0 e width/height:0, forçando o React Native a construir e
+ *    montar os componentes antes do utilizador os ver.
+ *
+ * Ambos só arrancam depois de `isReady` (ver PreWarm acima), para evitar
+ * queries com dados por defeito/incorrectos.
+ */
+export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
+  const { isReady } = useCategory();
 
   // ── Animação ──────────────────────────────────────────────────────────────
   const opacity = useRef(new Animated.Value(0)).current;
@@ -113,35 +163,12 @@ export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
        * O React Native constrói os componentes, aplica estilos e faz o layout
        * enquanto o splash está visível. Quando o utilizador navega para qualquer
        * tab pela primeira vez, os componentes já estão aquecidos - render instantâneo.
+       *
+       * Só montamos isto depois de `isReady`, para garantir que a categoria
+       * usada nos pedidos de pre-fetch já é a categoria persistida do
+       * utilizador, e não o valor por defeito "over19".
        */}
-      <View
-        style={{
-          position: "absolute",
-          opacity: 0,
-          width: 0,
-          height: 0,
-          overflow: "hidden",
-        }}
-        pointerEvents="none"
-        accessibilityElementsHidden={true}
-        importantForAccessibility="no-hide-descendants"
-      >
-        <View style={{ width: 390, height: 844 }}>
-          <Home navigation={noopNavigation as any} />
-        </View>
-        <View style={{ width: 390, height: 844 }}>
-          <Matches navigation={noopNavigation as any} />
-        </View>
-        <View style={{ width: 390, height: 844 }}>
-          <SeasonScreen navigation={noopNavigation as any} />
-        </View>
-        <View style={{ width: 390, height: 844 }}>
-          <News navigation={noopNavigation as any} />
-        </View>
-        <View style={{ width: 390, height: 844 }}>
-          <NotificationSettings navigation={noopNavigation as any} />
-        </View>
-      </View>
+      {isReady && <PreWarm />}
     </View>
   );
 };

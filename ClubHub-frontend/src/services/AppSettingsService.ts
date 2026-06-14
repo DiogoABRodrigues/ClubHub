@@ -12,9 +12,10 @@ export const AppSettingsService = {
     return Boolean(data?.notificationsEnabled);
   },
 
-  toggle: async (value: boolean): Promise<void> => {
-    await api.post("/app-settings/notifications/toggle", {
+  toggle: async (value: boolean): Promise<boolean> => {
+    const { data } = await api.post("/app-settings/notifications/toggle", {
       value,
     });
+    return Boolean(data?.notificationsEnabled);
   },
 };
