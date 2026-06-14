@@ -1,13 +1,13 @@
-// backend/services/statement.service.ts
 import Statement from "../models/Statement";
 import { Op } from "sequelize";
 import cache from "../services/cache.service";
-import { CacheKeys } from "../cache/keys";
+
+const ACTIVE_STATEMENT_KEY = "app:statement:active";
+
 class StatementService {
   async createStatement(data: Partial<Statement>) {
     const now = new Date();
 
-    // Expirar todos os statements ativos
     await Statement.update(
       { dateToExpire: now },
       {
@@ -19,7 +19,7 @@ class StatementService {
 
     try {
       const statement = await Statement.create(data);
-      console.log("CREATE Statement - sucesso:", statement.toJSON());
+      await cache.del(ACTIVE_STATEMENT_KEY);
       return statement;
     } catch (error: any) {
       console.error("CREATE Statement - erro:", error.message);
@@ -30,7 +30,9 @@ class StatementService {
   async updateStatement(id: number, data: Partial<Statement>) {
     const statement = await Statement.findByPk(id);
     if (!statement) throw new Error("Statement not found");
-    return await statement.update(data);
+    const updated = await statement.update(data);
+    await cache.del(ACTIVE_STATEMENT_KEY);
+    return updated;
   }
 
   async getStatementById(id: number) {
@@ -38,18 +40,26 @@ class StatementService {
   }
 
   async getActiveStatement() {
+    const cached = await cache.get(ACTIVE_STATEMENT_KEY);
+    if (cached !== undefined && cached !== null) return cached;
+
     const now = new Date();
-    return await Statement.findOne({
+    const statement = await Statement.findOne({
       where: {
         [Op.or]: [{ dateToExpire: { [Op.gt]: now } }, { dateToExpire: null }],
       },
     });
+
+    await cache.set(ACTIVE_STATEMENT_KEY, statement ?? null, 5 * 60);
+
+    return statement;
   }
 
   async deleteStatement(id: number) {
     const statement = await Statement.findByPk(id);
     if (!statement) throw new Error("Statement not found");
     await statement.destroy();
+    await cache.del(ACTIVE_STATEMENT_KEY);
   }
 }
 

@@ -5,10 +5,19 @@ import { pushService } from "./push.service";
 import deviceService from "./device.service";
 import { getNotificationsEnabled } from "../utils/getNotificationsEnabled";
 
+const NEWS_ALL_KEY = "app:news:all";
+
 class NewsService {
+  private async invalidateAll() {
+    await Promise.all([
+      cache.del(CacheKeys.news.last10),
+      cache.del(NEWS_ALL_KEY),
+    ]);
+  }
+
   async create(data: any) {
     const news = await News.create(data);
-    await cache.del(CacheKeys.news.last10);
+    await this.invalidateAll();
     await this.notify(news);
     return news;
   }
@@ -33,9 +42,15 @@ class NewsService {
   }
 
   async getAll() {
-    return await News.findAll({
+    const cached = await cache.get(NEWS_ALL_KEY);
+    if (cached) return cached;
+
+    const news = await News.findAll({
       order: [["publishedAt", "DESC"]],
     });
+
+    await cache.setPermanent(NEWS_ALL_KEY, news);
+    return news;
   }
 
   async getLast10() {
@@ -49,9 +64,7 @@ class NewsService {
       limit: 10,
     });
 
-    // Persiste sem TTL — invalida em create/update/delete
     await cache.setPermanent(key, news);
-
     return news;
   }
 
@@ -62,16 +75,16 @@ class NewsService {
   async update(id: number, data: any) {
     const news = await News.findByPk(id);
     if (!news) return null;
-    await cache.del(CacheKeys.news.last10);
     await news.update(data);
+    await this.invalidateAll();
     return news;
   }
 
   async delete(id: number) {
     const news = await News.findByPk(id);
     if (!news) return null;
-    await cache.del(CacheKeys.news.last10);
     await news.destroy();
+    await this.invalidateAll();
     return true;
   }
 }

@@ -7,49 +7,61 @@ import { CacheKeys } from "../cache/keys";
 import SeasonService from "./season.service";
 import Season from "../models/Season";
 
+const adminCacheKey = (seasonId: number, category: string) =>
+  `app:players:season:${seasonId}:${category}:admin`;
+
+async function fetchPlayersWithSquad(
+  seasonId: number,
+  category: string,
+  includeErrors: boolean,
+): Promise<any[]> {
+  const squadWhere: any = { seasonId, category };
+  if (!includeErrors) {
+    squadWhere.status = { [Op.ne]: "error" };
+  }
+
+  return Player.findAll({
+    include: [
+      {
+        model: Squad,
+        where: squadWhere,
+        attributes: ["status", "position", "number", "isFieldPlayer"],
+        required: true,
+      },
+      {
+        model: Stats,
+        where: { seasonId, category },
+        required: false,
+      },
+    ],
+  }).then((players) =>
+    players.map((p: any) => {
+      const plain = p.toJSON();
+      const squad = plain.Squad ?? plain.Squads?.[0] ?? {};
+      plain.squadStatus = squad.status ?? "active";
+      plain.position = squad.position ?? null;
+      plain.number = squad.number ?? null;
+      plain.isFieldPlayer = squad.isFieldPlayer ?? false;
+      delete plain.Squad;
+      delete plain.Squads;
+      return plain;
+    }),
+  );
+}
+
 export default class PlayerService {
   async getAll() {
     return Player.findAll();
   }
 
+  /** Frontend público — exclui jogadores com status "error", com cache Redis */
   async getBySeasonId(seasonId: number, category: string = "over19") {
     const key = CacheKeys.players.bySeason(seasonId, category);
 
     const cached = await cache.get(key);
     if (cached) return cached;
 
-    const squadEntries = await Squad.findAll({
-      where: { seasonId, category, status: { [Op.ne]: "error" } },
-    });
-
-    const externalIds = squadEntries.map((s) => s.playerExternalId);
-
-    const players = await Player.findAll({
-      where: { externalId: externalIds },
-      include: [
-        { model: Stats, where: { seasonId, category }, required: false },
-      ],
-    });
-
-    const statusMap: Record<number, string> = {};
-    const positionMap: Record<number, string | null> = {};
-    const numberMap: Record<number, number | null> = {};
-    const isFieldPlayerMap: Record<number, boolean> = {};
-    for (const entry of squadEntries) {
-      statusMap[entry.playerExternalId] = entry.status;
-      positionMap[entry.playerExternalId] = entry.position;
-      numberMap[entry.playerExternalId] = entry.number;
-      isFieldPlayerMap[entry.playerExternalId] = entry.isFieldPlayer ?? false;
-    }
-
-    const enriched = players.map((p: any) => {
-      const plain = p.toJSON();
-      plain.squadStatus = statusMap[plain.externalId] ?? "active";
-      plain.position = positionMap[plain.externalId] ?? null;
-      plain.number = numberMap[plain.externalId] ?? null;
-      plain.isFieldPlayer = isFieldPlayerMap[plain.externalId] ?? false;
-      return plain;
-    });
+    const enriched = await fetchPlayersWithSquad(seasonId, category, false);
 
     await cache.setPermanent(key, enriched);
     return enriched;
@@ -61,37 +73,17 @@ export default class PlayerService {
     return this.getBySeasonId(season.id, category);
   }
 
-  /** Admin: devolve TODOS os jogadores (incluindo "error") de um escalão. */
+  /** Admin — inclui jogadores com status "error", com cache Redis próprio */
   async getAllBySeasonId(seasonId: number, category: string = "over19") {
-    const squadEntries = await Squad.findAll({ where: { seasonId, category } });
-    const externalIds = squadEntries.map((s) => s.playerExternalId);
+    const key = adminCacheKey(seasonId, category);
 
-    const players = await Player.findAll({
-      where: { externalId: externalIds },
-      include: [
-        { model: Stats, where: { seasonId, category }, required: false },
-      ],
-    });
+    const cached = await cache.get(key);
+    if (cached) return cached;
 
-    const statusMap: Record<number, string> = {};
-    const positionMap: Record<number, string | null> = {};
-    const numberMap: Record<number, number | null> = {};
-    const isFieldPlayerMap: Record<number, boolean> = {};
-    for (const entry of squadEntries) {
-      statusMap[entry.playerExternalId] = entry.status;
-      positionMap[entry.playerExternalId] = entry.position;
-      numberMap[entry.playerExternalId] = entry.number;
-      isFieldPlayerMap[entry.playerExternalId] = entry.isFieldPlayer ?? false;
-    }
+    const enriched = await fetchPlayersWithSquad(seasonId, category, true);
 
-    return players.map((p: any) => {
-      const plain = p.toJSON();
-      plain.squadStatus = statusMap[plain.externalId] ?? "active";
-      plain.position = positionMap[plain.externalId] ?? null;
-      plain.number = numberMap[plain.externalId] ?? null;
-      plain.isFieldPlayer = isFieldPlayerMap[plain.externalId] ?? false;
-      return plain;
-    });
+    await cache.setPermanent(key, enriched);
+    return enriched;
   }
 
   async getAllStatsByPlayerId(playerId: number) {
@@ -128,6 +120,12 @@ export default class PlayerService {
     const player = await Player.findByPk(playerId);
     if (!player) throw new Error("Player not found");
     await player.update(updates);
+
+    // Invalida caches públicos e admin para todas as seasons/categories onde o
+    // jogador possa aparecer (clearPattern cobre todos os suffixes)
+    await cache.clearPattern(`app:players:*`);
+    await cache.del(CacheKeys.players.allStatsByPlayer(playerId));
+
     return player;
   }
 
@@ -144,7 +142,9 @@ export default class PlayerService {
 
     await entry.update({ status });
 
+    // Invalida cache público, admin e squad
     await cache.del(CacheKeys.players.bySeason(seasonId, category));
+    await cache.del(adminCacheKey(seasonId, category));
     await cache.del(CacheKeys.squad.bySeason(seasonId, category));
 
     return entry;

@@ -1,17 +1,38 @@
 import AppSettings from "../models/AppSettings";
 import { redis } from "../config/redis";
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
+import { invalidateNotificationsCache } from "../utils/getNotificationsEnabled";
+
+const SETTINGS_CACHE_PREFIX = "app:settings:key:";
 
 class AppSettingsService {
+  private cacheKey(key: string) {
+    return `${SETTINGS_CACHE_PREFIX}${key}`;
+  }
+
   async get(key: string): Promise<string | null> {
+    const cacheKey = this.cacheKey(key);
+
+    const cached = await redis.get(cacheKey);
+    if (cached !== null) return cached === "__null__" ? null : cached;
+
     const setting = await AppSettings.findOne({ where: { key } });
+    const value = setting?.value ?? null;
 
-    if (!setting) return null;
+    await redis.set(cacheKey, value ?? "__null__");
 
-    return setting.value;
+    return value;
   }
 
   async set(key: string, value: string): Promise<void> {
     await AppSettings.upsert({ key, value });
+
+    await redis.del(this.cacheKey(key));
+
+    if (key === "notifications_enabled") {
+      await invalidateNotificationsCache();
+    }
   }
 
   async isNotificationsEnabled(): Promise<boolean> {
