@@ -1,5 +1,4 @@
 import cron from "node-cron";
-import { Op } from "sequelize";
 import Match from "../models/Match";
 import { pushService } from "../services/push.service";
 import deviceService from "../services/device.service";
@@ -17,21 +16,11 @@ export const startMatchReminderJob = () => {
         const today = new Date().toISOString().split("T")[0];
         const enabledCategories = getEnabledCategories();
 
-        // Busca jogos de hoje agrupados por category
-        const matches = await Match.findAll({
-          where: { date: today, status: "upcoming" },
-        });
-
-        if (!matches.length) {
-          console.log("No matches today");
-          return;
-        }
-
-        // Envia notificação separada por escalão
+        // Envia notificação separada por escalão, filtrando por categoria já na BD
         for (const cfg of enabledCategories) {
-          const categoryMatches = matches.filter(
-            (m: any) => (m.category ?? "over19") === cfg.category,
-          );
+          const categoryMatches = await Match.findAll({
+            where: { date: today, status: "upcoming", category: cfg.category },
+          });
           if (!categoryMatches.length) continue;
 
           const devices = await deviceService.getDevicesForMatchday(

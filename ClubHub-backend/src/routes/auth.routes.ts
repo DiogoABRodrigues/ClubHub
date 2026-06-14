@@ -13,6 +13,4 @@ router.post("/logout", authMiddleware, (req, res) =>
 
 router.get("/me", authMiddleware, (req, res) => MeController.me(req, res));
 
-router.get("/wake-up", AuthController.wakeUp);
-
 export default router;

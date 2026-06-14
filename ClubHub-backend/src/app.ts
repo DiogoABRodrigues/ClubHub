@@ -18,6 +18,7 @@ import scraperRoutes from "./routes/scraper.routes";
 import matchEventRoutes from "./routes/matchEvent.routes";
 import deviceRoutes from "./routes/device.routes";
 import authRoutes from "./routes/auth.routes";
+import AuthController from "./controllers/auth.controller";
 import appSettingsRoutes from "./routes/appSettings.routes";
 import notificationsRoutes from "./routes/notification.routes";
 import feedbackRoutes from "./routes/feedback.routes";
@@ -94,10 +95,25 @@ const deviceLimiter = rateLimit({
   message: { error: "Too many requests" },
 });
 
+// Endpoint dedicado para evitar cold starts (cron interno) — fora do authLimiter
+const wakeUpLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests" },
+});
+
 // ─── trust proxy (Render / Railway / etc.) ────────────────────────────────────
 app.set("trust proxy", 1);
 
 // ─── Rotas ───────────────────────────────────────────────────────────────────
+// Rota dedicada para o cron de wake-up — fora do authLimiter (10 req/min),
+// que poderia conflituar com pings frequentes (4x/hora).
+app.get("/api/wake-up", wakeUpLimiter, (req, res) =>
+  AuthController.wakeUp(req, res),
+);
+
 app.use("/api", limiter);
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/scrape", scraperLimiter, scraperRoutes);

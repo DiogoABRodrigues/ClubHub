@@ -9,14 +9,6 @@ export default class StatsService {
   }
 
   async getBySeasonId(seasonId: number, category: string = "over19") {
-    return Stats.findAll({ where: { seasonId, category } });
-  }
-
-  async getByCurrentSeasonId(category: string = "over19") {
-    const season = await new SeasonService().getCurrentSeason();
-    if (!season || typeof season !== "object" || !("id" in season)) return [];
-
-    const seasonId = (season as { id: number }).id;
     const key = CacheKeys.stats.bySeason(seasonId, category);
 
     const cached = await cache.get(key);
@@ -25,5 +17,13 @@ export default class StatsService {
     const data = await Stats.findAll({ where: { seasonId, category } });
     await cache.setPermanent(key, data);
     return data;
+  }
+
+  async getByCurrentSeasonId(category: string = "over19") {
+    const season = await new SeasonService().getCurrentSeason();
+    if (!season || typeof season !== "object" || !("id" in season)) return [];
+
+    const seasonId = (season as { id: number }).id;
+    return this.getBySeasonId(seasonId, category);
   }
 }
