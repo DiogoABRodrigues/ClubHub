@@ -34,7 +34,7 @@ export default class MatchService {
           model: MatchEvent,
           as: "events",
           separate: true,
-          order: [["minute", "ASC"]],
+          order: [["minute", "ASC"], ["createdAt", "ASC"]],
         },
       ],
     });
@@ -69,7 +69,7 @@ export default class MatchService {
           model: MatchEvent,
           as: "events",
           separate: true,
-          order: [["minute", "ASC"]],
+          order: [["minute", "ASC"], ["createdAt", "ASC"]],
         },
       ],
     });
@@ -131,7 +131,7 @@ export default class MatchService {
           model: MatchEvent,
           as: "events",
           separate: true,
-          order: [["minute", "ASC"]],
+          order: [["minute", "ASC"], ["createdAt", "ASC"]],
         },
       ],
     });
