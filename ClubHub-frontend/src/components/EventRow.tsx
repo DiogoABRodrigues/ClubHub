@@ -50,7 +50,7 @@ export const EventRow = ({
     if (event.isOpponent) {
       if (event.type === "red_card") return "Jogador Adversário";
       if (isPenaltyShootout) return "Adversário";
-      return "Golo Adversário";
+      return "Adversário";
     }
     const player = players.find((p) => p.id === event.playerId);
     return player ? player.name : "Jogador";
