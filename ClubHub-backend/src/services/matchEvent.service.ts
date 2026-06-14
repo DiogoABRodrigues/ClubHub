@@ -1,5 +1,6 @@
 import MatchEvent from "../models/MatchEvent";
 import Match from "../models/Match";
+import MatchService from "./match.service";
 import { pushService } from "./push.service";
 import deviceService from "./device.service";
 import spamGuard from "../utils/eventSpamGuard";
@@ -12,6 +13,8 @@ import { teamConfig } from "../config/teamConfig";
 import { getNotificationsEnabled } from "../utils/getNotificationsEnabled";
 
 class MatchEventService {
+  private matchService = new MatchService();
+
   async createEvent(matchId: number, data: any) {
     console.log("CREATE EVENT CALLED", matchId, data);
 
@@ -36,7 +39,14 @@ class MatchEventService {
 
     console.log("BEFORE SCORE UPDATE");
 
-    await this.updateMatchScore(matchId, event);
+    const scoreChanged = await this.updateMatchScore(matchId, event);
+
+    // Se o resultado foi alterado (golo), reenvia o jogo completo e
+    // atualizado via socket, para todos os clientes terem feedback imediato
+    // sem dependerem de um segundo PATCH manual do admin.
+    if (scoreChanged) {
+      await this.matchService.refreshAndBroadcast(matchId);
+    }
 
     console.log("BEFORE NOTIFY");
 
@@ -47,11 +57,11 @@ class MatchEventService {
     return event;
   }
 
-  private async updateMatchScore(matchId: number, event: any) {
-    if (event.type !== "goal") return;
+  private async updateMatchScore(matchId: number, event: any): Promise<boolean> {
+    if (event.type !== "goal") return false;
 
     const match = await Match.findByPk(matchId);
-    if (!match) return;
+    if (!match) return false;
 
     let [home, away] = (match.result ?? "0-0").split("-").map(Number);
 
@@ -68,6 +78,8 @@ class MatchEventService {
     await match.update({ result: newResult });
 
     console.log("UPDATED RESULT:", newResult);
+
+    return true;
   }
 
   async updateEvent(eventId: number, data: any) {

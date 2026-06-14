@@ -86,6 +86,7 @@ export default class MatchService {
 
     const category = (match as any).category ?? "over19";
 
+    // Só invalida os matches — standings são geridas pelo scrapper
     await cache.del(
       CacheKeys.matches.bySeason(match.seasonId as number, category),
     );
@@ -117,6 +118,35 @@ export default class MatchService {
 
   async updateOutcome(id: number, outcome: string) {
     return this.update(id, { outcome });
+  }
+
+  async refreshAndBroadcast(id: number) {
+    const match = await Match.findByPk(id, {
+      include: [
+        {
+          model: Lineup,
+          include: [{ model: Player, attributes: ["id", "name", "photoUrl"] }],
+        },
+        {
+          model: MatchEvent,
+          as: "events",
+          separate: true,
+          order: [["minute", "ASC"]],
+        },
+      ],
+    });
+
+    if (!match) return null;
+
+    const category = (match as any).category ?? "over19";
+
+    await cache.del(
+      CacheKeys.matches.bySeason(match.seasonId as number, category),
+    );
+
+    socketService.emitMatchUpdate(match);
+
+    return match;
   }
 
   private async notifyResult(match: Match) {
