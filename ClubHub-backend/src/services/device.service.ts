@@ -88,6 +88,10 @@ class DeviceService {
   async getDeviceById(id: string) {
     return Device.findByPk(id);
   }
+
+  async getAllDevices() {
+    return Device.findAll();
+  }
 }
 
 export default new DeviceService();

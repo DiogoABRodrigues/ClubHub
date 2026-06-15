@@ -39,6 +39,7 @@ export const CacheKeys = {
 
   news: {
     last10: "app:news:last10",
+    all: "app:news:all",
   },
 
   categories: {

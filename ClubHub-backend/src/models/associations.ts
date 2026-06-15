@@ -2,7 +2,6 @@ import Lineup from "./Lineup";
 import Match from "./Match";
 import Player from "./Player";
 import Stats from "./Stats";
-import Feedback from "./Feedback";
 import Squad from "./Squad";
 
 export const initAssociations = () => {

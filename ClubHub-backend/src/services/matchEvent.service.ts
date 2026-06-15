@@ -16,12 +16,9 @@ class MatchEventService {
   private matchService = new MatchService();
 
   async createEvent(matchId: number, data: any) {
-    console.log("CREATE EVENT CALLED", matchId, data);
-
     const key = buildEventKey(data, matchId);
 
     if (await spamGuard.isDuplicate(key)) {
-      console.log("🚫 Duplicate event blocked:", key);
       return null;
     }
 
@@ -37,8 +34,6 @@ class MatchEventService {
       );
     }
 
-    console.log("BEFORE SCORE UPDATE");
-
     const scoreChanged = await this.updateMatchScore(matchId, event);
 
     // Se o resultado foi alterado (golo), reenvia o jogo completo e
@@ -48,11 +43,7 @@ class MatchEventService {
       await this.matchService.refreshAndBroadcast(matchId);
     }
 
-    console.log("BEFORE NOTIFY");
-
     await this.notify(event, "create", match ?? undefined);
-
-    console.log("AFTER NOTIFY");
 
     return event;
   }
@@ -76,8 +67,6 @@ class MatchEventService {
     const newResult = `${home}-${away}`;
 
     await match.update({ result: newResult });
-
-    console.log("UPDATED RESULT:", newResult);
 
     return true;
   }
@@ -125,7 +114,6 @@ class MatchEventService {
   }
 
   async notify(event: MatchEvent, action: "create" | "delete", match?: Match) {
-    console.log("NOTIFY", event.type, action, match?.category);
 
     const settings = await getNotificationsEnabled();
     if (!settings) return;
@@ -134,9 +122,6 @@ class MatchEventService {
     const categoryLabel = this._getCategoryLabel(category);
 
     const devices = await deviceService.getDevicesForGoals(category);
-
-    console.log("Category:", category);
-    console.log("Devices:", devices.length);
 
     let title = "";
     let body = "";

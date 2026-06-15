@@ -10,7 +10,7 @@ class NotificationService {
   }
 
   private async notify(news: any) {
-    const devices = await deviceService.getDevicesForNews();
+    const devices = await deviceService.getAllDevices();
 
     if (!devices.length) return;
 

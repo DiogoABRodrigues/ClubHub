@@ -32,7 +32,7 @@ class PushService {
         notification: {
           color: "#800000",
           icon: "icon_notifications",
-          imageUrl: payload.imageUrl ? undefined : payload.imageUrl,
+          imageUrl: payload.imageUrl ?? undefined,
         },
       },
     });

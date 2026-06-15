@@ -5,13 +5,11 @@ import { pushService } from "./push.service";
 import deviceService from "./device.service";
 import { getNotificationsEnabled } from "../utils/getNotificationsEnabled";
 
-const NEWS_ALL_KEY = "app:news:all";
-
 class NewsService {
   private async invalidateAll() {
     await Promise.all([
       cache.del(CacheKeys.news.last10),
-      cache.del(NEWS_ALL_KEY),
+      cache.del(CacheKeys.news.all),
     ]);
   }
 
@@ -42,14 +40,14 @@ class NewsService {
   }
 
   async getAll() {
-    const cached = await cache.get(NEWS_ALL_KEY);
+    const cached = await cache.get(CacheKeys.news.all);
     if (cached) return cached;
 
     const news = await News.findAll({
       order: [["publishedAt", "DESC"]],
     });
 
-    await cache.setPermanent(NEWS_ALL_KEY, news);
+    await cache.setPermanent(CacheKeys.news.all, news);
     return news;
   }
 
