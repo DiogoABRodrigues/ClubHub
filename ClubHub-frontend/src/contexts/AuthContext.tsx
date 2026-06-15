@@ -13,7 +13,6 @@ type AuthContextType = {
   isAdmin: boolean;
   adminMode: boolean;
   loading: boolean;
-  accessToken: string | null;
   loginAsAdmin: (access: string, refresh: string) => Promise<void>;
   logout: () => Promise<void>;
   restoreSession: () => Promise<void>;
@@ -25,12 +24,10 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminMode, setAdminMode] = useState(false);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loginAsAdmin = async (access: string, refresh: string) => {
     setMemoryToken(access);
-    setAccessToken(access);
     setIsAdmin(true);
 
     await AsyncStorage.setItem("accessToken", access);
@@ -39,7 +36,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     setMemoryToken(null);
-    setAccessToken(null);
     setIsAdmin(false);
 
     await AsyncStorage.removeItem("accessToken");
@@ -60,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await AsyncStorage.setItem("accessToken", data.accessToken);
       await AsyncStorage.setItem("refreshToken", data.refreshToken);
 
-      setAccessToken(data.accessToken);
+      setMemoryToken(data.accessToken);
       setIsAdmin(true);
     } catch (e) {
       console.log("session invalid", e);
@@ -80,7 +76,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isAdmin,
         adminMode,
         loading,
-        accessToken,
         loginAsAdmin,
         logout,
         restoreSession,
