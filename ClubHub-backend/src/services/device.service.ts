@@ -1,6 +1,6 @@
-import { Op } from "sequelize";
 import Device from "../models/Device";
-import { cacheGet, cacheSet, cacheDelPattern } from "../utils/cache";
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
 
 export type NotificationType = "goals" | "matchday" | "result";
 export type CategoryKey = "over19" | "sub19" | "sub17" | "sub15" | "sub13";
@@ -28,7 +28,7 @@ class DeviceService {
     sub13_result?: boolean;
   }) {
     await Device.upsert(data);
-    await cacheDelPattern("devices:*");
+    await cache.del(`devices:*`);
     return await Device.findByPk(data.id);
   }
 
@@ -37,52 +37,52 @@ class DeviceService {
     preferences: Partial<Omit<Device, "id" | "pushToken" | "platform">>,
   ) {
     const [updatedRows] = await Device.update(preferences, { where: { id } });
-    await cacheDelPattern("devices:*");
+    await cache.del(`devices:*`);
     return updatedRows;
   }
 
   async getDevicesForGoals(category: CategoryKey = "over19") {
     const col = `${category}_goals` as keyof Device;
-    const key = `devices:goals:${category}`;
-    const cached = await cacheGet(key);
+    const key = CacheKeys.devices.goals(category);
+    const cached = await cache.get(key) as Device[] | null;
     if (cached) return cached;
     const data = await Device.findAll({ where: { [col]: true } });
-    await cacheSet(key, data, 600);
+    await cache.set(key, data, 600);
     return data;
   }
 
   async getDevicesForMatchday(category: CategoryKey = "over19") {
     const col = `${category}_matchday` as keyof Device;
-    const key = `devices:matchday:${category}`;
-    const cached = await cacheGet(key);
+    const key = CacheKeys.devices.matchday(category);
+    const cached = await cache.get(key) as Device[] | null;
     if (cached) return cached;
     const data = await Device.findAll({ where: { [col]: true } });
-    await cacheSet(key, data, 600);
+    await cache.set(key, data, 600);
     return data;
   }
 
   async getDevicesForResults(category: CategoryKey = "over19") {
     const col = `${category}_result` as keyof Device;
-    const key = `devices:results:${category}`;
-    const cached = await cacheGet(key);
+    const key = CacheKeys.devices.results(category);
+    const cached = await cache.get(key) as Device[] | null;
     if (cached) return cached;
     const data = await Device.findAll({ where: { [col]: true } });
-    await cacheSet(key, data, 600);
+    await cache.set(key, data, 600);
     return data;
   }
 
   async getDevicesForNews() {
-    const key = "devices:news";
-    const cached = await cacheGet(key);
+    const key = CacheKeys.devices.news;
+    const cached = await cache.get(key) as Device[] | null;
     if (cached) return cached;
     const data = await Device.findAll({ where: { news: true } });
-    await cacheSet(key, data, 600);
+    await cache.set(key, data, 600);
     return data;
   }
 
   async deleteByTokens(tokens: string[]) {
     await Device.destroy({ where: { pushToken: tokens } });
-    await cacheDelPattern("devices:*");
+    await cache.del(`devices:*`);
   }
 
   async getDeviceById(id: string) {

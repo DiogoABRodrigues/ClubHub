@@ -16,7 +16,7 @@ export default class SeasonService {
   async getCurrentSeason() {
     const key = CacheKeys.season.current;
 
-    const cached = await cache.get(key);
+    const cached = await cache.get(key) as Season | null;
     if (cached) return cached;
 
     const now = new Date();

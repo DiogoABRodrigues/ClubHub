@@ -49,4 +49,11 @@ export const CacheKeys = {
   teams: {
     all: "app:teams:all",
   },
+
+  devices: {
+    goals: (category: string) => `devices:goals:${category}`,
+    matchday: (category: string) => `devices:matchday:${category}`,
+    results: (category: string) => `devices:results:${category}`,
+    news: "devices:news",
+  },
 };

@@ -30,17 +30,11 @@ export default class StandingService {
 
   async getByCurrentSeasonId(category: string = "over19") {
     const season = await new SeasonService().getCurrentSeason();
-    if (!season || typeof season !== "object" || !("id" in season)) return [];
 
-    const seasonId = (season as { id: number }).id;
-    const key = CacheKeys.standings.bySeason(seasonId, category);
+    if (!season || typeof season !== "object" || !("id" in season)) {
+      return [];
+    }
 
-    const cached = await cache.get(key);
-    if (cached) return cached;
-
-    const data = await Standing.findAll({ where: { seasonId, category } });
-    await cache.setPermanent(key, data);
-
-    return data;
+    return this.getBySeasonId(season.id, category);
   }
 }

@@ -34,7 +34,7 @@ class MatchEventService {
       );
     }
 
-    const scoreChanged = await this.updateMatchScore(matchId, event);
+    const scoreChanged = await this.updateMatchScore(match, event);
 
     // Se o resultado foi alterado (golo), reenvia o jogo completo e
     // atualizado via socket, para todos os clientes terem feedback imediato
@@ -48,10 +48,9 @@ class MatchEventService {
     return event;
   }
 
-  private async updateMatchScore(matchId: number, event: any): Promise<boolean> {
+  private async updateMatchScore(match: Match | null, event: any): Promise<boolean> {
     if (event.type !== "goal") return false;
 
-    const match = await Match.findByPk(matchId);
     if (!match) return false;
 
     let [home, away] = (match.result ?? "0-0").split("-").map(Number);

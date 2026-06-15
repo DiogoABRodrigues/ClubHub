@@ -93,26 +93,25 @@ export default class PlayerService {
     if (cached) return cached;
 
     const player = await Player.findByPk(playerId, {
-      include: [{ model: Stats }],
+      include: [
+        {
+          model: Stats,
+          separate: true,
+          include: [
+            {
+              model: Season,
+              attributes: ["id", "year"],
+            },
+          ],
+          order: [[Season, "year", "DESC"]],
+        },
+      ],
     });
 
     if (!player) return null;
 
-    const seasons = await Season.findAll();
-    const seasonYearMap: Record<number, string> = {};
-    for (const s of seasons) {
-      seasonYearMap[s.id] = s.year;
-    }
-
-    const stats = (player as any).Stats ?? [];
-    stats.sort((a: any, b: any) => {
-      const yearA = parseInt(seasonYearMap[a.seasonId]?.split("/")?.[0] ?? "0");
-      const yearB = parseInt(seasonYearMap[b.seasonId]?.split("/")?.[0] ?? "0");
-      return yearB - yearA;
-    });
-    (player as any).Stats = stats;
-
     await cache.setPermanent(key, player);
+
     return player;
   }
 
