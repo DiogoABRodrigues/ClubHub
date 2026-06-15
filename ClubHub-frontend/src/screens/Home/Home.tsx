@@ -232,12 +232,7 @@ export const Home = ({ navigation }: any) => {
               <Text style={styles.sectionTitle}>Últimas Notícias</Text>
             </View>
 
-            {recentNews.length === 0 ? (
-              <EmptyState
-                title="Sem notícias de momento"
-                message="Volta mais tarde para veres as últimas novidades."
-              />
-            ) : (
+            {(
               recentNews.map((item) => (
                 <TouchableOpacity
                   key={item.id}
