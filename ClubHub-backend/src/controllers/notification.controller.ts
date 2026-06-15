@@ -1,59 +1,33 @@
 import { Request, Response } from "express";
 import notificationService from "../services/notification.service";
+import { asyncHandler } from "../utils/asyncHandler";
 
 class NotificationController {
-  async create(req: Request, res: Response) {
-    try {
-      const { title, body, type } = req.body;
+  create = asyncHandler(async (req: Request, res: Response) => {
+    const { title, body, type } = req.body;
+    const notification = await notificationService.create({ title, body, type });
+    return res.status(201).json(notification);
+  });
 
-      const notification = await notificationService.create({
-        title,
-        body,
-        type,
-      });
+  findAll = asyncHandler(async (_req: Request, res: Response) => {
+    const notifications = await notificationService.findAll();
+    return res.json(notifications);
+  });
 
-      return res.status(201).json(notification);
-    } catch (error) {
-      return res.status(500).json({ error: "Error creating notification" });
+  findById = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const notification = await notificationService.findById(Number(id));
+    if (!notification) {
+      return res.status(404).json({ error: "Not found" });
     }
-  }
+    return res.json(notification);
+  });
 
-  async findAll(req: Request, res: Response) {
-    try {
-      const notifications = await notificationService.findAll();
-      return res.json(notifications);
-    } catch (error) {
-      return res.status(500).json({ error: "Error fetching notifications" });
-    }
-  }
-
-  async findById(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-
-      const notification = await notificationService.findById(Number(id));
-
-      if (!notification) {
-        return res.status(404).json({ error: "Not found" });
-      }
-
-      return res.json(notification);
-    } catch (error) {
-      return res.status(500).json({ error: "Error fetching notification" });
-    }
-  }
-
-  async delete(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-
-      await notificationService.delete(Number(id));
-
-      return res.json({ message: "Deleted successfully" });
-    } catch (error) {
-      return res.status(500).json({ error: "Error deleting notification" });
-    }
-  }
+  delete = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    await notificationService.delete(Number(id));
+    return res.json({ message: "Deleted successfully" });
+  });
 }
 
 export default new NotificationController();

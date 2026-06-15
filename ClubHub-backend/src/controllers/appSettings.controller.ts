@@ -1,23 +1,23 @@
 import { Request, Response } from "express";
 import appSettingsService from "../services/appSettings.service";
+import { asyncHandler } from "../utils/asyncHandler";
 
 class AppSettingsController {
-  async toggleNotifications(req: Request, res: Response) {
+  toggleNotifications = asyncHandler(async (req: Request, res: Response) => {
     const { value } = req.body;
     await appSettingsService.set("notifications_enabled", String(value));
     return res.json({
       success: true,
       notificationsEnabled: value,
     });
-  }
+  });
 
-  async getSettings(req: Request, res: Response) {
+  getSettings = asyncHandler(async (_req: Request, res: Response) => {
     const enabled = await appSettingsService.isNotificationsEnabled();
-
     return res.json({
       notificationsEnabled: enabled,
     });
-  }
+  });
 }
 
 export default new AppSettingsController();

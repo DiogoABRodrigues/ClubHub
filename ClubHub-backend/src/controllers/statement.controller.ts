@@ -1,46 +1,29 @@
 import { Request, Response } from "express";
 import StatementService from "../services/statement.service";
+import { asyncHandler } from "../utils/asyncHandler";
 
 class StatementController {
-  async create(req: Request, res: Response) {
-    try {
-      const statement = await StatementService.createStatement(req.body);
-      res.status(201).json(statement);
-    } catch (error: any) {
-      res.status(400).json({ error: error.message });
-    }
-  }
+  create = asyncHandler(async (req: Request, res: Response) => {
+    const statement = await StatementService.createStatement(req.body);
+    res.status(201).json(statement);
+  });
 
-  async update(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      const statement = await StatementService.updateStatement(
-        Number(id),
-        req.body,
-      );
-      res.status(200).json(statement);
-    } catch (error: any) {
-      res.status(404).json({ error: error.message });
-    }
-  }
+  update = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const statement = await StatementService.updateStatement(Number(id), req.body);
+    res.status(200).json(statement);
+  });
 
-  async getActiveStatements(req: Request, res: Response) {
-    try {
-      const statement = await StatementService.getActiveStatement();
-      res.status(200).json(statement);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  }
+  getActiveStatements = asyncHandler(async (_req: Request, res: Response) => {
+    const statement = await StatementService.getActiveStatement();
+    res.status(200).json(statement);
+  });
 
-  async deleteStatement(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      await StatementService.deleteStatement(Number(id));
-      res.status(204).send();
-    } catch (error: any) {
-      res.status(404).json({ error: error.message });
-    }
-  }
+  deleteStatement = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    await StatementService.deleteStatement(Number(id));
+    res.status(204).send();
+  });
 }
+
 export default new StatementController();

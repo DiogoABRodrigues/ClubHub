@@ -1,24 +1,25 @@
 import { Request, Response } from "express";
 import StatsService from "../services/stats.service";
+import { asyncHandler } from "../utils/asyncHandler";
 
 const service = new StatsService();
 
 export default class StatsController {
-  static async getAll(req: Request, res: Response) {
+  static getAll = asyncHandler(async (_req: Request, res: Response) => {
     const data = await service.getAll();
     res.json(data);
-  }
+  });
 
-  static async getBySeasonId(req: Request, res: Response) {
+  static getBySeasonId = asyncHandler(async (req: Request, res: Response) => {
     const seasonId = parseInt(String(req.params.seasonId));
     const category = String(req.query.category ?? "over19");
     const data = await service.getBySeasonId(seasonId, category);
     res.json(data);
-  }
+  });
 
-  static async getByCurrentSeasonId(req: Request, res: Response) {
+  static getByCurrentSeasonId = asyncHandler(async (req: Request, res: Response) => {
     const category = String(req.query.category ?? "over19");
     const data = await service.getByCurrentSeasonId(category);
     res.json(data);
-  }
+  });
 }
