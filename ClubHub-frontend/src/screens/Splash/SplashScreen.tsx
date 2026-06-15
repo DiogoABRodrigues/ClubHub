@@ -1,14 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import { View, Animated } from "react-native";
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import { View, Animated, Dimensions } from "react-native";
 
-// Screens a pré-aquecer
 import { Home } from "../Home/Home";
 import { Matches } from "../Matches/Matches";
 import { SeasonScreen } from "../Season/SeasonScreen";
 import { News } from "../News/News";
-import { NotificationSettings } from "../NotificationSettings/NotificationSettings";
 
-// Hooks de dados
 import { useMatches } from "../../hooks/useMatches";
 import { useTeams } from "../../hooks/useTeams";
 import { useStandings } from "../../hooks/useStandings";
@@ -20,17 +17,15 @@ import { useSeasons } from "../../hooks/useSeasons";
 import { useStatements } from "../../hooks/useStatements";
 import { useStats } from "../../hooks/useStats";
 import { useCategory } from "../../contexts/CategoryContext";
+
 import { styles } from "./Splash.styles";
 
 interface SplashScreenProps {
   onFinish: () => void;
 }
 
-/**
- * Mock de navigation para o pre-warm.
- * Os screens são renderizados com opacity:0, por isso nunca são interactivos.
- * Este mock evita crashes em screens que chamam navigation.navigate() no mount.
- */
+const { width, height } = Dimensions.get("window");
+
 const noopNavigation = {
   navigate: () => {},
   goBack: () => {},
@@ -46,20 +41,7 @@ const noopNavigation = {
   getState: () => null,
 };
 
-/**
- * PreWarm: dispara os pedidos de dados e monta os screens principais
- * com opacity:0 / width:height:0.
- *
- * Isto só é montado depois de `CategoryContext` ter terminado de ler a
- * categoria persistida no AsyncStorage (isReady === true). Caso contrário,
- * hooks como useMatches/useStandings/usePlayers/useStats e
- * useSeasonsByCategory (usado pelo SelectedSeasonContext) disparariam um
- * primeiro pedido com a categoria por defeito ("over19") e, segundos
- * depois, um segundo pedido já com a categoria real do utilizador -
- * criando pedidos à API duplicados e desnecessários.
- */
 const PreWarm = () => {
-  // ── Data pre-fetch ────────────────────────────────────────────────────────
   useMatches();
   useTeams();
   useStandings();
@@ -71,6 +53,8 @@ const PreWarm = () => {
   useStats();
   useAppSetting("notifications_enabled");
 
+  const nav = useMemo(() => noopNavigation, []);
+
   return (
     <View
       style={{
@@ -81,46 +65,35 @@ const PreWarm = () => {
         overflow: "hidden",
       }}
       pointerEvents="none"
-      accessibilityElementsHidden={true}
+      accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
     >
-      <View style={{ width: 390, height: 844 }}>
-        <Home navigation={noopNavigation as any} />
+      <View style={{ width, height }}>
+        <Home navigation={nav as any} />
       </View>
-      <View style={{ width: 390, height: 844 }}>
-        <Matches navigation={noopNavigation as any} />
+
+      <View style={{ width, height }}>
+        <Matches navigation={nav as any} />
       </View>
-      <View style={{ width: 390, height: 844 }}>
+          
+      <View style={{ width, height }}>
         <SeasonScreen navigation={noopNavigation as any} />
       </View>
-      <View style={{ width: 390, height: 844 }}>
-        <News navigation={noopNavigation as any} />
+
+      <View style={{ width, height }}>
+        <News navigation={nav as any} />
       </View>
-      <View style={{ width: 390, height: 844 }}>
-        <NotificationSettings />
-      </View>
+
     </View>
   );
 };
-/**
- * SplashScreen com pre-warming duplo:
- *
- * 1. DATA PRE-FETCH: todos os hooks de dados disparam os pedidos à API
- *    enquanto o splash está visível.
- *
- * 2. COMPONENT PRE-WARM: todos os screens principais são renderizados com
- *    opacity:0 e width/height:0, forçando o React Native a construir e
- *    montar os componentes antes do utilizador os ver.
- *
- * Ambos só arrancam depois de `isReady` (ver PreWarm acima), para evitar
- * queries com dados por defeito/incorrectos.
- */
+
 export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
   const { isReady } = useCategory();
 
-  // ── Animação ──────────────────────────────────────────────────────────────
   const opacity = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(0.8)).current;
+
   const [animationDone, setAnimationDone] = useState(false);
 
   useEffect(() => {
@@ -139,35 +112,22 @@ export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
   }, []);
 
   useEffect(() => {
-    if (animationDone) {
-      onFinish();
-    }
-  }, [animationDone]);
+    if (animationDone) onFinish();
+  }, [animationDone, onFinish]);
 
   return (
     <View style={styles.container}>
-      {/* Logo animado */}
       <Animated.Image
         source={require("../../../assets/icon.png")}
-        style={[styles.logo, { opacity, transform: [{ scale }] }]}
+        style={[
+          styles.logo,
+          {
+            opacity,
+            transform: [{ scale }],
+          },
+        ]}
       />
 
-      {/*
-       * Pre-warm: screens completamente invisíveis e não interactivos.
-       *
-       * - opacity: 0         → invisíveis
-       * - width/height: 0    → não ocupam espaço
-       * - pointerEvents:"none" → não recebem toques
-       * - accessibilityElementsHidden → ignorados por leitores de ecrã
-       *
-       * O React Native constrói os componentes, aplica estilos e faz o layout
-       * enquanto o splash está visível. Quando o utilizador navega para qualquer
-       * tab pela primeira vez, os componentes já estão aquecidos - render instantâneo.
-       *
-       * Só montamos isto depois de `isReady`, para garantir que a categoria
-       * usada nos pedidos de pre-fetch já é a categoria persistida do
-       * utilizador, e não o valor por defeito "over19".
-       */}
       {isReady && <PreWarm />}
     </View>
   );

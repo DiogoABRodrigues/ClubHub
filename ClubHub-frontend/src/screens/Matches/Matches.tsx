@@ -4,7 +4,7 @@ import {
   Text,
   TouchableOpacity,
   RefreshControl,
-  FlatList,
+  ScrollView,
 } from "react-native";
 import { styles } from "./Matches.styles";
 import { MatchCard } from "../../components/MatchCard";
@@ -15,7 +15,6 @@ import { useCompetitions } from "../../hooks/useCompetitions";
 import { useAuth } from "../../contexts/AuthContext";
 import { EmptyState } from "../../components/EmptyState";
 
-type TabKey = "all" | "live" | "upcoming" | "finished";
 
 interface MatchesSectionProps {
   title: string;
@@ -111,34 +110,17 @@ export const Matches = ({ navigation }: any) => {
     return map;
   }, [competitions]);
 
-  const [activeTab] = useState<TabKey>("all");
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [showAllFinished, setShowAllFinished] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    if (activeTab === "all") {
-      setShowAllUpcoming(false);
-      setShowAllFinished(false);
-    }
-  }, [activeTab]);
+  const liveMatches = matches.filter(m => m.status === "live");
+  const upcomingMatches = matches.filter(m => m.status === "upcoming").toReversed();
+  const finishedMatches = matches.filter(m => m.status === "finished");
 
-  const liveMatches = useMemo(
-    () => matches.filter((m) => m.status === "live"),
-    [matches],
-  );
-  const upcomingMatches = useMemo(
-    () => matches.filter((m) => m.status === "upcoming").toReversed(),
-    [matches],
-  );
-  const finishedMatches = useMemo(
-    () => matches.filter((m) => m.status === "finished"),
-    [matches],
-  );
-
-  const showLive = activeTab === "all" || activeTab === "live";
-  const showUpcoming = activeTab === "all" || activeTab === "upcoming";
-  const showFinished = activeTab === "all" || activeTab === "finished";
+  const showLive = true;
+  const showUpcoming = true;
+  const showFinished = true;
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -170,10 +152,7 @@ export const Matches = ({ navigation }: any) => {
     [],
   );
 
-  const isEmpty =
-    (activeTab === "all" && matches.length === 0) ||
-    (activeTab === "live" && liveMatches.length === 0) ||
-    (activeTab === "upcoming" && upcomingMatches.length === 0);
+  const isEmpty = matches.length === 0;
 
   const renderContent = () => (
     <View style={styles.content}>
@@ -205,6 +184,7 @@ export const Matches = ({ navigation }: any) => {
           competitionsMap={competitionsMap}
         />
       )}
+
       {showFinished && finishedMatches.length > 0 && (
         <MatchesSection
           title="Últimos Resultados"
@@ -241,10 +221,7 @@ export const Matches = ({ navigation }: any) => {
         </View>
       </View>
 
-      <FlatList
-        data={[{ key: "content" }]}
-        renderItem={renderContent}
-        keyExtractor={(item) => item.key}
+      <ScrollView
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -253,7 +230,9 @@ export const Matches = ({ navigation }: any) => {
             tintColor={COLORS.primary}
           />
         }
-      />
+      >
+        {renderContent()}
+      </ScrollView>
     </View>
   );
 };
