@@ -12,6 +12,8 @@ export const CacheKeys = {
   matches: {
     bySeason: (seasonId: number, category: string = "over19") =>
       `app:matches:season:${seasonId}:${category}`,
+    byCompetition: (competitionId: number) =>
+      `app:matches:competition:${competitionId}`,
   },
 
   players: {

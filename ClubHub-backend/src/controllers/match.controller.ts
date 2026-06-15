@@ -23,6 +23,12 @@ export default class MatchController {
     res.json(data);
   });
 
+  static getByCompetitionId = asyncHandler(async (req: Request, res: Response) => {
+    const competitionId = Number(req.params.competitionId);
+    const data = await service.getByCompetitionId(competitionId);
+    res.json(data);
+  });
+
   static create = asyncHandler(async (req: Request, res: Response) => {
     const data = await service.create(req.body);
     res.status(201).json(data);

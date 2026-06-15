@@ -49,6 +49,46 @@ export default class MatchService {
     return this.getBySeasonId(season.id, category);
   }
 
+  async getByCompetitionId(competitionId: number) {
+    const key = CacheKeys.matches.byCompetition(competitionId);
+
+    const cached = await cache.get(key);
+    if (cached) return cached;
+
+    const matches = await Match.findAll({
+      where: { competitionId },
+      include: [
+        {
+          model: MatchEvent,
+          as: "events",
+          separate: true,
+          order: [["minute", "ASC"], ["createdAt", "ASC"]],
+        },
+      ],
+      order: [["date", "DESC"]],
+    });
+
+    // Agrupar por ronda no backend
+    const roundMap = new Map<string, typeof matches>();
+    for (const match of matches) {
+      const round = (match as any).round ?? "Sem ronda";
+      if (!roundMap.has(round)) roundMap.set(round, []);
+      roundMap.get(round)!.push(match);
+    }
+
+    const roundOrder = ["F", "MF", "QF", "1/8", "1/16"];
+    const rounds = Array.from(roundMap.entries())
+      .map(([round, roundMatches]) => ({ round, matches: roundMatches }))
+      .sort((a, b) => {
+        const aIdx = roundOrder.indexOf(a.round.trim().toUpperCase());
+        const bIdx = roundOrder.indexOf(b.round.trim().toUpperCase());
+        return aIdx - bIdx;
+      });
+
+    await cache.setPermanent(key, rounds);
+    return rounds;
+  }
+
   async create(data: any) {
     return Match.create(data);
   }
@@ -90,6 +130,10 @@ export default class MatchService {
     await cache.del(
       CacheKeys.matches.bySeason(match.seasonId as number, category),
     );
+
+    if (match.competitionId) {
+      await cache.del(CacheKeys.matches.byCompetition(match.competitionId));
+    }
 
     socketService.emitMatchUpdate(match);
 

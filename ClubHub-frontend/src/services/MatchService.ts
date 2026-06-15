@@ -1,6 +1,11 @@
 import { api } from "./api";
 import { Match } from "../models/Match";
 
+export type CupRound = {
+  round: string;
+  matches: Match[];
+};
+
 export const MatchService = {
   getAll: async (): Promise<Match[]> => {
     const { data } = await api.get("/matches");
@@ -21,6 +26,10 @@ export const MatchService = {
     const { data } = await api.get("/matches/current", {
       params: { category },
     });
+    return data;
+  },
+  getByCompetitionId: async (competitionId: number): Promise<CupRound[]> => {
+    const { data } = await api.get(`/matches/by-competition/${competitionId}`);
     return data;
   },
   create: async (match: Partial<Match>): Promise<Match> => {

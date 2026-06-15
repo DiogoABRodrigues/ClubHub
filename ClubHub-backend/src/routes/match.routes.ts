@@ -9,6 +9,7 @@ const router = Router();
 router.get("/", MatchController.getAll);
 router.get("/season/:seasonId", MatchController.getBySeasonId);
 router.get("/current", MatchController.getByCurrentSeasonId);
+router.get("/by-competition/:competitionId", MatchController.getByCompetitionId);
 
 // ADMIN ONLY
 router.post(
