@@ -69,6 +69,14 @@ export const MatchDetail = () => {
     [],
   );
 
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+        <Text style={styles.mutedText}>A carregar jogo...</Text>
+      </View>
+    );
+  }
+
   if (!match) {
     return (
       <View
@@ -101,13 +109,16 @@ export const MatchDetail = () => {
 
   const location = match.location;
 
+  const getPosition = (playerId: number) =>
+    playersMap.get(playerId)?.position ?? "";
+
   //ordernar por posição (Guarda-Redes, Defesas, Médios, Avançados)
   const sortedLineup = useMemo(() => {
     if (!match.Lineups) return [];
 
     return [...match.Lineups].sort((a, b) => {
-      const aPos = playersMap.get(a.playerId)?.Stats?.[0]?.position || "";
-      const bPos = playersMap.get(b.playerId)?.Stats?.[0]?.position || "";
+      const aPos = getPosition(a.playerId);
+      const bPos = getPosition(b.playerId);
 
       const orderA = getPositionOrder(aPos);
       const orderB = getPositionOrder(bPos);
@@ -429,7 +440,7 @@ export const MatchDetail = () => {
                           )}
                           <Text style={styles.lineupName}>{player.name}</Text>
                           <Text style={styles.lineupPosition}>
-                            {player.Stats?.[0]?.position}
+                            {player.position}
                           </Text>
                         </View>
                       );
