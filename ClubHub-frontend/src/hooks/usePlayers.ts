@@ -4,6 +4,7 @@ import { Player } from "../models/Player";
 import { useSelectedSeason } from "../contexts/Selectedseasoncontext";
 import { useCategory } from "../contexts/CategoryContext";
 import { useAuth } from "../contexts/AuthContext";
+import { useMemo } from "react";
 
 export const usePlayers = () => {
   const { isAdmin } = useAuth();
@@ -16,7 +17,6 @@ export const usePlayers = () => {
     queryFn: () =>
       PlayerService.getBySeasonId(currentSeasonId!, selectedCategory),
     enabled: !!currentSeasonId,
-    select: (players: Player[]) => players,
   });
 
   const allPlayersQuery = useQuery({
@@ -24,8 +24,23 @@ export const usePlayers = () => {
     queryFn: () =>
       PlayerService.getAllBySeasonId(currentSeasonId!, selectedCategory),
     enabled: !!currentSeasonId && isAdmin,
-    select: (players: Player[]) => players,
   });
+
+  const activePlayers = useMemo(() => {
+    return (
+      playersQuery.data?.filter(
+        (p) => (p.squadStatus ?? "active") === "active",
+      ) ?? []
+    );
+  }, [playersQuery.data]);
+
+  const visiblePlayers = useMemo(() => {
+    return (
+      playersQuery.data?.filter(
+        (p) => (p.squadStatus ?? "active") !== "error",
+      ) ?? []
+    );
+  }, [playersQuery.data]);
 
   const updatePlayerMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: Partial<Player> }) =>
@@ -53,77 +68,67 @@ export const usePlayers = () => {
         status,
         selectedCategory,
       ),
+
     onMutate: async ({ playerExternalId, status }) => {
-      // Optimistic update em ambas as queries
       await queryClient.cancelQueries({
         queryKey: ["players", currentSeasonId, selectedCategory],
       });
+
       await queryClient.cancelQueries({
         queryKey: ["players-all", currentSeasonId, selectedCategory],
       });
-      queryClient.setQueryData<Player[]>(
+
+      const updateFn = (old?: Player[]) =>
+        old?.map((p) =>
+          p.externalId === playerExternalId
+            ? { ...p, squadStatus: status }
+            : p,
+        );
+
+      queryClient.setQueryData(
         ["players", currentSeasonId, selectedCategory],
-        (old) =>
-          old?.map((p) =>
-            p.externalId === playerExternalId
-              ? { ...p, squadStatus: status }
-              : p,
-          ),
+        updateFn,
       );
-      queryClient.setQueryData<Player[]>(
+
+      queryClient.setQueryData(
         ["players-all", currentSeasonId, selectedCategory],
-        (old) =>
-          old?.map((p) =>
-            p.externalId === playerExternalId
-              ? { ...p, squadStatus: status }
-              : p,
-          ),
+        updateFn,
       );
     },
+
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["players", currentSeasonId, selectedCategory],
       });
+
       queryClient.invalidateQueries({
         queryKey: ["players-all", currentSeasonId, selectedCategory],
       });
     },
+
     onError: () => {
       queryClient.invalidateQueries({
         queryKey: ["players", currentSeasonId, selectedCategory],
       });
+
       queryClient.invalidateQueries({
         queryKey: ["players-all", currentSeasonId, selectedCategory],
       });
     },
   });
 
-  // Apenas jogadores ativos - para o ecrã público do plantel
-  const getActivePlayers = (): Player[] => {
-    return (
-      playersQuery.data?.filter(
-        (p) => (p.squadStatus ?? "active") === "active",
-      ) ?? []
-    );
-  };
-
-  // Ativos + quem saiu ("left") - não inclui erros
-  const getVisiblePlayers = (): Player[] => {
-    return (
-      playersQuery.data?.filter(
-        (p) => (p.squadStatus ?? "active") !== "error",
-      ) ?? []
-    );
-  };
-
   return {
     players: playersQuery.data ?? [],
     allPlayers: allPlayersQuery.data ?? [],
+
     loading: playersQuery.isLoading,
     refreshPlayers: playersQuery.refetch,
+
     updatePlayer: updatePlayerMutation.mutate,
     updateSquadStatus: updateSquadStatusMutation.mutate,
-    getActivePlayers,
-    getVisiblePlayers,
+
+    // 🔥 agora está estável + memoizado
+    getActivePlayers: () => activePlayers,
+    getVisiblePlayers: () => visiblePlayers,
   };
 };
