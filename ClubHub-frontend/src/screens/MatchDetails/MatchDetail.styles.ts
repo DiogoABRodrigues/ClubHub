@@ -138,7 +138,7 @@ export const styles = StyleSheet.create({
 
   colon: {
     fontSize: 28,
-    color: "rgba(255,255,255,0.4)",
+    color: COLORS.textPrimary,
     marginHorizontal: 4,
   },
 

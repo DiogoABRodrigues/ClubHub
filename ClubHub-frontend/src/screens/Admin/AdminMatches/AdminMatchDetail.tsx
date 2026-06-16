@@ -535,7 +535,7 @@ export const AdminMatchDetail = () => {
                 <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
                   {homeScoreDisplay}
                 </Text>
-                <Text style={styles.colon}>:</Text>
+                <Text style={styles.colon}>-</Text>
                 <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
                   {awayScoreDisplay}
                 </Text>

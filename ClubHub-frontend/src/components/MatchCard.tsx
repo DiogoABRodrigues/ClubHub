@@ -153,7 +153,7 @@ export const MatchCard = React.memo(
 
             <View style={styles.liveScoreCol}>
               <Text style={styles.liveScoreText}>
-                {homeScore ?? "–"} – {awayScore ?? "–"}
+                {homeScore ?? "-"} - {awayScore ?? "-"}
               </Text>
             </View>
 
@@ -275,7 +275,7 @@ export const MatchCard = React.memo(
 
           <View style={styles.finCenterCol}>
             <Text style={styles.finScoreText}>
-              {homeScore ?? "–"} – {awayScore ?? "–"}
+              {homeScore ?? "-"} - {awayScore ?? "-"}
             </Text>
             {match.decidedByPenalties && (
               <Text

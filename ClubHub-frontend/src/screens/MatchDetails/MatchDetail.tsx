@@ -247,7 +247,7 @@ export const MatchDetail = () => {
 
           <View style={styles.scoreContainer}>
             <Text style={styles.scoreText}>{homeScoreDisplay}</Text>
-            <Text style={styles.colon}>:</Text>
+            <Text style={styles.colon}>-</Text>
             <Text style={styles.scoreText}>{awayScoreDisplay}</Text>
           </View>
 
