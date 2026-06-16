@@ -261,8 +261,12 @@ export const Home = ({ navigation }: any) => {
                     )}
                   </View>
                   <View style={styles.newsContent}>
-                    <Text style={styles.newsTitle}>{item.title}</Text>
-                    <Text style={styles.newsExcerpt}>{item.excerpt}</Text>
+                    <Text style={styles.newsTitle} numberOfLines={1}>
+                      {item.title}
+                    </Text>
+                    <Text style={styles.newsExcerpt} numberOfLines={1}>
+                      {item.excerpt}
+                    </Text>
                     <Text style={styles.relatedDate}>
                       {formatDatePT(item.createdAt)}
                     </Text>
