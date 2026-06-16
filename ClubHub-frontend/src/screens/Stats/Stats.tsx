@@ -12,7 +12,9 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
+  RefreshControl,
 } from "react-native";
+import { COLORS } from "../../theme/colors";
 import { ArrowUp, ArrowDown } from "lucide-react-native";
 import { usePlayers } from "../../hooks/usePlayers";
 import { Player } from "../../models/Player";
@@ -33,9 +35,19 @@ const SortIcon = React.memo(
 );
 
 export const SquadStats = React.memo(function SquadStats() {
-  const { players } = usePlayers();
+  const { players, refreshPlayers } = usePlayers();
   const [sortField, setSortField] = useState<SortField>("goals");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refreshPlayers();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refreshPlayers]);
 
   // Ref do FlatList
   const flatListRef = useRef<FlatList>(null);

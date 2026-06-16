@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert } from "react-native";
+import React, { useCallback, useState } from "react";
+import { View, Text, FlatList, TouchableOpacity, Alert, RefreshControl } from "react-native";
 import { Plus, Edit, Trash2 } from "lucide-react-native";
 
 import { useNews } from "../../../hooks/useNews";
@@ -8,8 +8,20 @@ import { NewsCard } from "../../../components/NewsCard";
 import { styles } from "./AdminNews.styles";
 import { useAuth } from "../../../contexts/AuthContext";
 export const AdminNews = ({ navigation }: { navigation: any }) => {
-  const { news, loading, deleteNews } = useNews();
+  const { news, loading, deleteNews, refreshNews } = useNews();
   const { isAdmin } = useAuth();
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refreshNews();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refreshNews]);
+
   if (!isAdmin) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -89,6 +101,14 @@ export const AdminNews = ({ navigation }: { navigation: any }) => {
         data={news}
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+          />
+        }
         ListHeaderComponent={
           <TouchableOpacity
             style={styles.addButton}

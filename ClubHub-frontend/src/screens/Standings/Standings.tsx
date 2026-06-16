@@ -1,16 +1,17 @@
-import React, { useMemo, useCallback } from "react";
-import { View, Text, SectionList } from "react-native";
-import { useQuery } from "@tanstack/react-query";
+import React, { useMemo, useCallback, useState } from "react";
+import { View, Text, SectionList, RefreshControl } from "react-native";
+import { COLORS } from "../../theme/colors";
 import { useStandings } from "../../hooks/useStandings";
 import { useCompetitions } from "../../hooks/useCompetitions";
+import { useMatches } from "../../hooks/useMatches";
 import { LeagueTableRow } from "../../components/LeagueTableRow";
 import { CupMatchRow } from "../../components/CupMatchRow";
 import { styles } from "./Standings.styles";
 import { LegendItem } from "../../models/Competition";
 import { useSelectedSeason } from "../../contexts/Selectedseasoncontext";
+import { Match } from "../../models/Match";
 import { useAuth } from "../../contexts/AuthContext";
 import { EmptyState } from "../../components/EmptyState";
-import { MatchService, CupRound } from "../../services/MatchService";
 
 type LeagueSection = {
   type: "league";
@@ -18,6 +19,11 @@ type LeagueSection = {
   competitionName: string;
   legend: LegendItem[];
   data: any[];
+};
+
+type CupRound = {
+  round: string;
+  matches: Match[];
 };
 
 type CupSection = {
@@ -38,22 +44,22 @@ const COLS = {
   points: 1,
 };
 
-// Hook dedicado para os jogos de uma competição de taça — uma query por competição.
-// O backend já devolve os jogos agrupados e ordenados por ronda.
-function useCupMatches(competitionId: number, enabled: boolean) {
-  return useQuery({
-    queryKey: ["matches", "by-competition", competitionId],
-    queryFn: () => MatchService.getByCompetitionId(competitionId),
-    enabled,
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-  });
+function sortRounds(a: CupRound, b: CupRound): number {
+  const aRound = a.round.trim().toUpperCase();
+  const bRound = b.round.trim().toUpperCase();
+
+  const order = ["F", "MF", "QF", "1/8", "1/16"];
+  const aIdx = order.indexOf(aRound);
+  const bIdx = order.indexOf(bRound);
+
+  return aIdx - bIdx;
 }
 
 export const Standings = React.memo(function Standings({ navigation }: any) {
   const { adminMode } = useAuth();
-  const { standings, loading: standingsLoading } = useStandings();
-  const { competitions, loading: competitionsLoading } = useCompetitions();
+  const { standings, loading: standingsLoading, refreshStandings } = useStandings();
+  const { competitions, loading: competitionsLoading, refreshCompetitions } = useCompetitions();
+  const { matches } = useMatches();
   const { selectedSeason: currentSeason } = useSelectedSeason();
 
   const navigateToMatchDetail = (matchId: number) => {
@@ -62,73 +68,83 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
     });
   };
 
-  // Separar competições da época em liga e taça — não depende de matches.
-  const { leagueComps, cupComps } = useMemo(() => {
-    if (!currentSeason || !competitions.length)
-      return { leagueComps: [], cupComps: [] };
+  const [refreshing, setRefreshing] = useState(false);
 
-    const seasonComps = competitions.filter(
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([refreshStandings(), refreshCompetitions()]);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refreshStandings, refreshCompetitions]);
+
+  const sections = useMemo<Section[]>(() => {
+    if (!currentSeason || !competitions.length) return [];
+
+    const seasonCompetitions = competitions.filter(
       (c) => c.seasonId === currentSeason.id,
     );
 
-    return {
-      leagueComps: seasonComps.filter(
-        (c) => !c.name.toLowerCase().includes("taça"),
-      ),
-      cupComps: seasonComps.filter((c) =>
-        c.name.toLowerCase().includes("taça"),
-      ),
-    };
-  }, [competitions, currentSeason]);
+    const result: Section[] = [];
 
-  // Uma query por competição de taça. Hooks têm de ser no nível do componente,
-  // por isso limitamos a 3 taças (caso extremamente improvável de ter mais).
-  const cupQuery0 = useCupMatches(cupComps[0]?.id ?? 0, !!cupComps[0]);
-  const cupQuery1 = useCupMatches(cupComps[1]?.id ?? 0, !!cupComps[1]);
-  const cupQuery2 = useCupMatches(cupComps[2]?.id ?? 0, !!cupComps[2]);
+    for (const comp of seasonCompetitions) {
+      const isCup = comp.name.toLowerCase().includes("taça");
 
-  const cupQueries = [cupQuery0, cupQuery1, cupQuery2].slice(0, cupComps.length);
+      if (isCup) {
+        const competitionMatches = matches.filter(
+          (m) => m.competitionId === comp.id,
+        );
 
-  // Secções de liga — depende apenas de standings + leagueComps.
-  const leagueSections = useMemo<LeagueSection[]>(() => {
-    return leagueComps
-      .map((comp) => {
-        const competitionStandings = standings
-          .filter((s) => s.competitionId === comp.id)
-          .sort((a, b) => a.position - b.position);
+        if (competitionMatches.length === 0) continue;
 
-        if (competitionStandings.length === 0) return null;
+        const roundMap = new Map<string, Match[]>();
 
-        return {
-          type: "league" as const,
-          competitionId: comp.id,
-          competitionName: comp.name,
-          legend: comp.legend ?? [],
-          data: competitionStandings,
-        };
-      })
-      .filter(Boolean) as LeagueSection[];
-  }, [leagueComps, standings]);
+        competitionMatches.forEach((match) => {
+          const round = match.round ?? "Sem ronda";
 
-  // Secções de taça — depende dos dados já agrupados vindos do backend.
-  const cupSections = useMemo<CupSection[]>(() => {
-    return cupComps
-      .map((comp, i) => {
-        const rounds = cupQueries[i]?.data;
-        if (!rounds || rounds.length === 0) return null;
+          if (!roundMap.has(round)) {
+            roundMap.set(round, []);
+          }
 
-        return {
-          type: "cup" as const,
+          roundMap.get(round)!.push(match);
+        });
+
+        const rounds: CupRound[] = Array.from(roundMap.entries())
+          .map(([round, roundMatches]) => ({
+            round,
+            matches: roundMatches.sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+            ),
+          }))
+          .sort(sortRounds);
+
+        result.push({
+          type: "cup",
           competitionId: comp.id,
           competitionName: comp.name,
           rounds,
           data: rounds,
-        };
-      })
-      .filter(Boolean) as CupSection[];
-  }, [cupComps, cupQuery0.data, cupQuery1.data, cupQuery2.data]);
+        });
+      } else {
+        const competitionStandings = standings
+          .filter((s) => s.competitionId === comp.id)
+          .sort((a, b) => a.position - b.position);
 
-  const sections: Section[] = [...leagueSections, ...cupSections];
+        if (competitionStandings.length === 0) continue;
+
+        result.push({
+          type: "league",
+          competitionId: comp.id,
+          competitionName: comp.name,
+          legend: comp.legend ?? [],
+          data: competitionStandings,
+        });
+      }
+    }
+
+    return result;
+  }, [competitions, standings, matches, currentSeason]);
 
   const renderItem = ({ item, section }: { item: any; section: Section }) => {
     if (section.type === "league") {
@@ -248,10 +264,7 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
     [],
   );
 
-  const isLoading =
-    standingsLoading ||
-    competitionsLoading ||
-    cupQueries.some((q) => q.isLoading);
+  const isLoading = standingsLoading || competitionsLoading;
 
   if (!isLoading && sections.length === 0) {
     return (
@@ -275,6 +288,14 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         stickySectionHeadersEnabled={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+          />
+        }
         initialNumToRender={20}
         maxToRenderPerBatch={20}
         windowSize={5}
