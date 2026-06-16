@@ -168,8 +168,9 @@ export const SquadScreen = React.memo(function SquadScreen() {
         }}
         contentContainerStyle={globalStyles.squadList}
       />
-
-      <PlayerCardModal player={selectedPlayer} onClose={handleCloseModal} />
+      {selectedPlayer?.isFieldPlayer && (
+        <PlayerCardModal player={selectedPlayer} onClose={handleCloseModal} />
+      )}
     </>
   );
 });
