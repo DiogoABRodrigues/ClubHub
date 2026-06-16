@@ -5,12 +5,12 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = Router();
 
-router.post("/login", (req, res) => AuthController.login(req, res));
-router.post("/refresh", (req, res) => AuthController.refresh(req, res));
-router.post("/logout", authMiddleware, (req, res) =>
-  AuthController.logout(req, res),
+router.post("/login", (req, res, next) => AuthController.login(req, res, next));
+router.post("/refresh", (req, res, next) => AuthController.refresh(req, res, next));
+router.post("/logout", authMiddleware, (req, res, next) =>
+  AuthController.logout(req, res, next),
 );
 
-router.get("/me", authMiddleware, (req, res) => MeController.me(req, res));
+router.get("/me", authMiddleware, (req, res, next) => MeController.me(req, res, next));
 
 export default router;

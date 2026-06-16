@@ -10,12 +10,12 @@ router.post(
   "/notifications/toggle",
   authMiddleware,
   authorizeRoles("admin"),
-  (req, res) => appSettingsController.toggleNotifications(req, res),
+  (req, res, next) => appSettingsController.toggleNotifications(req, res, next),
 );
 
 // get settings
-router.get("/settings", authMiddleware, authorizeRoles("admin"), (req, res) =>
-  appSettingsController.getSettings(req, res),
+router.get("/settings", authMiddleware, authorizeRoles("admin"), (req, res, next) =>
+  appSettingsController.getSettings(req, res, next),
 );
 
 export default router;
