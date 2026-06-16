@@ -6,7 +6,6 @@ export const styles = StyleSheet.create({
   eventRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: SPACING.md,
     paddingVertical: 10,
     minHeight: 44,
     borderBottomWidth: 0.8,

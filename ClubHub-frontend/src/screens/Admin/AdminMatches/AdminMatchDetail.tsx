@@ -884,7 +884,7 @@ export const AdminMatchDetail = () => {
                       )}
                       {secondHalf.length > 0 && (
                         <>
-                          <View style={[styles.halfHeader, { marginTop: 4 }]}>
+                          <View style={[styles.halfHeader]}>
                             <Text style={styles.halfHeaderText}>2ª Parte</Text>
                           </View>
                           {secondHalf.map((event: MatchEvent) => (

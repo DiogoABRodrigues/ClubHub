@@ -295,7 +295,9 @@ export const MatchDetail = () => {
               <>
                 {firstHalf.length > 0 && (
                   <>
+                  <View style={[styles.halfHeader]}>
                     <Text style={styles.halfHeaderText}>1ª Parte</Text>
+                  </View>  
                     {firstHalf.map((event: any) => (
                       <EventRow
                         key={event.id}
@@ -308,7 +310,9 @@ export const MatchDetail = () => {
 
                 {secondHalf.length > 0 && (
                   <>
-                    <Text style={styles.halfHeaderText}>2ª Parte</Text>
+                    <View style={[styles.halfHeader]}>
+                      <Text style={styles.halfHeaderText}>2ª Parte</Text>
+                    </View>
                     {secondHalf.map((event: any) => (
                       <EventRow
                         key={event.id}
