@@ -110,8 +110,8 @@ app.set("trust proxy", 1);
 // ─── Rotas ───────────────────────────────────────────────────────────────────
 // Rota dedicada para o cron de wake-up — fora do authLimiter (10 req/min),
 // que poderia conflituar com pings frequentes (4x/hora).
-app.get("/api/wake-up", wakeUpLimiter, (req, res) =>
-  AuthController.wakeUp(req, res),
+app.get("/api/wake-up", wakeUpLimiter, (req, res, next) =>
+  AuthController.wakeUp(req, res, next),
 );
 
 app.use("/api", limiter);
