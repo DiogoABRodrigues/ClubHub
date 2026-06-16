@@ -9,8 +9,14 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+
+  scrollContent: {
+    // sem padding aqui — a imagem featured vai full-bleed
+  },
+
   content: {
     paddingHorizontal: SPACING.md,
+    paddingBottom: SPACING.xl,
   },
 
   headerLeft: {
@@ -22,7 +28,7 @@ export const styles = StyleSheet.create({
 
   titleContainer: {
     justifyContent: "center",
-    marginBottom: 0, // 🔥 remove qualquer offset vertical
+    marginBottom: 0,
   },
 
   backButton: {
@@ -61,25 +67,20 @@ export const styles = StyleSheet.create({
     lineHeight: FONT_SIZE.xl * 1.1,
   },
 
-  // ── Imagem de destaque (full-bleed) ───────────────────────────────────────
+  // ── Imagem de destaque (full-bleed, altura dinâmica) ─────────────────────
   featuredImage: {
     width: screenWidth,
-    height: 240,
-    borderRadius: 0,
+    // height é definida dinamicamente no componente via Image.getSize
     marginBottom: SPACING.md,
-    marginHorizontal: -SPACING.md,
-    resizeMode: "cover",
   },
 
   placeholderImage: {
     width: screenWidth,
     height: 240,
-    borderRadius: 0,
     backgroundColor: COLORS.primaryLight,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: SPACING.md,
-    marginHorizontal: -SPACING.md,
   },
 
   logoEmoji: {
@@ -150,7 +151,7 @@ export const styles = StyleSheet.create({
     marginTop: SPACING.xl,
     paddingTop: SPACING.lg,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: COLORS.secondary,
   },
 
   relatedTitle: {
@@ -174,12 +175,9 @@ export const styles = StyleSheet.create({
   },
 
   relatedImage: {
-    width: 52,
-    height: 52,
+    width: 72,
+    height: 72,
     borderRadius: RADIUS.md,
-    backgroundColor: "#ffffff",
-    justifyContent: "center",
-    alignItems: "center",
     overflow: "hidden",
     flexShrink: 0,
   },

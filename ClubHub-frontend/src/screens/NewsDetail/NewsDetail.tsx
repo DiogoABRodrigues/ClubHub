@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
+import { View, Text, ScrollView, Image, TouchableOpacity, Dimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./NewsDetail.styles";
 import { COLORS } from "../../theme/colors";
@@ -7,6 +7,8 @@ import { useNews } from "../../hooks/useNews";
 import { formatDatePT } from "../../utils/dateUtils";
 import { useAuth } from "../../contexts/AuthContext";
 import { EmptyState } from "../../components/EmptyState";
+
+const screenWidth = Dimensions.get("window").width;
 
 export const NewsDetail = ({ route, navigation }: any) => {
   const { id } = route.params;
@@ -21,23 +23,49 @@ export const NewsDetail = ({ route, navigation }: any) => {
     return map;
   }, [news]);
 
-  // Memoize para evitar recalcular a cada render
   const newsFound = useMemo(() => {
     return newsMap.get(id);
   }, [newsMap, id]);
 
   const relatedNews = useMemo(() => {
     const result = [];
-
     for (const n of news) {
       if (n.id !== id) {
         result.push(n);
         if (result.length === 3) break;
       }
     }
-
     return result;
   }, [news, id]);
+
+  // Altura dinâmica da imagem principal
+  const [featuredHeight, setFeaturedHeight] = useState<number>(240);
+
+  useEffect(() => {
+    if (!newsFound?.image) return;
+    Image.getSize(
+      newsFound.image,
+      (w, h) => {
+        if (w > 0) {
+          setFeaturedHeight((h / w) * screenWidth);
+        }
+      },
+      () => {
+        setFeaturedHeight(240);
+      },
+    );
+  }, [newsFound?.image]);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([refreshNews()]);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refreshNews]);
 
   if (!newsFound) {
     return (
@@ -53,20 +81,9 @@ export const NewsDetail = ({ route, navigation }: any) => {
       </View>
     );
   }
+
   const formatDate = formatDatePT;
-
   const isEmpty = news.length === 0;
-
-  const [refreshing, setRefreshing] = useState(false);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    try {
-      await Promise.all([refreshNews()]);
-    } finally {
-      setRefreshing(false);
-    }
-  }, [refreshNews]);
 
   return (
     <View style={styles.container}>
@@ -85,6 +102,7 @@ export const NewsDetail = ({ route, navigation }: any) => {
           </View>
         </View>
       </View>
+
       {isEmpty && (
         <EmptyState
           title="Não foi possível encontrar informação"
@@ -92,68 +110,67 @@ export const NewsDetail = ({ route, navigation }: any) => {
         />
       )}
 
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Featured Image */}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Featured Image — full-bleed, altura proporcional */}
         {newsFound.image ? (
           <Image
             source={{ uri: newsFound.image }}
-            style={styles.featuredImage}
-            resizeMode="cover"
+            style={[styles.featuredImage, { height: featuredHeight }]}
+            resizeMode="contain"
           />
         ) : (
           <View style={styles.placeholderImage}>
             <Text style={styles.logoEmoji}>⚽</Text>
           </View>
         )}
-        {/* Title */}
-        <Text style={styles.newsTitle}>{newsFound.title}</Text>
 
-        {/* Meta */}
-        <View style={styles.metaRow}>
-          <View style={styles.metaItem}>
-            <Text style={styles.metaText}>
-              {formatDate(newsFound.createdAt)}
-            </Text>
+        {/* Content com padding horizontal */}
+        <View style={styles.content}>
+          <Text style={styles.newsTitle}>{newsFound.title}</Text>
+
+          <View style={styles.metaRow}>
+            <View style={styles.metaItem}>
+              <Text style={styles.metaText}>
+                {formatDate(newsFound.createdAt)}
+              </Text>
+            </View>
           </View>
+
+          <Text style={styles.excerpt}>{newsFound.excerpt}</Text>
+          <Text style={styles.contentText}>{newsFound.content}</Text>
+
+          {/* Related News */}
+          {relatedNews.length > 0 && (
+            <View style={styles.relatedContainer}>
+              <Text style={styles.relatedTitle}>Mais Notícias</Text>
+              {relatedNews.map((n) => (
+                <TouchableOpacity
+                  key={n.id}
+                  onPress={() => navigation.navigate("NewsDetail", { id: n.id })}
+                  style={styles.relatedCard}
+                >
+                  <Image
+                    source={
+                      n.image
+                        ? { uri: n.image }
+                        : require("../../../assets/player.jpg")
+                    }
+                    style={styles.relatedImage}
+                    resizeMode="contain"
+                  />
+                  <View style={styles.relatedTextContainer}>
+                    <Text style={styles.relatedNewsTitle} numberOfLines={2}>
+                      {n.title}
+                    </Text>
+                    <Text style={styles.relatedDate}>
+                      {formatDate(n.createdAt)}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </View>
-
-        {/* Excerpt */}
-        <Text style={styles.excerpt}>{newsFound.excerpt}</Text>
-
-        {/* Content */}
-        <Text style={styles.contentText}>{newsFound.content}</Text>
-
-        {/* Related News */}
-        {relatedNews.length > 0 && (
-          <View style={styles.relatedContainer}>
-            <Text style={styles.relatedTitle}>Mais Notícias</Text>
-            {relatedNews.map((n) => (
-              <TouchableOpacity
-                key={n.id}
-                onPress={() => navigation.navigate("NewsDetail", { id: n.id })}
-                style={styles.relatedCard}
-              >
-                <Image
-                  source={
-                    n.image
-                      ? { uri: n.image }
-                      : require("../../../assets/player.jpg")
-                  }
-                  style={styles.relatedImage}
-                  resizeMode="cover"
-                />
-                <View style={styles.relatedTextContainer}>
-                  <Text style={styles.relatedNewsTitle} numberOfLines={2}>
-                    {n.title}
-                  </Text>
-                  <Text style={styles.relatedDate}>
-                    {formatDate(n.createdAt)}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
       </ScrollView>
     </View>
   );

@@ -13,7 +13,9 @@ export const styles = StyleSheet.create({
 
   image: {
     width: "100%",
-    height: 180,
+    // height é definida dinamicamente no componente via Image.getSize
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
   },
 
   placeholder: {
@@ -22,6 +24,8 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.primary + "20",
     alignItems: "center",
     justifyContent: "center",
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
   },
 
   placeholderEmoji: {
