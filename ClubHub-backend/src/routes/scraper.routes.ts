@@ -9,6 +9,7 @@ import { authorizeRoles } from "../middlewares/authorizeRoles";
 import { redis } from "../config/redis";
 import { closeSharedBrowser } from "../utils/browser";
 import { getEnabledCategories } from "../config/teamConfig";
+import socketService from "../services/socket.service";
 
 const router = Router();
 
@@ -53,6 +54,7 @@ router.post(
       const teams = await scrapeAllTeams();
 
       await redis.flushDb();
+      socketService.emitDataUpdated();
 
       res.json({
         success: true,
@@ -104,6 +106,7 @@ router.post(
       const stats = await scrapeTeamStats(cfg);
 
       await redis.flushDb();
+      socketService.emitDataUpdated();
 
       res.json({
         success: true,

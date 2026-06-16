@@ -6,6 +6,11 @@ class SocketService {
     io.emit("match:update", match);
   }
 
+  emitDataUpdated() {
+    const io = getIO();
+    io.emit("data:updated");
+  }
+
   emitMatchEvent(matchId: number, event: any) {
     const io = getIO();
 
