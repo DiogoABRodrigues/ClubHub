@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./AdminSettings.styles";
@@ -22,6 +23,7 @@ export const AdminSettings = ({ navigation }: any) => {
     );
   }
 
+  const queryClient = useQueryClient();
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateDone, setUpdateDone] = useState(false);
   const { logout, setAdminMode } = useAuth();
@@ -58,6 +60,7 @@ export const AdminSettings = ({ navigation }: any) => {
     setUpdateDone(false);
     try {
       await ScrapperService.scrapAll();
+      await queryClient.invalidateQueries();
       setUpdateDone(true);
     } catch (error) {
       alert("Falha ao atualizar dados. Tente novamente.");
