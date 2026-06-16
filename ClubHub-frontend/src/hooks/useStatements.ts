@@ -11,6 +11,7 @@ export const useStatements = () => {
   const statementsQuery = useQuery({
     queryKey: ["statements"],
     queryFn: StatementService.getActive,
+    staleTime: Infinity,
     select: (data: Statement) => [data],
   });
 

@@ -19,7 +19,7 @@ export const useMatches = () => {
     queryFn: () =>
       MatchService.getBySeasonId(currentSeasonId!, selectedCategory),
     enabled: !!currentSeasonId,
-    staleTime: 1000 * 60 * 5,
+    staleTime: Infinity,
     refetchOnWindowFocus: false,
     select: (matches: Match[]) =>
       matches.sort(
@@ -79,45 +79,27 @@ export const useMatches = () => {
   };
 
   const addMatchEvent = async (id: number, event: MatchEvent) => {
-    const match = queryClient
-      .getQueryData<Match[]>(["matches", currentSeasonId, selectedCategory])
-      ?.find((m) => m.id === id);
+    const createdEvent = await MatchEventService.create(id, event);
 
-    if (!match) return;
-
-    const createdEvent = await MatchEventService.create(match.id, event);
-    const updatedEvents = [...(match.events ?? []), createdEvent];
-
-    queryClient.setQueryData<Match[]>(
-      ["matches", currentSeasonId, selectedCategory],
-      (old) =>
-        old?.map((m) => (m.id === id ? { ...m, events: updatedEvents } : m)),
+    queryClient.setQueriesData<Match[]>({ queryKey: ["matches"] }, (old) =>
+      old?.map((m) => {
+        if (m.id !== id) return m;
+        return { ...m, events: [...(m.events ?? []), createdEvent] };
+      }),
     );
-
-    // O backend recalcula e actualiza o score via socket match:update.
-    // Não calculamos o resultado aqui para evitar race condition com o backend.
   };
 
   const deleteMatchEvent = async (id: number, event: MatchEvent) => {
     if (!event.id) return;
 
-    const match = queryClient
-      .getQueryData<Match[]>(["matches", currentSeasonId, selectedCategory])
-      ?.find((m) => m.id === id);
-
-    if (!match) return;
-
     await MatchEventService.delete(event.id);
 
-    const updatedEvents = match.events?.filter((e) => e.id !== event.id) ?? [];
-    queryClient.setQueryData<Match[]>(
-      ["matches", currentSeasonId, selectedCategory],
-      (old) =>
-        old?.map((m) => (m.id === id ? { ...m, events: updatedEvents } : m)),
+    queryClient.setQueriesData<Match[]>({ queryKey: ["matches"] }, (old) =>
+      old?.map((m) => {
+        if (m.id !== id) return m;
+        return { ...m, events: m.events?.filter((e) => e.id !== event.id) ?? [] };
+      }),
     );
-
-    // O backend recalcula e actualiza o score via socket match:update.
-    // Não calculamos o resultado aqui para evitar race condition com o backend.
   };
 
   const saveLineup = async (

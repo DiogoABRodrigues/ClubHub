@@ -5,6 +5,7 @@ const useHelper = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["helper", "categories"],
     queryFn: HelperService.getAllCategoriesAvailable,
+    staleTime: Infinity,
   });
   return { categories: data, isLoading, isError };
 };

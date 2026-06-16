@@ -11,6 +11,7 @@ export const useCompetitions = () => {
   const competitionsQuery = useQuery({
     queryKey: ["competitions"],
     queryFn: CompetitionService.getAll,
+    staleTime: Infinity,
   });
 
   // ─────────────────────────────

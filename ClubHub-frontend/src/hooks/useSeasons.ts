@@ -9,6 +9,7 @@ export const useSeasons = () => {
   const seasonsQuery = useQuery({
     queryKey: ["seasons"],
     queryFn: SeasonService.getAll,
+    staleTime: Infinity,
   });
 
   return {
@@ -24,7 +25,7 @@ export const useSeasonsByCategory = (category: string) => {
   const query = useQuery<Season[]>({
     queryKey: ["seasons", "byCategory", category],
     queryFn: () => SeasonService.getByCategory(category),
-    staleTime: 1000 * 60 * 60 * 6, // 6h - dado estável
+    staleTime: Infinity,
   });
 
   return {

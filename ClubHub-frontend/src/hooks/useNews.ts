@@ -13,6 +13,7 @@ export const useNews = () => {
   const newsQuery = useQuery({
     queryKey: ["news"],
     queryFn: NewsService.getLast10,
+    staleTime: Infinity,
     select: (data: News[]) => data,
   });
 

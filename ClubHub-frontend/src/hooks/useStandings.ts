@@ -13,7 +13,7 @@ export const useStandings = () => {
     queryFn: () =>
       StandingService.getBySeasonId(currentSeasonId!, selectedCategory),
     enabled: !!currentSeasonId,
-    staleTime: 1000 * 60 * 10,
+    staleTime: Infinity,
   });
 
   return {

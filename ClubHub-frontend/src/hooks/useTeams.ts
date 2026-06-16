@@ -7,6 +7,7 @@ export const useTeams = () => {
   const teamsQuery = useQuery({
     queryKey: ["teams"],
     queryFn: TeamService.getAll,
+    staleTime: Infinity,
   });
 
   return {
