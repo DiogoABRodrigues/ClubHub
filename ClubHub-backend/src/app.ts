@@ -62,6 +62,11 @@ app.use(compression());
 // ─── HTTP request logging ─────────────────────────────────────────────────────
 app.use(pinoHttp({ logger }));
 
+// Endpoint leve para health checks da pipeline e da infraestrutura.
+app.get("/health", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 // ─── Rate limiters ────────────────────────────────────────────────────────────
 const limiter = rateLimit({
   windowMs: 60 * 1000,
