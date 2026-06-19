@@ -420,27 +420,25 @@ jobs:
           name: backend-dist
           path: ClubHub-backend/
 
+
+      - name: Create Firebase credentials file
+        run: |
+          mkdir -p /etc/secrets
+          echo '${{ secrets.CI_FIREBASE_CREDENTIALS_JSON }}' > /etc/secrets/firebase.json
+
       - name: Start backend server
-        run: node dist/server.js &
+        run: node dist/server.js > /tmp/backend.log 2>&1 &
         working-directory: ClubHub-backend
         env:
           NODE_ENV: test
           PORT: 3000
-          # PostgreSQL local (CI)
           DATABASE_URL: postgresql://clubhub:clubhub@localhost:5432/clubhub_test
-          # Redis local (CI)
           REDIS_URL: redis://localhost:6379
-          # JWT — valores longos de teste (>= 32 chars exigidos pelo server.ts)
           JWT_ACCESS_SECRET: ${{ secrets.CI_JWT_ACCESS_SECRET }}
           JWT_REFRESH_SECRET: ${{ secrets.CI_JWT_REFRESH_SECRET }}
-          # Supabase — apontar para instância real ou deixar falhar graciosamente
           SUPABASE_URL: ${{ secrets.CI_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.CI_SUPABASE_SERVICE_ROLE_KEY }}
           SUPABASE_BUCKET: uploads
-          # Firebase — stub (notificações vão falhar mas o servidor arranca)
-          FIREBASE_PROJECT_ID: ci-stub
-          FIREBASE_CLIENT_EMAIL: ci@ci-stub.iam.gserviceaccount.com
-          FIREBASE_PRIVATE_KEY: ${{ secrets.CI_FIREBASE_PRIVATE_KEY }}
 
       - name: Wait for backend to be ready
         run: |
@@ -453,8 +451,8 @@ jobs:
             echo "Attempt $i/20 — waiting..."
             sleep 3
           done
-          echo "Backend did not start in time — printing logs:"
-          jobs -l
+          echo "Backend did not start in time — logs:"
+          cat /tmp/backend.log
           exit 1
 
       - name: Run OWASP ZAP baseline scan
