@@ -45,7 +45,7 @@
     ],
     "extra": {
       "router": {},
-      "BACKEND_URI": "https://clubhub-c8u0.onrender.com:3000",
+      "BACKEND_URI": "https://clubhub-c8u0.onrender.com",
       "eas": {
         "projectId": "2118d1ae-beb4-4503-a7ab-106eab98fb24"
       }
