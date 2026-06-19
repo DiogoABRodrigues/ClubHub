@@ -423,8 +423,7 @@ jobs:
 
       - name: Create Firebase credentials file
         run: |
-          mkdir -p $HOME/secrets
-          echo '${{ secrets.CI_FIREBASE_CREDENTIALS_JSON }}' > $HOME/secrets/firebase.json
+          echo '${{ secrets.CI_FIREBASE_CREDENTIALS_JSON }}' > firebase.json
 
       - name: Start backend server
         run: node dist/server.js > /tmp/backend.log 2>&1 &
@@ -441,6 +440,12 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.CI_SUPABASE_SERVICE_ROLE_KEY }}
           SUPABASE_BUCKET: uploads
 
+      - name: Verify Firebase file
+        run: |
+          pwd
+          ls -la
+          test -f firebase.json && echo "firebase.json exists"
+          
       - name: Wait for backend to be ready
         run: |
           for i in $(seq 1 20); do
