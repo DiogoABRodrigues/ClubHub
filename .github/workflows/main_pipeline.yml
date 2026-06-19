@@ -423,13 +423,14 @@ jobs:
 
       - name: Create Firebase credentials file
         run: |
-          mkdir -p /etc/secrets
-          echo '${{ secrets.CI_FIREBASE_CREDENTIALS_JSON }}' > /etc/secrets/firebase.json
+          mkdir -p $HOME/secrets
+          echo '${{ secrets.CI_FIREBASE_CREDENTIALS_JSON }}' > $HOME/secrets/firebase.json
 
       - name: Start backend server
         run: node dist/server.js > /tmp/backend.log 2>&1 &
         working-directory: ClubHub-backend
         env:
+          FIREBASE_CREDENTIALS_PATH: $HOME/secrets/firebase.json
           NODE_ENV: test
           PORT: 3000
           DATABASE_URL: postgresql://clubhub:clubhub@localhost:5432/clubhub_test
