@@ -49,7 +49,7 @@ async function startServer() {
 
     //wait restartBrowser();
 
-    await redis.flushDb();
+    //await redis.flushDb();
     console.log("DB ligada");
 
     server.listen(PORT, async () => {
