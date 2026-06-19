@@ -187,7 +187,7 @@ export const StatementModal = ({ visible, onClose }: Props) => {
           dateToExpire ? dateToExpire.toTimeString().slice(0, 5) : "12:00"
         }
         onClose={() => setPickerVisible(false)}
-        onSave={async (date, time) => {
+        onSave={async (date: string, time: string) => {
           const [year, month, day] = date.split("-").map(Number);
           const [hour, minute] = time.split(":").map(Number);
           setDateToExpire(new Date(year, month - 1, day, hour, minute));

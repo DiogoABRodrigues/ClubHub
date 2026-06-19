@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback } from "react";
 import { View, Text } from "react-native";
-import { Player } from "../data/mockData";
+import { Player } from "../models/Player";
 import { COLORS } from "../theme/colors";
 import { styles } from "./styles/PlayerLineup.styles";
 
