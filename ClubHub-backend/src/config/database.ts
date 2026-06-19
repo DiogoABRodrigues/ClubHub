@@ -16,7 +16,7 @@ export const sequelize = new Sequelize(process.env.DATABASE_URL!, {
         ? {
             require: true,
             // Valida o certificado SSL do servidor (protege contra MITM)
-            rejectUnauthorized: false,
+            rejectUnauthorized: true,
           }
         : false,
   },
