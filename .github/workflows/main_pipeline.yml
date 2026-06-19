@@ -430,7 +430,7 @@ jobs:
         run: node dist/server.js > /tmp/backend.log 2>&1 &
         working-directory: ClubHub-backend
         env:
-          FIREBASE_CREDENTIALS_PATH: $HOME/secrets/firebase.json
+          FIREBASE_CREDENTIALS_PATH: ${{ github.workspace }}/firebase.json
           NODE_ENV: test
           PORT: 3000
           DATABASE_URL: postgresql://clubhub:clubhub@localhost:5432/clubhub_test
