@@ -1,8 +1,10 @@
 import admin from "firebase-admin";
 import fs from "fs";
 
+const credentialsPath = process.env.FIREBASE_CREDENTIALS_PATH || "/etc/secrets/firebase.json";
+
 const serviceAccount = JSON.parse(
-  fs.readFileSync("/etc/secrets/firebase.json", "utf8")
+  fs.readFileSync(credentialsPath, "utf8")
 );
 
 if (!admin.apps.length) {
@@ -12,14 +14,3 @@ if (!admin.apps.length) {
 }
 
 export default admin;
-
-/*import admin from "firebase-admin";
-import serviceAccount from "../config/adecas-70555-firebase-adminsdk-fbsvc-bf0ae60726.json";
-
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount as any),
-  });
-}
-
-export default admin;*/
