@@ -25,6 +25,7 @@ import feedbackRoutes from "./routes/feedback.routes";
 import rateLimit from "express-rate-limit";
 import compression from "compression";
 import helperRoutes from "./routes/helper.routes";
+import { notFoundHandler, errorHandler } from "./middlewares/errorHandler";
 
 // ─── Logger ───────────────────────────────────────────────────────────────────
 export const logger = pino({
@@ -134,5 +135,9 @@ app.use("/api/app-settings", appSettingsRoutes);
 app.use("/api/notifications", notificationsRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/helper", helperRoutes);
+
+// ─── 404 + tratamento de erros ───────────
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 export default app;
