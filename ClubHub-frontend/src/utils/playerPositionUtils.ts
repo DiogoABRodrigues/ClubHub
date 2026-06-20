@@ -1,4 +1,3 @@
-import { Player } from "../models/Player";
 
 export const POSITION_ORDER: Record<string, number> = {
   "Guarda Redes": 1,

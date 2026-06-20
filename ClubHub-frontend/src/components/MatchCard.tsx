@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback, useState } from "react";
-import { View, Text, TouchableOpacity, Alert, Image } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./styles/MatchCard.styles";
 import { COLORS } from "../theme/colors";

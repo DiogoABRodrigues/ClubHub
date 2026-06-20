@@ -1,5 +1,5 @@
 // src/components/ZZImage.tsx
-import React, { useState } from "react";
+import React from "react";
 import { Image, ImageStyle, StyleProp } from "react-native";
 
 // O Samsung S25 (One UI 7) envia um User-Agent que o zerozero.pt bloqueia com 403.

@@ -1,8 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Platform } from "react-native";
 import { NewsService } from "../services/NewsService";
 import { News } from "../models/News";
-import { teamConfig } from "../config/teamConfig";
 
 export const useNews = () => {
   const queryClient = useQueryClient();

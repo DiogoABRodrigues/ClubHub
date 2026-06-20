@@ -1,6 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CompetitionService } from "../services/CompetitionService";
-import { Competition } from "../models/Competition";
 
 export const useCompetitions = () => {
   const queryClient = useQueryClient();

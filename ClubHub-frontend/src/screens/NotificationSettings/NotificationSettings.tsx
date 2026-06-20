@@ -530,14 +530,14 @@ export const NotificationSettings = () => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [tapCount, setTapCount] = useState(0);
+  const [, setTapCount] = useState(0);
   const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     AsyncStorage.getItem("deviceId").then(setDeviceId);
   }, []);
 
-  const { preferences, loading, updatePreferences } =
+  const { preferences, updatePreferences } =
     useDevicePreferences(deviceId);
 
   const safePrefs: DevicePreferences = preferences ?? {

@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, FONT_SIZE, RADIUS } from "../../theme/colors";
+import { COLORS, SPACING, FONT_SIZE } from "../../theme/colors";
 
 export const styles = StyleSheet.create({
   // ── Linha principal ───────────────────────────────────────────────────────

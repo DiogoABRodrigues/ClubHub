@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Modal, FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCategory } from "../contexts/CategoryContext";
-import { teamConfig } from "../config/teamConfig";
 import { COLORS } from "../theme/colors";
 import { styles } from "./styles/Seasonpicker.styles";
 import type { Category } from "../contexts/CategoryContext";
