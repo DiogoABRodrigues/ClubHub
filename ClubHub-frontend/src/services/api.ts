@@ -1,10 +1,16 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { refreshToken } from "./AuthService";
 import { teamConfig } from "../config/teamConfig";
+import {
+  clearTokens,
+  getAccessToken,
+  getRefreshToken,
+  saveTokens,
+} from "../storage/auth";
 
 const BACKEND_URI = teamConfig.backend_URL;
 let memoryToken: string | null = null;
+let refreshPromise: Promise<string> | null = null;
 
 export function setMemoryToken(token: string | null) {
   memoryToken = token;
@@ -21,7 +27,7 @@ export const scrapperApi = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
-  const token = memoryToken ?? (await AsyncStorage.getItem("accessToken"));
+  const token = memoryToken ?? (await getAccessToken());
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -31,7 +37,7 @@ api.interceptors.request.use(async (config) => {
 });
 
 scrapperApi.interceptors.request.use(async (config) => {
-  const token = memoryToken ?? (await AsyncStorage.getItem("accessToken"));
+  const token = memoryToken ?? (await getAccessToken());
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -48,15 +54,26 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !original._retry) {
       original._retry = true;
 
-      const refresh = await AsyncStorage.getItem("refreshToken");
+      const refresh = await getRefreshToken();
       if (!refresh) return Promise.reject(error);
 
-      const data = await refreshToken(refresh);
+      refreshPromise ??= refreshToken(refresh)
+        .then(async (data) => {
+          await saveTokens(data.accessToken, data.refreshToken);
+          setMemoryToken(data.accessToken);
+          return data.accessToken;
+        })
+        .catch(async (refreshError) => {
+          setMemoryToken(null);
+          await clearTokens();
+          throw refreshError;
+        })
+        .finally(() => {
+          refreshPromise = null;
+        });
 
-      await AsyncStorage.setItem("accessToken", data.accessToken);
-      await AsyncStorage.setItem("refreshToken", data.refreshToken);
-
-      original.headers.Authorization = `Bearer ${data.accessToken}`;
+      const accessToken = await refreshPromise;
+      original.headers.Authorization = `Bearer ${accessToken}`;
 
       return api(original);
     }
@@ -73,15 +90,26 @@ scrapperApi.interceptors.response.use(
     if (error.response?.status === 401 && !original._retry) {
       original._retry = true;
 
-      const refresh = await AsyncStorage.getItem("refreshToken");
+      const refresh = await getRefreshToken();
       if (!refresh) return Promise.reject(error);
 
-      const data = await refreshToken(refresh);
+      refreshPromise ??= refreshToken(refresh)
+        .then(async (data) => {
+          await saveTokens(data.accessToken, data.refreshToken);
+          setMemoryToken(data.accessToken);
+          return data.accessToken;
+        })
+        .catch(async (refreshError) => {
+          setMemoryToken(null);
+          await clearTokens();
+          throw refreshError;
+        })
+        .finally(() => {
+          refreshPromise = null;
+        });
 
-      await AsyncStorage.setItem("accessToken", data.accessToken);
-      await AsyncStorage.setItem("refreshToken", data.refreshToken);
-
-      original.headers.Authorization = `Bearer ${data.accessToken}`;
+      const accessToken = await refreshPromise;
+      original.headers.Authorization = `Bearer ${accessToken}`;
 
       return scrapperApi(original);
     }

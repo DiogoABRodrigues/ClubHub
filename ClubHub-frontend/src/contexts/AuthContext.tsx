@@ -5,9 +5,13 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { refreshToken } from "../services/AuthService";
 import { setMemoryToken } from "../services/api";
+import {
+  clearTokens,
+  getRefreshToken,
+  saveTokens,
+} from "../storage/auth";
 
 type AuthContextType = {
   isAdmin: boolean;
@@ -30,21 +34,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setMemoryToken(access);
     setIsAdmin(true);
 
-    await AsyncStorage.setItem("accessToken", access);
-    await AsyncStorage.setItem("refreshToken", refresh);
+    await saveTokens(access, refresh);
   };
 
   const logout = async () => {
     setMemoryToken(null);
     setIsAdmin(false);
 
-    await AsyncStorage.removeItem("accessToken");
-    await AsyncStorage.removeItem("refreshToken");
+    await clearTokens();
   };
 
   const restoreSession = async () => {
     try {
-      const refresh = await AsyncStorage.getItem("refreshToken");
+      const refresh = await getRefreshToken();
 
       if (!refresh) {
         setLoading(false);
@@ -53,8 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       const data = await refreshToken(refresh);
 
-      await AsyncStorage.setItem("accessToken", data.accessToken);
-      await AsyncStorage.setItem("refreshToken", data.refreshToken);
+      await saveTokens(data.accessToken, data.refreshToken);
 
       setMemoryToken(data.accessToken);
       setIsAdmin(true);

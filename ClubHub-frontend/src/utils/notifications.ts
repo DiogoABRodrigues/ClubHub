@@ -2,6 +2,7 @@ import messaging from "@react-native-firebase/messaging";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ExpoNotifications from "expo-notifications";
+import * as Crypto from "expo-crypto";
 import { DeviceService } from "../services/DeviceService";
 
 export async function registerForPushNotifications() {
@@ -29,7 +30,7 @@ export async function registerForPushNotifications() {
 
     let deviceId = await AsyncStorage.getItem("deviceId");
     if (!deviceId) {
-      deviceId = Math.random().toString(36).substring(2);
+      deviceId = Crypto.randomUUID();
       await AsyncStorage.setItem("deviceId", deviceId);
     }
 

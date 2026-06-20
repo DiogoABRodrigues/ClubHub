@@ -1,4 +1,8 @@
 import { api } from "./api";
+import {
+  getDeviceAccessToken,
+  saveDeviceAccessToken,
+} from "../storage/auth";
 
 export interface CategoryPrefs {
   goals: boolean;
@@ -30,18 +34,30 @@ export interface DevicePayload {
 
 export const DeviceService = {
   register: async (payload: DevicePayload): Promise<void> => {
-    await api.post("/device", payload);
+    const currentToken = await getDeviceAccessToken();
+    const response = await api.post("/device", payload, {
+      headers: currentToken ? { "X-Device-Token": currentToken } : undefined,
+    });
+    if (response.data?.deviceAccessToken) {
+      await saveDeviceAccessToken(response.data.deviceAccessToken);
+    }
   },
 
   updatePreferences: async (
     id: string,
     payload: Partial<Omit<DevicePayload, "id" | "pushToken" | "platform">>,
   ) => {
-    await api.patch(`/device/${id}`, payload);
+    const token = await getDeviceAccessToken();
+    await api.patch(`/device/${id}`, payload, {
+      headers: token ? { "X-Device-Token": token } : undefined,
+    });
   },
 
   getById: async (id: string): Promise<DevicePayload> => {
-    const response = await api.get(`/device/${id}`);
+    const token = await getDeviceAccessToken();
+    const response = await api.get(`/device/${id}`, {
+      headers: token ? { "X-Device-Token": token } : undefined,
+    });
     return response.data;
   },
 };

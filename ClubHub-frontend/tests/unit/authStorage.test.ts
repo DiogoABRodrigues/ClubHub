@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   clearTokens,
   getAccessToken,
@@ -8,7 +7,7 @@ import {
 
 describe("armazenamento de autenticação", () => {
   beforeEach(async () => {
-    await AsyncStorage.clear();
+    await clearTokens();
   });
 
   it("guarda e recupera ambos os tokens", async () => {
