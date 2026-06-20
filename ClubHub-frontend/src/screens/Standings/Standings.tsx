@@ -12,6 +12,7 @@ import { useSelectedSeason } from "../../contexts/Selectedseasoncontext";
 import { Match } from "../../models/Match";
 import { useAuth } from "../../contexts/AuthContext";
 import { EmptyState } from "../../components/EmptyState";
+import { useTeams } from "../../hooks/useTeams";
 
 type LeagueSection = {
   type: "league";
@@ -60,6 +61,7 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
   const { standings, loading: standingsLoading, refreshStandings } = useStandings();
   const { competitions, loading: competitionsLoading, refreshCompetitions } = useCompetitions();
   const { matches } = useMatches();
+  const { teams } = useTeams();
   const { selectedSeason: currentSeason } = useSelectedSeason();
 
   const navigateToMatchDetail = (matchId: number) => {
@@ -69,6 +71,14 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
   };
 
   const [refreshing, setRefreshing] = useState(false);
+
+  const teamLogos = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const team of teams) {
+      map.set(team.name.trim().toLowerCase(), team.logoUrl ?? "");
+    }
+    return map;
+  }, [teams]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -148,7 +158,12 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
 
   const renderItem = ({ item, section }: { item: any; section: Section }) => {
     if (section.type === "league") {
-      return <LeagueTableRow standing={item} />;
+      return (
+        <LeagueTableRow
+          standing={item}
+          teamLogo={teamLogos.get(item.teamName.trim().toLowerCase())}
+        />
+      );
     }
 
     const round = item as CupRound;

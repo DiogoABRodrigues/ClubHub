@@ -12,7 +12,6 @@ export const useStatements = () => {
     queryKey: ["statements"],
     queryFn: StatementService.getActive,
     staleTime: Infinity,
-    select: (data: Statement) => [data],
   });
 
   // ─────────────────────────────
@@ -22,7 +21,7 @@ export const useStatements = () => {
   const createStatement = useMutation({
     mutationFn: StatementService.create,
     onSuccess: (newStatement) => {
-      queryClient.setQueryData(["statements"], [newStatement]);
+      queryClient.setQueryData(["statements"], newStatement);
     },
   });
 
@@ -36,7 +35,7 @@ export const useStatements = () => {
     }) => StatementService.update(id, updates),
 
     onSuccess: (updated) => {
-      queryClient.setQueryData(["statements"], [updated]);
+      queryClient.setQueryData(["statements"], updated);
     },
   });
 
@@ -50,12 +49,12 @@ export const useStatements = () => {
     }) => StatementService.update(id, updates),
 
     onSuccess: () => {
-      queryClient.setQueryData(["statements"], []);
+      queryClient.setQueryData(["statements"], null);
     },
   });
 
   return {
-    statements: statementsQuery.data ?? [],
+    statements: statementsQuery.data ? [statementsQuery.data] : [],
     loading: statementsQuery.isLoading,
 
     refreshStatements: () =>

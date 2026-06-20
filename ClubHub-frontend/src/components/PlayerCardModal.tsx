@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Modal,
   View,
@@ -14,6 +14,7 @@ import { PlayerService } from "../services/PlayerService";
 import { useSeasons } from "../hooks/useSeasons";
 import { COLORS, SPACING } from "../theme/colors";
 import { styles } from "./styles/PlayerCardModal.styles";
+import { useQuery } from "@tanstack/react-query";
 
 const defaultPlayerImage = require("../../assets/player.jpg");
 
@@ -57,22 +58,12 @@ export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
 }) => {
   const { seasons } = useSeasons();
   const seasonMap = Object.fromEntries(seasons.map((s) => [s.id, s.year]));
-  const [fullPlayer, setFullPlayer] = useState<Player | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  // Quando o modal abre, vai buscar o jogador com TODAS as stats
-  useEffect(() => {
-    if (!player) {
-      setFullPlayer(null);
-      return;
-    }
-
-    setLoading(true);
-    PlayerService.getAllStats(player.id)
-      .then(setFullPlayer)
-      .catch(() => setFullPlayer(player)) // fallback: usa o que já temos
-      .finally(() => setLoading(false));
-  }, [player?.id]);
+  const { data: fullPlayer, isLoading: loading } = useQuery({
+    queryKey: ["player", player?.id, "allStats"],
+    queryFn: () => PlayerService.getAllStats(player!.id),
+    enabled: !!player,
+    staleTime: Infinity,
+  });
 
   if (!player) return null;
 

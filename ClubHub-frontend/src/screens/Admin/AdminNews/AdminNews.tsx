@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert, RefreshControl } from "react-native";
-import { Plus, Edit, Trash2 } from "lucide-react-native";
+import { Plus, Trash2 } from "lucide-react-native";
 
 import { useNews } from "../../../hooks/useNews";
 import { COLORS } from "../../../theme/colors";
@@ -22,13 +22,6 @@ export const AdminNews = ({ navigation }: { navigation: any }) => {
     }
   }, [refreshNews]);
 
-  if (!isAdmin) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Acesso negado</Text>
-      </View>
-    );
-  }
   const handleDelete = useCallback(
     (id: number, title: string) => {
       Alert.alert("Eliminar notícia", `Eliminar "${title}"?`, [
@@ -48,6 +41,14 @@ export const AdminNews = ({ navigation }: { navigation: any }) => {
     },
     [deleteNews],
   );
+
+  if (!isAdmin) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Acesso negado</Text>
+      </View>
+    );
+  }
 
   if (loading) {
     return (

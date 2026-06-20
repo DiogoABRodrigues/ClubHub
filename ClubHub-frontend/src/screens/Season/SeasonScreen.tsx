@@ -36,6 +36,8 @@ export function SeasonScreen({ navigation }: any) {
   // 👇 mantém tabs já carregados (mount once)
   const [mountedTabs, setMountedTabs] = useState<SeasonTab[]>([
     "standings",
+    "squad",
+    "stats",
   ]);
 
   const handleTabPress = useCallback((tab: SeasonTab) => {

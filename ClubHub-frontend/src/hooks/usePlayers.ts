@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlayerService } from "../services/PlayerService";
 import { Player } from "../models/Player";
@@ -101,22 +102,25 @@ export const usePlayers = () => {
   });
 
   // Apenas jogadores ativos - para o ecrã público do plantel
-  const getActivePlayers = (): Player[] => {
-    return (
+  const activePlayers = useMemo(
+    () =>
       playersQuery.data?.filter(
-        (p) => (p.squadStatus ?? "active") === "active",
-      ) ?? []
-    );
-  };
+        (player) => (player.squadStatus ?? "active") === "active",
+      ) ?? [],
+    [playersQuery.data],
+  );
 
   // Ativos + quem saiu ("left") - não inclui erros
-  const getVisiblePlayers = (): Player[] => {
-    return (
+  const visiblePlayers = useMemo(
+    () =>
       playersQuery.data?.filter(
-        (p) => (p.squadStatus ?? "active") !== "error",
-      ) ?? []
-    );
-  };
+        (player) => (player.squadStatus ?? "active") !== "error",
+      ) ?? [],
+    [playersQuery.data],
+  );
+
+  const getActivePlayers = useCallback(() => activePlayers, [activePlayers]);
+  const getVisiblePlayers = useCallback(() => visiblePlayers, [visiblePlayers]);
 
   return {
     players: playersQuery.data ?? [],

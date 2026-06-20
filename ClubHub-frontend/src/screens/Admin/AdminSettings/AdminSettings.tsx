@@ -14,19 +14,10 @@ import { useAppSetting } from "../../../hooks/useAppSettings";
 import { Alert } from "react-native";
 
 export const AdminSettings = ({ navigation }: any) => {
-  const { isAdmin, adminMode } = useAuth();
-  if (!isAdmin) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Acesso negado</Text>
-      </View>
-    );
-  }
-
+  const { isAdmin, logout, setAdminMode } = useAuth();
   const queryClient = useQueryClient();
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateDone, setUpdateDone] = useState(false);
-  const { logout, setAdminMode } = useAuth();
   const [statementModalVisible, setStatementModalVisible] = useState(false);
   const [notificationModalVisible, setNotificationModalVisible] =
     useState(false);
@@ -68,6 +59,14 @@ export const AdminSettings = ({ navigation }: any) => {
       setIsUpdating(false);
     }
   };
+
+  if (!isAdmin) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Acesso negado</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

@@ -1,42 +1,41 @@
 import { useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppSettingsService } from "../services/AppSettingsService";
+import { useAuth } from "../contexts/AuthContext";
 
 export function useAppSetting(key: string) {
-  const [value, setValue] = useState<boolean>(false);
+  const { isAdmin, loading: authLoading } = useAuth();
+  const [value, setValue] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const load = async () => {
-      const token = await AsyncStorage.getItem("accessToken");
-      if (!token) {
-        // Sem token não faz o request, evita o 401
-        setLoading(false);
-        return;
-      }
+    if (authLoading) return;
+    if (!isAdmin) {
+      setLoading(false);
+      return;
+    }
 
-      try {
-        const res = await AppSettingsService.get(key as any);
-        setValue(res);
-      } catch {
-        // silencia o erro, valor fica false por defeito
-      } finally {
-        setLoading(false);
-      }
+    let active = true;
+    setLoading(true);
+    AppSettingsService.get(key as any)
+      .then((result) => {
+        if (active) setValue(result);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
     };
-
-    load();
-  }, [key]);
+  }, [key, isAdmin, authLoading]);
 
   const toggle = async (newValue: boolean) => {
+    const previous = value;
     setValue(newValue);
     try {
-      // O endpoint de toggle já devolve o novo valor confirmado,
-      // não é preciso fazer um GET extra a seguir.
-      const confirmed = await AppSettingsService.toggle(newValue);
-      setValue(confirmed);
+      setValue(await AppSettingsService.toggle(newValue));
     } catch {
-      setValue(!newValue); // rollback
+      setValue(previous);
     }
   };
 

@@ -6,16 +6,6 @@ import { Matches } from "../Matches/Matches";
 import { SeasonScreen } from "../Season/SeasonScreen";
 import { News } from "../News/News";
 
-import { useMatches } from "../../hooks/useMatches";
-import { useTeams } from "../../hooks/useTeams";
-import { useStandings } from "../../hooks/useStandings";
-import { useNews } from "../../hooks/useNews";
-import { useAppSetting } from "../../hooks/useAppSettings";
-import { useCompetitions } from "../../hooks/useCompetitions";
-import { usePlayers } from "../../hooks/usePlayers";
-import { useSeasons } from "../../hooks/useSeasons";
-import { useStatements } from "../../hooks/useStatements";
-import { useStats } from "../../hooks/useStats";
 import { useCategory } from "../../contexts/CategoryContext";
 
 import { styles } from "./Splash.styles";
@@ -42,17 +32,6 @@ const noopNavigation = {
 };
 
 const PreWarm = () => {
-  useMatches();
-  useTeams();
-  useStandings();
-  useNews();
-  useCompetitions();
-  usePlayers();
-  useSeasons();
-  useStatements();
-  useStats();
-  useAppSetting("notifications_enabled");
-
   const nav = useMemo(() => noopNavigation, []);
 
   return (

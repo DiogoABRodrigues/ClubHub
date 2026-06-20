@@ -1,5 +1,12 @@
-import React, { useCallback, useMemo, useState, useEffect } from "react";
-import { View, Text, ScrollView, Image, TouchableOpacity, Dimensions } from "react-native";
+import React, { useMemo, useState, useEffect, useRef, useCallback } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./NewsDetail.styles";
 import { COLORS } from "../../theme/colors";
@@ -12,8 +19,9 @@ const screenWidth = Dimensions.get("window").width;
 
 export const NewsDetail = ({ route, navigation }: any) => {
   const { id } = route.params;
-  const { news, refreshNews } = useNews();
+  const { news } = useNews();
   const { adminMode } = useAuth();
+  const scrollRef = useRef<ScrollView>(null);
 
   const newsMap = useMemo(() => {
     const map = new Map();
@@ -42,6 +50,13 @@ export const NewsDetail = ({ route, navigation }: any) => {
   const [featuredHeight, setFeaturedHeight] = useState<number>(240);
 
   useEffect(() => {
+    setFeaturedHeight(240);
+    requestAnimationFrame(() => {
+      scrollRef.current?.scrollTo({ y: 0, animated: false });
+    });
+  }, [id]);
+
+  useEffect(() => {
     if (!newsFound?.image) return;
     Image.getSize(
       newsFound.image,
@@ -56,16 +71,13 @@ export const NewsDetail = ({ route, navigation }: any) => {
     );
   }, [newsFound?.image]);
 
-  const [refreshing, setRefreshing] = useState(false);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    try {
-      await Promise.all([refreshNews()]);
-    } finally {
-      setRefreshing(false);
-    }
-  }, [refreshNews]);
+  const openRelatedNews = useCallback(
+    (newsId: number) => {
+      scrollRef.current?.scrollTo({ y: 0, animated: false });
+      navigation.navigate("NewsDetail", { id: newsId });
+    },
+    [navigation],
+  );
 
   if (!newsFound) {
     return (
@@ -110,7 +122,7 @@ export const NewsDetail = ({ route, navigation }: any) => {
         />
       )}
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView ref={scrollRef} contentContainerStyle={styles.scrollContent}>
         {/* Featured Image — full-bleed, altura proporcional */}
         {newsFound.image ? (
           <Image
@@ -146,7 +158,7 @@ export const NewsDetail = ({ route, navigation }: any) => {
               {relatedNews.map((n) => (
                 <TouchableOpacity
                   key={n.id}
-                  onPress={() => navigation.navigate("NewsDetail", { id: n.id })}
+                  onPress={() => openRelatedNews(n.id)}
                   style={styles.relatedCard}
                 >
                   <Image

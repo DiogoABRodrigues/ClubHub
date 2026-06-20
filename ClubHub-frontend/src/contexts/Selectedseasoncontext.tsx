@@ -28,7 +28,7 @@ const SelectedSeasonContext = createContext<SelectedSeasonContextType>({
 export const SelectedSeasonProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const { selectedCategory, acknowledgeCategoryChange } = useCategory();
+  const { selectedCategory } = useCategory();
   const { seasons } = useSeasonsByCategory(selectedCategory);
   const [selectedSeason, setSelectedSeason] = useState<Season | null>(null);
   const prevCategory = useRef(selectedCategory);
@@ -44,6 +44,12 @@ export const SelectedSeasonProvider: React.FC<{
   // Quando as seasons disponíveis carregam/mudam, seleciona a mais recente
   useEffect(() => {
     if (!seasons.length) return;
+    if (
+      selectedSeason &&
+      seasons.some((season) => season.id === selectedSeason.id)
+    ) {
+      return;
+    }
     const latest = seasons.reduce((best, s) => {
       const bestYear = parseInt(best.year.split("/")?.[0] ?? "0");
       const sYear = parseInt(s.year.split("/")?.[0] ?? "0");
@@ -52,7 +58,7 @@ export const SelectedSeasonProvider: React.FC<{
     setSelectedSeason(latest);
     // Avisa o CategoryContext que já temos season - os dados vão começar a carregar
     // O overlay será escondido quando os dados ficarem prontos (ver useCategoryDataReady)
-  }, [seasons]);
+  }, [seasons, selectedSeason]);
 
   const value = useMemo(
     () => ({

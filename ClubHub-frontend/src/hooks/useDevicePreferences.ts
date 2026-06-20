@@ -86,7 +86,7 @@ export const useDevicePreferences = (deviceId: string | null) => {
         inFlightRef.current === 0 &&
         Object.keys(pendingRef.current).length === 0
       ) {
-        queryClient.invalidateQueries({ queryKey });
+        previousRef.current = undefined;
       }
     },
   });

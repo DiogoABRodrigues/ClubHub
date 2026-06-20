@@ -37,15 +37,7 @@ const EMPTY_FORM: FormData = {
 export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
   const editId: number | undefined = route?.params?.id;
   const isEditing = Boolean(editId);
-  const { isAdmin, adminMode } = useAuth();
-  if (!isAdmin) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Acesso negado</Text>
-      </View>
-    );
-  }
-
+  const { isAdmin } = useAuth();
   const { news, createNews, updateNews } = useNews();
 
   const existingNews = useMemo(
@@ -174,6 +166,14 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
       setForm((prev) => ({ ...prev, image: result.assets[0].uri }));
     }
   };
+
+  if (!isAdmin) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Acesso negado</Text>
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView

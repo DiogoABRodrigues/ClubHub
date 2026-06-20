@@ -120,14 +120,6 @@ const PlayerCard = React.memo(
 /* ---------------- SCREEN ---------------- */
 export function AdminSquadScreen() {
   const { isAdmin } = useAuth();
-  if (!isAdmin) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Acesso negado</Text>
-      </View>
-    );
-  }
-
   const { allPlayers, updateSquadStatus } = usePlayers();
   const { selectedSeasonId } = useSelectedSeason();
 
@@ -216,6 +208,14 @@ export function AdminSquadScreen() {
     },
     [handleChangeStatus],
   );
+
+  if (!isAdmin) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Acesso negado</Text>
+      </View>
+    );
+  }
 
   return (
     <FlashList

@@ -4,19 +4,17 @@ import {
   Text,
   TouchableOpacity,
   LayoutAnimation,
-  Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./styles/LeagueTableRow.styles";
 import { COLORS } from "../theme/colors";
 import { Standing } from "../models/Standing";
-import { useTeams } from "../hooks/useTeams";
-import { teamConfig } from "../config/teamConfig";
 import { ZZImage } from "./ZZImage";
 
 interface Props {
   standing: Standing;
   isUserTeam?: boolean;
+  teamLogo?: string;
 }
 
 const COLS = {
@@ -63,25 +61,13 @@ const TeamLogo = ({ uri }: { uri?: string }) => {
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export const LeagueTableRow = React.memo(
-  ({ standing, isUserTeam = false }: Props) => {
-    const { teams } = useTeams();
+  ({ standing, isUserTeam = false, teamLogo }: Props) => {
     const [expanded, setExpanded] = useState(false);
 
     const toggleExpand = useCallback(() => {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       setExpanded((prev) => !prev);
     }, []);
-
-    const teamMap = useMemo(() => {
-      const map: Record<string, any> = {};
-      teams.forEach((t) => {
-        map[t.name.trim().toLowerCase()] = t;
-      });
-      return map;
-    }, [teams]);
-
-    const normalizedName = standing.teamName.trim().toLowerCase();
-    const teamLogo = teamMap[normalizedName]?.logoUrl;
 
     //const appTeamName = teamConfig.name.trim().toLowerCase();
     //const isAppTeam = normalizedName === appTeamName;
