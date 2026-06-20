@@ -103,6 +103,15 @@ const PlayerPicker = React.memo(
     return (
       <View style={{ marginTop: 8 }}>
         <Text style={adminStyles.fieldLabel}>{label}</Text>
+        {players.length > 8 && (
+          <TextInput
+            style={adminStyles.input}
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Procurar jogador"
+            placeholderTextColor={COLORS.textMuted}
+          />
+        )}
         {filtered.length > 0 ? (
           <ScrollView
             style={{

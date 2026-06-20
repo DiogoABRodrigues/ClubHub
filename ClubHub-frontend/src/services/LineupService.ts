@@ -21,4 +21,12 @@ export const LineupService = {
   deleteByMatch: async (matchId: number): Promise<void> => {
     await api.delete(`/lineups?matchId=${matchId}`);
   },
+
+  replaceForMatch: async (
+    matchId: number,
+    entries: { playerId: number; isStarting: boolean }[],
+  ): Promise<Lineup[]> => {
+    const { data } = await api.put(`/lineups/match/${matchId}`, { entries });
+    return data;
+  },
 };

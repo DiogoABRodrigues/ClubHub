@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
@@ -16,18 +17,28 @@ import { EventRow } from "../../components/EventRow";
 import { COLORS } from "../../theme/colors";
 import { styles } from "./MatchDetail.styles";
 
-import { useMatches } from "../../hooks/useMatches";
+import { useMatchDetail } from "../../hooks/useMatchDetail";
 import { useTeams } from "../../hooks/useTeams";
 import { usePlayers } from "../../hooks/usePlayers";
 import { useCompetitions } from "../../hooks/useCompetitions";
 
-import {
-  formatDateWithWeekdayPT,
-  getPenaltyDisplayScore,
-} from "../../utils/dateUtils";
+import { getPenaltyDisplayScore } from "../../utils/dateUtils";
 
 import { getPositionOrder } from "../../utils/playerPositionUtils";
 import { Competition } from "../../models/Competition";
+import { Match } from "../../models/Match";
+
+const EMPTY_MATCH: Match = {
+  id: -1,
+  category: "over19",
+  teamName: "",
+  date: "",
+  homeOrAway: "C",
+  opponent: "",
+  status: "upcoming",
+  createdAt: "",
+  updatedAt: "",
+};
 
 export const MatchDetail = () => {
   const route = useRoute();
@@ -36,7 +47,11 @@ export const MatchDetail = () => {
 
   const { competitions, refreshCompetitions } = useCompetitions();
   const { getActivePlayers, refreshPlayers } = usePlayers();
-  const { matches, loading, refreshMatches } = useMatches();
+  const {
+    match: loadedMatch,
+    loading,
+    refreshMatch,
+  } = useMatchDetail(id);
   const { teams, refreshTeams } = useTeams();
 
   const players = useMemo(() => getActivePlayers(), [getActivePlayers]);
@@ -49,7 +64,7 @@ export const MatchDetail = () => {
     return map;
   }, [players]);
 
-  const match = matches.find((m) => m.id === id);
+  const match = loadedMatch ?? EMPTY_MATCH;
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -57,7 +72,7 @@ export const MatchDetail = () => {
     setRefreshing(true);
     try {
       await Promise.all([
-        refreshMatches(),
+        refreshMatch(),
         refreshCompetitions(),
         refreshTeams(),
         refreshPlayers(),
@@ -65,7 +80,7 @@ export const MatchDetail = () => {
     } finally {
       setRefreshing(false);
     }
-  }, [refreshMatches, refreshCompetitions, refreshTeams, refreshPlayers]);
+  }, [refreshMatch, refreshCompetitions, refreshTeams, refreshPlayers]);
 
   const [activeTab, setActiveTab] = useState<"timeline" | "lineup">(
     "timeline",
@@ -78,22 +93,6 @@ export const MatchDetail = () => {
     ],
     [],
   );
-
-  if (loading) {
-    return (
-      <View style={[styles.container]}>
-        <Text style={styles.mutedText}>A carregar jogo...</Text>
-      </View>
-    );
-  }
-
-  if (!match) {
-    return (
-      <View style={[styles.container]}>
-        <Text style={styles.mutedText}>Match not found</Text>
-      </View>
-    );
-  }
 
   const homeTeamName =
     match.homeOrAway === "C" ? match.teamName : match.opponent;
@@ -197,6 +196,14 @@ export const MatchDetail = () => {
 
   const { firstHalf, secondHalf, extraTime, penalties } = groupedEvents;
 
+  if (!loading && !loadedMatch) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.mutedText}>Jogo não encontrado</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView
       style={styles.container}
@@ -291,7 +298,11 @@ export const MatchDetail = () => {
         {/* CONTENT */}
         <View style={styles.tabContent}>
           {activeTab === "timeline" &&
-            (match.events?.length ? (
+            (loading ? (
+              <View style={styles.emptyState}>
+                <ActivityIndicator size="small" color={COLORS.primary} />
+              </View>
+            ) : match.events?.length ? (
               <>
                 {firstHalf.length > 0 && (
                   <>

@@ -8,6 +8,7 @@ import { MatchEvent } from "../models/MatchEvent";
 import { Lineup } from "../models/Lineup";
 import { useSelectedSeason } from "../contexts/Selectedseasoncontext";
 import { useCategory } from "../contexts/CategoryContext";
+import { matchDetailKey } from "./useMatchDetail";
 
 export const useMatches = () => {
   const queryClient = useQueryClient();
@@ -22,7 +23,7 @@ export const useMatches = () => {
     staleTime: Infinity,
     refetchOnWindowFocus: false,
     select: (matches: Match[]) =>
-      matches.sort(
+      [...matches].sort(
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
       ),
   });
@@ -30,10 +31,13 @@ export const useMatches = () => {
   const updateMatch = useMutation({
     mutationFn: ({ id, data }: { id: number; data: Partial<Match> }) =>
       MatchService.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["matches", currentSeasonId, selectedCategory],
-      });
+    onSuccess: (updated) => {
+      queryClient.setQueryData(matchDetailKey(updated.id), updated);
+      queryClient.setQueriesData<Match[]>({ queryKey: ["matches"] }, (old) =>
+        old?.map((match) =>
+          match.id === updated.id ? { ...match, ...updated } : match,
+        ),
+      );
     },
   });
 
@@ -55,12 +59,15 @@ export const useMatches = () => {
 
     await updateMatch.mutateAsync({
       id,
-      data: { status: "live", date: new Date().toISOString() },
+      data: {
+        status: "live",
+        date: new Date().toISOString().slice(0, 10),
+      },
     });
   };
 
   const pauseMatch = async (id: number) => {
-    await updateMatch.mutateAsync({ id, data: { status: "halftime" } });
+    await updateMatch.mutateAsync({ id, data: { statusTime: "interval" } });
   };
 
   const finishMatch = async (
@@ -79,14 +86,8 @@ export const useMatches = () => {
   };
 
   const addMatchEvent = async (id: number, event: MatchEvent) => {
-    const createdEvent = await MatchEventService.create(id, event);
-
-    queryClient.setQueriesData<Match[]>({ queryKey: ["matches"] }, (old) =>
-      old?.map((m) => {
-        if (m.id !== id) return m;
-        return { ...m, events: [...(m.events ?? []), createdEvent] };
-      }),
-    );
+    await MatchEventService.create(id, event);
+    await queryClient.invalidateQueries({ queryKey: matchDetailKey(id) });
   };
 
   const deleteMatchEvent = async (id: number, event: MatchEvent) => {
@@ -94,36 +95,22 @@ export const useMatches = () => {
 
     await MatchEventService.delete(event.id);
 
-    queryClient.setQueriesData<Match[]>({ queryKey: ["matches"] }, (old) =>
-      old?.map((m) => {
-        if (m.id !== id) return m;
-        return { ...m, events: m.events?.filter((e) => e.id !== event.id) ?? [] };
-      }),
-    );
+    await queryClient.invalidateQueries({ queryKey: matchDetailKey(id) });
   };
 
   const saveLineup = async (
     matchId: number,
     entries: { playerId: number | string; isStarting: boolean }[],
   ) => {
-    await LineupService.deleteByMatch(matchId);
-
-    const createdLineups: Lineup[] = await Promise.all(
-      entries.map((e) =>
-        LineupService.create({
-          matchId,
-          playerId: Number(e.playerId),
-          isStarting: e.isStarting,
-        }),
-      ),
+    const createdLineups: Lineup[] = await LineupService.replaceForMatch(
+      matchId,
+      entries.map((entry) => ({
+        playerId: Number(entry.playerId),
+        isStarting: entry.isStarting,
+      })),
     );
-
-    queryClient.setQueryData<Match[]>(
-      ["matches", currentSeasonId, selectedCategory],
-      (old) =>
-        old?.map((m) =>
-          m.id === matchId ? { ...m, Lineups: createdLineups } : m,
-        ),
+    queryClient.setQueryData<Match>(matchDetailKey(matchId), (old) =>
+      old ? { ...old, Lineups: createdLineups } : old,
     );
   };
 

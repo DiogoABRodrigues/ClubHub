@@ -1,42 +1,35 @@
+import { useEffect } from "react";
+import { Match } from "../models/Match";
 import { queryClient } from "../lib/queryClient";
 import { socket } from "../services/socket";
-import { useEffect } from "react";
+import { matchDetailKey } from "../hooks/useMatchDetail";
 
-export const SocketProvider = ({ children }: any) => {
+export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
+    const handleMatchUpdate = (match: Match) => {
+      queryClient.setQueryData(matchDetailKey(match.id), match);
+      queryClient.setQueriesData<Match[]>({ queryKey: ["matches"] }, (old) =>
+        old?.map((current) =>
+          current.id === match.id ? { ...current, ...match } : current,
+        ),
+      );
+    };
+
+    const handleDataUpdated = () => {
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          ["matches", "players", "players-all", "standings", "stats", "teams"]
+            .includes(String(query.queryKey[0])),
+      });
+    };
+
+    socket.on("match:update", handleMatchUpdate);
+    socket.on("data:updated", handleDataUpdated);
     socket.connect();
 
-    socket.on("match:update", (match) => {
-      // A query key real é ["matches", seasonId, category]. setQueriesData
-      // com queryKey:["matches"] e exact:false (default) faz partial match,
-      // ou seja, atualiza a(s) query(ies) ["matches", seasonId, category]
-      // que já estiverem em cache, sem precisarmos de saber o seasonId/category
-      // activos.
-      queryClient.setQueriesData<any[]>({ queryKey: ["matches"] }, (old) =>
-        old?.some((m) => m.id === match.id)
-          ? old.map((m) => (m.id === match.id ? match : m))
-          : old,
-      );
-    });
-
-    socket.on("match:event", ({ matchId, event }) => {
-      queryClient.setQueriesData<any[]>({ queryKey: ["matches"] }, (old) =>
-        old?.map((m) => {
-          if (m.id !== matchId) return m;
-          const exists = m.events?.some((e: any) => e.id === event.id);
-          const updatedEvents = exists
-            ? m.events.map((e: any) => (e.id === event.id ? event : e))
-            : [...(m.events ?? []), event];
-          return { ...m, events: updatedEvents };
-        }),
-      );
-    });
-
-    socket.on("data:updated", () => {
-      queryClient.invalidateQueries();
-    });
-
     return () => {
+      socket.off("match:update", handleMatchUpdate);
+      socket.off("data:updated", handleDataUpdated);
       socket.disconnect();
     };
   }, []);

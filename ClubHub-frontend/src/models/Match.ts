@@ -3,7 +3,7 @@ import { MatchEvent } from "./MatchEvent";
 
 export type Match = {
   id: number;
-  category: "Senior" | "U19" | "U17" | "U15";
+  category: "over19" | "sub19" | "sub17" | "sub15" | "sub13";
   teamName: string;
   date: string; // ISO string
   time?: string;
@@ -14,7 +14,7 @@ export type Match = {
   seasonId?: number | null;
   round?: string;
   outcome?: "V" | "E" | "D" | null;
-  status: "upcoming" | "live" | "finished" | "halftime";
+  status: "upcoming" | "live" | "finished";
   createdAt: string;
   updatedAt: string;
   location?: string;

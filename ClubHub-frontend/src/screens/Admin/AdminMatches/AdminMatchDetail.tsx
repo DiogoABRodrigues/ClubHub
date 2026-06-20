@@ -35,21 +35,27 @@ import { MatchEventService } from "../../../services/MatchEventService";
 import { MatchEvent } from "../../../models/MatchEvent";
 import { getPositionOrder } from "../../../utils/playerPositionUtils";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useMatchDetail } from "../../../hooks/useMatchDetail";
+import { Match } from "../../../models/Match";
+
+const EMPTY_MATCH: Match = {
+  id: -1,
+  category: "over19",
+  teamName: "",
+  date: "",
+  homeOrAway: "C",
+  opponent: "",
+  status: "upcoming",
+  createdAt: "",
+  updatedAt: "",
+};
 
 export const AdminMatchDetail = () => {
   const route = useRoute();
   const { isAdmin, adminMode } = useAuth();
-  if (!isAdmin) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Acesso negado</Text>
-      </View>
-    );
-  }
   const navigation = useNavigation();
   const { id } = route.params as { id: number };
   const {
-    matches,
     refreshMatches,
     addMatchEvent,
     updateMatch,
@@ -57,6 +63,11 @@ export const AdminMatchDetail = () => {
     startMatch,
     finishMatch,
   } = useMatches();
+  const {
+    match: loadedMatch,
+    loading: matchLoading,
+    refreshMatch,
+  } = useMatchDetail(id);
   const { teams, refreshTeams } = useTeams();
   const { getActivePlayers, refreshPlayers } = usePlayers();
 
@@ -71,22 +82,9 @@ export const AdminMatchDetail = () => {
     }
     return map;
   }, [players]);
-  const match = useMemo(() => matches.find((m) => m.id === id), [matches, id]);
+  const match = loadedMatch ?? EMPTY_MATCH;
 
   const { competitions, refreshCompetitions } = useCompetitions();
-
-  if (!match) {
-    return (
-      <View
-        style={[
-          styles.container,
-          { justifyContent: "center", alignItems: "center" },
-        ]}
-      >
-        <Text>Jogo não encontrado</Text>
-      </View>
-    );
-  }
 
   const [activeTab, setActiveTab] = useState<"timeline" | "lineup">("timeline");
   const [showEventModal, setShowEventModal] = useState(false);
@@ -101,6 +99,7 @@ export const AdminMatchDetail = () => {
 
     try {
       await Promise.all([
+        refreshMatch(),
         refreshMatches(),
         refreshCompetitions(),
         refreshTeams(),
@@ -111,7 +110,13 @@ export const AdminMatchDetail = () => {
     } finally {
       setRefreshing(false);
     }
-  }, [refreshMatches, refreshCompetitions, refreshTeams, refreshPlayers]);
+  }, [
+    refreshMatch,
+    refreshMatches,
+    refreshCompetitions,
+    refreshTeams,
+    refreshPlayers,
+  ]);
 
   const tabs = useMemo(
     () => [
@@ -138,7 +143,7 @@ export const AdminMatchDetail = () => {
         // EDIT: chamar API de update do evento
         await MatchEventService.update(editingEvent.id, form);
         // Força refresh para reflectir a mudança (Redis já foi invalidado no backend)
-        await refreshMatches();
+        await refreshMatch();
       } else {
         // CREATE: adicionar na BD
         await addMatchEvent(match.id, form);
@@ -315,7 +320,7 @@ export const AdminMatchDetail = () => {
   );
 
   const isLive = match.status === "live";
-  const isHalftime = match.status === "halftime";
+  const isHalftime = match.statusTime === "interval";
   const isUpcoming = match.status === "upcoming";
   const isFinished = match.status === "finished";
   const canEditDateTime = isLive || isUpcoming || isFinished;
@@ -476,6 +481,28 @@ export const AdminMatchDetail = () => {
       },
     ]);
   }, [match, updateMatch]);
+
+  if (!isAdmin) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Acesso negado</Text>
+      </View>
+    );
+  }
+
+  if (matchLoading || !loadedMatch) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
+        <Text>{matchLoading ? "A carregar jogo..." : "Jogo não encontrado"}</Text>
+      </View>
+    );
+  }
+
   return (
     <>
       <ScrollView
