@@ -50,6 +50,14 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "")
 
 app.use(
   cors({
+    origin: (origin, callback) => {
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(null, false);
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   }),
@@ -64,6 +72,7 @@ app.use(pinoHttp({ logger }));
 
 // Endpoint leve para health checks da pipeline e da infraestrutura.
 app.get("/health", (_req, res) => {
+  res.set("Cache-Control", "no-store");
   res.status(200).json({ status: "ok" });
 });
 
