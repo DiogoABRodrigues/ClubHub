@@ -1,0 +1,10 @@
+appId: com.x13dean13.A.D.E.C.A.S
+---
+- launchApp
+- extendedWaitUntil:
+    visible: "Início"
+    timeout: 20000
+- tapOn: "Jogos"
+- assertVisible: "Jogos e Resultados"
+- tapOn: "Início"
+- assertVisible: "Próximo Jogo"

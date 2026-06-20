@@ -32,6 +32,12 @@ export function errorHandler(
     });
   }
 
+  if ((error as any).type === "entity.too.large") {
+    return res.status(413).json({
+      message: "Payload demasiado grande.",
+    });
+  }
+
   console.error(error);
 
   return res.status(500).json({
