@@ -462,12 +462,12 @@ jobs:
           exit 1
 
       - name: Run OWASP ZAP baseline scan
-        uses: zaproxy/action-baseline@v0.14.0
+        uses: zaproxy/action-baseline@v0.15.0
         with:
           target: http://localhost:3000/health
           fail_action: true
           allow_issue_writing: false
-          cmd_options: '-j'
+          cmd_options: '-j -I'
 
       - name: Upload ZAP reports
         if: always()

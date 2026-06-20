@@ -76,6 +76,12 @@ app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
+// Landing endpoint para scanners e verificações básicas do serviço.
+app.get("/", (_req, res) => {
+  res.set("Cache-Control", "no-store");
+  res.status(200).json({ name: "ClubHub API", status: "ok" });
+});
+
 // ─── Rate limiters ────────────────────────────────────────────────────────────
 const limiter = rateLimit({
   windowMs: 60 * 1000,
