@@ -27,4 +27,23 @@ export default class LineupController {
     await service.deleteByMatch(matchId);
     res.status(204).send();
   });
+
+  static replaceForMatch = asyncHandler(async (req: Request, res: Response) => {
+    const matchId = Number(req.params.matchId);
+    const entries = req.body?.entries;
+    if (!Number.isInteger(matchId) || !Array.isArray(entries)) {
+      return res.status(400).json({ message: "Formação inválida." });
+    }
+
+    const normalized = entries.map((entry: any) => ({
+      playerId: Number(entry.playerId),
+      isStarting: entry.isStarting !== false,
+    }));
+    if (normalized.some((entry) => !Number.isInteger(entry.playerId))) {
+      return res.status(400).json({ message: "Jogador inválido." });
+    }
+
+    const data = await service.replaceForMatch(matchId, normalized);
+    return res.json(data);
+  });
 }

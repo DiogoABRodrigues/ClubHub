@@ -1,7 +1,7 @@
 import { redis } from "../config/redis";
 import AppSettings from "../models/AppSettings";
 
-const CACHE_KEY = "app:settings:notifications_enabled";
+const CACHE_KEY = "app:settings:key:notifications_enabled";
 
 export async function getNotificationsEnabled(): Promise<boolean> {
   const cached = await redis.get(CACHE_KEY);
@@ -18,8 +18,4 @@ export async function getNotificationsEnabled(): Promise<boolean> {
   await redis.set(CACHE_KEY, enabled ? "true" : "false");
 
   return enabled;
-}
-
-export async function invalidateNotificationsCache() {
-  await redis.del(CACHE_KEY);
 }

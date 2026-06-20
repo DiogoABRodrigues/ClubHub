@@ -1,8 +1,9 @@
 import cron from "node-cron";
+import { Op } from "sequelize";
 import Match from "../models/Match";
 import { pushService } from "../services/push.service";
 import deviceService from "../services/device.service";
-import { teamConfig, getEnabledCategories } from "../config/teamConfig";
+import { getEnabledCategories } from "../config/teamConfig";
 import { getNotificationsEnabled } from "../utils/getNotificationsEnabled";
 
 export const startMatchReminderJob = () => {
@@ -10,39 +11,43 @@ export const startMatchReminderJob = () => {
     "30 10 * * *",
     async () => {
       try {
-        const settings = await getNotificationsEnabled();
-        if (!settings) return;
+        if (!(await getNotificationsEnabled())) return;
 
         const today = new Date().toISOString().split("T")[0];
         const enabledCategories = getEnabledCategories();
+        const matches = await Match.findAll({
+          attributes: ["category"],
+          where: {
+            date: today,
+            status: "upcoming",
+            category: {
+              [Op.in]: enabledCategories.map((category) => category.category),
+            },
+          },
+          raw: true,
+        });
+        const categoriesWithMatches = new Set(
+          matches.map((match) => match.category),
+        );
 
-        // Envia notificação separada por escalão, filtrando por categoria já na BD
-        for (const cfg of enabledCategories) {
-          const categoryMatches = await Match.findAll({
-            where: { date: today, status: "upcoming", category: cfg.category },
-          });
-          if (!categoryMatches.length) continue;
+        for (const config of enabledCategories) {
+          if (!categoriesWithMatches.has(config.category)) continue;
 
           const devices = await deviceService.getDevicesForMatchday(
-            cfg.category,
+            config.category,
           );
           if (!devices.length) continue;
 
           const title =
-            cfg.category === "over19"
+            config.category === "over19"
               ? "Dia de jogo!"
-              : `Dia de jogo, ${cfg.label}!`;
-          const body = `Hoje é dia de jogo! Não te esqueças de apoiar o ${cfg.teamName}!`;
+              : `Dia de jogo, ${config.label}!`;
+          const body = `Hoje é dia de jogo! Não te esqueças de apoiar o ${config.teamName}!`;
 
-          const response = await pushService.sendToDevices(devices, {
-            title,
-            body,
-          });
-          await pushService.handleReceipts(response);
-          console.log(`✅ Notificação de jogo enviada para ${cfg.label}`);
+          await pushService.sendToDevices(devices, { title, body });
         }
-      } catch (err) {
-        console.error("❌ Cron error:", err);
+      } catch (error) {
+        console.error("Erro no lembrete de jogo:", error);
       }
     },
     { timezone: "Europe/Lisbon" },

@@ -18,7 +18,7 @@ export const initSocket = (server: http.Server) => {
     perMessageDeflate: false,
   });
 
-  io.on("connection", (socket) => {
+  io.on("connection", (_socket) => {
     // não precisa joinMatch
   });
 

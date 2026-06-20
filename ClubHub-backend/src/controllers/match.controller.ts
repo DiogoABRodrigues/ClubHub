@@ -17,6 +17,21 @@ export default class MatchController {
     res.json(data);
   });
 
+  static getSummariesBySeasonId = asyncHandler(
+    async (req: Request, res: Response) => {
+      const seasonId = Number(req.params.seasonId);
+      const category = String(req.query.category ?? "over19");
+      const data = await service.getSummariesBySeasonId(seasonId, category);
+      res.json(data);
+    },
+  );
+
+  static getById = asyncHandler(async (req: Request, res: Response) => {
+    const data = await service.getById(Number(req.params.id));
+    if (!data) return res.status(404).json({ message: "Jogo não encontrado" });
+    return res.json(data);
+  });
+
   static getByCurrentSeasonId = asyncHandler(async (req: Request, res: Response) => {
     const category = String(req.query.category ?? "over19");
     const data = await service.getByCurrentSeasonId(category);

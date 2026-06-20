@@ -8,8 +8,10 @@ const router = Router();
 // GET (sem restrição)
 router.get("/", MatchController.getAll);
 router.get("/season/:seasonId", MatchController.getBySeasonId);
+router.get("/season/:seasonId/summaries", MatchController.getSummariesBySeasonId);
 router.get("/current", MatchController.getByCurrentSeasonId);
 router.get("/by-competition/:competitionId", MatchController.getByCompetitionId);
+router.get("/:id", MatchController.getById);
 
 // ADMIN ONLY
 router.post(

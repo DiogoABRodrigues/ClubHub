@@ -3,125 +3,125 @@ import Match from "../models/Match";
 import MatchService from "./match.service";
 import { pushService } from "./push.service";
 import deviceService from "./device.service";
+import type { CategoryKey } from "./device.service";
 import spamGuard from "../utils/eventSpamGuard";
 import { buildEventKey } from "../utils/buildEventKey";
-import cache from "../services/cache.service";
-import { CacheKeys } from "../cache/keys";
-import socketService from "./socket.service";
 import Player from "../models/Player";
 import { teamConfig } from "../config/teamConfig";
 import { getNotificationsEnabled } from "../utils/getNotificationsEnabled";
+import { sequelize } from "../config/database";
+import { AppError } from "../errors/AppError";
 
 class MatchEventService {
   private matchService = new MatchService();
 
   async createEvent(matchId: number, data: any) {
     const key = buildEventKey(data, matchId);
+    if (await spamGuard.isDuplicate(key)) return null;
 
-    if (await spamGuard.isDuplicate(key)) {
-      return null;
-    }
+    const { event, match } = await sequelize.transaction(async (transaction) => {
+      const match = await Match.findByPk(matchId, {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
+      if (!match) throw new AppError("Match not found", 404);
 
-    const event = await MatchEvent.create({ ...data, matchId });
-
-    socketService.emitMatchEvent(matchId, event);
-
-    const match = await Match.findByPk(matchId);
-
-    if (match?.seasonId != null) {
-      await cache.del(
-        CacheKeys.matches.bySeason(match.seasonId, match.category ?? "over19"),
+      const event = await MatchEvent.create(
+        { ...data, matchId },
+        { transaction },
       );
-    }
+      await this.recalculateScore(match, transaction);
+      return { event, match };
+    });
 
-    const scoreChanged = await this.updateMatchScore(match, event);
-
-    // Se o resultado foi alterado (golo), reenvia o jogo completo e
-    // atualizado via socket, para todos os clientes terem feedback imediato
-    // sem dependerem de um segundo PATCH manual do admin.
-    if (scoreChanged) {
-      await this.matchService.refreshAndBroadcast(matchId);
-    }
-
-    await this.notify(event, "create", match ?? undefined);
-
+    await this.matchService.refreshAndBroadcast(matchId);
+    await this.notify(event, "create", match);
     return event;
   }
 
-  private async updateMatchScore(match: Match | null, event: any): Promise<boolean> {
-    if (event.type !== "goal") return false;
-
-    if (!match) return false;
-
-    let [home, away] = (match.result ?? "0-0").split("-").map(Number);
-
-    const isHome = match.homeOrAway === "C";
-    const isForUs = !event.isOpponent;
-
-    if (isForUs && isHome) home++;
-    else if (isForUs && !isHome) away++;
-    else if (!isForUs && isHome) away++;
-    else home++;
-
-    const newResult = `${home}-${away}`;
-
-    await match.update({ result: newResult });
-
-    return true;
-  }
-
   async updateEvent(eventId: number, data: any) {
-    const event = await MatchEvent.findByPk(eventId);
-    if (!event) return null;
+    const { event, match } = await sequelize.transaction(async (transaction) => {
+      const event = await MatchEvent.findByPk(eventId, {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
+      if (!event) throw new AppError("Event not found", 404);
 
-    await event.update(data);
+      const match = await Match.findByPk(event.matchId, {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
+      if (!match) throw new AppError("Match not found", 404);
 
-    const match = await Match.findByPk(event.matchId);
+      await event.update(data, { transaction });
+      await this.recalculateScore(match, transaction);
+      return { event, match };
+    });
 
-    if (match?.seasonId != null) {
-      await cache.del(
-        CacheKeys.matches.bySeason(match.seasonId, match.category ?? "over19"),
-      );
-    }
-
-    socketService.emitMatchEvent(event.matchId, event);
-
+    await this.matchService.refreshAndBroadcast(match.id);
     return event;
   }
 
   async deleteEvent(eventId: number) {
-    const event = await MatchEvent.findByPk(eventId);
-    if (!event) return null;
+    const { event, match } = await sequelize.transaction(async (transaction) => {
+      const event = await MatchEvent.findByPk(eventId, {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
+      if (!event) throw new AppError("Event not found", 404);
 
-    await MatchEvent.destroy({ where: { id: eventId } });
+      const match = await Match.findByPk(event.matchId, {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
+      if (!match) throw new AppError("Match not found", 404);
 
-    const match = await Match.findByPk(event.matchId);
+      await event.destroy({ transaction });
+      await this.recalculateScore(match, transaction);
+      return { event, match };
+    });
 
-    if (match?.seasonId != null) {
-      await cache.del(
-        CacheKeys.matches.bySeason(match.seasonId, match.category ?? "over19"),
-      );
+    await this.matchService.refreshAndBroadcast(match.id);
+    if (match.status !== "finished") {
+      await this.notify(event, "delete", match);
     }
-
-    if (match?.status !== "finished") {
-      await this.notify(event, "delete", match ?? undefined);
-    }
-
-    socketService.emitMatchEvent(event.matchId, event);
-
     return true;
   }
 
-  async notify(event: MatchEvent, action: "create" | "delete", match?: Match) {
+  private async recalculateScore(match: Match, transaction: any) {
+    const goals = await MatchEvent.findAll({
+      attributes: ["isOpponent", "isOwnGoal"],
+      where: { matchId: match.id, type: "goal" },
+      transaction,
+    });
 
-    const settings = await getNotificationsEnabled();
-    if (!settings) return;
+    let ourGoals = 0;
+    let opponentGoals = 0;
+    for (const goal of goals) {
+      const goalForUs = goal.isOwnGoal ? goal.isOpponent : !goal.isOpponent;
+      if (goalForUs) ourGoals += 1;
+      else opponentGoals += 1;
+    }
 
-    const category = (match as any)?.category ?? "over19";
-    const categoryLabel = this._getCategoryLabel(category);
+    const result =
+      match.homeOrAway === "C"
+        ? `${ourGoals}-${opponentGoals}`
+        : `${opponentGoals}-${ourGoals}`;
+    await match.update({ result }, { transaction });
+  }
 
+  private async notify(
+    event: MatchEvent,
+    action: "create" | "delete",
+    match: Match,
+  ) {
+    if (!(await getNotificationsEnabled())) return;
+
+    const category = (match.category ?? "over19") as CategoryKey;
     const devices = await deviceService.getDevicesForGoals(category);
+    if (!devices.length) return;
 
+    const categoryLabel = this.getCategoryLabel(category);
     let title = "";
     let body = "";
 
@@ -129,56 +129,37 @@ class MatchEventService {
       title = "Correção!";
       body = `${categoryLabel}Evento de ${event.type} aos ${event.minute}' foi corrigido.`;
     } else {
-      let playerName: string;
-
-      if (event.isOpponent) {
-        playerName = "Adversário";
-      } else {
-        const player = await Player.findByPk(event.playerId || -1);
-        playerName = player ? player.name : teamConfig.name;
+      let playerName = "Adversário";
+      if (!event.isOpponent) {
+        const player = event.playerId
+          ? await Player.findByPk(event.playerId, { attributes: ["name"] })
+          : null;
+        playerName = player?.name ?? teamConfig.name;
       }
 
-      switch (event.type) {
-        case "goal":
-          title = category === "over19" ? "Golo!" : `Golo, ${categoryLabel}!`;
-
-          const freshMatch = await Match.findByPk(match!.id);
-
-          const result = freshMatch?.result ? `\n[${freshMatch.result}]` : "";
-
-          body = `${playerName} - ${event.minute}'${result}`;
-          break;
-
-        case "red_card":
-          title =
-            category === "over19"
-              ? "Vermelho 🟥"
-              : `Vermelho 🟥, ${categoryLabel}!`;
-
-          body = `${playerName} - ${event.minute}'`;
-          break;
-
-        default:
-          return;
+      if (event.type === "goal") {
+        title = category === "over19" ? "Golo!" : `Golo, ${categoryLabel}!`;
+        body = `${playerName} - ${event.minute}'\n[${match.result}]`;
+      } else if (event.type === "red_card") {
+        title =
+          category === "over19"
+            ? "Vermelho 🟥"
+            : `Vermelho 🟥, ${categoryLabel}!`;
+        body = `${playerName} - ${event.minute}'`;
+      } else {
+        return;
       }
     }
 
-    if (!devices.length) return;
-
-    const response = await pushService.sendToDevices(devices, {
-      title,
-      body,
-    });
-
-    await pushService.handleReceipts(response);
+    await pushService.sendToDevices(devices, { title, body });
   }
 
-  private _getCategoryLabel(category: string): string {
+  private getCategoryLabel(category: string): string {
     if (category === "over19") return "";
-
-    const cfg = teamConfig.categories.find((c) => c.category === category);
-
-    return cfg ? cfg.label : category;
+    const config = teamConfig.categories.find(
+      (item) => item.category === category,
+    );
+    return config ? `${config.label}: ` : `${category}: `;
   }
 }
 

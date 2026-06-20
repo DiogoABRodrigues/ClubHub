@@ -6,6 +6,12 @@ import { authorizeRoles } from "../middlewares/authorizeRoles";
 const router = Router();
 
 router.get("/", LineupController.getAll);
+router.put(
+  "/match/:matchId",
+  authMiddleware,
+  authorizeRoles("admin"),
+  LineupController.replaceForMatch,
+);
 router.post(
   "/",
   authMiddleware,
