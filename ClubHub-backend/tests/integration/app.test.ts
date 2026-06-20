@@ -84,6 +84,13 @@ describe("API HTTP", () => {
     expect(response.body).toHaveProperty("message");
   });
 
+  it("protege dados de dispositivos contra acesso por ID", async () => {
+    const response = await request(app).get("/api/device/12345678abcdefgh");
+
+    expect(response.status).toBe(403);
+    expect(response.body.message).toBe("Dispositivo nao autorizado");
+  });
+
   it("aceita JSON até ao limite configurado e rejeita payloads excessivos", async () => {
     const response = await request(app)
       .post("/api/auth/refresh")

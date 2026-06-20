@@ -1,34 +1,7 @@
 import { Request, Response } from "express";
-import path from "path";
-import { randomUUID } from "crypto";
 import feedbackService from "../services/feedback.service";
-import { supabase } from "../lib/supabase";
 import { asyncHandler } from "../utils/asyncHandler";
-
-const BUCKET = process.env.SUPABASE_BUCKET ?? "uploads";
-
-async function uploadFeedbackImage(
-  req: Request & { file?: Express.Multer.File },
-  type: "suggestion" | "bug",
-): Promise<string | null> {
-  if (!req.file) return null;
-
-  const ext = path.extname(req.file.originalname).toLowerCase() || ".jpg";
-  const prefix = type === "suggestion" ? "sugestao" : "bug";
-  const filename = `${prefix}_${randomUUID()}${ext}`;
-
-  const { error } = await supabase.storage
-    .from(BUCKET)
-    .upload(filename, req.file.buffer, {
-      contentType: req.file.mimetype,
-      upsert: false,
-    });
-
-  if (error) throw new Error(`Supabase upload falhou: ${error.message}`);
-
-  const { data } = supabase.storage.from(BUCKET).getPublicUrl(filename);
-  return data.publicUrl;
-}
+import { uploadToSupabase } from "../middlewares/upload";
 
 class FeedbackController {
   /** POST /api/feedback - público */
@@ -40,13 +13,27 @@ class FeedbackController {
         .status(400)
         .json({ message: "Campo 'type' inválido. Use 'suggestion' ou 'bug'." });
     }
-    if (!message || typeof message !== "string" || !message.trim()) {
+    if (
+      !message ||
+      typeof message !== "string" ||
+      !message.trim() ||
+      message.length > 5000
+    ) {
       return res
         .status(400)
         .json({ message: "Campo 'message' é obrigatório." });
     }
 
-    const imageUrl = await uploadFeedbackImage(req, type);
+    if (
+      deviceId !== undefined &&
+      deviceId !== null &&
+      (typeof deviceId !== "string" ||
+        !/^[a-zA-Z0-9_-]{8,128}$/.test(deviceId))
+    ) {
+      return res.status(400).json({ message: "Device ID invalido." });
+    }
+
+    const imageUrl = await uploadToSupabase(req);
 
     const feedback = await feedbackService.create({
       type,
