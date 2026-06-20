@@ -10,6 +10,7 @@ class NewsService {
     await Promise.all([
       cache.del(CacheKeys.news.last10),
       cache.del(CacheKeys.news.all),
+      cache.clearPattern(CacheKeys.news.pagesPattern),
     ]);
   }
 
@@ -39,10 +40,33 @@ class NewsService {
     await pushService.handleReceipts(response);
   }
 
-  async getAll() {
-    return cache.remember(CacheKeys.news.all, () =>
-      News.findAll({ order: [["publishedAt", "DESC"]] }),
-    );
+  async getAll(page = 1, limit = 10) {
+    const safePage = Number.isFinite(page) ? Math.max(1, Math.trunc(page)) : 1;
+    const safeLimit = Number.isFinite(limit)
+      ? Math.min(30, Math.max(1, Math.trunc(limit)))
+      : 10;
+    const key = CacheKeys.news.page(safePage, safeLimit);
+
+    return cache.remember(key, async () => {
+      const { rows, count } = await News.findAndCountAll({
+        order: [
+          ["publishedAt", "DESC"],
+          ["id", "DESC"],
+        ],
+        limit: safeLimit,
+        offset: (safePage - 1) * safeLimit,
+      });
+      const totalPages = Math.ceil(count / safeLimit);
+
+      return {
+        items: rows,
+        page: safePage,
+        limit: safeLimit,
+        total: count,
+        totalPages,
+        hasNextPage: safePage < totalPages,
+      };
+    });
   }
 
   async getLast10() {

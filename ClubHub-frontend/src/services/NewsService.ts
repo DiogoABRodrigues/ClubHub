@@ -1,14 +1,20 @@
 import { api, publicApi } from "./api";
 import { News } from "../models/News";
 
-export const NewsService = {
-  getAll: async (): Promise<News[]> => {
-    const { data } = await publicApi.get("/news");
-    return data;
-  },
+export type PaginatedNews = {
+  items: News[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+};
 
-  getLast10: async (): Promise<News[]> => {
-    const { data } = await publicApi.get("/news/last10");
+export const NewsService = {
+  getPage: async (page = 1, limit = 10): Promise<PaginatedNews> => {
+    const { data } = await publicApi.get("/news", {
+      params: { page, limit },
+    });
     return data;
   },
 

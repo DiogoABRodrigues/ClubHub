@@ -1,14 +1,21 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { View, Text, ScrollView } from "react-native";
-import { RefreshControl } from "react-native";
+import React, { useCallback, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  View,
+} from "react-native";
 import { styles } from "./News.styles";
 import { NewsCard } from "../../components/NewsCard";
 import { EmptyState } from "../../components/EmptyState";
 import { useNews } from "../../hooks/useNews";
 import { COLORS } from "../../theme/colors";
+import { News as NewsModel } from "../../models/News";
 
 export const News = ({ navigation }: any) => {
-  const { news, loading, refreshNews } = useNews();
+  const { news, loading, loadingMore, hasMore, loadMore, refreshNews } =
+    useNews();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
@@ -20,26 +27,22 @@ export const News = ({ navigation }: any) => {
     }
   }, [refreshNews]);
 
-  const goToNewsDetail = useCallback(
-    (id: number) => navigation.navigate("NewsDetail", { id }),
+  const renderItem = useCallback(
+    ({ item }: { item: NewsModel }) => (
+      <NewsCard
+        news={item}
+        onPress={() => navigation.navigate("NewsDetail", { id: item.id })}
+      />
+    ),
     [navigation],
   );
 
-  const renderedNews = useMemo(
-    () =>
-      news.map((item) => (
-        <NewsCard
-          key={item.id}
-          news={item}
-          onPress={() => goToNewsDetail(item.id)}
-        />
-      )),
-    [news, goToNewsDetail],
-  );
+  const handleEndReached = useCallback(() => {
+    if (hasMore && !loadingMore) void loadMore();
+  }, [hasMore, loadingMore, loadMore]);
 
   return (
     <View style={styles.container}>
-      {/* HEADER */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <View>
@@ -49,9 +52,13 @@ export const News = ({ navigation }: any) => {
         </View>
       </View>
 
-      {/* CONTENT */}
-      <ScrollView
+      <FlatList
+        data={news}
+        renderItem={renderItem}
+        keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.content}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.4}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -60,18 +67,25 @@ export const News = ({ navigation }: any) => {
             tintColor={COLORS.primary}
           />
         }
-      >
-        {!loading && news.length === 0 ? (
-          <EmptyState
-            title="Não foi possível encontrar informação"
-            message="Por favor tenta novamente mais tarde."
-            onRetry={onRefresh}
-            retryLabel="Atualizar"
-          />
-        ) : (
-          <View style={styles.newsList}>{renderedNews}</View>
-        )}
-      </ScrollView>
+        ListEmptyComponent={
+          !loading ? (
+            <EmptyState
+              title="Não foi possível encontrar informação"
+              message="Por favor tenta novamente mais tarde."
+              onRetry={onRefresh}
+              retryLabel="Atualizar"
+            />
+          ) : null
+        }
+        ListFooterComponent={
+          loadingMore ? (
+            <ActivityIndicator
+              style={{ paddingVertical: 20 }}
+              color={COLORS.primary}
+            />
+          ) : null
+        }
+      />
     </View>
   );
 };

@@ -14,6 +14,7 @@ jest.mock("../../src/services/api", () => ({
 import { api, publicApi } from "../../src/services/api";
 import { HelperService } from "../../src/services/HelperService";
 import { MatchService } from "../../src/services/MatchService";
+import { NewsService } from "../../src/services/NewsService";
 import { SeasonService } from "../../src/services/SeasonService";
 import { TeamService } from "../../src/services/TeamService";
 
@@ -53,6 +54,18 @@ describe("contratos dos serviços HTTP", () => {
     ).resolves.toEqual({ id: 8, status: "finished" });
     expect(mockedApi.patch).toHaveBeenCalledWith("/matches/8", {
       status: "finished",
+    });
+  });
+
+  it("consulta notícias com paginação", async () => {
+    mockedPublicApi.get.mockResolvedValueOnce({
+      data: { items: [], page: 2, hasNextPage: false },
+    });
+
+    await NewsService.getPage(2, 10);
+
+    expect(mockedPublicApi.get).toHaveBeenCalledWith("/news", {
+      params: { page: 2, limit: 10 },
     });
   });
 

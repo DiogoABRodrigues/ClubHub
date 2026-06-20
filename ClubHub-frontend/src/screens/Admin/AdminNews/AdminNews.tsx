@@ -1,5 +1,13 @@
 import React, { useCallback, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert, RefreshControl } from "react-native";
+import {
+  ActivityIndicator,
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+  RefreshControl,
+} from "react-native";
 import { Plus, Trash2 } from "lucide-react-native";
 
 import { useNews } from "../../../hooks/useNews";
@@ -8,7 +16,15 @@ import { NewsCard } from "../../../components/NewsCard";
 import { styles } from "./AdminNews.styles";
 import { useAuth } from "../../../contexts/AuthContext";
 export const AdminNews = ({ navigation }: { navigation: any }) => {
-  const { news, loading, deleteNews, refreshNews } = useNews();
+  const {
+    news,
+    loading,
+    loadingMore,
+    hasMore,
+    loadMore,
+    deleteNews,
+    refreshNews,
+  } = useNews();
   const { isAdmin } = useAuth();
 
   const [refreshing, setRefreshing] = useState(false);
@@ -102,6 +118,10 @@ export const AdminNews = ({ navigation }: { navigation: any }) => {
         data={news}
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.content}
+        onEndReached={() => {
+          if (hasMore && !loadingMore) void loadMore();
+        }}
+        onEndReachedThreshold={0.4}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -118,6 +138,14 @@ export const AdminNews = ({ navigation }: { navigation: any }) => {
             <Plus width={16} height={16} color="#fff" />
             <Text style={styles.addButtonText}>Adicionar</Text>
           </TouchableOpacity>
+        }
+        ListFooterComponent={
+          loadingMore ? (
+            <ActivityIndicator
+              style={{ paddingVertical: 20 }}
+              color={COLORS.primary}
+            />
+          ) : null
         }
         renderItem={({ item }) => (
           <View style={styles.newsWrapper}>

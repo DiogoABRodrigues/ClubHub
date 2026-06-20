@@ -1,35 +1,42 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useMemo } from "react";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { NewsService } from "../services/NewsService";
 import { News } from "../models/News";
+
+const NEWS_PAGE_SIZE = 10;
 
 export const useNews = () => {
   const queryClient = useQueryClient();
 
-  // ─────────────────────────────
-  // GET NEWS
-  // ─────────────────────────────
-  const newsQuery = useQuery({
+  const newsQuery = useInfiniteQuery({
     queryKey: ["news"],
-    queryFn: NewsService.getLast10,
+    queryFn: ({ pageParam }) =>
+      NewsService.getPage(pageParam, NEWS_PAGE_SIZE),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.hasNextPage ? lastPage.page + 1 : undefined,
     staleTime: Infinity,
-    select: (data: News[]) => data,
   });
 
-  // ─────────────────────────────
-  // DELETE
-  // ─────────────────────────────
+  const news = useMemo(
+    () => newsQuery.data?.pages.flatMap((page) => page.items) ?? [],
+    [newsQuery.data],
+  );
+
+  const refreshNews = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: ["news"] }),
+    [queryClient],
+  );
+
   const deleteNews = useMutation({
     mutationFn: (id: number) => NewsService.delete(id),
-    onSuccess: (_, id) => {
-      queryClient.setQueryData<News[]>(["news"], (old) =>
-        old?.filter((n) => n.id !== id),
-      );
-    },
+    onSuccess: refreshNews,
   });
 
-  // ─────────────────────────────
-  // CREATE
-  // ─────────────────────────────
   const createNews = useMutation({
     mutationFn: ({
       news,
@@ -38,18 +45,9 @@ export const useNews = () => {
       news: Partial<News>;
       imageUri?: string;
     }) => NewsService.create(news as News, imageUri),
-
-    onSuccess: (newNews) => {
-      queryClient.setQueryData<News[]>(["news"], (old) => [
-        newNews,
-        ...(old ?? []),
-      ]);
-    },
+    onSuccess: refreshNews,
   });
 
-  // ─────────────────────────────
-  // UPDATE
-  // ─────────────────────────────
   const updateNews = useMutation({
     mutationFn: ({
       id,
@@ -60,19 +58,16 @@ export const useNews = () => {
       news: Partial<News>;
       imageUri?: string;
     }) => NewsService.update(id, news as News, imageUri),
-
-    onSuccess: (updatedNews) => {
-      queryClient.setQueryData<News[]>(["news"], (old) =>
-        old?.map((n) => (n.id === updatedNews.id ? updatedNews : n)),
-      );
-    },
+    onSuccess: refreshNews,
   });
 
   return {
-    news: newsQuery.data ?? [],
+    news,
     loading: newsQuery.isLoading,
-    refreshNews: () => queryClient.invalidateQueries({ queryKey: ["news"] }),
-
+    loadingMore: newsQuery.isFetchingNextPage,
+    hasMore: newsQuery.hasNextPage,
+    loadMore: newsQuery.fetchNextPage,
+    refreshNews,
     deleteNews: deleteNews.mutateAsync,
     createNews: createNews.mutateAsync,
     updateNews: updateNews.mutateAsync,
