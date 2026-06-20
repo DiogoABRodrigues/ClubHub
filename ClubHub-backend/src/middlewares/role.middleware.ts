@@ -4,7 +4,12 @@ export function roleMiddleware(roles: string[]) {
   return (req: Request, res: Response, next: NextFunction) => {
     const user = (req as any).user;
 
-    if (!user || !roles.includes(user.role)) {
+    const allowed =
+      user &&
+      (roles.includes(user.role) ||
+        (user.role === "super_admin" && roles.includes("admin")));
+
+    if (!allowed) {
       return res.status(403).json({ message: "Sem permissões" });
     }
 

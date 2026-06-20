@@ -8,7 +8,11 @@ export const authorizeRoles = (...roles: string[]) => {
       return res.status(401).json({ message: "Não autenticado" });
     }
 
-    if (!roles.includes(user.role)) {
+    const allowed =
+      roles.includes(user.role) ||
+      (user.role === "super_admin" && roles.includes("admin"));
+
+    if (!allowed) {
       return res.status(403).json({ message: "Sem permissão para aceder" });
     }
 

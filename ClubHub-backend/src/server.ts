@@ -13,6 +13,7 @@ import { scrapeTeamPlayers } from "./scrapers/playersScraper";
 import { scrapeAllTeams } from "./scrapers/allTeamsScraper";
 import { scrapeTeamStats } from "./scrapers/statsScraper";
 import { closeSharedBrowser } from "./utils/browser";
+import { env } from "./config/env";
 
 async function restartBrowser() {
   await closeSharedBrowser();
@@ -20,16 +21,11 @@ async function restartBrowser() {
   await new Promise((r) => setTimeout(r, 2000));
 }
 
-if (
-  !process.env.JWT_ACCESS_SECRET ||
-  process.env.JWT_ACCESS_SECRET.length < 32
-) {
-  throw new Error("JWT_ACCESS_SECRET fraco ou ausente");
-}
-
-const PORT = process.env.PORT;
-
 const server = http.createServer(app);
+server.requestTimeout = 30_000;
+server.headersTimeout = 35_000;
+server.keepAliveTimeout = 5_000;
+server.maxRequestsPerSocket = 1_000;
 
 startMatchReminderJob();
 initAssociations();
@@ -52,8 +48,8 @@ async function startServer() {
     //await redis.flushDb();
     console.log("DB ligada");
 
-    server.listen(PORT, async () => {
-      console.log(`Servidor a correr em ${PORT}`);
+    server.listen(env.PORT, async () => {
+      console.log(`Servidor a correr em ${env.PORT}`);
       await warmupBrowser();
     });
   } catch (error) {
@@ -63,3 +59,35 @@ async function startServer() {
 }
 
 void startServer();
+
+let shuttingDown = false;
+
+async function shutdown(signal: string) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  console.log(`A encerrar (${signal})...`);
+
+  const forceExit = setTimeout(() => process.exit(1), 10_000);
+  forceExit.unref();
+
+  server.close(async () => {
+    await Promise.allSettled([
+      closeSharedBrowser(),
+      redis.isOpen ? redis.quit() : Promise.resolve(),
+      sequelize.close(),
+    ]);
+    clearTimeout(forceExit);
+    process.exit(0);
+  });
+}
+
+process.on("SIGTERM", () => void shutdown("SIGTERM"));
+process.on("SIGINT", () => void shutdown("SIGINT"));
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled rejection:", reason);
+  void shutdown("unhandledRejection");
+});
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught exception:", error);
+  void shutdown("uncaughtException");
+});

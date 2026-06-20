@@ -22,6 +22,10 @@ describe("authMiddleware", () => {
     const token = jwt.sign(
       { id: 9, role: "admin" },
       process.env.JWT_ACCESS_SECRET!,
+      {
+        issuer: "clubhub-api",
+        audience: "clubhub-app",
+      },
     );
     const req = { headers: { authorization: `Bearer ${token}` } } as any;
     const next = vi.fn();

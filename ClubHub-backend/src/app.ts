@@ -26,49 +26,88 @@ import rateLimit from "express-rate-limit";
 import compression from "compression";
 import helperRoutes from "./routes/helper.routes";
 import { notFoundHandler, errorHandler } from "./middlewares/errorHandler";
+import { env, isAllowedOrigin } from "./config/env";
+import { requestSecurity } from "./middlewares/requestSecurity";
+import { randomUUID } from "crypto";
 
 // ─── Logger ───────────────────────────────────────────────────────────────────
 export const logger = pino({
   level: process.env.LOG_LEVEL ?? "info",
-  ...(process.env.NODE_ENV !== "production" && {
+  redact: {
+    paths: [
+      "req.headers.authorization",
+      "req.headers.cookie",
+      "req.body.password",
+      "req.body.refreshToken",
+      "res.headers.set-cookie",
+    ],
+    censor: "[REDACTED]",
+  },
+  ...(env.NODE_ENV !== "production" && {
     transport: { target: "pino-pretty" },
   }),
 });
 
 const app = express();
+app.disable("x-powered-by");
+app.set("trust proxy", env.TRUST_PROXY);
 
 // ─── Segurança: headers HTTP ──────────────────────────────────────────────────
-app.use(helmet());
+app.use(
+  helmet({
+    referrerPolicy: { policy: "no-referrer" },
+    strictTransportSecurity: env.IS_PRODUCTION
+      ? { maxAge: 31_536_000, includeSubDomains: true, preload: true }
+      : false,
+  }),
+);
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
 // Apps móveis nativas (Android/iOS) não enviam header Origin → permitimos
 // pedidos sem Origin. Origens de browser têm de estar em ALLOWED_ORIGINS.
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "")
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean);
-
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      if (isAllowedOrigin(origin)) {
         callback(null, true);
         return;
       }
 
-      callback(null, false);
+      callback(new Error("Origem CORS nao permitida"));
     },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    credentials: true,
+    allowedHeaders: [
+      "Authorization",
+      "Content-Type",
+      "X-Request-Id",
+      "X-Device-Token",
+    ],
+    credentials: false,
+    maxAge: 600,
   }),
 );
 
 // ─── Body / Compressão ────────────────────────────────────────────────────────
 app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: false, limit: "100kb" }));
+app.use(requestSecurity);
 app.use(compression());
 
 // ─── HTTP request logging ─────────────────────────────────────────────────────
-app.use(pinoHttp({ logger }));
+app.use(
+  pinoHttp({
+    logger,
+    genReqId: (req, res) => {
+      const supplied = req.headers["x-request-id"];
+      const id =
+        typeof supplied === "string" && /^[a-zA-Z0-9._-]{1,100}$/.test(supplied)
+          ? supplied
+          : randomUUID();
+      res.setHeader("X-Request-Id", id);
+      return id;
+    },
+  }),
+);
 
 // Endpoint leve para health checks da pipeline e da infraestrutura.
 app.get("/health", (_req, res) => {
@@ -126,8 +165,6 @@ const wakeUpLimiter = rateLimit({
 });
 
 // ─── trust proxy (Render / Railway / etc.) ────────────────────────────────────
-app.set("trust proxy", 1);
-
 // ─── Rotas ───────────────────────────────────────────────────────────────────
 // Rota dedicada para o cron de wake-up — fora do authLimiter (10 req/min),
 // que poderia conflituar com pings frequentes (4x/hora).
@@ -136,7 +173,16 @@ app.get("/api/wake-up", wakeUpLimiter, (req, res, next) =>
 );
 
 app.use("/api", limiter);
-app.use("/api/auth", authLimiter, authRoutes);
+app.use(
+  "/api/auth",
+  authLimiter,
+  (_req, res, next) => {
+    res.set("Cache-Control", "no-store");
+    res.set("Pragma", "no-cache");
+    next();
+  },
+  authRoutes,
+);
 app.use("/api/scrape", scraperLimiter, scraperRoutes);
 app.use("/api/device", deviceLimiter, deviceRoutes);
 app.use("/api/teams", teamRoutes);

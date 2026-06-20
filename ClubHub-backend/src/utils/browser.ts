@@ -30,8 +30,6 @@ async function createBrowser(): Promise<Browser> {
       "--disable-gpu",
       "--no-sandbox",
       "--disable-setuid-sandbox",
-      "--disable-web-security",
-      "--disable-features=IsolateOrigins,site-per-process",
       "--blink-settings=imagesEnabled=false", // não carrega imagens → muito mais rápido
     ],
     executablePath: cachedExecutablePath ?? (await getExecutablePath()),
