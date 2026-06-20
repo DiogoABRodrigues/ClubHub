@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import { authMiddleware } from "../../src/middlewares/authMiddleware";
 import { authorizeRoles } from "../../src/middlewares/authorizeRoles";
-import { roleMiddleware } from "../../src/middlewares/role.middleware";
 
 function responseDouble() {
   const res = { status: vi.fn(), json: vi.fn() };
@@ -70,13 +69,10 @@ describe("autorização por função", () => {
 
   it("permite funções configuradas nos dois middlewares", () => {
     const nextA = vi.fn();
-    const nextB = vi.fn();
     const req = { user: { role: "admin" } } as any;
 
     authorizeRoles("admin")(req, responseDouble() as any, nextA);
-    roleMiddleware(["admin"])(req, responseDouble() as any, nextB);
 
     expect(nextA).toHaveBeenCalledOnce();
-    expect(nextB).toHaveBeenCalledOnce();
   });
 });

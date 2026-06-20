@@ -1,25 +1,13 @@
+import http from "http";
 import app from "./app";
 import { sequelize } from "./config/database";
 import { connectRedis, redis } from "./config/redis";
 import { initAssociations } from "./models/associations";
 import { initSocket } from "./config/socket";
-import http from "http";
 import { startMatchReminderJob } from "./jobs/matchReminder.job";
 import { wakeUpBackend } from "./jobs/wake-up";
-import { warmupBrowser } from "./utils/browser";
-import { scrapeTeamMatches } from "./scrapers/matchScraper";
-import { scrapeStandings } from "./scrapers/standingsScraper";
-import { scrapeTeamPlayers } from "./scrapers/playersScraper";
-import { scrapeAllTeams } from "./scrapers/allTeamsScraper";
-import { scrapeTeamStats } from "./scrapers/statsScraper";
-import { closeSharedBrowser } from "./utils/browser";
+import { warmupBrowser, closeSharedBrowser } from "./utils/browser";
 import { env } from "./config/env";
-
-async function restartBrowser() {
-  await closeSharedBrowser();
-  // pequena pausa para o processo limpar memória
-  await new Promise((r) => setTimeout(r, 2000));
-}
 
 const server = http.createServer(app);
 server.requestTimeout = 30_000;
@@ -27,26 +15,15 @@ server.headersTimeout = 35_000;
 server.keepAliveTimeout = 5_000;
 server.maxRequestsPerSocket = 1_000;
 
-startMatchReminderJob();
 initAssociations();
 initSocket(server);
-wakeUpBackend();
+startMatchReminderJob();
+if (env.IS_PRODUCTION) wakeUpBackend();
 
 async function startServer() {
   try {
     await sequelize.authenticate();
     await connectRedis();
-    //await sequelize.sync({ alter: true });
-    //await scrapeTeamPlayers();
-    //await scrapeTeamMatches();
-    //await scrapeStandings();
-    //await scrapeTeamStats();
-    //await scrapeAllTeams();
-
-    //wait restartBrowser();
-
-    //await redis.flushDb();
-    console.log("DB ligada");
 
     server.listen(env.PORT, async () => {
       console.log(`Servidor a correr em ${env.PORT}`);

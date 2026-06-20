@@ -23,7 +23,7 @@ router.post(
   "/allInfo",
   authMiddleware,
   authorizeRoles("admin"),
-  async (req, res) => {
+  async (_req, res) => {
     try {
       const categories = getEnabledCategories();
       const results: any = {};
