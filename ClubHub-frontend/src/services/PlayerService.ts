@@ -1,16 +1,16 @@
-import { api } from "./api";
+import { api, publicApi } from "./api";
 import { Player } from "../models/Player";
 
 export const PlayerService = {
   getAll: async (): Promise<Player[]> => {
-    const { data } = await api.get("/players");
+    const { data } = await publicApi.get("/players");
     return data;
   },
   getBySeasonId: async (
     seasonId: number,
     category: string = "over19",
   ): Promise<Player[]> => {
-    const { data } = await api.get(`/players/season/${seasonId}`, {
+    const { data } = await publicApi.get(`/players/season/${seasonId}`, {
       params: { category },
     });
     return data;
@@ -26,12 +26,12 @@ export const PlayerService = {
     return data;
   },
   getByCurrentSeasonId: async (): Promise<Player[]> => {
-    const { data } = await api.get("/players/current");
+    const { data } = await publicApi.get("/players/current");
     return data;
   },
   /** Todas as stats de todas as épocas - usado no PlayerCardModal */
   getAllStats: async (playerId: number): Promise<Player> => {
-    const { data } = await api.get(`/players/${playerId}/allstats`);
+    const { data } = await publicApi.get(`/players/${playerId}/allstats`);
     return data;
   },
   updatePlayer: async (

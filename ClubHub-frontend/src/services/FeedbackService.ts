@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { publicApi } from "./api";
 
 export type FeedbackType = "suggestion" | "bug";
 
@@ -32,7 +32,7 @@ export const FeedbackService = {
       } as any);
     }
 
-    await api.post("/feedback", formData, {
+    await publicApi.post("/feedback", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
   },

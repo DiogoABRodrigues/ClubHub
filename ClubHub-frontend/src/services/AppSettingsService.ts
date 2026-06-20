@@ -7,7 +7,7 @@ export const AppSettingsService = {
     return data;
   },
 
-  get: async (key: AppSettingsKey): Promise<boolean> => {
+  get: async (_key: AppSettingsKey): Promise<boolean> => {
     const { data } = await api.get(`/app-settings/settings`);
     return Boolean(data?.notificationsEnabled);
   },

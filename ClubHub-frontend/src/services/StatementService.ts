@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { api, publicApi } from "./api";
 import { Statement } from "../models/Statement";
 
 export const StatementService = {
@@ -16,7 +16,7 @@ export const StatementService = {
   },
 
   getActive: async (): Promise<Statement> => {
-    const { data } = await api.get("/statements/");
+    const { data } = await publicApi.get("/statements/");
     return data;
   },
 

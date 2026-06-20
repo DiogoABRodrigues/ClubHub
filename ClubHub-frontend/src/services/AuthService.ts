@@ -1,7 +1,7 @@
-import { api } from "./api";
+import { api, publicApi } from "./api";
 
 export async function login(userName: string, password: string) {
-  const response = await api.post("auth/login", {
+  const response = await publicApi.post("auth/login", {
     userName,
     password,
   });
@@ -10,18 +10,15 @@ export async function login(userName: string, password: string) {
 }
 
 export async function refreshToken(refreshToken: string) {
-  const response = await api.post("auth/refresh", {
+  const response = await publicApi.post("auth/refresh", {
     refreshToken,
   });
 
   return response.data;
 }
 
-export async function logout(userName: string, password: string) {
-  const response = await api.post("auth/logout", {
-    userName,
-    password,
-  });
+export async function logout() {
+  const response = await api.post("auth/logout");
 
   return response.data;
 }

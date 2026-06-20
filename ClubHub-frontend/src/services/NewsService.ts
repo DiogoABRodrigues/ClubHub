@@ -1,15 +1,14 @@
-import { api } from "./api";
+import { api, publicApi } from "./api";
 import { News } from "../models/News";
-import { File } from "expo-file-system";
 
 export const NewsService = {
   getAll: async (): Promise<News[]> => {
-    const { data } = await api.get("/news");
+    const { data } = await publicApi.get("/news");
     return data;
   },
 
   getLast10: async (): Promise<News[]> => {
-    const { data } = await api.get("/news/last10");
+    const { data } = await publicApi.get("/news/last10");
     return data;
   },
 

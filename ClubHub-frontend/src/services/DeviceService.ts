@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { publicApi } from "./api";
 import {
   getDeviceAccessToken,
   saveDeviceAccessToken,
@@ -35,7 +35,7 @@ export interface DevicePayload {
 export const DeviceService = {
   register: async (payload: DevicePayload): Promise<void> => {
     const currentToken = await getDeviceAccessToken();
-    const response = await api.post("/device", payload, {
+    const response = await publicApi.post("/device", payload, {
       headers: currentToken ? { "X-Device-Token": currentToken } : undefined,
     });
     if (response.data?.deviceAccessToken) {
@@ -48,14 +48,14 @@ export const DeviceService = {
     payload: Partial<Omit<DevicePayload, "id" | "pushToken" | "platform">>,
   ) => {
     const token = await getDeviceAccessToken();
-    await api.patch(`/device/${id}`, payload, {
+    await publicApi.patch(`/device/${id}`, payload, {
       headers: token ? { "X-Device-Token": token } : undefined,
     });
   },
 
   getById: async (id: string): Promise<DevicePayload> => {
     const token = await getDeviceAccessToken();
-    const response = await api.get(`/device/${id}`, {
+    const response = await publicApi.get(`/device/${id}`, {
       headers: token ? { "X-Device-Token": token } : undefined,
     });
     return response.data;

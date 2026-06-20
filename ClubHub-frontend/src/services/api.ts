@@ -1,14 +1,8 @@
 import axios from "axios";
-import { refreshToken } from "./AuthService";
 import { teamConfig } from "../config/teamConfig";
-import {
-  clearTokens,
-  getAccessToken,
-  getRefreshToken,
-  saveTokens,
-} from "../storage/auth";
+import { clearTokens, getRefreshToken, saveTokens } from "../storage/auth";
 
-const BACKEND_URI = teamConfig.backend_URL;
+const BASE_URL = `${teamConfig.backend_URL}/api/`;
 let memoryToken: string | null = null;
 let refreshPromise: Promise<string> | null = null;
 
@@ -16,53 +10,54 @@ export function setMemoryToken(token: string | null) {
   memoryToken = token;
 }
 
+export const publicApi = axios.create({
+  baseURL: BASE_URL,
+  timeout: 15000,
+});
+
 export const api = axios.create({
-  baseURL: BACKEND_URI + "/api/",
+  baseURL: BASE_URL,
   timeout: 15000,
 });
 
 export const scrapperApi = axios.create({
-  baseURL: BACKEND_URI + "/api/",
+  baseURL: BASE_URL,
   timeout: 300000,
 });
 
-api.interceptors.request.use(async (config) => {
-  const token = memoryToken ?? (await getAccessToken());
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+function attachAccessToken(config: any) {
+  if (memoryToken) {
+    config.headers.Authorization = `Bearer ${memoryToken}`;
   }
-
   return config;
-});
+}
 
-scrapperApi.interceptors.request.use(async (config) => {
-  const token = memoryToken ?? (await getAccessToken());
+api.interceptors.request.use(attachAccessToken);
+scrapperApi.interceptors.request.use(attachAccessToken);
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+async function refreshAccessToken(): Promise<string> {
+  const refresh = await getRefreshToken();
+  if (!refresh) throw new Error("Sem refresh token");
 
-  return config;
-});
+  const { data } = await publicApi.post("auth/refresh", {
+    refreshToken: refresh,
+  });
+  await saveTokens(data.accessToken, data.refreshToken);
+  setMemoryToken(data.accessToken);
+  return data.accessToken;
+}
 
-api.interceptors.response.use(
-  (res) => res,
-  async (error) => {
-    const original = error.config;
+function installRefreshInterceptor(client: typeof api) {
+  client.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const original = error.config;
+      if (error.response?.status !== 401 || !original || original._retry) {
+        return Promise.reject(error);
+      }
 
-    if (error.response?.status === 401 && !original._retry) {
       original._retry = true;
-
-      const refresh = await getRefreshToken();
-      if (!refresh) return Promise.reject(error);
-
-      refreshPromise ??= refreshToken(refresh)
-        .then(async (data) => {
-          await saveTokens(data.accessToken, data.refreshToken);
-          setMemoryToken(data.accessToken);
-          return data.accessToken;
-        })
+      refreshPromise ??= refreshAccessToken()
         .catch(async (refreshError) => {
           setMemoryToken(null);
           await clearTokens();
@@ -74,46 +69,10 @@ api.interceptors.response.use(
 
       const accessToken = await refreshPromise;
       original.headers.Authorization = `Bearer ${accessToken}`;
+      return client(original);
+    },
+  );
+}
 
-      return api(original);
-    }
-
-    return Promise.reject(error);
-  },
-);
-
-scrapperApi.interceptors.response.use(
-  (res) => res,
-  async (error) => {
-    const original = error.config;
-
-    if (error.response?.status === 401 && !original._retry) {
-      original._retry = true;
-
-      const refresh = await getRefreshToken();
-      if (!refresh) return Promise.reject(error);
-
-      refreshPromise ??= refreshToken(refresh)
-        .then(async (data) => {
-          await saveTokens(data.accessToken, data.refreshToken);
-          setMemoryToken(data.accessToken);
-          return data.accessToken;
-        })
-        .catch(async (refreshError) => {
-          setMemoryToken(null);
-          await clearTokens();
-          throw refreshError;
-        })
-        .finally(() => {
-          refreshPromise = null;
-        });
-
-      const accessToken = await refreshPromise;
-      original.headers.Authorization = `Bearer ${accessToken}`;
-
-      return scrapperApi(original);
-    }
-
-    return Promise.reject(error);
-  },
-);
+installRefreshInterceptor(api);
+installRefreshInterceptor(scrapperApi);
