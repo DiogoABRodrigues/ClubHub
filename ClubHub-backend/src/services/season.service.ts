@@ -6,11 +6,22 @@ import Match from "../models/Match";
 
 export default class SeasonService {
   async getAll() {
-    return Season.findAll({ order: [["id", "ASC"]] });
+    const cached = await cache.get<Season[]>(CacheKeys.season.all);
+    if (cached) return cached;
+
+    const seasons = await Season.findAll({ order: [["id", "ASC"]] });
+    await cache.setPermanent(CacheKeys.season.all, seasons);
+    return seasons;
   }
 
   async getById(id: number) {
-    return Season.findByPk(id);
+    const key = CacheKeys.season.byId(id);
+    const cached = await cache.get<Season>(key);
+    if (cached) return cached;
+
+    const season = await Season.findByPk(id);
+    if (season) await cache.setPermanent(key, season);
+    return season;
   }
 
   async getCurrentSeason() {

@@ -86,7 +86,7 @@ class DeviceController {
       id,
       pushToken,
       platform,
-      ...preferencesFrom(req.body),
+      ...(!existing ? preferencesFrom(req.body) : {}),
     } as any);
 
     return res.json({

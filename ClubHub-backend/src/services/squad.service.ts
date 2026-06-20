@@ -11,12 +11,9 @@ export default class SquadService {
   async getBySeasonId(seasonId: number, category: string = "over19") {
     const key = CacheKeys.squad.bySeason(seasonId, category);
 
-    const cached = await cache.get(key);
-    if (cached) return cached;
-
-    const data = await Squad.findAll({ where: { seasonId, category } });
-    await cache.setPermanent(key, data);
-    return data;
+    return cache.remember(key, () =>
+      Squad.findAll({ where: { seasonId, category } }),
+    );
   }
 
   async getByCurrentSeasonId(category: string = "over19") {
@@ -41,6 +38,7 @@ export default class SquadService {
 
     await cache.del(CacheKeys.squad.bySeason(seasonId, category));
     await cache.del(CacheKeys.players.bySeason(seasonId, category));
+    await cache.del(CacheKeys.players.adminBySeason(seasonId, category));
 
     return entry;
   }

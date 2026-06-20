@@ -6,13 +6,9 @@ export default class TeamService {
   async getAll() {
     const key = CacheKeys.teams.all;
 
-    const cached = await cache.get(key);
-    if (cached) return cached;
-
-    const teams = await Team.findAll();
-    await cache.setPermanent(key, teams);
-
-    return teams;
+    return cache.remember(key, () =>
+      Team.findAll({ order: [["name", "ASC"]] }),
+    );
   }
 
   async getByName(name: string) {

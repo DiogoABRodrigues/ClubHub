@@ -4,6 +4,8 @@ import Player from "./Player";
 import Stats from "./Stats";
 import Squad from "./Squad";
 import Season from "./Season";
+import MatchEvent from "./MatchEvent";
+import Competition from "./Competition";
 
 export const initAssociations = () => {
   Lineup.belongsTo(Match, { foreignKey: "matchId" });
@@ -11,6 +13,12 @@ export const initAssociations = () => {
 
   Match.hasMany(Lineup, { foreignKey: "matchId" });
   Player.hasMany(Lineup, { foreignKey: "playerId" });
+  Match.hasMany(MatchEvent, { foreignKey: "matchId", as: "events" });
+  MatchEvent.belongsTo(Match, { foreignKey: "matchId" });
+  Match.belongsTo(Competition, {
+    foreignKey: "competitionId",
+    as: "competitionDetails",
+  });
 
   Player.hasMany(Stats, {
     foreignKey: "playerExternalId",

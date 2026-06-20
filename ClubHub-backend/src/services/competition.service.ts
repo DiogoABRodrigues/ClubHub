@@ -7,27 +7,17 @@ export default class CompetitionService {
   async getAll() {
     const key = CacheKeys.competitions.all;
 
-    const cached = await cache.get(key);
-    if (cached) return cached;
-
-    const data = await Competition.findAll({
-      order: [["id", "ASC"]],
-    });
-    await cache.setPermanent(key, data);
-
-    return data;
+    return cache.remember(key, () =>
+      Competition.findAll({ order: [["id", "ASC"]] }),
+    );
   }
 
   async getBySeasonId(seasonId: number) {
     const key = CacheKeys.competitions.bySeason(seasonId);
 
-    const cached = await cache.get(key);
-    if (cached) return cached;
-
-    const data = await Competition.findAll({ where: { seasonId } });
-    await cache.setPermanent(key, data);
-
-    return data;
+    return cache.remember(key, () =>
+      Competition.findAll({ where: { seasonId } }),
+    );
   }
 
   async getByCurrentSeasonId() {

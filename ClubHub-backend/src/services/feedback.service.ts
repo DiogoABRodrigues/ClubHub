@@ -15,8 +15,12 @@ class FeedbackService {
     });
   }
 
-  async findAll(): Promise<Feedback[]> {
-    return Feedback.findAll({ order: [["createdAt", "DESC"]] });
+  async findAll(limit = 100, offset = 0): Promise<Feedback[]> {
+    return Feedback.findAll({
+      order: [["createdAt", "DESC"]],
+      limit,
+      offset,
+    });
   }
 }
 

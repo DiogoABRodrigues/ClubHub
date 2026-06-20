@@ -98,6 +98,12 @@ MatchEvent.init(
     sequelize,
     modelName: "MatchEvent",
     tableName: "match_events",
+    indexes: [
+      {
+        name: "match_events_match_minute_idx",
+        fields: ["matchId", "minute"],
+      },
+    ],
   },
 );
 

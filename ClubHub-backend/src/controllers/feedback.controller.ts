@@ -46,8 +46,10 @@ class FeedbackController {
   });
 
   /** GET /api/feedback - apenas admin */
-  findAll = asyncHandler(async (_req: Request, res: Response) => {
-    const feedbacks = await feedbackService.findAll();
+  findAll = asyncHandler(async (req: Request, res: Response) => {
+    const limit = Math.min(Math.max(Number(req.query.limit) || 100, 1), 200);
+    const offset = Math.max(Number(req.query.offset) || 0, 0);
+    const feedbacks = await feedbackService.findAll(limit, offset);
     return res.json(feedbacks);
   });
 }

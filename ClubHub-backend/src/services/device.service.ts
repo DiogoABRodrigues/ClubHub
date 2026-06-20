@@ -27,9 +27,9 @@ class DeviceService {
     sub13_matchday?: boolean;
     sub13_result?: boolean;
   }) {
-    await Device.upsert(data);
-    await cache.del(`devices:*`);
-    return await Device.findByPk(data.id);
+    const [device] = await Device.upsert(data, { returning: true });
+    await cache.clearPattern("devices:*");
+    return device;
   }
 
   async updatePreferences(
@@ -37,7 +37,7 @@ class DeviceService {
     preferences: Partial<Omit<Device, "id" | "pushToken" | "platform">>,
   ) {
     const [updatedRows] = await Device.update(preferences, { where: { id } });
-    await cache.del(`devices:*`);
+    await cache.clearPattern("devices:*");
     return updatedRows;
   }
 
@@ -82,7 +82,7 @@ class DeviceService {
 
   async deleteByTokens(tokens: string[]) {
     await Device.destroy({ where: { pushToken: tokens } });
-    await cache.del(`devices:*`);
+    await cache.clearPattern("devices:*");
   }
 
   async getDeviceById(id: string) {
@@ -90,7 +90,12 @@ class DeviceService {
   }
 
   async getAllDevices() {
-    return Device.findAll();
+    const cached = await cache.get<Device[]>(CacheKeys.devices.all);
+    if (cached) return cached;
+
+    const devices = await Device.findAll();
+    await cache.set(CacheKeys.devices.all, devices, 600);
+    return devices;
   }
 }
 

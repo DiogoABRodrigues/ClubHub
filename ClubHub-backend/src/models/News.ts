@@ -24,7 +24,18 @@ News.init(
     image: { type: DataTypes.STRING },
     publishedAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
   },
-  { sequelize, modelName: "News", tableName: "news", timestamps: true },
+  {
+    sequelize,
+    modelName: "News",
+    tableName: "news",
+    timestamps: true,
+    indexes: [
+      {
+        name: "news_published_at_idx",
+        fields: ["publishedAt"],
+      },
+    ],
+  },
 );
 
 export default News;

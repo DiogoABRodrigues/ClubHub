@@ -1,8 +1,5 @@
 import AppSettings from "../models/AppSettings";
 import { redis } from "../config/redis";
-import cache from "../services/cache.service";
-import { CacheKeys } from "../cache/keys";
-import { invalidateNotificationsCache } from "../utils/getNotificationsEnabled";
 
 const SETTINGS_CACHE_PREFIX = "app:settings:key:";
 
@@ -30,9 +27,6 @@ class AppSettingsService {
 
     await redis.del(this.cacheKey(key));
 
-    if (key === "notifications_enabled") {
-      await invalidateNotificationsCache();
-    }
   }
 
   async isNotificationsEnabled(): Promise<boolean> {

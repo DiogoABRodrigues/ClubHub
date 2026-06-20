@@ -40,30 +40,20 @@ class NewsService {
   }
 
   async getAll() {
-    const cached = await cache.get(CacheKeys.news.all);
-    if (cached) return cached;
-
-    const news = await News.findAll({
-      order: [["publishedAt", "DESC"]],
-    });
-
-    await cache.setPermanent(CacheKeys.news.all, news);
-    return news;
+    return cache.remember(CacheKeys.news.all, () =>
+      News.findAll({ order: [["publishedAt", "DESC"]] }),
+    );
   }
 
   async getLast10() {
     const key = CacheKeys.news.last10;
 
-    const cached = await cache.get(key);
-    if (cached) return cached;
-
-    const news = await News.findAll({
-      order: [["publishedAt", "DESC"]],
-      limit: 10,
-    });
-
-    await cache.setPermanent(key, news);
-    return news;
+    return cache.remember(key, () =>
+      News.findAll({
+        order: [["publishedAt", "DESC"]],
+        limit: 10,
+      }),
+    );
   }
 
   async getById(id: number) {

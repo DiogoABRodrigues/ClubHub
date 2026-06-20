@@ -29,7 +29,23 @@ Lineup.init(
       defaultValue: true,
     },
   },
-  { sequelize, modelName: "Lineup", tableName: "lineups", timestamps: true },
+  {
+    sequelize,
+    modelName: "Lineup",
+    tableName: "lineups",
+    timestamps: true,
+    indexes: [
+      {
+        name: "lineups_match_idx",
+        fields: ["matchId"],
+      },
+      {
+        name: "lineups_match_player_unique",
+        unique: true,
+        fields: ["matchId", "playerId"],
+      },
+    ],
+  },
 );
 
 export default Lineup;

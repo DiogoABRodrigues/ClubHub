@@ -41,6 +41,16 @@ Competition.init(
     modelName: "Competition",
     tableName: "competitions",
     timestamps: true,
+    indexes: [
+      {
+        name: "competitions_season_category_idx",
+        fields: ["seasonId", "category"],
+      },
+      {
+        name: "competitions_external_id_idx",
+        fields: ["externalId"],
+      },
+    ],
   },
 );
 

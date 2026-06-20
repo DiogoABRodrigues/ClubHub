@@ -1,9 +1,6 @@
 // models/Match.ts
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
-import Competition from "./Competition";
-import Lineup from "./Lineup";
-import MatchEvent from "./MatchEvent";
 
 class Match extends Model {
   public id!: number;
@@ -114,8 +111,16 @@ Match.init(
     tableName: "matches",
     indexes: [
       {
+        name: "matches_identity_unique",
         unique: true,
-        fields: ["teamName", "opponent", "homeOrAway", "competitionId"],
+        fields: [
+          "teamName",
+          "opponent",
+          "homeOrAway",
+          "competitionId",
+          "date",
+          "category",
+        ],
       },
       {
         fields: ["competitionId"],
@@ -123,26 +128,17 @@ Match.init(
       {
         fields: ["status"],
       },
+      {
+        name: "matches_season_category_date_idx",
+        fields: ["seasonId", "category", "date"],
+      },
+      {
+        name: "matches_date_status_category_idx",
+        fields: ["date", "status", "category"],
+      },
     ],
   },
 );
 
 // Associação
-Match.belongsTo(Competition, {
-  foreignKey: "competitionId",
-  as: "competitionDetails",
-});
-
-Match.hasMany(Lineup, { foreignKey: "matchId", as: "lineups" });
-Lineup.belongsTo(Match, { foreignKey: "matchId" });
-
-Match.hasMany(MatchEvent, {
-  foreignKey: "matchId",
-  as: "events",
-});
-
-MatchEvent.belongsTo(Match, {
-  foreignKey: "matchId",
-});
-
 export default Match;

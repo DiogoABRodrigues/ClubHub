@@ -1,6 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
-import Admin from "./Admin";
 
 class Statement extends Model {
   declare id: number;

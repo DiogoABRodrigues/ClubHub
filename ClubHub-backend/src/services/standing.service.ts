@@ -7,25 +7,18 @@ export default class StandingService {
   async getAll() {
     const key = CacheKeys.standings.all;
 
-    const cached = await cache.get(key);
-    if (cached) return cached;
-
-    const data = await Standing.findAll();
-    await cache.setPermanent(key, data);
-
-    return data;
+    return cache.remember(key, () => Standing.findAll());
   }
 
   async getBySeasonId(seasonId: number, category: string = "over19") {
     const key = CacheKeys.standings.bySeason(seasonId, category);
 
-    const cached = await cache.get(key);
-    if (cached) return cached;
-
-    const data = await Standing.findAll({ where: { seasonId, category } });
-    await cache.setPermanent(key, data);
-
-    return data;
+    return cache.remember(key, () =>
+      Standing.findAll({
+        where: { seasonId, category },
+        order: [["competitionId", "ASC"], ["position", "ASC"]],
+      }),
+    );
   }
 
   async getByCurrentSeasonId(category: string = "over19") {

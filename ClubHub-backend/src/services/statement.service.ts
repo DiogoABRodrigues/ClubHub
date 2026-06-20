@@ -3,6 +3,7 @@ import { Op } from "sequelize";
 import cache from "../services/cache.service";
 
 const ACTIVE_STATEMENT_KEY = "app:statement:active";
+const NO_ACTIVE_STATEMENT = "__none__";
 
 class StatementService {
   async createStatement(data: Partial<Statement>) {
@@ -40,8 +41,9 @@ class StatementService {
   }
 
   async getActiveStatement() {
-    const cached = await cache.get(ACTIVE_STATEMENT_KEY);
-    if (cached !== undefined && cached !== null) return cached;
+    const cached = await cache.get<Statement | string>(ACTIVE_STATEMENT_KEY);
+    if (cached === NO_ACTIVE_STATEMENT) return null;
+    if (cached) return cached;
 
     const now = new Date();
     const statement = await Statement.findOne({
@@ -50,7 +52,11 @@ class StatementService {
       },
     });
 
-    await cache.set(ACTIVE_STATEMENT_KEY, statement ?? null, 5 * 60);
+    await cache.set(
+      ACTIVE_STATEMENT_KEY,
+      statement ?? NO_ACTIVE_STATEMENT,
+      5 * 60,
+    );
 
     return statement;
   }

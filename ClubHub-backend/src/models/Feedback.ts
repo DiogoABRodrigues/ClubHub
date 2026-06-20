@@ -23,6 +23,12 @@ Feedback.init(
     modelName: "Feedback",
     tableName: "feedbacks",
     timestamps: true,
+    indexes: [
+      {
+        name: "feedback_created_at_idx",
+        fields: ["createdAt"],
+      },
+    ],
   },
 );
 

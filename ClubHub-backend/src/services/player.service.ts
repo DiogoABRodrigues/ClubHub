@@ -7,9 +7,6 @@ import { CacheKeys } from "../cache/keys";
 import SeasonService from "./season.service";
 import Season from "../models/Season";
 
-const adminCacheKey = (seasonId: number, category: string) =>
-  `app:players:season:${seasonId}:${category}:admin`;
-
 async function fetchPlayersWithSquad(
   seasonId: number,
   category: string,
@@ -58,13 +55,9 @@ export default class PlayerService {
   async getBySeasonId(seasonId: number, category: string = "over19") {
     const key = CacheKeys.players.bySeason(seasonId, category);
 
-    const cached = await cache.get(key);
-    if (cached) return cached;
-
-    const enriched = await fetchPlayersWithSquad(seasonId, category, false);
-
-    await cache.setPermanent(key, enriched);
-    return enriched;
+    return cache.remember(key, () =>
+      fetchPlayersWithSquad(seasonId, category, false),
+    );
   }
 
   async getByCurrentSeasonId(category: string = "over19") {
@@ -75,15 +68,11 @@ export default class PlayerService {
 
   /** Admin — inclui jogadores com status "error", com cache Redis próprio */
   async getAllBySeasonId(seasonId: number, category: string = "over19") {
-    const key = adminCacheKey(seasonId, category);
+    const key = CacheKeys.players.adminBySeason(seasonId, category);
 
-    const cached = await cache.get(key);
-    if (cached) return cached;
-
-    const enriched = await fetchPlayersWithSquad(seasonId, category, true);
-
-    await cache.setPermanent(key, enriched);
-    return enriched;
+    return cache.remember(key, () =>
+      fetchPlayersWithSquad(seasonId, category, true),
+    );
   }
 
   async getAllStatsByPlayerId(playerId: number) {
@@ -143,7 +132,7 @@ export default class PlayerService {
 
     // Invalida cache público, admin e squad
     await cache.del(CacheKeys.players.bySeason(seasonId, category));
-    await cache.del(adminCacheKey(seasonId, category));
+    await cache.del(CacheKeys.players.adminBySeason(seasonId, category));
     await cache.del(CacheKeys.squad.bySeason(seasonId, category));
 
     return entry;

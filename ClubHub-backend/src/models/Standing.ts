@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
 import Season from "./Season"; // importa o modelo Season
 import Competition from "./Competition";
@@ -112,6 +112,16 @@ Standing.init(
     modelName: "Standing",
     tableName: "standings",
     timestamps: true,
+    indexes: [
+      {
+        name: "standings_season_category_idx",
+        fields: ["seasonId", "category"],
+      },
+      {
+        name: "standings_competition_season_category_idx",
+        fields: ["competitionId", "seasonId", "category"],
+      },
+    ],
   },
 );
 

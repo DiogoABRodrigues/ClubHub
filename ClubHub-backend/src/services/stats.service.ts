@@ -11,12 +11,9 @@ export default class StatsService {
   async getBySeasonId(seasonId: number, category: string = "over19") {
     const key = CacheKeys.stats.bySeason(seasonId, category);
 
-    const cached = await cache.get(key);
-    if (cached) return cached;
-
-    const data = await Stats.findAll({ where: { seasonId, category } });
-    await cache.setPermanent(key, data);
-    return data;
+    return cache.remember(key, () =>
+      Stats.findAll({ where: { seasonId, category } }),
+    );
   }
 
   async getByCurrentSeasonId(category: string = "over19") {
