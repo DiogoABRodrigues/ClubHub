@@ -15,6 +15,12 @@ export const publicApi = axios.create({
   timeout: 15000,
 });
 
+export const healthApi = axios.create({
+  baseURL: teamConfig.backend_URL,
+  // Um cold start do alojamento pode demorar mais do que uma query normal.
+  timeout: 60000,
+});
+
 export const api = axios.create({
   baseURL: BASE_URL,
   timeout: 15000,
