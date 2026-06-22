@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Animated,
   Dimensions,
+  Modal,
   Text,
   TouchableOpacity,
   View,
@@ -162,21 +163,7 @@ export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
         ]}
       />
 
-      {hasError ? (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorTitle}>Alguma coisa não correu bem</Text>
-          <Text style={styles.errorMessage}>
-            Os dados solicitados não puderam ser carregados.
-          </Text>
-          <TouchableOpacity
-            style={styles.retryButton}
-            onPress={() => setAttempt((current) => current + 1)}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.retryButtonText}>Tentar novamente</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
+      {!hasError && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color="#FFFFFF" />
           <Text style={styles.loadingText}>A carregar...</Text>
@@ -184,6 +171,33 @@ export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
       )}
 
       {backendReady && !hasError && <PreWarm />}
+
+      <Modal
+        visible={hasError}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+        onRequestClose={() => {}}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.errorModal}>
+            <View style={styles.errorIcon}>
+              <Text style={styles.errorIconText}>!</Text>
+            </View>
+            <Text style={styles.errorTitle}>Alguma coisa não correu bem</Text>
+            <Text style={styles.errorMessage}>
+              Os dados solicitados não puderam ser carregados.
+            </Text>
+            <TouchableOpacity
+              style={styles.retryButton}
+              onPress={() => setAttempt((current) => current + 1)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.retryButtonText}>Tentar novamente</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
