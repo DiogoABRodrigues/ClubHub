@@ -18,7 +18,7 @@ server.maxRequestsPerSocket = 1_000;
 initAssociations();
 initSocket(server);
 startMatchReminderJob();
-if (env.IS_PRODUCTION) wakeUpBackend();
+wakeUpBackend();
 
 async function startServer() {
   try {
