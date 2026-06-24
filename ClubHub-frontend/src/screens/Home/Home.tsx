@@ -265,7 +265,7 @@ export const Home = ({ navigation }: any) => {
                       {item.title}
                     </Text>
                     <Text style={styles.newsExcerpt} numberOfLines={1}>
-                      {item.excerpt}
+                      {item.content}
                     </Text>
                     <Text style={styles.relatedDate}>
                       {formatDatePT(item.createdAt)}

@@ -163,13 +163,6 @@ export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
         ]}
       />
 
-      {!hasError && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color="#FFFFFF" />
-          <Text style={styles.loadingText}>A carregar...</Text>
-        </View>
-      )}
-
       {backendReady && !hasError && <PreWarm />}
 
       <Modal

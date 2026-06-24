@@ -20,7 +20,6 @@ import { useAuth } from "../../../contexts/AuthContext";
 
 interface FormData {
   title: string;
-  excerpt: string;
   content: string;
   category: "Team" | "Transfers" | "Events";
   image: string;
@@ -28,7 +27,6 @@ interface FormData {
 
 const EMPTY_FORM: FormData = {
   title: "",
-  excerpt: "",
   content: "",
   category: "Team",
   image: "",
@@ -54,7 +52,6 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
     if (isEditing && existingNews) {
       setForm({
         title: existingNews.title ?? "",
-        excerpt: existingNews.excerpt ?? "",
         content: existingNews.content ?? "",
         category: existingNews.category ?? "Team",
         image: existingNews.image ?? "",
@@ -80,10 +77,6 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
     if (!form.title.trim()) {
       newErrors.title = "O título é obrigatório";
       missing.push("Título");
-    }
-    if (!form.excerpt.trim()) {
-      newErrors.excerpt = "O resumo é obrigatório";
-      missing.push("Resumo");
     }
     if (!form.content.trim()) {
       newErrors.content = "O conteúdo é obrigatório";
@@ -244,25 +237,6 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
               maxLength={120}
             />
             <Text style={styles.charCount}>{form.title.length}/120</Text>
-          </Field>
-
-          {/* RESUMO */}
-          <Field label="Resumo" error={errors.excerpt}>
-            <TextInput
-              style={[
-                styles.input,
-                styles.textArea,
-                errors.excerpt && styles.inputError,
-              ]}
-              value={form.excerpt}
-              onChangeText={updateField("excerpt")}
-              placeholder="Breve descrição da notícia (aparece nos cards)"
-              placeholderTextColor={COLORS.muted}
-              multiline
-              numberOfLines={3}
-              maxLength={300}
-            />
-            <Text style={styles.charCount}>{form.excerpt.length}/300</Text>
           </Field>
 
           {/* CONTEÚDO */}

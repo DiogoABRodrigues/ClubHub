@@ -70,7 +70,7 @@ export const NewsCard = React.memo(({ news, onPress }: Props) => {
           {news.title}
         </Text>
         <Text style={styles.excerpt} numberOfLines={2}>
-          {news.excerpt}
+          {news.content}
         </Text>
       </View>
     </Pressable>
