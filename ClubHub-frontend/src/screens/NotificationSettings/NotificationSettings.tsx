@@ -33,6 +33,7 @@ import { SeasonPicker } from "../../components/Seasonpicker";
 import { CategoryPicker } from "../../components/Categorypicker";
 import useHelper from "../../hooks/useHelper";
 import { CategoryConfig } from "../../models/Category";
+import { useCategory } from "../../contexts/CategoryContext";
 type CategoryKey = "over19" | "sub19" | "sub17" | "sub15" | "sub13";
 
 const NOTIFICATION_ROWS: {
@@ -524,9 +525,11 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
 // ── NotificationSettings ──────────────────────────────────────────────────────
 export const NotificationSettings = () => {
   const { loginAsAdmin, setAdminMode } = useAuth();
-  const { categories } = useHelper();
+  const { categories, isLoading: categoriesLoading } = useHelper();
+  const { isReady: categoryReady } = useCategory();
 
   const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [deviceIdReady, setDeviceIdReady] = useState(false);
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -534,11 +537,19 @@ export const NotificationSettings = () => {
   const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    AsyncStorage.getItem("deviceId").then(setDeviceId);
+    AsyncStorage.getItem("deviceId")
+      .then(setDeviceId)
+      .finally(() => setDeviceIdReady(true));
   }, []);
 
-  const { preferences, updatePreferences } =
+  const { preferences, loading: preferencesLoading, updatePreferences } =
     useDevicePreferences(deviceId);
+
+  const isInitialLoading =
+    !categoryReady ||
+    categoriesLoading ||
+    !deviceIdReady ||
+    (!!deviceId && preferencesLoading && !preferences);
 
   const safePrefs: DevicePreferences = preferences ?? {
     news: true,
@@ -587,6 +598,12 @@ export const NotificationSettings = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
+        {isInitialLoading ? (
+          <View style={styles.loadingCard}>
+            <ActivityIndicator size="small" color={COLORS.primary} />
+          </View>
+        ) : (
+          <>
         {/* Pickers */}
         <View
           style={{
@@ -698,6 +715,8 @@ export const NotificationSettings = () => {
           </Text>
           .
         </Text>
+          </>
+        )}
       </ScrollView>
 
       {/* Modal Admin */}

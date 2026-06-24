@@ -4,15 +4,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCategory } from "../contexts/CategoryContext";
 import { COLORS } from "../theme/colors";
 import { styles } from "./styles/Seasonpicker.styles";
-import type { Category } from "../contexts/CategoryContext";
+import { CATEGORY_LABELS, type Category } from "../contexts/CategoryContext";
 import useHelper from "../hooks/useHelper";
 
 export const CategoryPicker: React.FC = () => {
-  const { selectedCategory, setSelectedCategory } = useCategory();
-  const { categories } = useHelper();
+  const { selectedCategory, setSelectedCategory, isReady } = useCategory();
+  const { categories, isLoading } = useHelper();
   const enabledCategories = categories?.filter((c) => c.enabled) || [];
   const [open, setOpen] = useState(false);
 
+  const loading = !isReady || isLoading;
   const onlyOne = enabledCategories.length <= 1;
   const current = enabledCategories.find(
     (c) => c.category === selectedCategory,
@@ -26,7 +27,9 @@ export const CategoryPicker: React.FC = () => {
         activeOpacity={onlyOne ? 1 : 0.7}
       >
         <Text style={styles.triggerText}>
-          {current?.label ?? selectedCategory}
+          {loading
+            ? "-"
+            : current?.label ?? CATEGORY_LABELS[selectedCategory]}
         </Text>
         {!onlyOne && (
           <Ionicons

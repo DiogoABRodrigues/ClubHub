@@ -52,6 +52,15 @@ export const styles = StyleSheet.create({
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.xl,
   },
+  loadingCard: {
+    minHeight: 160,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
 
   // ── Banner informativo ────────────────────────────────────────────────────
   infoBanner: {
