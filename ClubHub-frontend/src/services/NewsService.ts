@@ -26,10 +26,6 @@ export const NewsService = {
       formData.append("category", news.category);
       formData.append("content", news.content);
 
-      if (news.excerpt) {
-        formData.append("excerpt", news.excerpt);
-      }
-
       if (imageUri) {
         formData.append("image", {
           uri: imageUri,
@@ -58,10 +54,6 @@ export const NewsService = {
       formData.append("title", news.title);
       formData.append("category", news.category);
       formData.append("content", news.content);
-
-      if (news.excerpt) {
-        formData.append("excerpt", news.excerpt);
-      }
 
       if (imageUri) {
         formData.append("image", {

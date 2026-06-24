@@ -148,7 +148,6 @@ export const NewsDetail = ({ route, navigation }: any) => {
             </View>
           </View>
 
-          <Text style={styles.excerpt}>{newsFound.excerpt}</Text>
           <Text style={styles.contentText}>{newsFound.content}</Text>
 
           {/* Related News */}
