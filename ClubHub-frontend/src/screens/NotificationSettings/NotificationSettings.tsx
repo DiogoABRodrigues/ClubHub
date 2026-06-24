@@ -667,15 +667,37 @@ export const NotificationSettings = () => {
         </Text>
         <FeedbackBox deviceId={deviceId} />
 
-        {/* Instagram */}
-        <TouchableOpacity
-          style={[styles.instagramBtn, { marginTop: SPACING.lg }]}
-          onPress={() => Linking.openURL(teamConfig.instagram_URL)}
-          activeOpacity={0.8}
-        >
-          <Ionicons name="logo-instagram" size={20} color="#FFFFFF" />
-          <Text style={styles.instagramBtnText}>Instagram</Text>
-        </TouchableOpacity>
+        {/* Links do clube */}
+        <View style={styles.clubLinks}>
+          <TouchableOpacity
+            style={styles.clubLinkBtn}
+            onPress={() => Linking.openURL(teamConfig.instagram_URL)}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="logo-instagram" size={20} color="#FFFFFF" />
+            <Text style={styles.clubLinkBtnText}>Instagram</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.clubLinkBtn}
+            onPress={() => Linking.openURL(teamConfig.merch_URL)}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="shirt-outline" size={20} color="#FFFFFF" />
+            <Text style={styles.clubLinkBtnText}>Loja do Clube</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.dataDisclaimer}>
+          Os dados apresentados retirados do{" "}
+          <Text
+            style={styles.dataSourceLink}
+            onPress={() => Linking.openURL(teamConfig.dataSource_URL)}
+          >
+            zerozero.pt
+          </Text>
+          .
+        </Text>
       </ScrollView>
 
       {/* Modal Admin */}

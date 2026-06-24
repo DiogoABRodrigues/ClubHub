@@ -226,25 +226,42 @@ export const styles = StyleSheet.create({
     fontSize: FONT_SIZE.sm,
   },
 
-  // ── Instagram btn ─────────────────────────────────────────────────────────
-  instagramBtn: {
+  // ── Links do clube ────────────────────────────────────────────────────────
+  clubLinks: {
+    marginTop: SPACING.lg,
+    gap: SPACING.sm,
+    alignItems: "center",
+  },
+  clubLinkBtn: {
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "center",
     justifyContent: "center",
     gap: 8,
     width: "60%",
-    marginTop: SPACING.md,
     paddingVertical: 13,
     borderRadius: RADIUS.lg,
     backgroundColor: COLORS.warning,
     borderWidth: 1.5,
     borderColor: "#FFFFFF",
   },
-  instagramBtnText: {
+  clubLinkBtnText: {
     color: "#FFFFFF",
     fontWeight: "700",
     fontSize: FONT_SIZE.md,
     letterSpacing: 0.3,
+  },
+  dataDisclaimer: {
+    color: "#6B7280",
+    fontSize: FONT_SIZE.xs,
+    lineHeight: 17,
+    marginTop: SPACING.lg,
+    paddingHorizontal: SPACING.md,
+    textAlign: "center",
+  },
+  dataSourceLink: {
+    color: COLORS.primary,
+    fontWeight: "700",
+    textDecorationLine: "underline",
   },
 });
