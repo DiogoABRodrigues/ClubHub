@@ -46,18 +46,20 @@ class AuthService {
   }
 
   async login(userName: string, password: string) {
+    const normalizedUserName =
+      typeof userName === "string" ? userName.trim() : "";
+
     if (
       typeof userName !== "string" ||
       typeof password !== "string" ||
-      userName.length < 1 ||
-      userName.length > 100 ||
-      password.length < 8 ||
+      normalizedUserName.length < 1 ||
+      normalizedUserName.length > 100 ||
+      password.length < 1 ||
       password.length > 200
     ) {
       throw new AppError("Credenciais invalidas", 401);
     }
 
-    const normalizedUserName = userName.trim();
     const admin = await Admin.findOne({ where: { userName: normalizedUserName } });
     const invalid = "Credenciais invalidas";
 
