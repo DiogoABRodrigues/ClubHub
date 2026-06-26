@@ -3,6 +3,7 @@ import { redis } from "../config/redis";
 class CacheService {
   private defaultTTL = 60 * 60 * 24;
   private stableTTL = 60 * 60 * 24;
+  private inFlightTimeoutMs = Number(process.env.CACHE_IN_FLIGHT_TIMEOUT_MS) || 25_000;
   private inFlight = new Map<string, Promise<unknown>>();
 
   async get<T>(key: string): Promise<T | null> {
@@ -39,14 +40,25 @@ class CacheService {
     const existing = this.inFlight.get(key) as Promise<T> | undefined;
     if (existing) return existing;
 
-    const loading = loader()
-      .then(async (value) => {
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeout = setTimeout(() => {
+        this.inFlight.delete(key);
+        reject(new Error(`Cache loader timed out for ${key}`));
+      }, this.inFlightTimeoutMs);
+    });
+
+    const loading = Promise.race([
+      loader().then(async (value) => {
         await this.set(key, value, ttl);
         return value;
-      })
-      .finally(() => {
-        this.inFlight.delete(key);
-      });
+      }),
+      timeoutPromise,
+    ]).finally(() => {
+      if (timeout) clearTimeout(timeout);
+      this.inFlight.delete(key);
+    });
+
     this.inFlight.set(key, loading);
     return loading;
   }

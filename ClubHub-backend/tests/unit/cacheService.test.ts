@@ -41,4 +41,38 @@ describe("CacheService", () => {
       "database-value",
     );
   });
+
+  it("liberta uma chave in-flight quando o loader fica preso", async () => {
+    vi.useFakeTimers();
+    vi.resetModules();
+    process.env.CACHE_IN_FLIGHT_TIMEOUT_MS = "50";
+
+    try {
+      redisMock.get.mockResolvedValue(null);
+      redisMock.set.mockResolvedValue("OK");
+
+      const { default: freshCache } = await import(
+        "../../src/services/cache.service"
+      );
+      const stuckLoader = vi.fn(() => new Promise<string>(() => {}));
+
+      const first = freshCache.remember("stuck-key", stuckLoader);
+      const firstExpectation = expect(first).rejects.toThrow(
+        "Cache loader timed out",
+      );
+      await vi.advanceTimersByTimeAsync(50);
+      await firstExpectation;
+
+      const recoveryLoader = vi.fn(async () => "recovered");
+      await expect(
+        freshCache.remember("stuck-key", recoveryLoader),
+      ).resolves.toBe("recovered");
+
+      expect(stuckLoader).toHaveBeenCalledOnce();
+      expect(recoveryLoader).toHaveBeenCalledOnce();
+    } finally {
+      delete process.env.CACHE_IN_FLIGHT_TIMEOUT_MS;
+      vi.useRealTimers();
+    }
+  });
 });
