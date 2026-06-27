@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Alert } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 
 const parseDate = (d: string) => {
   if (!d) return new Date();
@@ -32,6 +34,13 @@ const formatTime = (date: Date) => {
   return `${h}:${m}`;
 };
 
+const formatDate = (date: Date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+};
+
 export const DateTimePickerModal = ({
   visible,
   initialDate,
@@ -52,8 +61,11 @@ export const DateTimePickerModal = ({
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const handleChange = async (_: any, date?: Date) => {
-    if (!date) return onClose();
+  const handleChange = async (event: DateTimePickerEvent, date?: Date) => {
+    if (event.type === "dismissed" || !date) {
+      onClose();
+      return;
+    }
 
     if (phase === "date") {
       const merged = new Date(date);
@@ -67,7 +79,7 @@ export const DateTimePickerModal = ({
       const final = new Date(value);
       final.setHours(date.getHours(), date.getMinutes());
 
-      await onSave(final.toISOString().slice(0, 10), formatTime(final));
+      await onSave(formatDate(final), formatTime(final));
     } catch {
       Alert.alert("Erro", "Falha ao guardar data");
     } finally {

@@ -22,8 +22,7 @@ import { useTeams } from "../../hooks/useTeams";
 import { usePlayers } from "../../hooks/usePlayers";
 import { useCompetitions } from "../../hooks/useCompetitions";
 
-import { getPenaltyDisplayScore } from "../../utils/dateUtils";
-
+import { formatDateWithWeekdayPT, getPenaltyDisplayScore } from "../../utils/dateUtils";
 import { getPositionOrder } from "../../utils/playerPositionUtils";
 import { Competition } from "../../models/Competition";
 import { Match } from "../../models/Match";
@@ -266,6 +265,29 @@ export const MatchDetail = () => {
             )}
             <Text style={styles.teamName}>{awayTeamName}</Text>
           </View>
+        </View>
+        {/* Match Info */}
+        <View style={styles.matchInfo}>
+          <View style={styles.infoItem}>
+            <Ionicons
+              name="calendar-outline"
+              size={16}
+              color={COLORS.textPrimary}
+            />
+            <Text style={styles.infoText}>
+              {formatDateWithWeekdayPT(match.date)} • {match.time}
+            </Text>
+          </View>
+          {match.location && (
+            <View style={styles.infoItem}>
+              <Ionicons
+                name="location-outline"
+                size={16}
+                color={COLORS.textPrimary}
+              />
+              <Text style={styles.infoText}>{match.location}</Text>
+            </View>
+          )}
         </View>
       </View>
 

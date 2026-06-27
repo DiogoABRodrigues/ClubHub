@@ -22,7 +22,7 @@ export const styles = createThemedStyles(() => ({
   header: {
     backgroundColor: COLORS.primary,
     paddingTop: SPACING.xl + 8,
-    paddingBottom: SPACING.lg,
+    paddingBottom: SPACING.md,
     paddingHorizontal: SPACING.md,
   },
 
