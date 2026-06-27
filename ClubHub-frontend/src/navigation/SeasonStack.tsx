@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MatchDetail } from "../screens/MatchDetails/MatchDetail";
 import { AdminMatchDetail } from "../screens/Admin/AdminMatches/AdminMatchDetail";
 import { SeasonScreen } from "../screens/Season/SeasonScreen";
+import { withThemeUpdates } from "./withThemeUpdates";
 
 export type SeasonStackParamList = {
   SeasonScreen: undefined;
@@ -11,6 +12,9 @@ export type SeasonStackParamList = {
 };
 
 const Stack = createNativeStackNavigator<SeasonStackParamList>();
+const ThemedSeasonScreen = withThemeUpdates(SeasonScreen);
+const ThemedMatchDetail = withThemeUpdates(MatchDetail);
+const ThemedAdminMatchDetail = withThemeUpdates(AdminMatchDetail);
 
 export const SeasonStack = () => (
   <Stack.Navigator
@@ -19,8 +23,8 @@ export const SeasonStack = () => (
       animation: "none",
     }}
   >
-    <Stack.Screen name="SeasonScreen" component={SeasonScreen} />
-    <Stack.Screen name="MatchDetail" component={MatchDetail} />
-    <Stack.Screen name="AdminMatchDetail" component={AdminMatchDetail} />
+    <Stack.Screen name="SeasonScreen" component={ThemedSeasonScreen} />
+    <Stack.Screen name="MatchDetail" component={ThemedMatchDetail} />
+    <Stack.Screen name="AdminMatchDetail" component={ThemedAdminMatchDetail} />
   </Stack.Navigator>
 );

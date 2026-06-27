@@ -23,7 +23,6 @@ import {
   SPACING,
   RADIUS,
   FONT_SIZE,
-  ThemePreference,
 } from "../../theme/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../../contexts/AuthContext";
@@ -67,15 +66,6 @@ const NOTIFICATION_ROWS: {
     label: "Resultado final",
     desc: "Quando o jogo termina",
   },
-];
-
-const THEME_OPTIONS: {
-  value: ThemePreference;
-  label: string;
-  icon: string;
-}[] = [
-  { value: "light", label: "Claro", icon: "sunny-outline" },
-  { value: "dark", label: "Escuro", icon: "moon-outline" },
 ];
 
 function categoryPrefKey(
@@ -519,7 +509,7 @@ export const NotificationSettings = () => {
   const { loginAsAdmin, setAdminMode } = useAuth();
   const { categories, isLoading: categoriesLoading } = useHelper();
   const { isReady: categoryReady } = useCategory();
-  const { colors, preference, setPreference } = useTheme();
+  const { mode, setPreference } = useTheme();
 
   const [deviceId, setDeviceId] = useState<string | null>(null);
   const [deviceIdReady, setDeviceIdReady] = useState(false);
@@ -598,65 +588,64 @@ export const NotificationSettings = () => {
         ) : (
           <>
         {/* Pickers */}
-        <View
-          style={{
-            backgroundColor: COLORS.surfaceLight,
-            borderRadius: RADIUS.lg,
-            padding: SPACING.sm,
-            marginBottom: SPACING.lg,
-            borderWidth: 1,
-            borderColor: COLORS.borders.default,
-          }}
-        >
-          <View style={{ flexDirection: "row", gap: 8 }}>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 12, color: COLORS.text.blackWhite, marginBottom: 4 }}>
-                Escalão
-              </Text>
-              <CategoryPicker />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 12, color: COLORS.text.blackWhite, marginBottom: 4 }}>
-                Época
-              </Text>
-              <SeasonPicker />
+        <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 8, marginBottom: SPACING.lg }}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: COLORS.surfaceLight,
+              borderRadius: RADIUS.lg,
+              padding: SPACING.sm,
+              borderWidth: 1,
+              borderColor: COLORS.borders.default,
+            }}
+          >
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 12, color: COLORS.text.blackWhite, marginBottom: 4 }}>
+                  Escalão
+                </Text>
+                <CategoryPicker />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 12, color: COLORS.text.blackWhite, marginBottom: 4 }}>
+                  Época
+                </Text>
+                <SeasonPicker />
+              </View>
             </View>
           </View>
-        </View>
-
-        <Text style={styles.sectionTitle}>Tema</Text>
-        <View style={styles.themeCard}>
-          {THEME_OPTIONS.map((option) => {
-            const active = preference === option.value;
-            return (
-              <TouchableOpacity
-                key={option.value}
-                onPress={() => setPreference(option.value)}
-                activeOpacity={0.75}
-                style={[
-                  styles.themeOption,
-                  active && {
-                    backgroundColor: colors.brand.primary,
-                    borderColor: colors.brand.primary,
-                  },
-                ]}
-              >
-                <Ionicons
-                  name={option.icon as any}
-                  size={16}
-                  color={active ? colors.text.inverse : colors.text.secondary}
-                />
-                <Text
+          <View
+            accessibilityRole="tablist"
+            accessibilityLabel="Escolher tema"
+            style={styles.themeSwitcher}
+          >
+            {(["light", "dark"] as const).map((theme) => {
+              const active = mode === theme;
+              return (
+                <TouchableOpacity
+                  key={theme}
+                  accessibilityRole="button"
+                  accessibilityLabel={
+                    theme === "light" ? "Tema claro" : "Tema escuro"
+                  }
+                  activeOpacity={0.75}
+                  onPress={() => setPreference(theme)}
                   style={[
-                    styles.themeOptionText,
-                    active && { color: colors.text.inverse },
+                    styles.themeSwitcherOption,
+                    active && styles.themeSwitcherOptionActive,
                   ]}
                 >
-                  {option.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+                  <Ionicons
+                    name={theme === "light" ? "sunny-outline" : "moon-outline"}
+                    size={18}
+                    color={
+                      active ? COLORS.text.inverse : COLORS.text.blackWhite
+                    }
+                  />
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
 
         {/* Notícias */}

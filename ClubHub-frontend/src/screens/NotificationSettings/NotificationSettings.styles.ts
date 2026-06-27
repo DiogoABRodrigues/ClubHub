@@ -152,35 +152,28 @@ export const styles = createThemedStyles(() => ({
     paddingRight: SPACING.md,
   },
 
-  // ── Card de equipa ────────────────────────────────────────────────────────
-  themeCard: {
+  themeSwitcher: {
+    width: "20%",
+    height: 42,
     flexDirection: "row",
-    gap: SPACING.sm,
-    backgroundColor: COLORS.surfaceLight,
-    borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.borders.default,
-    padding: SPACING.sm,
-    marginBottom: SPACING.lg,
-  },
-  themeOption: {
-    flex: 1,
-    minHeight: 42,
     borderRadius: RADIUS.md,
     borderWidth: 1,
     borderColor: COLORS.borders.default,
     backgroundColor: COLORS.backgrounds.muted,
+    padding: 3,
+    gap: 3,
+  },
+  themeSwitcherOption: {
+    flex: 1,
+    borderRadius: RADIUS.sm,
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "row",
-    gap: 6,
   },
-  themeOptionText: {
-    color: COLORS.text.secondary,
-    fontSize: FONT_SIZE.xs,
-    fontWeight: "700",
+  themeSwitcherOptionActive: {
+    backgroundColor: COLORS.primary,
   },
 
+  // ── Card de equipa ────────────────────────────────────────────────────────
   teamCard: {
     backgroundColor: COLORS.surfaceLight,
     borderRadius: RADIUS.lg,

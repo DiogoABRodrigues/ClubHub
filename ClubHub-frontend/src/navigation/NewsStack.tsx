@@ -2,6 +2,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { News } from "../screens/News/News";
 import { NewsDetail } from "../screens/NewsDetail/NewsDetail";
+import { withThemeUpdates } from "./withThemeUpdates";
 
 export type NewsStackParamList = {
   News: undefined;
@@ -9,6 +10,8 @@ export type NewsStackParamList = {
 };
 
 const Stack = createNativeStackNavigator<NewsStackParamList>();
+const ThemedNews = withThemeUpdates(News);
+const ThemedNewsDetail = withThemeUpdates(NewsDetail);
 
 export const NewsStack = () => (
   <Stack.Navigator
@@ -17,7 +20,7 @@ export const NewsStack = () => (
       animation: "none",
     }}
   >
-    <Stack.Screen name="News" component={News} />
-    <Stack.Screen name="NewsDetail" component={NewsDetail} />
+    <Stack.Screen name="News" component={ThemedNews} />
+    <Stack.Screen name="NewsDetail" component={ThemedNewsDetail} />
   </Stack.Navigator>
 );

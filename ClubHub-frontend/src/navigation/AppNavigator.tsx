@@ -17,8 +17,11 @@ import { useCategory } from "../contexts/CategoryContext";
 import { useCategoryTransition } from "../hooks/useCategoryTransition";
 import { CategoryTransitionOverlay } from "../components/CategoryTransitionOverlay";
 import { useTheme } from "../contexts/ThemeContext";
+import { withThemeUpdates } from "./withThemeUpdates";
 
 const Tab = createBottomTabNavigator();
+const ThemedNotificationSettings = withThemeUpdates(NotificationSettings);
+const ThemedAdminSettings = withThemeUpdates(AdminSettings);
 
 const ICON_MAP: Record<string, string> = {
   Início: "home-outline",
@@ -34,7 +37,7 @@ const ICON_MAP: Record<string, string> = {
 const AppContent = () => {
   const { isAdmin, adminMode, setAdminMode } = useAuth();
   const { isCategoryChanging } = useCategory();
-  const { colors, mode } = useTheme();
+  const { colors } = useTheme();
 
   // Activa o mecanismo que esconde o overlay quando os dados ficam prontos
   useCategoryTransition();
@@ -44,7 +47,7 @@ const AppContent = () => {
   return (
     <View style={styles.container}>
       <Tab.Navigator
-        key={`${adminMode ? "admin" : "user"}-${mode}`}
+        key={adminMode ? "admin" : "user"}
         screenOptions={({ route }) => ({
           headerShown: false,
           tabBarActiveTintColor: colors.brand.primary,
@@ -70,7 +73,7 @@ const AppContent = () => {
         />
         <Tab.Screen
           name="Definições"
-          component={adminMode ? AdminSettings : NotificationSettings}
+          component={adminMode ? ThemedAdminSettings : ThemedNotificationSettings}
         />
 
         {isAdmin && (
@@ -140,7 +143,7 @@ export const AppNavigator = () => {
 
   return (
     <NavigationContainer
-      key={`${adminMode ? "admin-root" : "user-root"}-${mode}`}
+      key={adminMode ? "admin-root" : "user-root"}
       theme={navigationTheme}
     >
       <AppContent />

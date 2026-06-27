@@ -4,6 +4,7 @@ import { Home } from "../screens/Home/Home";
 import { MatchDetail } from "../screens/MatchDetails/MatchDetail";
 import { AdminMatchDetail } from "../screens/Admin/AdminMatches/AdminMatchDetail";
 import { NewsDetail } from "../screens/NewsDetail/NewsDetail";
+import { withThemeUpdates } from "./withThemeUpdates";
 
 export type HomeStackParamList = {
   Home: undefined;
@@ -13,6 +14,10 @@ export type HomeStackParamList = {
 };
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
+const ThemedHome = withThemeUpdates(Home);
+const ThemedAdminMatchDetail = withThemeUpdates(AdminMatchDetail);
+const ThemedMatchDetail = withThemeUpdates(MatchDetail);
+const ThemedNewsDetail = withThemeUpdates(NewsDetail);
 
 export const HomeStack = () => (
   <Stack.Navigator
@@ -21,9 +26,9 @@ export const HomeStack = () => (
       animation: "none",
     }}
   >
-    <Stack.Screen name="Home" component={Home} />
-    <Stack.Screen name="AdminMatchDetail" component={AdminMatchDetail} />
-    <Stack.Screen name="MatchDetail" component={MatchDetail} />
-    <Stack.Screen name="NewsDetail" component={NewsDetail} />
+    <Stack.Screen name="Home" component={ThemedHome} />
+    <Stack.Screen name="AdminMatchDetail" component={ThemedAdminMatchDetail} />
+    <Stack.Screen name="MatchDetail" component={ThemedMatchDetail} />
+    <Stack.Screen name="NewsDetail" component={ThemedNewsDetail} />
   </Stack.Navigator>
 );
