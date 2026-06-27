@@ -307,7 +307,7 @@ export const MatchDetail = () => {
                 style={[
                   styles.tabText,
                   activeTab === tab.key && {
-                    color: COLORS.textSecondary,
+                    color: COLORS.text.blackWhite,
                   },
                 ]}
               >

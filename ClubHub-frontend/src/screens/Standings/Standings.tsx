@@ -171,17 +171,19 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
     const round = item as CupRound;
 
     return (
-      <View style={styles.cupRoundBlock}>
-        <Text style={styles.roundLabel}>{round.round}</Text>
-
-        {round.matches.map((match) => (
-          <CupMatchRow
-            onPress={() => navigateToMatchDetail(match.id)}
-            key={match.id}
-            match={match}
-          />
-        ))}
-      </View>
+      <>
+        <View style={styles.cupRoundBlock}>
+          <Text style={styles.roundLabel}>{round.round}</Text>
+            {round.matches.map((match) => (
+              <CupMatchRow
+                onPress={() => navigateToMatchDetail(match.id)}
+                key={match.id}
+                match={match}
+              />
+            ))}
+          </View>
+        <View style={styles.sectionSeparator} />
+      </>
     );
   };
 
@@ -249,27 +251,28 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
       }
 
       return (
-        <View style={styles.legend}>
-          <Text style={styles.legendTitle}>Legenda</Text>
+        <>
+          <View style={styles.legend}>
+            <Text style={styles.legendTitle}>Legenda</Text>
+              <View style={styles.legendItems}>
+                {section.legend.map((item, index) => (
+                  <View key={index} style={styles.legendItem}>
+                    <View
+                      style={[
+                        styles.legendColor,
+                        {
+                          backgroundColor: item.color,
+                        },
+                      ]}
+                    />
 
-          <View style={styles.legendItems}>
-            {section.legend.map((item, index) => (
-              <View key={index} style={styles.legendItem}>
-                <View
-                  style={[
-                    styles.legendColor,
-                    {
-                      backgroundColor: item.color,
-                    },
-                  ]}
-                />
-
-                <Text style={styles.legendText}>{item.label}</Text>
+                    <Text style={styles.legendText}>{item.label}</Text>
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
+            </View>
           <View style={styles.sectionSeparator} />
-        </View>
+        </>
       );
     },
     [],

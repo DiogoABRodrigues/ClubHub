@@ -35,7 +35,7 @@ export const styles = createThemedStyles(() => ({
   sectionTitle: {
     fontSize: FONT_SIZE.xs,
     fontWeight: "700",
-    color: COLORS.primary,
+    color: COLORS.tertiary,
     textTransform: "uppercase",
     letterSpacing: 0.1,
   },
@@ -43,13 +43,13 @@ export const styles = createThemedStyles(() => ({
   showMoreInline: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: COLORS.primary,
+    color: COLORS.tertiary,
   },
 
   showMore: {
     textAlign: "center",
     marginTop: 10,
-    color: COLORS.primary,
+    color: COLORS.tertiary,
     fontWeight: "600",
     fontSize: FONT_SIZE.sm,
   },

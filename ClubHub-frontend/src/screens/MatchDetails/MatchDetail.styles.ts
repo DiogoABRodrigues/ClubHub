@@ -179,7 +179,7 @@ export const styles = createThemedStyles(() => ({
   },
 
   activeTab: {
-    borderBottomColor: COLORS.textSecondary,
+    borderBottomColor: COLORS.text.blackWhite,
     borderBottomWidth: 2,
   },
 

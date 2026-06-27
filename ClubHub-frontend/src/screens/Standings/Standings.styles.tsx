@@ -48,6 +48,8 @@ export const styles = createThemedStyles(() => ({
     borderColor: COLORS.border,
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
+    backgroundColor: COLORS.surfaceLight,
+    marginTop: SPACING.md,
   },
 
   legendTitle: {
@@ -184,7 +186,7 @@ export const styles = createThemedStyles(() => ({
   sectionSeparator: {
     height: 1,
     backgroundColor: COLORS.primary,
-    marginTop: SPACING.xl,
+    marginTop: SPACING.md,
     marginHorizontal: -SPACING.md, // vai de ponta a ponta
   },
 }));

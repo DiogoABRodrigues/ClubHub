@@ -93,7 +93,7 @@ export const styles = createThemedStyles(() => ({
   },
 
   tabTextActive: {
-    color: COLORS.primary,
+    color: COLORS.tertiary,
     fontWeight: "700",
   },
 
