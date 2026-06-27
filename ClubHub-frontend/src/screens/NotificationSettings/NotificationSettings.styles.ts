@@ -96,9 +96,9 @@ export const styles = createThemedStyles(() => ({
   sectionTitle: {
     fontSize: 11,
     fontWeight: "700",
+    letterSpacing: 0.7,
     color: COLORS.text.blackWhite,
     textTransform: "uppercase",
-    letterSpacing: 0.7,
     marginBottom: SPACING.sm,
     paddingHorizontal: 4,
   },

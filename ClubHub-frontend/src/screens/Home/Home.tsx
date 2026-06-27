@@ -175,11 +175,11 @@ export const Home = ({ navigation }: any) => {
         {
           <View style={styles.section}>
             <View style={styles.sectionTitleRow}>
-              <Ionicons
+              {/*<Ionicons
                 name="calendar-outline"
-                size={16}
+                size={12}
                 color={COLORS.secondary}
-              />
+              />*/}
               <Text style={styles.sectionTitle}>Próximo Jogo</Text>
             </View>
             {(nextMatch && (
@@ -203,11 +203,11 @@ export const Home = ({ navigation }: any) => {
         {recentMatch && (
           <View style={styles.section}>
             <View style={styles.sectionTitleRow}>
-              <Ionicons
+              {/*<Ionicons
                 name="time-outline"
                 size={16}
                 color={COLORS.secondary}
-              />
+              />*/}
               <Text style={styles.sectionTitle}>Último Jogo</Text>
             </View>
             <MatchCard
@@ -224,11 +224,11 @@ export const Home = ({ navigation }: any) => {
         {!loading && recentNews.length > 0 && (
           <View style={styles.section}>
             <View style={styles.sectionTitleRow}>
-              <Ionicons
+              {/*<Ionicons
                 name="newspaper-outline"
                 size={16}
                 color={COLORS.secondary}
-              />
+              />*/}
               <Text style={styles.sectionTitle}>Últimas Notícias</Text>
             </View>
 

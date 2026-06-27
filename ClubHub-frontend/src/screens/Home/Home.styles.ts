@@ -85,10 +85,11 @@ export const styles = createThemedStyles(() => ({
   },
 
   sectionTitle: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.xs,
     fontWeight: "700",
     color: COLORS.secondary,
     letterSpacing: 0.1,
+    textTransform: "uppercase",
   },
 
   // ── Notícias ──────────────────────────────────────────────────────────────
