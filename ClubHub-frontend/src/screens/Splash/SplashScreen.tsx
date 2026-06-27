@@ -14,6 +14,7 @@ import { Home } from "../Home/Home";
 import { Matches } from "../Matches/Matches";
 import { SeasonScreen } from "../Season/SeasonScreen";
 import { News } from "../News/News";
+import { NotificationSettings } from "../NotificationSettings/NotificationSettings";
 import { useCategory } from "../../contexts/CategoryContext";
 import { healthApi } from "../../services/api";
 import { styles } from "./Splash.styles";
@@ -60,6 +61,9 @@ const PreWarm = () => {
       </View>
       <View style={{ width, height }}>
         <News navigation={nav as any} />
+      </View>
+      <View style={{ width, height }}>
+        <NotificationSettings />
       </View>
     </View>
   );
