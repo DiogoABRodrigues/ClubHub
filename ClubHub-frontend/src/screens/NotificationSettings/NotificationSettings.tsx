@@ -518,6 +518,7 @@ export const NotificationSettings = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [, setTapCount] = useState(0);
   const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasLoadedOnce = useRef(false);
 
   useEffect(() => {
     AsyncStorage.getItem("deviceId")
@@ -529,10 +530,11 @@ export const NotificationSettings = () => {
     useDevicePreferences(deviceId);
 
   const isInitialLoading =
-    !categoryReady ||
-    categoriesLoading ||
-    !deviceIdReady ||
-    (!!deviceId && preferencesLoading && !preferences);
+    !hasLoadedOnce.current &&
+    (!deviceIdReady ||
+      (!!deviceId && preferencesLoading && !preferences));
+
+  if (!isInitialLoading && deviceIdReady) hasLoadedOnce.current = true;
 
   const safePrefs: DevicePreferences = preferences ?? {
     news: true,
@@ -596,7 +598,7 @@ export const NotificationSettings = () => {
             }}
           >
             <Ionicons
-              name={mode === "dark" ? "moon-outline" : "sunny-outline"}
+              name={mode === "dark" ? "sunny-outline" : "moon-outline"}
               size={18}
               color={COLORS.text.blackWhite}
             />
@@ -620,10 +622,11 @@ export const NotificationSettings = () => {
                 borderWidth: 1,
                 borderColor: COLORS.borders.default,
                 marginBottom: SPACING.lg,
+                alignSelf: "center",
               }}
             >
-              <View style={{ flexDirection: "row", gap: 8 }}>
-                <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-start" }}>
+                <View>
                   <Text
                     style={{
                       fontSize: 12,
@@ -635,7 +638,15 @@ export const NotificationSettings = () => {
                   </Text>
                   <CategoryPicker />
                 </View>
-                <View style={{ flex: 1 }}>
+                <View
+                  style={{
+                    width: 1,
+                    alignSelf: "stretch",
+                    backgroundColor: COLORS.borders.default,
+                    marginVertical: 2,
+                  }}
+                />
+                <View>
                   <Text
                     style={{
                       fontSize: 12,

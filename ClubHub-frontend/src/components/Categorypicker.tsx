@@ -27,9 +27,7 @@ export const CategoryPicker: React.FC = () => {
         activeOpacity={onlyOne ? 1 : 0.7}
       >
         <Text style={styles.triggerText}>
-          {loading
-            ? "-"
-            : current?.label ?? CATEGORY_LABELS[selectedCategory]}
+          {current?.label ?? CATEGORY_LABELS[selectedCategory] ?? "-"}
         </Text>
         {!onlyOne && (
           <Ionicons

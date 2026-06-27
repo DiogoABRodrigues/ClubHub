@@ -52,6 +52,7 @@ const styles = createThemedStyles(() => ({
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: COLORS.backgrounds.screen,
+    opacity: 0.4,
     zIndex: 999,
     justifyContent: "center",
     alignItems: "center",
@@ -64,6 +65,5 @@ const styles = createThemedStyles(() => ({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
-    elevation: 4,
   },
 }));
