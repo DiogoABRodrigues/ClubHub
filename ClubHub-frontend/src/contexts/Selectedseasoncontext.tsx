@@ -28,7 +28,7 @@ const SelectedSeasonContext = createContext<SelectedSeasonContextType>({
 export const SelectedSeasonProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const { selectedCategory } = useCategory();
+  const { selectedCategory, triggerTransition } = useCategory();
   const { seasons } = useSeasonsByCategory(selectedCategory);
   const [selectedSeason, setSelectedSeason] = useState<Season | null>(null);
   const prevCategory = useRef(selectedCategory);
@@ -60,10 +60,17 @@ export const SelectedSeasonProvider: React.FC<{
     // O overlay será escondido quando os dados ficarem prontos (ver useCategoryDataReady)
   }, [seasons, selectedSeason]);
 
+  const handleSetSelectedSeason = (season: Season) => {
+    if (season.id !== selectedSeason?.id) {
+      triggerTransition();
+    }
+    setSelectedSeason(season);
+  };
+
   const value = useMemo(
     () => ({
       selectedSeason,
-      setSelectedSeason,
+      setSelectedSeason: handleSetSelectedSeason,
       selectedSeasonId: selectedSeason?.id ?? null,
       availableSeasons: seasons,
     }),

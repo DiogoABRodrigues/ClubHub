@@ -27,6 +27,8 @@ interface CategoryContextValue {
   isCategoryChanging: boolean;
   /** Chamado por quem sabe que os dados já estão prontos */
   acknowledgeCategoryChange: () => void;
+  /** Chamado por outros contextos (ex: season) para activar o mesmo overlay */
+  triggerTransition: () => void;
   /**
    * true assim que a leitura inicial do AsyncStorage terminou.
    * Enquanto for false, `selectedCategory` ainda pode ser apenas o valor
@@ -44,6 +46,7 @@ const CategoryContext = createContext<CategoryContextValue>({
   setSelectedCategory: async () => {},
   isCategoryChanging: false,
   acknowledgeCategoryChange: () => {},
+  triggerTransition: () => {},
   isReady: false,
 });
 
@@ -86,6 +89,18 @@ export function CategoryProvider({ children }: { children: ReactNode }) {
     await AsyncStorage.setItem(STORAGE_KEY, category);
   };
 
+  const triggerTransition = () => {
+    pendingHide.current = false;
+    setIsCategoryChanging(true);
+    minTimeRef.current = setTimeout(() => {
+      minTimeRef.current = null;
+      if (pendingHide.current) {
+        setIsCategoryChanging(false);
+        pendingHide.current = false;
+      }
+    }, 350);
+  };
+
   const acknowledgeCategoryChange = () => {
     if (!isCategoryChanging) return;
     if (minTimeRef.current) {
@@ -103,6 +118,7 @@ export function CategoryProvider({ children }: { children: ReactNode }) {
         setSelectedCategory,
         isCategoryChanging,
         acknowledgeCategoryChange,
+        triggerTransition,
         isReady,
       }}
     >

@@ -21,6 +21,8 @@ export function useCategoryTransition() {
 
     const matchesKey = ["matches", selectedSeasonId, selectedCategory];
     const standingsKey = ["standings", selectedSeasonId, selectedCategory];
+    const seasonMatchesKey = ["matches", selectedSeasonId];
+    const seasonStandingsKey = ["standings", selectedSeasonId];
 
     let settled = false;
     let unsubscribe = () => {};
@@ -42,15 +44,20 @@ export function useCategoryTransition() {
 
       const matchState = queryClient.getQueryState(matchesKey);
       const standingsState = queryClient.getQueryState(standingsKey);
+      const seasonMatchState = queryClient.getQueryState(seasonMatchesKey);
+      const seasonStandingsState = queryClient.getQueryState(seasonStandingsKey);
 
       const matchesReady =
         matchState?.status === "success" || matchState?.status === "error";
       const standingsReady =
         standingsState?.status === "success" ||
         standingsState?.status === "error";
+      const seasonMatchesReady =
+        seasonMatchState?.status === "success" || seasonMatchState?.status === "error";
+      const seasonStandingsReady =
+        seasonStandingsState?.status === "success" || seasonStandingsState?.status === "error";
 
-      // Basta um dos dois estar pronto para esconder
-      if (matchesReady || standingsReady) {
+      if (matchesReady || standingsReady || seasonMatchesReady || seasonStandingsReady) {
         finish();
       }
     };
