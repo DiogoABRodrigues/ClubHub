@@ -577,6 +577,30 @@ export const NotificationSettings = () => {
               <Text style={styles.headerTitle}>Definições</Text>
             </TouchableOpacity>
           </View>
+
+          {/* Theme toggle */}
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Alternar tema"
+            activeOpacity={0.75}
+            onPress={() => setPreference(mode === "light" ? "dark" : "light")}
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: RADIUS.md,
+              borderWidth: 1,
+              borderColor: COLORS.borders.default,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: COLORS.backgrounds.muted,
+            }}
+          >
+            <Ionicons
+              name={mode === "dark" ? "moon-outline" : "sunny-outline"}
+              size={18}
+              color={COLORS.text.blackWhite}
+            />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -587,151 +611,131 @@ export const NotificationSettings = () => {
           </View>
         ) : (
           <>
-        {/* Pickers */}
-        <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 8, marginBottom: SPACING.lg }}>
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: COLORS.surfaceLight,
-              borderRadius: RADIUS.lg,
-              padding: SPACING.sm,
-              borderWidth: 1,
-              borderColor: COLORS.borders.default,
-            }}
-          >
-            <View style={{ flexDirection: "row", gap: 8 }}>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 12, color: COLORS.text.blackWhite, marginBottom: 4 }}>
-                  Escalão
-                </Text>
-                <CategoryPicker />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 12, color: COLORS.text.blackWhite, marginBottom: 4 }}>
-                  Época
-                </Text>
-                <SeasonPicker />
-              </View>
-            </View>
-          </View>
-          <View
-            accessibilityRole="tablist"
-            accessibilityLabel="Escolher tema"
-            style={styles.themeSwitcher}
-          >
-            {(["light", "dark"] as const).map((theme) => {
-              const active = mode === theme;
-              return (
-                <TouchableOpacity
-                  key={theme}
-                  accessibilityRole="button"
-                  accessibilityLabel={
-                    theme === "light" ? "Tema claro" : "Tema escuro"
-                  }
-                  activeOpacity={0.75}
-                  onPress={() => setPreference(theme)}
-                  style={[
-                    styles.themeSwitcherOption,
-                    active && styles.themeSwitcherOptionActive,
-                  ]}
-                >
-                  <Ionicons
-                    name={theme === "light" ? "sunny-outline" : "moon-outline"}
-                    size={18}
-                    color={
-                      active ? COLORS.text.inverse : COLORS.text.blackWhite
-                    }
-                  />
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
-
-        {/* Notícias */}
-        <Text style={styles.sectionTitle}>Notícias</Text>
-        <View style={[styles.toggleCard, { marginBottom: SPACING.lg }]}>
-          <View style={styles.toggleLeft}>
+            {/* Pickers */}
             <View
               style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: safePrefs.news
-                  ? COLORS.brand.tint
-                  : COLORS.backgrounds.subtle,
-                justifyContent: "center",
-                alignItems: "center",
+                backgroundColor: COLORS.surfaceLight,
+                borderRadius: RADIUS.lg,
+                padding: SPACING.sm,
+                borderWidth: 1,
+                borderColor: COLORS.borders.default,
+                marginBottom: SPACING.lg,
               }}
             >
-              <Ionicons
-                name="newspaper-outline"
-                size={20}
-                color={COLORS.text.blackWhite}
+              <View style={{ flexDirection: "row", gap: 8 }}>
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: COLORS.text.blackWhite,
+                      marginBottom: 4,
+                    }}
+                  >
+                    Escalão
+                  </Text>
+                  <CategoryPicker />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: COLORS.text.blackWhite,
+                      marginBottom: 4,
+                    }}
+                  >
+                    Época
+                  </Text>
+                  <SeasonPicker />
+                </View>
+              </View>
+            </View>
+
+            {/* Notícias */}
+            <Text style={styles.sectionTitle}>Notícias</Text>
+            <View style={[styles.toggleCard, { marginBottom: SPACING.lg }]}>
+              <View style={styles.toggleLeft}>
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: safePrefs.news
+                      ? COLORS.brand.tint
+                      : COLORS.backgrounds.subtle,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Ionicons
+                    name="newspaper-outline"
+                    size={20}
+                    color={COLORS.text.blackWhite}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.toggleTitle}>Alertas de Notícias</Text>
+                  <Text style={styles.toggleDescription}>
+                    Notificações de novas notícias.
+                  </Text>
+                </View>
+              </View>
+              <Switch
+                value={safePrefs.news}
+                onValueChange={() =>
+                  updatePreferences({ news: !safePrefs.news })
+                }
               />
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.toggleTitle}>Alertas de Notícias</Text>
-              <Text style={styles.toggleDescription}>
-                Notificações de novas notícias.
-              </Text>
+
+            {/* Por escalão */}
+            <Text style={styles.sectionTitle}>Notificações Por escalão</Text>
+            {categories?.map((cfg: CategoryConfig) => (
+              <EscalaoSection
+                key={cfg.category}
+                cfg={cfg}
+                preferences={safePrefs}
+                updatePreferences={updatePreferences}
+                defaultOpen={false}
+              />
+            ))}
+
+            {/* Sugestões & Erros */}
+            <Text style={[styles.sectionTitle, { marginTop: SPACING.lg }]}>
+              Feedback
+            </Text>
+            <FeedbackBox deviceId={deviceId} />
+
+            {/* Links do clube */}
+            <View style={styles.clubLinks}>
+              <TouchableOpacity
+                style={styles.clubLinkBtn}
+                onPress={() => Linking.openURL(teamConfig.instagram_URL)}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="logo-instagram" size={20} color={COLORS.white} />
+                <Text style={styles.clubLinkBtnText}>Instagram</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.clubLinkBtn}
+                onPress={() => Linking.openURL(teamConfig.merch_URL)}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="shirt-outline" size={20} color={COLORS.white} />
+                <Text style={styles.clubLinkBtnText}>Loja do Clube</Text>
+              </TouchableOpacity>
             </View>
-          </View>
-          <Switch
-            value={safePrefs.news}
-            onValueChange={() => updatePreferences({ news: !safePrefs.news })}
-          />
-        </View>
 
-        {/* Por escalão */}
-        <Text style={styles.sectionTitle}>Notificações Por escalão</Text>
-        {categories?.map((cfg: CategoryConfig) => (
-          <EscalaoSection
-            key={cfg.category}
-            cfg={cfg}
-            preferences={safePrefs}
-            updatePreferences={updatePreferences}
-            defaultOpen={false}
-          />
-        ))}
-
-        {/* Sugestões & Erros */}
-        <Text style={[styles.sectionTitle, { marginTop: SPACING.lg }]}>
-          Feedback
-        </Text>
-        <FeedbackBox deviceId={deviceId} />
-
-        {/* Links do clube */}
-        <View style={styles.clubLinks}>
-          <TouchableOpacity
-            style={styles.clubLinkBtn}
-            onPress={() => Linking.openURL(teamConfig.instagram_URL)}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="logo-instagram" size={20} color={COLORS.white} />
-            <Text style={styles.clubLinkBtnText}>Instagram</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.clubLinkBtn}
-            onPress={() => Linking.openURL(teamConfig.merch_URL)}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="shirt-outline" size={20} color={COLORS.white} />
-            <Text style={styles.clubLinkBtnText}>Loja do Clube</Text>
-          </TouchableOpacity>
-        </View>
-
-        <Text style={styles.dataDisclaimer}>
-          Os dados apresentados retirados do{" "}
-          <Text
-            style={styles.dataSourceLink}
-            onPress={() => Linking.openURL(teamConfig.dataSource_URL)}
-          >
-            zerozero.pt
-          </Text>
-          .
-        </Text>
+            <Text style={styles.dataDisclaimer}>
+              Os dados apresentados retirados do{" "}
+              <Text
+                style={styles.dataSourceLink}
+                onPress={() => Linking.openURL(teamConfig.dataSource_URL)}
+              >
+                zerozero.pt
+              </Text>
+              .
+            </Text>
           </>
         )}
       </ScrollView>
