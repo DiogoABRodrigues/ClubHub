@@ -1,15 +1,2 @@
 TODO.txt
-**/coverage/
-**/.env
-**/.env.*
-!**/.env.example
-**/node_modules/
-**/dist/
-**/.expo/
-**/.cache/
-**/*.log
-**/google-services.json
-**/GoogleService-Info.plist
-**/*.keystore
-**/*.jks
-!**/android/app/debug.keystore
+

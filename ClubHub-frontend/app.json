@@ -25,7 +25,9 @@
       "predictiveBackGestureEnabled": false,
       "allowBackup": false,
       "package": "com.x13dean13.A.D.E.C.A.S",
-      "permissions": ["POST_NOTIFICATIONS"],
+      "permissions": [
+        "POST_NOTIFICATIONS"
+      ],
       "blockedPermissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
@@ -55,9 +57,9 @@
       "router": {},
       "BACKEND_URI": "https://clubhub-c8u0.onrender.com",
       "eas": {
-        "projectId": "2118d1ae-beb4-4503-a7ab-106eab98fb24"
+        "projectId": "52c0553d-0cbd-47f4-a4d5-be8489e3e9ef"
       }
     },
-    "owner": "13dean13"
+    "owner": "13dean"
   }
 }
