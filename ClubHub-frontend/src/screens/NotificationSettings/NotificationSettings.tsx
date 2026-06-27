@@ -402,7 +402,7 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
             borderColor: COLORS.borders.default,
             padding: SPACING.sm,
             fontSize: FONT_SIZE.sm,
-            color: COLORS.text.primary,
+            color: COLORS.text.blackWhite,
             minHeight: 90,
             lineHeight: 20,
           }}
