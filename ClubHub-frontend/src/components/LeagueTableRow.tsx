@@ -10,6 +10,7 @@ import { styles } from "./styles/LeagueTableRow.styles";
 import { COLORS } from "../theme/colors";
 import { Standing } from "../models/Standing";
 import { ZZImage } from "./ZZImage";
+import { useTheme } from "../contexts/ThemeContext";
 
 interface Props {
   standing: Standing;
@@ -28,6 +29,7 @@ const COLS = {
 // ─── Logo helper ──────────────────────────────────────────────────────────────
 
 const TeamLogo = ({ uri }: { uri?: string }) => {
+  useTheme();
   const [failed, setFailed] = useState(false);
 
   if (uri && !failed) {
@@ -62,6 +64,7 @@ const TeamLogo = ({ uri }: { uri?: string }) => {
 
 export const LeagueTableRow = React.memo(
   ({ standing, isUserTeam = false, teamLogo }: Props) => {
+    const { mode } = useTheme();
     const [expanded, setExpanded] = useState(false);
 
     const toggleExpand = useCallback(() => {
@@ -79,7 +82,7 @@ export const LeagueTableRow = React.memo(
         return standing.rowColor + "4D";
       }
       return COLORS.background;
-    }, [standing.rowColor /*isAppTeam*/]);
+    }, [standing.rowColor, mode /*isAppTeam*/]);
 
     return (
       <TouchableOpacity activeOpacity={0.8} onPress={toggleExpand}>

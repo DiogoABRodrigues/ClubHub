@@ -13,6 +13,7 @@ import { Match } from "../../models/Match";
 import { useAuth } from "../../contexts/AuthContext";
 import { EmptyState } from "../../components/EmptyState";
 import { useTeams } from "../../hooks/useTeams";
+import { useTheme } from "../../contexts/ThemeContext";
 
 type LeagueSection = {
   type: "league";
@@ -58,6 +59,7 @@ function sortRounds(a: CupRound, b: CupRound): number {
 
 export const Standings = React.memo(function Standings({ navigation }: any) {
   const { adminMode } = useAuth();
+  const { mode } = useTheme();
   const { standings, loading: standingsLoading, refreshStandings } = useStandings();
   const { competitions, loading: competitionsLoading, refreshCompetitions } = useCompetitions();
   const { matches } = useMatches();
@@ -303,6 +305,7 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         stickySectionHeadersEnabled={false}
+        extraData={mode}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

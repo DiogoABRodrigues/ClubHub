@@ -17,12 +17,14 @@ import { usePlayers } from "../../hooks/usePlayers";
 import { Player } from "../../models/Player";
 import { styles as globalStyles } from "./Stats.styles";
 import { COLORS } from "../../theme/colors";
+import { useTheme } from "../../contexts/ThemeContext";
 
 type SortField = "games" | "minutes" | "goals";
 type SortOrder = "asc" | "desc";
 
 const SortIcon = React.memo(
   ({ active, order }: { active: boolean; order: SortOrder }) => {
+    useTheme();
     if (!active) return null;
     return order === "desc" ? (
       <ArrowUp width={14} height={14} color={COLORS.text.blackWhite} />
@@ -33,6 +35,7 @@ const SortIcon = React.memo(
 );
 
 export const SquadStats = React.memo(function SquadStats() {
+  const { mode } = useTheme();
   const { players } = usePlayers();
   const [sortField, setSortField] = useState<SortField>("goals");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
@@ -163,6 +166,7 @@ export const SquadStats = React.memo(function SquadStats() {
       maxToRenderPerBatch={10}
       windowSize={5}
       removeClippedSubviews
+      extraData={mode}
       getItemLayout={(_data, index) => ({
         length: 60,
         offset: 60 * index,

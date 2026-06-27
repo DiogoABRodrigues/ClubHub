@@ -9,6 +9,7 @@ import { ZZImage } from "./ZZImage";
 import { getPenaltyDisplayScore } from "../utils/dateUtils";
 import { styles } from "./styles/CupMatchRow.styles";
 import { TouchableOpacity } from "react-native";
+import { useTheme } from "../contexts/ThemeContext";
 
 interface Props {
   match: Match;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 const TeamLogo = ({ uri }: { uri?: string }) => {
+  useTheme();
   const [failed, setFailed] = React.useState(false);
 
   if (uri && !failed) {
@@ -47,6 +49,7 @@ const TeamLogo = ({ uri }: { uri?: string }) => {
 };
 
 export const CupMatchRow = React.memo(({ match, onPress }: Props) => {
+  useTheme();
   const { teams } = useTeams();
   const appTeamName = teamConfig.name.trim().toLowerCase();
 

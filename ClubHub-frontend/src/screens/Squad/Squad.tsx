@@ -11,6 +11,7 @@ import {
 import { PlayerCardModal } from "../../components/PlayerCardModal";
 import { EmptyState } from "../../components/EmptyState";
 import { COLORS } from "../../theme/colors";
+import { useTheme } from "../../contexts/ThemeContext";
 
 const defaultPlayerImage = require("../../../assets/player.jpg");
 
@@ -30,6 +31,7 @@ const PlayerCard = React.memo(
     player: Player;
     onPress: (player: Player) => void;
   }) => {
+    useTheme();
     const [firstName, ...rest] = player.name.split(" ");
     const lastName = rest.join(" ");
     const hasLeft = player.squadStatus === "left";
@@ -72,6 +74,7 @@ const PlayerCard = React.memo(
 //  SCREEN
 // ─────────────────────────────────────────────────────────────
 export const SquadScreen = React.memo(function SquadScreen() {
+  const { mode } = useTheme();
   // getVisiblePlayers devolve "active" + "left"; "error" já foi filtrado
   const { getVisiblePlayers } = usePlayers();
   const visiblePlayers = getVisiblePlayers();
@@ -162,6 +165,7 @@ export const SquadScreen = React.memo(function SquadScreen() {
           return `unknown-${index}`;
         }}
         contentContainerStyle={globalStyles.squadList}
+        extraData={mode}
       />
       {selectedPlayer?.isFieldPlayer && (
         <PlayerCardModal player={selectedPlayer} onClose={handleCloseModal} />
