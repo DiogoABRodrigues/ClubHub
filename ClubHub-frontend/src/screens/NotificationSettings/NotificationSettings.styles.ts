@@ -1,11 +1,11 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
+import { COLORS, SPACING, RADIUS, FONT_SIZE, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
-    backgroundColor: "#F4F4F6",
+    backgroundColor: COLORS.backgrounds.app,
   },
 
   // ── Header ───────────────────────────────────────────────────────────────
@@ -56,10 +56,10 @@ export const styles = StyleSheet.create({
     minHeight: 160,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.white,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: COLORS.borders.default,
   },
 
   // ── Banner informativo ────────────────────────────────────────────────────
@@ -67,9 +67,9 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     gap: SPACING.sm,
-    backgroundColor: "rgba(128,0,0,0.08)",
+    backgroundColor: COLORS.brand.tint,
     borderWidth: 1,
-    borderColor: "rgba(128,0,0,0.15)",
+    borderColor: COLORS.brand.border,
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     marginBottom: SPACING.lg,
@@ -84,7 +84,7 @@ export const styles = StyleSheet.create({
 
   infoDescription: {
     fontSize: FONT_SIZE.xs,
-    color: "#6B7280",
+    color: COLORS.text.secondary,
     lineHeight: 17,
   },
 
@@ -96,7 +96,7 @@ export const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#9CA3AF",
+    color: COLORS.text.blackWhite,
     textTransform: "uppercase",
     letterSpacing: 0.7,
     marginBottom: SPACING.sm,
@@ -108,13 +108,13 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.surfaceLight,
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     marginBottom: SPACING.sm,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
-    shadowColor: "#000",
+    borderColor: COLORS.borders.default,
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
     shadowRadius: 3,
@@ -139,26 +139,54 @@ export const styles = StyleSheet.create({
   },
 
   toggleTitle: {
-    fontSize: FONT_SIZE.md,
+    fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: "#111827",
+    color: COLORS.text.blackWhite,
     marginBottom: 2,
   },
 
   toggleDescription: {
     fontSize: FONT_SIZE.xs,
-    color: "#6B7280",
+    color: COLORS.text.secondary,
     lineHeight: 17,
     paddingRight: SPACING.md,
   },
 
   // ── Card de equipa ────────────────────────────────────────────────────────
+  themeCard: {
+    flexDirection: "row",
+    gap: SPACING.sm,
+    backgroundColor: COLORS.surfaceLight,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.borders.default,
+    padding: SPACING.sm,
+    marginBottom: SPACING.lg,
+  },
+  themeOption: {
+    flex: 1,
+    minHeight: 42,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.borders.default,
+    backgroundColor: COLORS.backgrounds.muted,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 6,
+  },
+  themeOptionText: {
+    color: COLORS.text.secondary,
+    fontSize: FONT_SIZE.xs,
+    fontWeight: "700",
+  },
+
   teamCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.surfaceLight,
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: COLORS.borders.default,
   },
 
   teamRow: {
@@ -171,12 +199,12 @@ export const styles = StyleSheet.create({
   teamTitle: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: "#111827",
+    color: COLORS.text.primary,
   },
 
   teamSubtitle: {
     fontSize: FONT_SIZE.xs,
-    color: "#6B7280",
+    color: COLORS.text.secondary,
   },
 
   saveButton: {
@@ -188,7 +216,7 @@ export const styles = StyleSheet.create({
   },
 
   saveButtonText: {
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontWeight: "700",
     fontSize: FONT_SIZE.md,
     letterSpacing: 0.2,
@@ -197,11 +225,11 @@ export const styles = StyleSheet.create({
   // ── Modal Admin ───────────────────────────────────────────────────────────
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: COLORS.backgrounds.overlay,
     justifyContent: "flex-end",
   },
   modalCard: {
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.surfaceLight,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 24,
@@ -210,15 +238,15 @@ export const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#111827",
+    color: COLORS.text.primary,
     marginBottom: 8,
   },
   input: {
-    backgroundColor: "#F3F4F6",
+    backgroundColor: COLORS.backgrounds.subtle,
     padding: 12,
     borderRadius: 10,
     fontSize: FONT_SIZE.sm,
-    color: "#111827",
+    color: COLORS.text.primary,
   },
   loginBtn: {
     backgroundColor: COLORS.primary,
@@ -227,10 +255,10 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 4,
   },
-  loginBtnText: { color: "#fff", fontWeight: "700", fontSize: FONT_SIZE.sm },
+  loginBtnText: { color: COLORS.white, fontWeight: "700", fontSize: FONT_SIZE.sm },
   cancelText: {
     textAlign: "center",
-    color: "#9CA3AF",
+    color: COLORS.text.muted,
     paddingVertical: 8,
     fontSize: FONT_SIZE.sm,
   },
@@ -251,17 +279,15 @@ export const styles = StyleSheet.create({
     paddingVertical: 13,
     borderRadius: RADIUS.lg,
     backgroundColor: COLORS.warning,
-    borderWidth: 1.5,
-    borderColor: "#FFFFFF",
   },
   clubLinkBtnText: {
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontWeight: "700",
     fontSize: FONT_SIZE.md,
     letterSpacing: 0.3,
   },
   dataDisclaimer: {
-    color: "#6B7280",
+    color: COLORS.text.secondary,
     fontSize: FONT_SIZE.xs,
     lineHeight: 17,
     marginTop: SPACING.lg,
@@ -273,4 +299,4 @@ export const styles = StyleSheet.create({
     fontWeight: "700",
     textDecorationLine: "underline",
   },
-});
+}));

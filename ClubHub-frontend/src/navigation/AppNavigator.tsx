@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "../theme/colors";
+import { COLORS, createThemedStyles } from "../theme/colors";
 
 import { HomeStack } from "./HomeStack";
 import { SeasonStack } from "./SeasonStack";
@@ -16,6 +16,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useCategory } from "../contexts/CategoryContext";
 import { useCategoryTransition } from "../hooks/useCategoryTransition";
 import { CategoryTransitionOverlay } from "../components/CategoryTransitionOverlay";
+import { useTheme } from "../contexts/ThemeContext";
 
 const Tab = createBottomTabNavigator();
 
@@ -33,6 +34,7 @@ const ICON_MAP: Record<string, string> = {
 const AppContent = () => {
   const { isAdmin, adminMode, setAdminMode } = useAuth();
   const { isCategoryChanging } = useCategory();
+  const { colors, mode } = useTheme();
 
   // Activa o mecanismo que esconde o overlay quando os dados ficam prontos
   useCategoryTransition();
@@ -42,14 +44,14 @@ const AppContent = () => {
   return (
     <View style={styles.container}>
       <Tab.Navigator
-        key={adminMode ? "admin" : "user"}
+        key={`${adminMode ? "admin" : "user"}-${mode}`}
         screenOptions={({ route }) => ({
           headerShown: false,
-          tabBarActiveTintColor: COLORS.secondary,
-          tabBarInactiveTintColor: COLORS.textSecondary,
+          tabBarActiveTintColor: colors.brand.primary,
+          tabBarInactiveTintColor: colors.black,
           tabBarStyle: {
-            backgroundColor: "#ffffff",
-            borderTopColor: COLORS.border,
+            backgroundColor: colors.backgrounds.elevated,
+            borderTopColor: colors.borders.default,
           },
           tabBarIcon: ({ color, size }) => {
             const iconName = ICON_MAP[route.name] ?? "ellipse-outline";
@@ -102,15 +104,52 @@ const AppContent = () => {
 
 export const AppNavigator = () => {
   const { adminMode } = useAuth();
+  const { colors, mode } = useTheme();
+  const navigationTheme = React.useMemo(
+    () => ({
+      dark: mode === "dark",
+      colors: {
+        primary: colors.brand.primary,
+        background: colors.backgrounds.app,
+        card: colors.backgrounds.elevated,
+        text: colors.text.primary,
+        border: colors.borders.default,
+        notification: colors.status.warning,
+      },
+      fonts: {
+        regular: {
+          fontFamily: "System",
+          fontWeight: "400" as const,
+        },
+        medium: {
+          fontFamily: "System",
+          fontWeight: "500" as const,
+        },
+        bold: {
+          fontFamily: "System",
+          fontWeight: "700" as const,
+        },
+        heavy: {
+          fontFamily: "System",
+          fontWeight: "800" as const,
+        },
+      },
+    }),
+    [colors, mode],
+  );
+
   return (
-    <NavigationContainer key={adminMode ? "admin-root" : "user-root"}>
+    <NavigationContainer
+      key={`${adminMode ? "admin-root" : "user-root"}-${mode}`}
+      theme={navigationTheme}
+    >
       <AppContent />
     </NavigationContainer>
   );
 };
 
-const styles = StyleSheet.create({
+const styles = createThemedStyles(() => ({
   container: {
     flex: 1,
   },
-});
+}));

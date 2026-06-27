@@ -9,6 +9,7 @@ import { queryClient } from "./src/lib/queryClient";
 import { SocketProvider } from "./src/contexts/SocketContext";
 import { SelectedSeasonProvider } from "./src/contexts/Selectedseasoncontext";
 import { CategoryProvider } from "./src/contexts/CategoryContext";
+import { ThemeProvider } from "./src/contexts/ThemeContext";
 import { registerForPushNotifications } from "./src/utils/notifications";
 import * as SplashScreen from "expo-splash-screen";
 
@@ -35,19 +36,21 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <QueryClientProvider client={queryClient}>
-        <CategoryProvider>
-          <SelectedSeasonProvider>
-            <AuthProvider>
-              <SocketProvider>
-                {!splashDone ? (
-                  <SplashScreenComponent onFinish={handleSplashFinish} />
-                ) : (
-                  <AppNavigator />
-                )}
-              </SocketProvider>
-            </AuthProvider>
-          </SelectedSeasonProvider>
-        </CategoryProvider>
+        <ThemeProvider>
+          <CategoryProvider>
+            <SelectedSeasonProvider>
+              <AuthProvider>
+                <SocketProvider>
+                  {!splashDone ? (
+                    <SplashScreenComponent onFinish={handleSplashFinish} />
+                  ) : (
+                    <AppNavigator />
+                  )}
+                </SocketProvider>
+              </AuthProvider>
+            </SelectedSeasonProvider>
+          </CategoryProvider>
+        </ThemeProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

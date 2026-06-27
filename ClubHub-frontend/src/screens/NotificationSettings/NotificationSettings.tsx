@@ -18,7 +18,13 @@ import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { Switch } from "../../components/Switch";
 import { styles } from "./NotificationSettings.styles";
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
+import {
+  COLORS,
+  SPACING,
+  RADIUS,
+  FONT_SIZE,
+  ThemePreference,
+} from "../../theme/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../../contexts/AuthContext";
 import { login as loginRequest } from "../../services/AuthService";
@@ -34,6 +40,7 @@ import { CategoryPicker } from "../../components/Categorypicker";
 import useHelper from "../../hooks/useHelper";
 import { CategoryConfig } from "../../models/Category";
 import { useCategory } from "../../contexts/CategoryContext";
+import { useTheme } from "../../contexts/ThemeContext";
 type CategoryKey = "over19" | "sub19" | "sub17" | "sub15" | "sub13";
 
 const NOTIFICATION_ROWS: {
@@ -60,6 +67,15 @@ const NOTIFICATION_ROWS: {
     label: "Resultado final",
     desc: "Quando o jogo termina",
   },
+];
+
+const THEME_OPTIONS: {
+  value: ThemePreference;
+  label: string;
+  icon: string;
+}[] = [
+  { value: "light", label: "Claro", icon: "sunny-outline" },
+  { value: "dark", label: "Escuro", icon: "moon-outline" },
 ];
 
 function categoryPrefKey(
@@ -93,13 +109,13 @@ function EscalaoSection({
   return (
     <View
       style={{
-        backgroundColor: "#FFFFFF",
+        backgroundColor: COLORS.surfaceLight,
         borderRadius: RADIUS.lg,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
+        borderColor: COLORS.borders.default,
         marginBottom: SPACING.sm,
         overflow: "hidden",
-        shadowColor: "#000",
+        shadowColor: COLORS.black,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.04,
         shadowRadius: 3,
@@ -115,7 +131,7 @@ function EscalaoSection({
           paddingHorizontal: SPACING.md,
           paddingVertical: SPACING.md,
           gap: SPACING.sm,
-          backgroundColor: "#FFFFFF",
+          backgroundColor: COLORS.surfaceLight,
         }}
       >
         <View
@@ -123,7 +139,7 @@ function EscalaoSection({
             width: 36,
             height: 36,
             borderRadius: 18,
-            backgroundColor: open ? "rgba(128,0,0,0.08)" : "#F3F4F6",
+            backgroundColor: open ? COLORS.brand.tint : COLORS.backgrounds.subtle,
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -131,15 +147,14 @@ function EscalaoSection({
           <Ionicons
             name="trophy-outline"
             size={16}
-            color={open ? COLORS.primary : "#9CA3AF"}
+            color={open ? COLORS.primary : COLORS.text.muted}
           />
         </View>
         <Text
           style={{
             flex: 1,
             fontSize: FONT_SIZE.md,
-            fontWeight: "600",
-            color: "#111827",
+            color: COLORS.text.blackWhite,
           }}
         >
           {cfg.label}
@@ -147,35 +162,12 @@ function EscalaoSection({
         <Ionicons
           name={open ? "chevron-up" : "chevron-down"}
           size={18}
-          color="#9ca3af"
+          color={COLORS.text.muted}
         />
       </TouchableOpacity>
 
       {open && (
-        <View style={{ borderTopWidth: 1, borderTopColor: "#F3F4F6" }}>
-          <View
-            style={{
-              paddingHorizontal: SPACING.md,
-              paddingTop: SPACING.sm,
-              paddingBottom: SPACING.xs,
-              backgroundColor: "#FAFAFA",
-              borderBottomWidth: 1,
-              borderBottomColor: "#F3F4F6",
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 10,
-                fontWeight: "700",
-                color: "#9CA3AF",
-                textTransform: "uppercase",
-                letterSpacing: 0.7,
-              }}
-            >
-              Jogos
-            </Text>
-          </View>
-
+        <View style={{ borderTopWidth: 1, borderTopColor: COLORS.backgrounds.subtle }}>
           {NOTIFICATION_ROWS.map(({ key: _key, icon, label, desc }, i) => {
             const prefKey = categoryPrefKey(
               cat,
@@ -191,9 +183,9 @@ function EscalaoSection({
                   alignItems: "center",
                   paddingHorizontal: SPACING.md,
                   paddingVertical: SPACING.sm + 2,
-                  backgroundColor: "#FFFFFF",
+                  backgroundColor: COLORS.surfaceLight,
                   borderTopWidth: i > 0 ? 1 : 0,
-                  borderTopColor: "#F3F4F6",
+                  borderTopColor: COLORS.backgrounds.subtle,
                 }}
               >
                 <View
@@ -209,7 +201,7 @@ function EscalaoSection({
                       width: 32,
                       height: 32,
                       borderRadius: 16,
-                      backgroundColor: value ? "rgba(128,0,0,0.08)" : "#F3F4F6",
+                      backgroundColor: value ? COLORS.brand.tint : COLORS.backgrounds.subtle,
                       justifyContent: "center",
                       alignItems: "center",
                     }}
@@ -217,7 +209,7 @@ function EscalaoSection({
                     <Ionicons
                       name={icon as any}
                       size={15}
-                      color={value ? COLORS.primary : "#9CA3AF"}
+                      color={value ? COLORS.primary : COLORS.text.muted}
                     />
                   </View>
                   <View style={{ flex: 1, paddingRight: SPACING.sm }}>
@@ -225,14 +217,14 @@ function EscalaoSection({
                       style={{
                         fontSize: FONT_SIZE.sm,
                         fontWeight: "600",
-                        color: "#111827",
+                        color: COLORS.text.blackWhite,
                         marginBottom: 1,
                       }}
                     >
                       {label}
                     </Text>
                     <Text
-                      style={{ fontSize: 11, color: "#9CA3AF", lineHeight: 15 }}
+                      style={{ fontSize: 11, color: COLORS.text.secondary, lineHeight: 15 }}
                     >
                       {desc}
                     </Text>
@@ -306,13 +298,13 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
   return (
     <View
       style={{
-        backgroundColor: "#FFFFFF",
+        backgroundColor: COLORS.surfaceLight,
         borderRadius: RADIUS.lg,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
+        borderColor: COLORS.borders.default,
         marginBottom: SPACING.sm,
         overflow: "hidden",
-        shadowColor: "#000",
+        shadowColor: COLORS.black,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.04,
         shadowRadius: 3,
@@ -335,7 +327,7 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
             width: 36,
             height: 36,
             borderRadius: 18,
-            backgroundColor: "rgba(128,0,0,0.08)",
+            backgroundColor: COLORS.brand.tint,
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -351,18 +343,18 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
             style={{
               fontSize: FONT_SIZE.md,
               fontWeight: "600",
-              color: "#111827",
+              color: COLORS.text.blackWhite,
             }}
           >
             Sugestões & Erros
           </Text>
-          <Text style={{ fontSize: 11, color: "#9CA3AF", lineHeight: 15 }}>
+          <Text style={{ fontSize: 11, color: COLORS.text.secondary, lineHeight: 15 }}>
             Ajuda-nos a melhorar a app
           </Text>
         </View>
       </View>
 
-      <View style={{ height: 1, backgroundColor: "#F3F4F6" }} />
+      <View style={{ height: 1, backgroundColor: COLORS.backgrounds.subtle }} />
 
       <View style={{ padding: SPACING.md, gap: SPACING.sm }}>
         {/* Tipo: Sugestão / Erro */}
@@ -381,16 +373,16 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
                   borderRadius: RADIUS.md,
                   alignItems: "center",
                   justifyContent: "center",
-                  backgroundColor: active ? COLORS.primary : "#F3F4F6",
+                  backgroundColor: active ? COLORS.primary : COLORS.backgrounds.subtle,
                   borderWidth: active ? 0 : 1,
-                  borderColor: "#E5E7EB",
+                  borderColor: COLORS.border,
                 }}
               >
                 <Text
                   style={{
                     fontSize: FONT_SIZE.sm,
                     fontWeight: active ? "700" : "500",
-                    color: active ? "#FFFFFF" : "#6B7280",
+                    color: active ? COLORS.white : COLORS.text.secondary,
                   }}
                 >
                   {label}
@@ -409,18 +401,18 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
               ? "Descreve a tua sugestão..."
               : "Descreve o erro que encontraste..."
           }
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={COLORS.text.muted}
           multiline
           numberOfLines={4}
           textAlignVertical="top"
           style={{
-            backgroundColor: "#F9FAFB",
+            backgroundColor: COLORS.backgrounds.muted,
             borderRadius: RADIUS.md,
             borderWidth: 1,
-            borderColor: "#E5E7EB",
+            borderColor: COLORS.borders.default,
             padding: SPACING.sm,
             fontSize: FONT_SIZE.sm,
-            color: "#111827",
+            color: COLORS.text.primary,
             minHeight: 90,
             lineHeight: 20,
           }}
@@ -444,12 +436,12 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
                 position: "absolute",
                 top: 6,
                 right: 6,
-                backgroundColor: "rgba(0,0,0,0.55)",
+                backgroundColor: COLORS.effect.blackClose,
                 borderRadius: 12,
                 padding: 4,
               }}
             >
-              <Ionicons name="close" size={14} color="#FFFFFF" />
+              <Ionicons name="close" size={14} color={COLORS.white} />
             </TouchableOpacity>
           </View>
         ) : (
@@ -465,15 +457,15 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
               paddingVertical: 6,
               borderRadius: RADIUS.md,
               borderWidth: 1,
-              borderColor: "#E5E7EB",
-              backgroundColor: "#F9FAFB",
+              borderColor: COLORS.borders.default,
+              backgroundColor: COLORS.backgrounds.muted,
             }}
           >
-            <Ionicons name="image-outline" size={16} color="#6B7280" />
+            <Ionicons name="image-outline" size={16} color={COLORS.text.secondary} />
             <Text
               style={{
                 fontSize: FONT_SIZE.xs,
-                color: "#6B7280",
+                color: COLORS.text.secondary,
                 fontWeight: "500",
               }}
             >
@@ -488,7 +480,7 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
           activeOpacity={0.8}
           disabled={sending || sent}
           style={{
-            backgroundColor: sent ? "#22C55E" : COLORS.primary,
+            backgroundColor: sent ? COLORS.status.successBright : COLORS.primary,
             borderRadius: RADIUS.md,
             paddingVertical: 12,
             alignItems: "center",
@@ -499,17 +491,17 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
           }}
         >
           {sending ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
+            <ActivityIndicator size="small" color={COLORS.white} />
           ) : (
             <Ionicons
               name={sent ? "checkmark" : "send-outline"}
               size={16}
-              color="#FFFFFF"
+              color={COLORS.white}
             />
           )}
           <Text
             style={{
-              color: "#FFFFFF",
+              color: COLORS.white,
               fontWeight: "700",
               fontSize: FONT_SIZE.sm,
             }}
@@ -527,6 +519,7 @@ export const NotificationSettings = () => {
   const { loginAsAdmin, setAdminMode } = useAuth();
   const { categories, isLoading: categoriesLoading } = useHelper();
   const { isReady: categoryReady } = useCategory();
+  const { colors, preference, setPreference } = useTheme();
 
   const [deviceId, setDeviceId] = useState<string | null>(null);
   const [deviceIdReady, setDeviceIdReady] = useState(false);
@@ -607,28 +600,63 @@ export const NotificationSettings = () => {
         {/* Pickers */}
         <View
           style={{
-            backgroundColor: "#FFFFFF",
+            backgroundColor: COLORS.surfaceLight,
             borderRadius: RADIUS.lg,
-            padding: SPACING.md,
+            padding: SPACING.sm,
             marginBottom: SPACING.lg,
             borderWidth: 1,
-            borderColor: "#E5E7EB",
+            borderColor: COLORS.borders.default,
           }}
         >
           <View style={{ flexDirection: "row", gap: 8 }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 11, color: "#9CA3AF", marginBottom: 4 }}>
+              <Text style={{ fontSize: 12, color: COLORS.text.blackWhite, marginBottom: 4 }}>
                 Escalão
               </Text>
               <CategoryPicker />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 11, color: "#9CA3AF", marginBottom: 4 }}>
+              <Text style={{ fontSize: 12, color: COLORS.text.blackWhite, marginBottom: 4 }}>
                 Época
               </Text>
               <SeasonPicker />
             </View>
           </View>
+        </View>
+
+        <Text style={styles.sectionTitle}>Tema</Text>
+        <View style={styles.themeCard}>
+          {THEME_OPTIONS.map((option) => {
+            const active = preference === option.value;
+            return (
+              <TouchableOpacity
+                key={option.value}
+                onPress={() => setPreference(option.value)}
+                activeOpacity={0.75}
+                style={[
+                  styles.themeOption,
+                  active && {
+                    backgroundColor: colors.brand.primary,
+                    borderColor: colors.brand.primary,
+                  },
+                ]}
+              >
+                <Ionicons
+                  name={option.icon as any}
+                  size={16}
+                  color={active ? colors.text.inverse : colors.text.secondary}
+                />
+                <Text
+                  style={[
+                    styles.themeOptionText,
+                    active && { color: colors.text.inverse },
+                  ]}
+                >
+                  {option.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         {/* Notícias */}
@@ -641,8 +669,8 @@ export const NotificationSettings = () => {
                 height: 40,
                 borderRadius: 20,
                 backgroundColor: safePrefs.news
-                  ? "rgba(128,0,0,0.08)"
-                  : "#F3F4F6",
+                  ? COLORS.brand.tint
+                  : COLORS.backgrounds.subtle,
                 justifyContent: "center",
                 alignItems: "center",
               }}
@@ -650,7 +678,7 @@ export const NotificationSettings = () => {
               <Ionicons
                 name="newspaper-outline"
                 size={20}
-                color={safePrefs.news ? COLORS.primary : "#9CA3AF"}
+                color={COLORS.text.blackWhite}
               />
             </View>
             <View style={{ flex: 1 }}>
@@ -691,7 +719,7 @@ export const NotificationSettings = () => {
             onPress={() => Linking.openURL(teamConfig.instagram_URL)}
             activeOpacity={0.8}
           >
-            <Ionicons name="logo-instagram" size={20} color="#FFFFFF" />
+            <Ionicons name="logo-instagram" size={20} color={COLORS.white} />
             <Text style={styles.clubLinkBtnText}>Instagram</Text>
           </TouchableOpacity>
 
@@ -700,7 +728,7 @@ export const NotificationSettings = () => {
             onPress={() => Linking.openURL(teamConfig.merch_URL)}
             activeOpacity={0.8}
           >
-            <Ionicons name="shirt-outline" size={20} color="#FFFFFF" />
+            <Ionicons name="shirt-outline" size={20} color={COLORS.white} />
             <Text style={styles.clubLinkBtnText}>Loja do Clube</Text>
           </TouchableOpacity>
         </View>
