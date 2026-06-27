@@ -33,7 +33,7 @@ export const CategoryPicker: React.FC = () => {
           <Ionicons
             name="chevron-down"
             size={14}
-            color={COLORS.textSecondary}
+            color={COLORS.text.blackWhite}
           />
         )}
       </TouchableOpacity>

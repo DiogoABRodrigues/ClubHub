@@ -14,7 +14,7 @@ export const styles = createThemedStyles(() => ({
   triggerText: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
   },
   overlay: {
     flex: 1,
