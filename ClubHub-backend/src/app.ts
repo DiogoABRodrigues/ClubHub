@@ -67,14 +67,6 @@ app.use(
 // pedidos sem Origin. Origens de browser têm de estar em ALLOWED_ORIGINS.
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (isAllowedOrigin(origin)) {
-        callback(null, true);
-        return;
-      }
-
-      callback(new Error("Origem CORS nao permitida"));
-    },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: [
       "Authorization",
