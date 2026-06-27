@@ -571,7 +571,7 @@ export const AdminMatchDetail = () => {
                 <Text
                   style={{
                     fontSize: 11,
-                    color: "rgba(255,255,255,0.7)",
+                    color: COLORS.text.inverseMuted,
                     marginTop: 2,
                   }}
                 >
@@ -831,8 +831,8 @@ export const AdminMatchDetail = () => {
                 style={[adminStyles.adminBtn, adminStyles.adminBtn]}
                 onPress={() => startMatch(match.id)}
               >
-                <Ionicons name="play-circle-outline" size={16} color="#fff" />
-                <Text style={[adminStyles.adminBtnText, { color: "#fff" }]}>
+                <Ionicons name="play-circle-outline" size={16} color={COLORS.white} />
+                <Text style={[adminStyles.adminBtnText, { color: COLORS.white }]}>
                   Recomeçar
                 </Text>
               </TouchableOpacity>

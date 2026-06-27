@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useCallback, useMemo } from "react";
 import { Animated, Pressable, StyleSheet } from "react-native";
-import { COLORS } from "../theme/colors";
+import { COLORS, createThemedStyles } from "../theme/colors";
 
 interface SwitchProps {
   value: boolean;
@@ -76,16 +76,16 @@ export const Switch: React.FC<SwitchProps> = React.memo(
   },
 );
 
-const styles = StyleSheet.create({
+const styles = createThemedStyles(() => ({
   track: {
     justifyContent: "center",
     alignItems: "flex-start",
   },
   thumb: {
     elevation: 2,
-    shadowColor: "#000",
+    shadowColor: COLORS.black,
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 1.5,
   },
-});
+}));

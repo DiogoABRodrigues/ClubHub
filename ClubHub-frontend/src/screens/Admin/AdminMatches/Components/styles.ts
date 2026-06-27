@@ -1,7 +1,7 @@
 import { StyleSheet, Platform } from "react-native";
-import { COLORS } from "../../../../theme/colors";
+import { COLORS, createThemedStyles } from "../../../../theme/colors";
 
-export const modalStyles = StyleSheet.create({
+export const modalStyles = createThemedStyles(() => ({
   overlay: {
     zIndex: 1,
   },
@@ -94,7 +94,7 @@ export const modalStyles = StyleSheet.create({
   },
 
   saveBtnText: {
-    color: "#fff",
+    color: COLORS.white,
     fontSize: 15,
     fontWeight: "700",
   },
@@ -119,4 +119,4 @@ export const modalStyles = StyleSheet.create({
   chipActive: {
     backgroundColor: COLORS.primary + "20",
   },
-});
+}));

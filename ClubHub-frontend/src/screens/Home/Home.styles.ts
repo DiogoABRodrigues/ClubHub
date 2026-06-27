@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, FONT_SIZE, RADIUS } from "../../theme/colors";
+import { COLORS, SPACING, FONT_SIZE, RADIUS, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
@@ -68,7 +68,6 @@ export const styles = StyleSheet.create({
 
   statementMessage: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
     lineHeight: 18,
   },
 
@@ -174,12 +173,12 @@ export const styles = StyleSheet.create({
     width: 5,
     height: 5,
     borderRadius: 3,
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.white,
   },
   livePillText: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#fff",
+    color: COLORS.white,
   },
   separator: {
     height: 1,
@@ -187,4 +186,4 @@ export const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 4,
   },
-});
+}));

@@ -1,7 +1,6 @@
-import { StyleSheet } from "react-native";
-import { COLORS, SPACING, FONT_SIZE, RADIUS } from "../../theme/colors";
+import { COLORS, SPACING, FONT_SIZE, RADIUS, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
@@ -59,7 +58,7 @@ export const styles = StyleSheet.create({
   },
 
   fulltimeBadge: {
-    backgroundColor: "rgba(255,255,255,0.18)",
+    backgroundColor: COLORS.effect.whiteStrong,
     paddingHorizontal: SPACING.sm,
     paddingVertical: 3,
     borderRadius: RADIUS.xl,
@@ -98,7 +97,7 @@ export const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: "rgba(255,255,255,0.15)",
+    backgroundColor: COLORS.effect.whiteMedium,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -166,7 +165,7 @@ export const styles = StyleSheet.create({
 
   tabsList: {
     flexDirection: "row",
-    backgroundColor: COLORS.textPrimary,
+    backgroundColor: COLORS.background.app,
     borderBottomColor: COLORS.border,
   },
 
@@ -181,6 +180,7 @@ export const styles = StyleSheet.create({
 
   activeTab: {
     borderBottomColor: COLORS.textSecondary,
+    borderBottomWidth: 2,
   },
 
   tabText: {
@@ -207,7 +207,7 @@ export const styles = StyleSheet.create({
   halfHeaderText: {
     fontSize: 11,
     fontWeight: "700",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     textTransform: "uppercase",
     letterSpacing: 0.6,
   },
@@ -315,9 +315,9 @@ export const styles = StyleSheet.create({
     paddingVertical: 10,
     minHeight: 44,
     borderBottomWidth: 0.8,
-    borderBottomColor: "#E5E7EB",
+    borderBottomColor: COLORS.borders.default,
     gap: 10,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.background.app,
   },
 
   lineupPhoto: {
@@ -345,12 +345,12 @@ export const styles = StyleSheet.create({
     flex: 1,
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
   },
 
   lineupPosition: {
     fontSize: 12,
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
   },
 
   // ── Stats ─────────────────────────────────────────────────────────────────
@@ -405,7 +405,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 56,
     gap: SPACING.sm,
   },
-});
+}));
 
 // ─── Picker de jogadores ────────────────────────────────────────────────────
 export const pickerStyles = {

@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../../theme/colors";
+import { COLORS, SPACING, RADIUS, FONT_SIZE, createThemedStyles } from "../../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   root: {
     flex: 1,
@@ -74,7 +74,7 @@ export const styles = StyleSheet.create({
   },
 
   saveBtnText: {
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontWeight: "700",
     fontSize: FONT_SIZE.sm,
   },
@@ -86,6 +86,7 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.surfaceLight,
     borderWidth: 1,
     borderColor: COLORS.primary,
+    marginBottom: SPACING.sm,
   },
 
   imagePreview: {
@@ -185,7 +186,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm + 2,
     fontSize: FONT_SIZE.md,
-    color: COLORS.textSecondary,
+    color: COLORS.text.whiteBlack,
     borderWidth: 1,
     borderColor: COLORS.primary,
   },
@@ -226,8 +227,8 @@ export const styles = StyleSheet.create({
   },
 
   bottomSaveBtnText: {
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontSize: FONT_SIZE.md,
     fontWeight: "700",
   },
-});
+}));

@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS } from "../../theme/colors";
+import { COLORS, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   card: {
     backgroundColor: COLORS.surface,
     borderWidth: 1,
@@ -90,4 +90,4 @@ export const styles = StyleSheet.create({
     color: COLORS.textMuted,
     marginLeft: 2,
   },
-});
+}));

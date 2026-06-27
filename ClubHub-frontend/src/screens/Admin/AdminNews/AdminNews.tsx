@@ -135,7 +135,7 @@ export const AdminNews = ({ navigation }: { navigation: any }) => {
             style={styles.addButton}
             onPress={() => navigation.navigate("AdminNewsForm")}
           >
-            <Plus width={16} height={16} color="#fff" />
+            <Plus width={16} height={16} color={COLORS.white} />
             <Text style={styles.addButtonText}>Adicionar</Text>
           </TouchableOpacity>
         }

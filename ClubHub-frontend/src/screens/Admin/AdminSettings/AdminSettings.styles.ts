@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../../theme/colors";
+import { COLORS, SPACING, RADIUS, FONT_SIZE, createThemedStyles } from "../../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
@@ -30,7 +30,7 @@ export const styles = StyleSheet.create({
   headerTitle: {
     fontSize: FONT_SIZE.xl,
     fontWeight: "800",
-    color: "#fff",
+    color: COLORS.white,
     letterSpacing: -0.8,
     lineHeight: FONT_SIZE.xl * 1.1,
   },
@@ -40,7 +40,7 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
     letterSpacing: 0.8,
     textTransform: "uppercase",
-    color: "rgba(255,255,255,0.7)",
+    color: COLORS.text.inverseMuted,
     marginBottom: 2,
   },
 
@@ -59,11 +59,11 @@ export const styles = StyleSheet.create({
 
   // ── Card - fundo branco/neutro, sem primary ───────────────────────────────
   card: {
-    backgroundColor: "#ffffff", // branco - não primary
+    backgroundColor: COLORS.surfaceLight, // branco - não primary
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     borderWidth: 1,
-    borderColor: "#e5e7eb", // cinza suave
+    borderColor: COLORS.borders.default, // cinza suave
     gap: SPACING.md,
   },
   cardIconRow: {
@@ -78,9 +78,9 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexShrink: 0,
-    backgroundColor: "#fef2f2", // tint leve do primary (vermelho escuro)
+    backgroundColor: COLORS.status.errorSoft, // tint leve do primary (vermelho escuro)
     borderWidth: 1,
-    borderColor: "#fecaca",
+    borderColor: COLORS.status.errorBorder,
   },
   cardTextBlock: {
     flex: 1,
@@ -90,12 +90,12 @@ export const styles = StyleSheet.create({
   cardTitle: {
     fontSize: FONT_SIZE.md,
     fontWeight: "700",
-    color: "#111827", // quase preto - legível sobre branco
+    color: COLORS.text.primary, // quase preto - legível sobre branco
     letterSpacing: -0.2,
   },
   cardDescription: {
     fontSize: FONT_SIZE.xs,
-    color: "#6b7280", // cinza médio
+    color: COLORS.text.secondary, // cinza médio
     lineHeight: 18,
   },
 
@@ -104,15 +104,15 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 6,
-    backgroundColor: "#fef9c3", // amarelo suave - informativo neutro
+    backgroundColor: COLORS.status.warningSoft, // amarelo suave - informativo neutro
     borderRadius: RADIUS.md,
     padding: SPACING.sm,
     borderWidth: 1,
-    borderColor: "#fde68a",
+    borderColor: COLORS.status.warningBorder,
   },
   infoBannerText: {
     fontSize: 12,
-    color: "#78350f", // castanho âmbar - contrasta no amarelo
+    color: COLORS.status.warningText, // castanho âmbar - contrasta no amarelo
     flex: 1,
     lineHeight: 17,
   },
@@ -127,13 +127,13 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   actionButtonDisabled: {
-    backgroundColor: "#9ca3af",
+    backgroundColor: COLORS.text.muted,
   },
   actionButtonDone: {
-    backgroundColor: "#16a34a",
+    backgroundColor: COLORS.status.success,
   },
   actionButtonDestructive: {
-    backgroundColor: "#dc2626",
+    backgroundColor: COLORS.status.error,
   },
   buttonInner: {
     flexDirection: "row",
@@ -142,7 +142,7 @@ export const styles = StyleSheet.create({
     gap: 7,
   },
   actionButtonText: {
-    color: "#fff",
+    color: COLORS.white,
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
     letterSpacing: 0.1,
@@ -150,4 +150,4 @@ export const styles = StyleSheet.create({
   spinIcon: {
     opacity: 0.9,
   },
-});
+}));

@@ -55,7 +55,7 @@ const TeamLogo = ({
           alignItems: "center",
           justifyContent: "center",
           backgroundColor:
-            variant === "dark" ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.12)",
+            variant === "dark" ? COLORS.effect.blackSubtle : COLORS.effect.whiteSoft,
           borderRadius: 4,
         },
       ]}
@@ -63,7 +63,7 @@ const TeamLogo = ({
       <Ionicons
         name="shield-outline"
         size={20}
-        color={variant === "dark" ? COLORS.textMuted : "rgba(255,255,255,0.5)"}
+        color={variant === "dark" ? COLORS.textMuted : COLORS.text.inverseFaint}
       />
     </View>
   );

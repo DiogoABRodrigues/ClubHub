@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../../theme/colors";
+import { COLORS, SPACING, RADIUS, FONT_SIZE, createThemedStyles } from "../../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
@@ -60,7 +60,7 @@ export const styles = StyleSheet.create({
   },
 
   addButtonText: {
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontWeight: "700",
     fontSize: FONT_SIZE.sm,
   },
@@ -116,7 +116,7 @@ export const styles = StyleSheet.create({
   },
 
   createButtonText: {
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontWeight: "700",
     fontSize: FONT_SIZE.sm,
   },
@@ -128,4 +128,4 @@ export const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     fontSize: FONT_SIZE.sm,
   },
-});
+}));

@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, RADIUS } from "../../theme/colors";
+import { COLORS, SPACING, RADIUS, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   // ── Shared logo ───────────────────────────────────────────────────────────
   logo: {
     width: 40,
@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   logoDark: {
-    backgroundColor: "rgba(255,255,255,0.12)",
+    backgroundColor: COLORS.effect.whiteSoft,
   },
   logoLight: {},
   logoEmoji: {
@@ -73,7 +73,7 @@ export const styles = StyleSheet.create({
   liveTeamName: {
     fontSize: 11,
     fontWeight: "600",
-    color: "rgba(255,255,255,0.9)",
+    color: COLORS.text.inverseSoft,
     textAlign: "center",
   },
   liveScoreCol: {
@@ -83,13 +83,13 @@ export const styles = StyleSheet.create({
   liveScoreText: {
     fontSize: 36,
     fontWeight: "800",
-    color: "#fff",
+    color: COLORS.white,
     letterSpacing: -2,
     lineHeight: 40,
   },
   liveScoreSub: {
     fontSize: 11,
-    color: "rgba(255,255,255,0.5)",
+    color: COLORS.text.inverseFaint,
     marginTop: 4,
   },
   liveFooterText: {
@@ -187,4 +187,4 @@ export const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: 0.4,
   },
-});
+}));

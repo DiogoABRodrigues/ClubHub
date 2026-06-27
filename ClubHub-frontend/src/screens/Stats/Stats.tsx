@@ -16,6 +16,7 @@ import { ArrowUp, ArrowDown } from "lucide-react-native";
 import { usePlayers } from "../../hooks/usePlayers";
 import { Player } from "../../models/Player";
 import { styles as globalStyles } from "./Stats.styles";
+import { COLORS } from "../../theme/colors";
 
 type SortField = "games" | "minutes" | "goals";
 type SortOrder = "asc" | "desc";
@@ -24,9 +25,9 @@ const SortIcon = React.memo(
   ({ active, order }: { active: boolean; order: SortOrder }) => {
     if (!active) return null;
     return order === "desc" ? (
-      <ArrowUp width={14} height={14} color="#666" />
+      <ArrowUp width={14} height={14} color={COLORS.text.blackWhite} />
     ) : (
-      <ArrowDown width={14} height={14} color="#666" />
+      <ArrowDown width={14} height={14} color={COLORS.text.blackWhite} />
     );
   },
 );

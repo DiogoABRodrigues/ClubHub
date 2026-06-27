@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS, FONT_SIZE, RADIUS, SPACING } from "../../theme/colors";
+import { COLORS, FONT_SIZE, RADIUS, SPACING, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   trigger: {
     flexDirection: "row",
     alignItems: "center",
@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: COLORS.backgrounds.overlay,
     justifyContent: "center",
     alignItems: "center",
     padding: SPACING.lg,
@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.backgroundWhite,
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
-    shadowColor: "#000",
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 16,
@@ -61,4 +61,4 @@ export const styles = StyleSheet.create({
     fontWeight: "700",
     color: COLORS.primaryDark,
   },
-});
+}));

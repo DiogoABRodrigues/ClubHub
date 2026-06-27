@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
+import { COLORS, SPACING, RADIUS, FONT_SIZE, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
@@ -64,7 +64,7 @@ export const styles = StyleSheet.create({
   },
 
   categoryTextActive: {
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontWeight: "700",
   },
 
@@ -99,7 +99,7 @@ export const styles = StyleSheet.create({
   },
 
   toggleTextActive: {
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontWeight: "700",
   },
 
@@ -159,7 +159,7 @@ export const styles = StyleSheet.create({
   },
 
   numberBadgeText: {
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontWeight: "700",
     fontSize: FONT_SIZE.xs,
   },
@@ -168,7 +168,7 @@ export const styles = StyleSheet.create({
   playerName: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     marginVertical: -2,
   },
 
@@ -181,7 +181,7 @@ export const styles = StyleSheet.create({
   position: {
     fontSize: FONT_SIZE.xs,
     fontWeight: "600",
-    color: COLORS.primaryDark,
+    color: COLORS.text.blackWhite,
     backgroundColor: COLORS.primaryLight,
     paddingHorizontal: SPACING.xs + 2,
     paddingVertical: 2,
@@ -200,7 +200,7 @@ export const styles = StyleSheet.create({
   positionHeaderText: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "700",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     textTransform: "uppercase",
     letterSpacing: 0.6,
   },
@@ -229,7 +229,7 @@ export const styles = StyleSheet.create({
   statsHeaderText: {
     fontSize: FONT_SIZE.xs,
     fontWeight: "700",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     textAlign: "center",
     textTransform: "uppercase",
     letterSpacing: 0.4,
@@ -255,7 +255,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
     fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
   },
 
   goalsText: {
@@ -269,7 +269,7 @@ export const styles = StyleSheet.create({
   // ── Modal de imagem ───────────────────────────────────────────────────────
   modalContainer: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.92)",
+    backgroundColor: COLORS.backgrounds.overlayExtraStrong,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -294,7 +294,7 @@ export const styles = StyleSheet.create({
 
   playerAge: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     marginTop: 2,
   },
-});
+}));

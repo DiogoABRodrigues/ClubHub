@@ -10,6 +10,7 @@ import {
 } from "../../../utils/playerPositionUtils";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useSelectedSeason } from "../../../contexts/Selectedseasoncontext";
+import { COLORS } from "../../../theme/colors";
 
 const defaultPlayerImage = require("../../../../assets/player.jpg");
 
@@ -29,9 +30,9 @@ const STATUS_LABELS: Record<SquadStatus, string> = {
 };
 
 const STATUS_COLORS: Record<SquadStatus, string> = {
-  active: "#22c55e",
-  left: "#f59e0b",
-  error: "#ef4444",
+  active: COLORS.status.successBright,
+  left: COLORS.status.left,
+  error: COLORS.status.errorBright,
 };
 
 /* ---------------- CARD MEMO ---------------- */
@@ -78,7 +79,7 @@ const PlayerCard = React.memo(
             paddingVertical: 2,
           }}
         >
-          <Text style={{ color: "#fff", fontSize: 9, fontWeight: "700" }}>
+          <Text style={{ color: COLORS.white, fontSize: 9, fontWeight: "700" }}>
             {STATUS_LABELS[currentStatus]}
           </Text>
         </View>

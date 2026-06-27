@@ -10,6 +10,7 @@ import {
 } from "../../utils/playerPositionUtils";
 import { PlayerCardModal } from "../../components/PlayerCardModal";
 import { EmptyState } from "../../components/EmptyState";
+import { COLORS } from "../../theme/colors";
 
 const defaultPlayerImage = require("../../../assets/player.jpg");
 
@@ -21,12 +22,6 @@ const chunkArray = (arr: Player[], size: number) => {
   return chunks;
 };
 
-// ─────────────────────────────────────────────────────────────
-//  CARD MEMO
-//  - status "active" → normal
-//  - status "left"   → opacidade reduzida + badge "Saiu"
-//  - status "error"  → nunca chega aqui (filtrado antes)
-// ─────────────────────────────────────────────────────────────
 const PlayerCard = React.memo(
   ({
     player,
@@ -56,14 +51,14 @@ const PlayerCard = React.memo(
           resizeMode="contain"
         />
         <Text
-          style={[globalStyles.playerName, hasLeft && { color: "#888" }]}
+          style={[globalStyles.playerName, hasLeft && { color: COLORS.text.blackWhite }]}
           numberOfLines={1}
         >
           {firstName}
         </Text>
 
         <Text
-          style={[globalStyles.playerName, hasLeft && { color: "#888" }]}
+          style={[globalStyles.playerName, hasLeft && { color: COLORS.text.blackWhite }]}
           numberOfLines={1}
         >
           {lastName}

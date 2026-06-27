@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Animated, StyleSheet, View, ActivityIndicator } from "react-native";
-import { COLORS } from "../theme/colors";
+import { COLORS, createThemedStyles } from "../theme/colors";
 
 interface CategoryTransitionOverlayProps {
   visible: boolean;
@@ -48,10 +48,10 @@ export const CategoryTransitionOverlay: React.FC<
   );
 };
 
-const styles = StyleSheet.create({
+const styles = createThemedStyles(() => ({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(255,255,255,0.85)",
+    backgroundColor: COLORS.backgrounds.screen,
     zIndex: 999,
     justifyContent: "center",
     alignItems: "center",
@@ -59,11 +59,11 @@ const styles = StyleSheet.create({
   loaderContainer: {
     padding: 24,
     borderRadius: 16,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
+    backgroundColor: COLORS.white,
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 4,
   },
-});
+}));

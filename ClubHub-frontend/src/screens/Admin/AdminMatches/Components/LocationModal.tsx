@@ -132,7 +132,7 @@ export const LocationModal = React.memo(
                 onPress={handleSave}
               >
                 {saving ? (
-                  <ActivityIndicator color="#fff" />
+                  <ActivityIndicator color={COLORS.white} />
                 ) : (
                   <Text style={modalStyles.saveBtnText}>Guardar</Text>
                 )}

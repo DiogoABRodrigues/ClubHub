@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
+import { COLORS, SPACING, RADIUS, FONT_SIZE, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
   },
 
   content: {
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: SPACING.sm,
     paddingTop: SPACING.sm,
     paddingBottom: SPACING.xl,
   },
@@ -53,7 +53,7 @@ export const styles = StyleSheet.create({
   legendTitle: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "700",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     marginBottom: SPACING.sm,
   },
 
@@ -75,7 +75,7 @@ export const styles = StyleSheet.create({
 
   legendText: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     flex: 1,
   },
 
@@ -134,7 +134,7 @@ export const styles = StyleSheet.create({
   },
 
   categoryTextActive: {
-    color: "#FFFFFF",
+    color: COLORS.white,
   },
 
   // ── Secções ───────────────────────────────────────────────────────────────
@@ -153,7 +153,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: FONT_SIZE.md,
     fontWeight: "700",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
   },
 
   // ── Tabela completa (wrapper) ──────────────────────────────────────────────
@@ -174,12 +174,12 @@ export const styles = StyleSheet.create({
   roundLabel: {
     fontSize: FONT_SIZE.xs,
     fontWeight: "600",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     textTransform: "uppercase",
     letterSpacing: 0.6,
     marginBottom: SPACING.xs,
     marginTop: SPACING.xs,
-    opacity: 0.6,
+    opacity: 0.8,
   },
   sectionSeparator: {
     height: 1,
@@ -187,4 +187,4 @@ export const styles = StyleSheet.create({
     marginTop: SPACING.xl,
     marginHorizontal: -SPACING.md, // vai de ponta a ponta
   },
-});
+}));

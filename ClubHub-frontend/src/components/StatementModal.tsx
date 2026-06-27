@@ -165,7 +165,7 @@ export const StatementModal = ({ visible, onClose }: Props) => {
               <TouchableOpacity
                 style={[
                   adminStyles.saveBtn,
-                  { backgroundColor: "#e53935", marginTop: 10 },
+                  { backgroundColor: COLORS.status.errorBright, marginTop: 10 },
                 ]}
                 onPress={handleDelete}
               >

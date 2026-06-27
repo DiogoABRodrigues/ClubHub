@@ -36,7 +36,7 @@ const TeamLogo = ({ uri }: { uri?: string }) => {
         {
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "rgba(0,0,0,0.05)",
+          backgroundColor: COLORS.effect.blackSoft,
           borderRadius: 4,
         },
       ]}

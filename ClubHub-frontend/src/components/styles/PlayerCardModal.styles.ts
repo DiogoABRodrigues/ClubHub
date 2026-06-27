@@ -1,14 +1,14 @@
 import { StyleSheet, Dimensions } from "react-native";
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
+import { COLORS, SPACING, RADIUS, FONT_SIZE, createThemedStyles } from "../../theme/colors";
 
 const SCREEN_W = Dimensions.get("window").width;
 // Em ecrãs pequenos (<380px) a foto fica mais pequena
 const PHOTO_COL_W = SCREEN_W < 380 ? 100 : 115;
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.72)",
+    backgroundColor: COLORS.backgrounds.overlayStrong,
     justifyContent: "center",
     alignItems: "center",
     padding: SPACING.md,
@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
     borderRadius: RADIUS.lg + 4,
     padding: SPACING.md,
     paddingTop: SPACING.lg,
-    shadowColor: "#000",
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.25,
     shadowRadius: 16,
@@ -73,7 +73,7 @@ export const styles = StyleSheet.create({
   },
 
   numberBadgeText: {
-    color: "#fff",
+    color: COLORS.white,
     fontWeight: "700",
     fontSize: FONT_SIZE.xs,
   },
@@ -89,14 +89,14 @@ export const styles = StyleSheet.create({
   firstName: {
     fontSize: FONT_SIZE.xs + 1,
     fontWeight: "600",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     textAlign: "center",
   },
 
   lastName: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "700",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     textAlign: "center",
     marginBottom: SPACING.xs,
   },
@@ -124,7 +124,7 @@ export const styles = StyleSheet.create({
   statsTitle: {
     fontSize: FONT_SIZE.xs + 1,
     fontWeight: "700",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: SPACING.xs,
@@ -135,7 +135,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: SPACING.xs,
     borderBottomWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: COLORS.muted,
     marginBottom: 2,
   },
 
@@ -144,7 +144,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: SPACING.xs + 1,
     borderBottomWidth: 0.5,
-    borderColor: COLORS.border,
+    borderColor: COLORS.muted,
   },
 
   // Época - ocupa o espaço restante e permite wrap
@@ -152,7 +152,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     fontSize: 11,
     fontWeight: "600",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     flexWrap: "nowrap",
   },
 
@@ -164,8 +164,7 @@ export const styles = StyleSheet.create({
 
   statValue: {
     fontSize: FONT_SIZE.xs + 1,
-    fontWeight: "700",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
   },
 
   goalsHighlight: {
@@ -174,7 +173,7 @@ export const styles = StyleSheet.create({
 
   statLabel: {
     fontSize: 10,
-    color: "#9CA3AF",
+    color: COLORS.text.blackWhite,
     textTransform: "uppercase",
     letterSpacing: 0.3,
     textAlign: "center",
@@ -189,7 +188,7 @@ export const styles = StyleSheet.create({
   noStats: {
     marginTop: SPACING.md,
     fontSize: FONT_SIZE.sm,
-    color: "#9CA3AF",
+    color: COLORS.text.muted,
     textAlign: "center",
   },
-});
+}));

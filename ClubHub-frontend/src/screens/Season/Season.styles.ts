@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
+import { COLORS, SPACING, RADIUS, FONT_SIZE, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
@@ -66,7 +66,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.background.app,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
     gap: SPACING.xs,
@@ -89,7 +89,7 @@ export const styles = StyleSheet.create({
   tabText: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "500",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
   },
 
   tabTextActive: {
@@ -101,4 +101,4 @@ export const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-});
+}));

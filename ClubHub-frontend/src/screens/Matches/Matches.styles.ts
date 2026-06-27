@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, FONT_SIZE, RADIUS } from "../../theme/colors";
+import { COLORS, SPACING, FONT_SIZE, RADIUS, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
@@ -106,7 +106,7 @@ export const styles = StyleSheet.create({
   },
 
   categoryTextActive: {
-    color: "#FFFFFF",
+    color: COLORS.white,
   },
   header: {
     backgroundColor: COLORS.surface,
@@ -166,7 +166,7 @@ export const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   tabTextActive: {
-    color: "#fff",
+    color: COLORS.white,
   },
   tabLiveDot: {
     width: 5,
@@ -188,11 +188,11 @@ export const styles = StyleSheet.create({
     width: 5,
     height: 5,
     borderRadius: 3,
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.white,
   },
   livePillText: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#fff",
+    color: COLORS.white,
   },
-});
+}));

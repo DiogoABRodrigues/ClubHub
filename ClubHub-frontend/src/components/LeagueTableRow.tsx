@@ -48,7 +48,7 @@ const TeamLogo = ({ uri }: { uri?: string }) => {
         {
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "rgba(0,0,0,0.05)",
+          backgroundColor: COLORS.effect.blackSoft,
           borderRadius: 4,
         },
       ]}
@@ -92,7 +92,7 @@ export const LeagueTableRow = React.memo(
         >
           {/* POSITION */}
           <View style={[styles.cell, { flex: COLS.position }]}>
-            <Text style={[styles.text, { color: COLORS.textSecondary }]}>
+            <Text style={[styles.text]}>
               {standing.position}
             </Text>
           </View>
@@ -112,7 +112,7 @@ export const LeagueTableRow = React.memo(
           <View
             style={[styles.cell, { flex: COLS.played, alignItems: "center" }]}
           >
-            <Text style={styles.mutedText}>{standing.played}</Text>
+            <Text style={styles.text}>{standing.played}</Text>
           </View>
 
           {/* GOAL DIFFERENCE */}

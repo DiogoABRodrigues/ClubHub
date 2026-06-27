@@ -167,12 +167,15 @@ export const NewsDetail = ({ route, navigation }: any) => {
                         : require("../../../assets/player.jpg")
                     }
                     style={styles.relatedImage}
-                    resizeMode="contain"
+                    resizeMode="cover"
                   />
                   <View style={styles.relatedTextContainer}>
                     <Text style={styles.relatedNewsTitle} numberOfLines={2}>
                       {n.title}
                     </Text>
+                    <Text style={styles.newsExcerpt} numberOfLines={1}>
+                         {n.content}
+                       </Text>
                     <Text style={styles.relatedDate}>
                       {formatDate(n.createdAt)}
                     </Text>

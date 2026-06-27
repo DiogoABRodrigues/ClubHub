@@ -1,10 +1,10 @@
 import { StyleSheet, Platform } from "react-native";
-import { COLORS, FONT_SIZE, RADIUS, SPACING } from "../../../theme/colors";
+import { COLORS, FONT_SIZE, RADIUS, SPACING, createThemedStyles } from "../../../theme/colors";
 import { Dimensions } from "react-native";
 
 const { height } = Dimensions.get("window");
 
-export const adminStyles = StyleSheet.create({
+export const adminStyles = createThemedStyles(() => ({
   // ── Botões de controlo no header ──────────────────────────────────────────
   adminActions: {
     flexDirection: "row",
@@ -190,7 +190,7 @@ export const adminStyles = StyleSheet.create({
   },
 
   saveBtnText: {
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontSize: FONT_SIZE.md,
     fontWeight: "700",
   },
@@ -216,7 +216,7 @@ export const adminStyles = StyleSheet.create({
   // ── Modal ─────────────────────────────────────────────────────────────────
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: COLORS.backgrounds.overlay,
     justifyContent: "flex-end",
   },
 
@@ -428,9 +428,9 @@ export const adminStyles = StyleSheet.create({
     paddingVertical: 10,
     minHeight: 44,
     borderBottomWidth: 0.8,
-    borderBottomColor: "#E5E7EB",
+    borderBottomColor: COLORS.borders.default,
     gap: 10,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.background.app,
   },
 
   lineupPhoto: {
@@ -458,9 +458,9 @@ export const adminStyles = StyleSheet.create({
     flex: 1,
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
   },
-
+  
   lineupPosition: {
     fontSize: FONT_SIZE.xs,
     color: COLORS.textSecondary,
@@ -504,4 +504,4 @@ export const adminStyles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
-});
+}));

@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING } from "../../theme/colors";
+import { COLORS, SPACING, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   // ── Linha de evento ───────────────────────────────────────────────────────
   eventRow: {
     flexDirection: "row",
@@ -9,9 +9,9 @@ export const styles = StyleSheet.create({
     paddingVertical: 10,
     minHeight: 44,
     borderBottomWidth: 0.8,
-    borderBottomColor: "#E5E7EB",
+    borderBottomColor: COLORS.borders.default,
     gap: 6,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.background.app,
   },
 
   // ── Minuto ────────────────────────────────────────────────────────────────
@@ -52,19 +52,19 @@ export const styles = StyleSheet.create({
   eventPlayer: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#111827",
+    color: COLORS.text.blackWhite,
   },
 
   eventAssist: {
     fontSize: 12,
-    color: "#6B7280",
+    color: COLORS.text.blackWhite,
   },
 
   // ── Resultado parcial ─────────────────────────────────────────────────────
   eventScore: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#16A34A",
+    color: COLORS.status.success,
   },
 
   // ── Ícone de evento ───────────────────────────────────────────────────────
@@ -72,6 +72,7 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     width: 37,
     textAlign: "center",
+    color: COLORS.text.blackWhite,
   },
 
   // ── Cartão físico ─────────────────────────────────────────────────────────
@@ -88,4 +89,4 @@ export const styles = StyleSheet.create({
     paddingVertical: 56,
     gap: SPACING.sm,
   },
-});
+}));

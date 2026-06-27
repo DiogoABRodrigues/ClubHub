@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, FONT_SIZE } from "../../theme/colors";
+import { COLORS, SPACING, FONT_SIZE, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   // ── Linha principal ───────────────────────────────────────────────────────
   row: {
     flexDirection: "row",
@@ -37,7 +37,7 @@ export const styles = StyleSheet.create({
   // ── Tipografia ────────────────────────────────────────────────────────────
   text: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
   },
 
   mutedText: {
@@ -79,4 +79,4 @@ export const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     marginRight: SPACING.sm,
   },
-});
+}));

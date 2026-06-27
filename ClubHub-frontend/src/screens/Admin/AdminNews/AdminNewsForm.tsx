@@ -12,7 +12,7 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "../../../theme/colors";
+import { COLORS, SPACING } from "../../../theme/colors";
 import { useNews } from "../../../hooks/useNews";
 import * as ImagePicker from "expo-image-picker";
 import { styles } from "./AdminNewsForm.styles";
@@ -190,7 +190,7 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
             </TouchableOpacity>
 
             <View style={styles.titleContainer}>
-              <Text style={styles.headerTitle}>News</Text>
+              <Text style={styles.headerTitle}>{isEditing ? "Editar Notícia" : "Criar Notícia"}</Text>
             </View>
           </View>
         </View>
@@ -219,8 +219,8 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
 
           {/* IMAGE URL */}
           <Field label="Imagem">
-            <TouchableOpacity style={styles.imagePickerBtn} onPress={pickImage}>
-              <Text style={{ color: "#fff" }}>
+            <TouchableOpacity style={[styles.imagePickerBtn, { marginBottom: SPACING.sm }]} onPress={pickImage}>
+              <Text style={{ color: COLORS.white }}>
                 {form.image ? "Alterar imagem" : "Selecionar imagem"}
               </Text>
             </TouchableOpacity>
@@ -262,13 +262,13 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
             disabled={saving}
           >
             {saving ? (
-              <ActivityIndicator size="small" color="#fff" />
+              <ActivityIndicator size="small" color={COLORS.white} />
             ) : (
               <>
                 <Ionicons
                   name="checkmark-circle-outline"
                   size={18}
-                  color="#fff"
+                  color={COLORS.white}
                 />
                 <Text style={styles.bottomSaveBtnText}>
                   {isEditing ? "Guardar Alterações" : "Publicar Notícia"}

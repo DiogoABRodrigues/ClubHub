@@ -93,6 +93,7 @@ export const AdminSettings = ({ navigation }: any) => {
                   name="sync-outline"
                   size={22}
                   color={COLORS.primary}
+                  style={{ color: COLORS.text.blackWhite }}
                 />
               </View>
               <View style={styles.cardTextBlock}>
@@ -131,7 +132,7 @@ export const AdminSettings = ({ navigation }: any) => {
                   <Ionicons
                     name="sync"
                     size={16}
-                    color="#fff"
+                    color={COLORS.white}
                     style={styles.spinIcon}
                   />
                   <Text style={styles.actionButtonText}>A atualizar...</Text>
@@ -141,7 +142,7 @@ export const AdminSettings = ({ navigation }: any) => {
                   <Ionicons
                     name="checkmark-circle-outline"
                     size={16}
-                    color="#fff"
+                    color={COLORS.white}
                   />
                   <Text style={styles.actionButtonText}>Atualizado</Text>
                 </View>
@@ -150,7 +151,7 @@ export const AdminSettings = ({ navigation }: any) => {
                   <Ionicons
                     name="cloud-download-outline"
                     size={16}
-                    color="#fff"
+                    color={COLORS.white}
                   />
                   <Text style={styles.actionButtonText}>
                     Iniciar Atualização
@@ -217,7 +218,7 @@ export const AdminSettings = ({ navigation }: any) => {
             onPress={() => setNotificationModalVisible(true)}
           >
             <View style={styles.buttonInner}>
-              <Ionicons name="send-outline" size={16} color="#fff" />
+              <Ionicons name="send-outline" size={16} color={COLORS.white} />
               <Text style={styles.actionButtonText}>Enviar Notificação</Text>
             </View>
           </TouchableOpacity>

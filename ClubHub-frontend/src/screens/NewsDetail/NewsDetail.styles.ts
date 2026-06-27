@@ -1,10 +1,10 @@
 import { StyleSheet } from "react-native";
-import { COLORS, SPACING, RADIUS, FONT_SIZE } from "../../theme/colors";
+import { COLORS, SPACING, RADIUS, FONT_SIZE, createThemedStyles } from "../../theme/colors";
 import { Dimensions } from "react-native";
 
 const screenWidth = Dimensions.get("window").width;
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
@@ -97,7 +97,7 @@ export const styles = StyleSheet.create({
     paddingVertical: SPACING.xs,
     borderRadius: RADIUS.xl,
     backgroundColor: COLORS.primary,
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontWeight: "700",
     fontSize: FONT_SIZE.xs,
     alignSelf: "flex-start",
@@ -108,7 +108,7 @@ export const styles = StyleSheet.create({
   newsTitle: {
     fontSize: FONT_SIZE.xl,
     fontWeight: "700",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     marginBottom: SPACING.sm,
     lineHeight: 30,
     letterSpacing: -0.4,
@@ -141,8 +141,8 @@ export const styles = StyleSheet.create({
   },
 
   contentText: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.text.blackWhite,
     lineHeight: 22,
   },
 
@@ -157,7 +157,7 @@ export const styles = StyleSheet.create({
   relatedTitle: {
     fontSize: FONT_SIZE.md,
     fontWeight: "700",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     marginBottom: SPACING.md,
     letterSpacing: -0.2,
   },
@@ -175,11 +175,11 @@ export const styles = StyleSheet.create({
   },
 
   relatedImage: {
-    width: 72,
-    height: 72,
+    width: 68,
+    height: 68,
     borderRadius: RADIUS.md,
+    backgroundColor: COLORS.surfaceLight,
     overflow: "hidden",
-    flexShrink: 0,
   },
 
   relatedTextContainer: {
@@ -193,6 +193,12 @@ export const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
     lineHeight: 18,
+  },
+
+  newsExcerpt: {
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.textPrimary,
+    lineHeight: 17,
   },
 
   relatedDate: {
@@ -219,4 +225,4 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
     marginTop: SPACING.xs,
   },
-});
+}));

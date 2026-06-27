@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS } from "../../theme/colors";
+import { COLORS, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   container: {
     flex: 1,
     backgroundColor: COLORS.primary,
@@ -26,12 +26,12 @@ export const styles = StyleSheet.create({
     gap: 10,
   },
   loadingText: {
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontSize: 14,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.55)",
+    backgroundColor: COLORS.backgrounds.overlayImage,
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
@@ -39,12 +39,12 @@ export const styles = StyleSheet.create({
   errorModal: {
     width: "100%",
     maxWidth: 360,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.white,
     borderRadius: 18,
     paddingHorizontal: 24,
     paddingVertical: 28,
     alignItems: "center",
-    shadowColor: "#000000",
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 16,
@@ -54,7 +54,7 @@ export const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "#FEE2E2",
+    backgroundColor: COLORS.status.errorLight,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
@@ -65,13 +65,13 @@ export const styles = StyleSheet.create({
     fontWeight: "800",
   },
   errorTitle: {
-    color: "#111827",
+    color: COLORS.text.primary,
     fontSize: 20,
     fontWeight: "700",
     textAlign: "center",
   },
   errorMessage: {
-    color: "#6B7280",
+    color: COLORS.text.secondary,
     fontSize: 15,
     lineHeight: 22,
     marginTop: 8,
@@ -87,8 +87,8 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   retryButtonText: {
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontSize: 15,
     fontWeight: "700",
   },
-});
+}));

@@ -523,7 +523,7 @@ export const AddEventModal = ({
               disabled={saving}
             >
               {saving ? (
-                <ActivityIndicator size="small" color="#fff" />
+                <ActivityIndicator size="small" color={COLORS.white} />
               ) : (
                 <Text style={adminStyles.saveBtnText}>
                   {eventToEdit ? "Guardar Alterações" : "Adicionar Evento"}

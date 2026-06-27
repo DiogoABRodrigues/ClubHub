@@ -313,7 +313,7 @@ export const AddLineupModal = ({
                   disabled={saving}
                 >
                   {saving ? (
-                    <ActivityIndicator size="small" color="#fff" />
+                    <ActivityIndicator size="small" color={COLORS.white} />
                   ) : (
                     <Text style={adminStyles.saveBtnText}>
                       Guardar Formação

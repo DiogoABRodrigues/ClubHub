@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS } from "../../theme/colors";
+import { COLORS, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   container: {
     flex: 1,
     padding: 24,
@@ -13,11 +13,12 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
     marginBottom: 8,
+    color: COLORS.text.blackWhite,
   },
   message: {
     fontSize: 14,
     textAlign: "center",
-    opacity: 0.6,
+    color: COLORS.text.dark,
   },
   button: {
     marginTop: 16,
@@ -30,4 +31,4 @@ export const styles = StyleSheet.create({
     color: "white",
     fontWeight: "600",
   },
-});
+}));

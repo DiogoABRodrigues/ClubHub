@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS } from "../../theme/colors";
+import { COLORS, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   container: {
     flexDirection: "row",
     alignItems: "center",
@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
-    backgroundColor: "rgba(244, 67, 54, 0.24)", // error com opacity
+    backgroundColor: COLORS.effect.live, // error com opacity
   },
 
   dot: {
@@ -24,4 +24,4 @@ export const styles = StyleSheet.create({
     color: COLORS.destructive,
     fontWeight: "600",
   },
-});
+}));

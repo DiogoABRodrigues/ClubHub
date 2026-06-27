@@ -25,7 +25,7 @@ const CardIcon = ({ type }: { type: string }) => (
   <View
     style={[
       styles.cardIcon,
-      { backgroundColor: type === "yellow_card" ? "#f5c518" : COLORS.error },
+      { backgroundColor: type === "yellow_card" ? COLORS.status.yellowCard : COLORS.error },
     ]}
   />
 );
@@ -79,7 +79,7 @@ export const EventRow = ({
       <View style={styles.eventRow}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           {adminMode && (
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ flexDirection: "row", alignItems: "center", marginLeft: 8 }}>
               <TouchableOpacity onPress={() => onEdit?.(event)}>
                 <Ionicons
                   name="create-outline"
@@ -144,7 +144,7 @@ export const EventRow = ({
       >
         {minuteLabel}
       </Text>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <View style={{ flexDirection: "row", alignItems: "center", marginRight: 8 }}>
         {adminMode && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity onPress={() => onEdit?.(event)}>

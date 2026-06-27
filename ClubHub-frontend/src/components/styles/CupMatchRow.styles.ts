@@ -1,15 +1,14 @@
-import { StyleSheet } from "react-native";
-import { COLORS, FONT_SIZE, RADIUS, SPACING } from "../../theme/colors";
+import { COLORS, FONT_SIZE, RADIUS, SPACING, createThemedStyles } from "../../theme/colors";
 
-export const styles = StyleSheet.create({
+export const styles = createThemedStyles(() => ({
   card: {
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: RADIUS.md,
     paddingVertical: SPACING.sm + 2,
     paddingHorizontal: SPACING.md,
     marginBottom: SPACING.sm,
-    backgroundColor: COLORS.backgroundWhite,
+    backgroundColor: COLORS.background.app
   },
 
   row: {
@@ -30,12 +29,11 @@ export const styles = StyleSheet.create({
 
   winner: {
     color: COLORS.textSecondary,
-    fontWeight: "700",
+    fontWeight: "500",
   },
 
   loser: {
     color: COLORS.textSecondary,
-    opacity: 0.45,
   },
 
   appTeam: {
@@ -43,7 +41,7 @@ export const styles = StyleSheet.create({
   },
 
   scoreBox: {
-    backgroundColor: COLORS.surfaceLight,
+    backgroundColor: COLORS.background.app,
     borderRadius: RADIUS.sm,
     paddingVertical: 4,
     paddingHorizontal: SPACING.sm + 2,
@@ -55,13 +53,13 @@ export const styles = StyleSheet.create({
   scoreText: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     letterSpacing: 0.5,
   },
 
   dateText: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     fontWeight: "400",
   },
 
@@ -71,7 +69,7 @@ export const styles = StyleSheet.create({
 
   metaText: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     opacity: 0.6,
   },
 
@@ -93,4 +91,4 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-end",
   },
-});
+}));
