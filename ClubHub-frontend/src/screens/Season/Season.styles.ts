@@ -79,21 +79,21 @@ export const styles = createThemedStyles(() => ({
     justifyContent: "center",
     paddingVertical: SPACING.sm,
     gap: SPACING.xs + 2,
-    borderRadius: RADIUS.md,
   },
 
   tabActive: {
-    borderColor: COLORS.primary,
+    borderBottomColor: COLORS.text.blackWhite,
+    borderBottomWidth: 2,
   },
 
   tabText: {
     fontSize: FONT_SIZE.sm,
-    fontWeight: "500",
-    color: COLORS.text.blackWhite,
+    fontWeight: "600",
+    color: COLORS.textSecondary,
   },
 
   tabTextActive: {
-    color: COLORS.tertiary,
+    color: COLORS.text.blackWhite,
     fontWeight: "700",
   },
 

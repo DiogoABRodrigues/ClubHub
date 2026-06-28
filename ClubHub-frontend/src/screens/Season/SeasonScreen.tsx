@@ -59,7 +59,7 @@ export function SeasonScreen({ navigation }: any) {
         <Icon
           width={20}
           height={20}
-          color={active ? colors.tertiary : colors.text.blackWhite}
+          color={active ? colors.text.blackWhite : colors.textSecondary}
         />
         <Text style={[styles.tabText, active && styles.tabTextActive]}>
           {label}
