@@ -154,7 +154,7 @@ export const LIGHT_COLORS = withLegacyAliases({
     subtle: basePalette.gray200,
     muted: basePalette.gray400,
     inverse: basePalette.white,
-    brandSoft: "#F7D7CA87",
+    brandSoft: basePalette.gray200,
   },
   status: {
     success: basePalette.green,

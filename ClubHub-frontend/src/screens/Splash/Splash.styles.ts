@@ -65,13 +65,13 @@ export const styles = createThemedStyles(() => ({
     fontWeight: "800",
   },
   errorTitle: {
-    color: COLORS.text.primary,
+    color: COLORS.text.blackWhite,
     fontSize: 20,
     fontWeight: "700",
     textAlign: "center",
   },
   errorMessage: {
-    color: COLORS.text.secondary,
+    color: COLORS.text.blackWhite,
     fontSize: 15,
     lineHeight: 22,
     marginTop: 8,
