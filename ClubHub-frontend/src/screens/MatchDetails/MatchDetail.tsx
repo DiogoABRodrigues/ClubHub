@@ -406,6 +406,24 @@ export const MatchDetail = () => {
 
                       return (
                         <View key={e.playerId} style={styles.lineupRow}>
+                          {player.photoUrl ? (
+                            <Image
+                              source={{ uri: player.photoUrl }}
+                              style={styles.lineupPhoto}
+                              //resizeMode="contain"
+                            />
+                          ) : (
+                            <View style={styles.lineupAvatar}>
+                              <Text style={styles.lineupAvatarText}>
+                                {player.name
+                                  .split(" ")
+                                  .map((w: string) => w[0])
+                                  .slice(0, 2)
+                                  .join("")
+                                  .toUpperCase()}
+                              </Text>
+                            </View>
+                          )}
                           <Text style={styles.lineupName}>
                             {player.name}
                           </Text>
@@ -422,6 +440,24 @@ export const MatchDetail = () => {
 
                       return (
                         <View key={e.playerId} style={styles.lineupRow}>
+                          {player.photoUrl ? (
+                            <Image
+                              source={{ uri: player.photoUrl }}
+                              style={styles.lineupPhoto}
+                              //resizeMode="contain"
+                            />
+                          ) : (
+                            <View style={styles.lineupAvatar}>
+                              <Text style={styles.lineupAvatarText}>
+                                {player.name
+                                  .split(" ")
+                                  .map((w: string) => w[0])
+                                  .slice(0, 2)
+                                  .join("")
+                                  .toUpperCase()}
+                              </Text>
+                            </View>
+                          )}
                           <Text style={styles.lineupName}>
                             {player.name}
                           </Text>
