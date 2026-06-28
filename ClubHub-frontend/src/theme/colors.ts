@@ -211,7 +211,7 @@ export const DARK_COLORS = withLegacyAliases({
     screen: basePalette.blackStealLight,
     elevated: basePalette.blackSteal,
     brandSurface: CLUB_MAROON,
-    brandSecondary: "#c49c24",
+    brandSecondary: "#c99700",
     subtle: basePalette.night500,
     muted: basePalette.night600,
     soft: "#172033",

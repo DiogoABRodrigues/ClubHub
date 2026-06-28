@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
@@ -50,23 +50,46 @@ const AppContent = () => {
         key={adminMode ? "admin" : "user"}
         screenOptions={({ route }) => ({
           headerShown: false,
-          tabBarActiveTintColor: colors.brand.primary,
-          tabBarInactiveTintColor: colors.black,
+          tabBarActiveTintColor: colors.text.blackWhite,
+          tabBarInactiveTintColor: colors.text.blackWhite,
+          color: colors.text.muted,
+          textColor: colors.text.muted,
           tabBarStyle: {
             backgroundColor: colors.backgrounds.elevated,
             borderTopColor: colors.borders.default,
           },
+          tabBarLabelStyle: {
+            fontWeight: "500",
+          },
+          tabBarLabel: ({ color, focused }) => (
+            <Text
+              style={[
+                styles.tabBarLabel,
+                focused && styles.tabBarLabelActive,
+                { color },
+              ]}
+            >
+              {route.name}
+            </Text>
+          ),
           tabBarIcon: ({ color, focused, size }) => {
             const iconName = ICON_MAP[route.name] ?? "ellipse-outline";
             const selectedIconName = focused
               ? iconName.replace("-outline", "")
               : iconName;
             return (
-              <Ionicons
-                name={selectedIconName as any}
-                size={size}
-                color={color}
-              />
+              <View
+                style={[
+                  styles.tabBarIconWrap,
+                  focused && styles.tabBarIconWrapActive,
+                ]}
+              >
+                <Ionicons
+                  name={selectedIconName as any}
+                  size={size}
+                  color={color}
+                />
+              </View>
             );
           },
         })}
@@ -161,5 +184,23 @@ export const AppNavigator = () => {
 const styles = createThemedStyles(() => ({
   container: {
     flex: 1,
+  },
+  tabBarIconWrap: {
+    width: 42,
+    height: 30,
+    alignItems: "center",
+    justifyContent: "flex-end",
+    //borderTopWidth: 2,
+    borderTopColor: "transparent",
+  },
+  tabBarIconWrapActive: {
+    borderTopColor: COLORS.text.blackWhite,
+  },
+  tabBarLabel: {
+    fontSize: 10,
+    fontWeight: "500",
+  },
+  tabBarLabelActive: {
+    fontWeight: "700",
   },
 }));
