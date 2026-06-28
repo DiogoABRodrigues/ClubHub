@@ -88,7 +88,7 @@ export const styles = createThemedStyles(() => ({
     paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borders.brandSoft,
-    alignItems: "flex-start",
+    alignItems: "center",
     backgroundColor: COLORS.backgrounds.screen,
   },
   playerInfo: {
