@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Trophy, Users, BarChart3 } from "lucide-react-native";
 
 import { styles } from "./Season.styles";
-import { COLORS } from "../../theme/colors";
 
 import { SquadScreen } from "../Squad/Squad";
 import { Standings } from "../Standings/Standings";
@@ -12,6 +11,7 @@ import { AdminSquadScreen } from "../Admin/AdminSquad/SquadAdmin";
 
 import { useAuth } from "../../contexts/AuthContext";
 import { useSelectedSeason } from "../../contexts/Selectedseasoncontext";
+import { useTheme } from "../../contexts/ThemeContext";
 
 type SeasonTab = "standings" | "squad" | "stats";
 
@@ -30,6 +30,7 @@ const TABS: Tab[] = [
 export function SeasonScreen({ navigation }: any) {
   const { adminMode } = useAuth();
   const { selectedSeason: currentSeason } = useSelectedSeason();
+  const { colors } = useTheme();
 
   const [activeTab, setActiveTab] = useState<SeasonTab>("standings");
 
@@ -58,14 +59,14 @@ export function SeasonScreen({ navigation }: any) {
         <Icon
           width={20}
           height={20}
-          color={active ? COLORS.tertiary : COLORS.text.blackWhite}
+          color={active ? colors.tertiary : colors.text.blackWhite}
         />
         <Text style={[styles.tabText, active && styles.tabTextActive]}>
           {label}
         </Text>
       </TouchableOpacity>
     ),
-    []
+    [colors]
   );
 
   return (

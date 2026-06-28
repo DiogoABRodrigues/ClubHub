@@ -1,8 +1,7 @@
-import { StyleSheet } from "react-native";
 import { COLORS, createThemedStyles } from "../../theme/colors";
 
 export const styles = createThemedStyles(() => ({
-  container: { flex: 1, backgroundColor: COLORS.white },
+  container: { flex: 1, backgroundColor: COLORS.backgrounds.screen },
   header: { padding: 16 },
   backButton: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   backText: { marginLeft: 4, color: COLORS.text.subtle },
@@ -42,7 +41,7 @@ export const styles = createThemedStyles(() => ({
   card: {
     flex: 1,
     margin: 4,
-    backgroundColor: COLORS.gray75,
+    backgroundColor: COLORS.backgrounds.elevated,
     borderRadius: 12,
     padding: 12,
   },
@@ -81,14 +80,16 @@ export const styles = createThemedStyles(() => ({
     flexDirection: "row",
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderColor: COLORS.borders.muted,
+    borderBottomColor: COLORS.borders.default,
+    backgroundColor: COLORS.backgrounds.screen,
   },
   statsRow: {
     flexDirection: "row",
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderColor: COLORS.borders.subtle,
+    borderBottomColor: COLORS.borders.subtle,
     alignItems: "flex-start",
+    backgroundColor: COLORS.backgrounds.screen,
   },
   playerInfo: {
     flex: 2,
@@ -99,7 +100,12 @@ export const styles = createThemedStyles(() => ({
     minWidth: 0,
   },
   statsPhoto: { width: 50, height: 50 },
-  statsText: { flex: 1, textAlign: "center", fontSize: 12, color: COLORS.text.blackWhite, },
+  statsText: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 12,
+    color: COLORS.text.blackWhite,
+  },
   goalsText: { color: COLORS.blue, fontWeight: "600" },
   positionHeader: {
     width: "100%",

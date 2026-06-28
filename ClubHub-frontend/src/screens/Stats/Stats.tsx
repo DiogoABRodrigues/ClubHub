@@ -16,7 +16,6 @@ import { ArrowUp, ArrowDown } from "lucide-react-native";
 import { usePlayers } from "../../hooks/usePlayers";
 import { Player } from "../../models/Player";
 import { styles as globalStyles } from "./Stats.styles";
-import { COLORS } from "../../theme/colors";
 import { useTheme } from "../../contexts/ThemeContext";
 
 type SortField = "games" | "minutes" | "goals";
@@ -24,12 +23,12 @@ type SortOrder = "asc" | "desc";
 
 const SortIcon = React.memo(
   ({ active, order }: { active: boolean; order: SortOrder }) => {
-    useTheme();
+    const { colors } = useTheme();
     if (!active) return null;
     return order === "desc" ? (
-      <ArrowUp width={14} height={14} color={COLORS.text.blackWhite} />
+      <ArrowUp width={14} height={14} color={colors.text.blackWhite} />
     ) : (
-      <ArrowDown width={14} height={14} color={COLORS.text.blackWhite} />
+      <ArrowDown width={14} height={14} color={colors.text.blackWhite} />
     );
   },
 );
@@ -128,32 +127,37 @@ export const SquadStats = React.memo(function SquadStats() {
         </TouchableOpacity>
       </View>
     ),
-    [handleSort, sortField, sortOrder],
+    [handleSort, mode, sortField, sortOrder],
   );
 
-  const renderItem = useCallback(({ item }: { item: Player }) => {
-    const defaultPlayerImage = require("../../../assets/player.jpg");
+  const renderItem = useCallback(
+    ({ item }: { item: Player }) => {
+      const defaultPlayerImage = require("../../../assets/player.jpg");
 
-    return (
-      <View style={globalStyles.statsRow}>
-        <View style={globalStyles.playerInfo}>
-          <Image
-            source={item.photoUrl ? { uri: item.photoUrl } : defaultPlayerImage}
-            style={globalStyles.statsPhoto}
-            resizeMode="contain"
-          />
-          <Text style={globalStyles.playerName}>{item.name}</Text>
+      return (
+        <View style={globalStyles.statsRow}>
+          <View style={globalStyles.playerInfo}>
+            <Image
+              source={
+                item.photoUrl ? { uri: item.photoUrl } : defaultPlayerImage
+              }
+              style={globalStyles.statsPhoto}
+              resizeMode="contain"
+            />
+            <Text style={globalStyles.playerName}>{item.name}</Text>
+          </View>
+          <Text style={globalStyles.statsText}>
+            {item.Stats?.[0]?.gamesPlayed}
+          </Text>
+          <Text style={globalStyles.statsText}>
+            {item.Stats?.[0]?.minutesPlayed}
+          </Text>
+          <Text style={globalStyles.statsText}>{item.Stats?.[0]?.goals}</Text>
         </View>
-        <Text style={globalStyles.statsText}>
-          {item.Stats?.[0]?.gamesPlayed}
-        </Text>
-        <Text style={globalStyles.statsText}>
-          {item.Stats?.[0]?.minutesPlayed}
-        </Text>
-        <Text style={globalStyles.statsText}>{item.Stats?.[0]?.goals}</Text>
-      </View>
-    );
-  }, []);
+      );
+    },
+    [mode],
+  );
 
   return (
     <FlatList
