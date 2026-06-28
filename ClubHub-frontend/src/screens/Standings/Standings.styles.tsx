@@ -187,6 +187,5 @@ export const styles = createThemedStyles(() => ({
     height: 1,
     backgroundColor: COLORS.primary,
     marginTop: SPACING.md,
-    marginHorizontal: -SPACING.md, // vai de ponta a ponta
   },
 }));
