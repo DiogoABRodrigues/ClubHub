@@ -56,10 +56,17 @@ const AppContent = () => {
             backgroundColor: colors.backgrounds.elevated,
             borderTopColor: colors.borders.default,
           },
-          tabBarIcon: ({ color, size }) => {
+          tabBarIcon: ({ color, focused, size }) => {
             const iconName = ICON_MAP[route.name] ?? "ellipse-outline";
+            const selectedIconName = focused
+              ? iconName.replace("-outline", "")
+              : iconName;
             return (
-              <Ionicons name={iconName as any} size={size} color={color} />
+              <Ionicons
+                name={selectedIconName as any}
+                size={size}
+                color={color}
+              />
             );
           },
         })}
