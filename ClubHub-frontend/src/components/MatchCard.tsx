@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback, useState } from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./styles/MatchCard.styles";
 import { COLORS } from "../theme/colors";
@@ -31,13 +31,12 @@ const TeamLogo = ({
   variant: "dark" | "light";
 }) => {
   const [failed, setFailed] = useState(false);
-  const logoStyle = variant === "dark" ? styles.logoDark : styles.logoLight;
 
   if (uri && !failed) {
     return (
       <ZZImage
         uri={uri}
-        style={[styles.logo, logoStyle]}
+        style={[styles.logo]}
         resizeMode="contain"
         onError={() => {
           setFailed(true);
@@ -50,7 +49,6 @@ const TeamLogo = ({
     <View
       style={[
         styles.logo,
-        logoStyle,
         {
           alignItems: "center",
           justifyContent: "center",
@@ -78,7 +76,7 @@ function getResult(match: Match): { label: string; color: string } | null {
   if (match.outcome === "V") return { label: "VITÓRIA", color: COLORS.success };
   if (match.outcome === "D")
     return { label: "DERROTA", color: COLORS.destructive };
-  return { label: "EMPATE", color: COLORS.textMuted };
+  return { label: "EMPATE", color: COLORS.text.subtle };
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -121,7 +119,6 @@ export const MatchCard = React.memo(
 
     const copyLocation = useCallback(async () => {
       await Clipboard.setStringAsync(location || "Localização não disponível");
-      Alert.alert("Localização copiada!", location);
     }, [location]);
 
     const result = useMemo(() => getResult(match), [match]);
@@ -134,8 +131,6 @@ export const MatchCard = React.memo(
           onPress={onPress}
           activeOpacity={0.88}
         >
-          <View style={styles.liveDecor} pointerEvents="none" />
-
           <View style={styles.cardTop}>
             <Text style={styles.liveComp} numberOfLines={1}>
               {compLabel}
@@ -145,7 +140,7 @@ export const MatchCard = React.memo(
 
           <View style={styles.cardBody}>
             <View style={styles.teamCol}>
-              <TeamLogo uri={homeLogo} variant="light" />
+              <TeamLogo uri={homeLogo} variant="dark" />
               <Text style={styles.liveTeamName} numberOfLines={2}>
                 {homeTeam}
               </Text>
@@ -158,7 +153,7 @@ export const MatchCard = React.memo(
             </View>
 
             <View style={styles.teamCol}>
-              <TeamLogo uri={awayLogo} variant="light" />
+              <TeamLogo uri={awayLogo} variant="dark" />
               <Text style={styles.liveTeamName} numberOfLines={2}>
                 {awayTeam}
               </Text>
@@ -170,7 +165,7 @@ export const MatchCard = React.memo(
               <Ionicons
                 name="location-outline"
                 size={11}
-                color={COLORS.textPrimary}
+                color={COLORS.text.subtle}
               />
               <Text style={styles.liveFooterText} numberOfLines={1}>
                 {location}
@@ -182,7 +177,7 @@ export const MatchCard = React.memo(
                 <Ionicons
                   name="copy-outline"
                   size={13}
-                  color={COLORS.textPrimary}
+                  color={COLORS.text.subtle}
                 />
               </TouchableOpacity>
             </View>
@@ -235,7 +230,7 @@ export const MatchCard = React.memo(
             <Ionicons
               name="location-outline"
               size={11}
-              color={COLORS.textMuted}
+              color={COLORS.text.subtle}
             />
             <Text style={styles.baseFooterText} numberOfLines={1}>
               {location ? location : "Localização não disponível"}
@@ -244,7 +239,7 @@ export const MatchCard = React.memo(
               <Ionicons
                 name="copy-outline"
                 size={13}
-                color={COLORS.textPrimary}
+                color={COLORS.text.subtle}
               />
             </TouchableOpacity>
           </View>
@@ -308,7 +303,7 @@ export const MatchCard = React.memo(
           <Ionicons
             name="calendar-outline"
             size={11}
-            color={COLORS.textMuted}
+            color={COLORS.text.subtle}
           />
           <Text style={styles.baseFooterText} numberOfLines={1}>
             {formattedDate}

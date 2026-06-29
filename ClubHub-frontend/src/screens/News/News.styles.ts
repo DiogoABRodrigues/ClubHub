@@ -18,8 +18,8 @@ export const styles = createThemedStyles(() => ({
 
   content: {
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.lg,
-    paddingBottom: SPACING.xl,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.sm,
   },
 
   headerLeft: {

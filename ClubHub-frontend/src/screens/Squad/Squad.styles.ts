@@ -106,7 +106,7 @@ export const styles = createThemedStyles(() => ({
   // ── Lista ─────────────────────────────────────────────────────────────────
   squadList: {
     paddingHorizontal: SPACING.sm,
-    paddingBottom: SPACING.xl,
+    paddingBottom: SPACING.md,
   },
 
   // ── Card de jogador (grelha) ──────────────────────────────────────────────

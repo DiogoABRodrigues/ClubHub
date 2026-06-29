@@ -49,8 +49,8 @@ export const styles = createThemedStyles(() => ({
   // ── Conteúdo ──────────────────────────────────────────────────────────────
   content: {
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.lg,
-    paddingBottom: SPACING.xl,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.md,
   },
   loadingCard: {
     minHeight: 160,

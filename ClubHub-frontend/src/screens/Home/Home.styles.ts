@@ -9,7 +9,7 @@ export const styles = createThemedStyles(() => ({
   },
 
   content: {
-    paddingBottom: SPACING.xl,
+    paddingBottom: SPACING.sm,
   },
 
   // ── Header ───────────────────────────────────────────────────────────────
@@ -95,18 +95,16 @@ export const styles = createThemedStyles(() => ({
   // ── Notícias ──────────────────────────────────────────────────────────────
   newsCard: {
     flexDirection: "row",
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: SPACING.sm + 2,
-    marginBottom: SPACING.sm,
+    backgroundColor: "transparent",
+    paddingVertical: SPACING.sm + 2,
+    borderBottomWidth: 0.5,
+    borderBottomColor: COLORS.borders.default,
     gap: SPACING.sm + 2,
   },
 
   relatedImage: {
-    width: 68,
-    height: 68,
+    width: 56,
+    height: 56,
     borderRadius: RADIUS.md,
     backgroundColor: COLORS.surfaceLight,
     overflow: "hidden",
@@ -121,19 +119,20 @@ export const styles = createThemedStyles(() => ({
   newsTitle: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: COLORS.textPrimary,
+    color: COLORS.text.blackWhite,
     lineHeight: 19,
   },
 
   newsExcerpt: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textPrimary,
+    color: COLORS.text.secondary,
     lineHeight: 17,
   },
 
   relatedDate: {
     fontSize: 11,
-    color: COLORS.textMuted,
+    color: COLORS.text.secondary,
+    fontWeight: "500",
     marginTop: 2,
   },
 

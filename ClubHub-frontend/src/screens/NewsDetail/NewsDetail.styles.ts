@@ -16,7 +16,7 @@ export const styles = createThemedStyles(() => ({
 
   content: {
     paddingHorizontal: SPACING.md,
-    paddingBottom: SPACING.xl,
+    paddingBottom: SPACING.sm,
   },
 
   headerLeft: {
@@ -150,33 +150,31 @@ export const styles = createThemedStyles(() => ({
   relatedContainer: {
     marginTop: SPACING.xl,
     paddingTop: SPACING.lg,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.secondary,
+    borderTopWidth: 0.5,
+    borderTopColor: COLORS.borders.default,
   },
 
   relatedTitle: {
-    fontSize: FONT_SIZE.md,
+    fontSize: FONT_SIZE.sm,
     fontWeight: "700",
-    color: COLORS.text.blackWhite,
-    marginBottom: SPACING.md,
-    letterSpacing: -0.2,
+    color: COLORS.tertiary,
+    letterSpacing: 0.1,
+    textTransform: "uppercase",
   },
 
   relatedCard: {
     flexDirection: "row",
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.lg,
-    padding: SPACING.sm + 2,
-    marginBottom: SPACING.sm,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    backgroundColor: "transparent",
+    paddingVertical: SPACING.sm + 2,
+    borderBottomWidth: 0.5,
+    borderBottomColor: COLORS.borders.default,
+    alignItems: "flex-start",
     gap: SPACING.sm,
   },
 
   relatedImage: {
-    width: 68,
-    height: 68,
+    width: 56,
+    height: 56,
     borderRadius: RADIUS.md,
     backgroundColor: COLORS.surfaceLight,
     overflow: "hidden",
@@ -190,20 +188,21 @@ export const styles = createThemedStyles(() => ({
   relatedNewsTitle: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: COLORS.textPrimary,
+    color: COLORS.text.blackWhite,
     marginBottom: SPACING.xs,
     lineHeight: 18,
   },
 
   newsExcerpt: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textPrimary,
+    color: COLORS.text.secondary,
     lineHeight: 17,
   },
 
   relatedDate: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textMuted,
+    color: COLORS.text.secondary,
+    fontWeight: "500",
   },
 
   // ── Empty / erro ──────────────────────────────────────────────────────────

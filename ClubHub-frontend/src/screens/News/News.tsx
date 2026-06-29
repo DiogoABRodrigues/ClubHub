@@ -28,13 +28,15 @@ export const News = ({ navigation }: any) => {
   }, [refreshNews]);
 
   const renderItem = useCallback(
-    ({ item }: { item: NewsModel }) => (
+    ({ item, index }: { item: NewsModel; index: number }) => (
       <NewsCard
         news={item}
         onPress={() => navigation.navigate("NewsDetail", { id: item.id })}
+        featured={index === 0}
+        isLast={!hasMore && index === news.length - 1}
       />
     ),
-    [navigation],
+    [navigation, news.length, hasMore],
   );
 
   const handleEndReached = useCallback(() => {

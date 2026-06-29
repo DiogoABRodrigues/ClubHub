@@ -65,10 +65,10 @@ export const styles = createThemedStyles(() => ({
   tabsContainer: {
     flexDirection: "row",
     paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.xs,
     backgroundColor: COLORS.background.app,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: COLORS.borders.subtle,
     gap: SPACING.xs,
   },
 
@@ -89,7 +89,7 @@ export const styles = createThemedStyles(() => ({
   tabText: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
   },
 
   tabTextActive: {

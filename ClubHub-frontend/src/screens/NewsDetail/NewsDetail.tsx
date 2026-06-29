@@ -154,11 +154,14 @@ export const NewsDetail = ({ route, navigation }: any) => {
           {relatedNews.length > 0 && (
             <View style={styles.relatedContainer}>
               <Text style={styles.relatedTitle}>Mais Notícias</Text>
-              {relatedNews.map((n) => (
+              {relatedNews.map((n, index) => (
                 <TouchableOpacity
                   key={n.id}
                   onPress={() => openRelatedNews(n.id)}
-                  style={styles.relatedCard}
+                  style={[
+                    styles.relatedCard,
+                    index === relatedNews.length - 1 && { borderBottomWidth: 0 },
+                  ]}
                 >
                   <Image
                     source={

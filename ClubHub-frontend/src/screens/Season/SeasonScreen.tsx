@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { Trophy, Users, BarChart3 } from "lucide-react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 import { styles } from "./Season.styles";
 
@@ -18,13 +18,13 @@ type SeasonTab = "standings" | "squad" | "stats";
 interface Tab {
   key: SeasonTab;
   label: string;
-  icon: any;
+  icon: string;
 }
 
 const TABS: Tab[] = [
-  { key: "standings", label: "Classificação", icon: Trophy },
-  { key: "squad", label: "Plantel", icon: Users },
-  { key: "stats", label: "Estatísticas", icon: BarChart3 },
+  { key: "standings", label: "Classificação", icon: "trophy-outline" },
+  { key: "squad", label: "Plantel", icon: "people-outline" },
+  { key: "stats", label: "Estatísticas", icon: "bar-chart-outline" },
 ];
 
 export function SeasonScreen({ navigation }: any) {
@@ -50,22 +50,40 @@ export function SeasonScreen({ navigation }: any) {
   }, []);
 
   const TabButton = useCallback(
-    ({ Icon, label, active, onPress }: any) => (
-      <TouchableOpacity
-        style={[styles.tab, active && styles.tabActive]}
-        onPress={onPress}
-        activeOpacity={0.7}
-      >
-        <Icon
-          width={20}
-          height={20}
-          color={active ? colors.text.blackWhite : colors.textSecondary}
-        />
-        <Text style={[styles.tabText, active && styles.tabTextActive]}>
-          {label}
-        </Text>
-      </TouchableOpacity>
-    ),
+    ({
+      active,
+      icon,
+      label,
+      onPress,
+    }: {
+      active: boolean;
+      icon: string;
+      label: string;
+      onPress: () => void;
+    }) => {
+      const inactiveIcon =
+        icon === "chat-outline" ? "bar-chart-outline" : icon;
+      const iconName = active
+        ? inactiveIcon.replace("-outline", "")
+        : inactiveIcon;
+
+      return (
+        <TouchableOpacity
+          style={[styles.tab, active && styles.tabActive]}
+          onPress={onPress}
+          activeOpacity={0.7}
+        >
+          <Ionicons
+            name={iconName as keyof typeof Ionicons.glyphMap}
+            size={20}
+            color={colors.text.blackWhite}
+          />
+          <Text style={[styles.tabText, active && styles.tabTextActive]}>
+            {label}
+          </Text>
+        </TouchableOpacity>
+      );
+    },
     [colors]
   );
 
@@ -88,7 +106,7 @@ export function SeasonScreen({ navigation }: any) {
         {TABS.map((tab) => (
           <TabButton
             key={tab.key}
-            Icon={tab.icon}
+            icon={tab.icon}
             label={tab.label}
             active={activeTab === tab.key}
             onPress={() => handleTabPress(tab.key)}

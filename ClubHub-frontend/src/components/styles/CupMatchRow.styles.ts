@@ -3,7 +3,7 @@ import { COLORS, FONT_SIZE, RADIUS, SPACING, createThemedStyles } from "../../th
 export const styles = createThemedStyles(() => ({
   card: {
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: COLORS.borders.subtle,
     borderRadius: RADIUS.md,
     paddingVertical: SPACING.sm + 2,
     paddingHorizontal: SPACING.md,

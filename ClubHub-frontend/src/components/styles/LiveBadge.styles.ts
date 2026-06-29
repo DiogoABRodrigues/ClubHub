@@ -9,7 +9,6 @@ export const styles = createThemedStyles(() => ({
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
-    backgroundColor: COLORS.effect.live, // error com opacity
   },
 
   dot: {

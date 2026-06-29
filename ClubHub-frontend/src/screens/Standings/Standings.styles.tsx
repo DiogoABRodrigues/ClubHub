@@ -10,8 +10,7 @@ export const styles = createThemedStyles(() => ({
 
   content: {
     paddingHorizontal: SPACING.sm,
-    paddingTop: SPACING.sm,
-    paddingBottom: SPACING.xl,
+    paddingBottom: SPACING.md,
   },
 
   // ── Header da tabela ──────────────────────────────────────────────────────
@@ -31,7 +30,7 @@ export const styles = createThemedStyles(() => ({
   headerText: {
     fontSize: FONT_SIZE.xs,
     fontWeight: "600",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
@@ -185,7 +184,7 @@ export const styles = createThemedStyles(() => ({
   },
   sectionSeparator: {
     height: 1,
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.borders.brandSoft,
     marginTop: SPACING.md,
   },
 }));

@@ -9,7 +9,7 @@ export const styles = createThemedStyles(() => ({
     paddingVertical: SPACING.sm + 2,
     paddingHorizontal: SPACING.sm + 2,
     borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: COLORS.borders.subtle,
   },
 
   userRow: {

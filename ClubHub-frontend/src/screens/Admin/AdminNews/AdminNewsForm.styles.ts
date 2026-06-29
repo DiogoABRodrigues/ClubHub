@@ -15,7 +15,7 @@ export const styles = createThemedStyles(() => ({
   },
   content: {
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.lg,
+    paddingTop: SPACING.md,
   },
 
   headerLeft: {
@@ -181,12 +181,12 @@ export const styles = createThemedStyles(() => ({
 
   // ── Input ─────────────────────────────────────────────────────────────────
   input: {
-    backgroundColor: COLORS.textPrimary,
+    backgroundColor: COLORS.background,
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm + 2,
     fontSize: FONT_SIZE.md,
-    color: COLORS.text.whiteBlack,
+    color: COLORS.text.blackWhite,
     borderWidth: 1,
     borderColor: COLORS.primary,
   },

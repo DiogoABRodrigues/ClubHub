@@ -233,10 +233,13 @@ export const Home = ({ navigation }: any) => {
             </View>
 
             {(
-              recentNews.map((item) => (
+              recentNews.map((item, index) => (
                 <TouchableOpacity
                   key={item.id}
-                  style={styles.newsCard}
+                  style={[
+                    styles.newsCard,
+                    index === recentNews.length - 1 && { borderBottomWidth: 0 },
+                  ]}
                   onPress={() =>
                     navigation.navigate("NewsDetail", { id: item.id })
                   }

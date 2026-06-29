@@ -1,4 +1,3 @@
-import { StyleSheet } from "react-native";
 import { COLORS, SPACING, RADIUS, createThemedStyles } from "../../theme/colors";
 
 export const styles = createThemedStyles(() => ({
@@ -10,10 +9,7 @@ export const styles = createThemedStyles(() => ({
     alignItems: "center",
     justifyContent: "center",
   },
-  logoDark: {
-    backgroundColor: COLORS.effect.whiteSoft,
-  },
-  logoLight: {},
+
   logoEmoji: {
     fontSize: 18,
   },
@@ -40,40 +36,37 @@ export const styles = createThemedStyles(() => ({
     gap: 4,
     marginTop: 12,
     paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopWidth: 0.5,
+    borderTopColor: COLORS.borders.muted,
   },
 
-  // ── LIVE card ─────────────────────────────────────────────────────────────
+  // ── LIVE card (variante D — consistente com baseCard) ────────────────────
   liveCard: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.backgrounds.elevated,
     borderRadius: RADIUS.lg,
-    padding: 16,
+    borderWidth: 0.5,
+    borderColor: COLORS.brand.border,
+    borderTopWidth: 2.5,
+    borderTopColor: COLORS.primary,
+    padding: 14,
     marginBottom: SPACING.sm,
     overflow: "hidden",
   },
-  // decorative background circle
-  liveDecor: {
-    position: "absolute",
-    top: -30,
-    right: -30,
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-  },
+  liveDecor: {},
   liveComp: {
     fontSize: 10,
-    color: COLORS.textPrimary,
+    color: COLORS.primary,
     letterSpacing: 0.4,
-    fontWeight: "500",
+    fontWeight: "600",
     flex: 1,
     marginRight: 8,
     marginBottom: SPACING.xs,
+    textTransform: "uppercase",
   },
   liveTeamName: {
     fontSize: 11,
     fontWeight: "600",
-    color: COLORS.text.inverseSoft,
+    color: COLORS.text.blackWhite,
     textAlign: "center",
   },
   liveScoreCol: {
@@ -83,54 +76,57 @@ export const styles = createThemedStyles(() => ({
   liveScoreText: {
     fontSize: 36,
     fontWeight: "800",
-    color: COLORS.white,
+    color: COLORS.primary,
     letterSpacing: -2,
     lineHeight: 40,
   },
   liveScoreSub: {
     fontSize: 11,
-    color: COLORS.text.inverseFaint,
+    color: COLORS.textMuted,
     marginTop: 4,
   },
   liveFooterText: {
     fontSize: 11,
-    color: COLORS.textPrimary,
+    color: COLORS.textMuted,
     flex: 1,
   },
 
-  // ── Base card (upcoming + finished) ──────────────────────────────────────
+  // ── Base card (upcoming + finished) — variante C ──────────────────────────
   baseCard: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.backgrounds.elevated,
     borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    borderWidth: 0.5,
+    borderColor: COLORS.brand.border,
+    borderTopWidth: 2.5,
+    borderTopColor: COLORS.primary,
     padding: 14,
     marginBottom: SPACING.sm,
   },
   baseComp: {
     fontSize: 10,
-    color: COLORS.textPrimary,
+    color: COLORS.primary,
     letterSpacing: 0.4,
-    fontWeight: "500",
+    fontWeight: "600",
     flex: 1,
     marginRight: 8,
     marginBottom: SPACING.xs,
+    textTransform: "uppercase",
   },
   baseTeamName: {
     fontSize: 11,
     fontWeight: "600",
-    color: COLORS.textPrimary,
+    color: COLORS.text.blackWhite,
     textAlign: "center",
   },
   baseFooterText: {
     fontSize: 11,
-    color: COLORS.textPrimary,
+    color: COLORS.text.subtle,
     flex: 1,
   },
 
   // ── Upcoming ──────────────────────────────────────────────────────────────
   upBadge: {
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: COLORS.brand.tint,
     borderRadius: 20,
     paddingHorizontal: 9,
     paddingVertical: 3,
@@ -138,7 +134,7 @@ export const styles = createThemedStyles(() => ({
   upBadgeText: {
     fontSize: 10,
     fontWeight: "700",
-    color: COLORS.primaryDark,
+    color: COLORS.primary,
   },
   upCenterCol: {
     alignItems: "center",
@@ -148,13 +144,13 @@ export const styles = createThemedStyles(() => ({
   vsText: {
     fontSize: 20,
     fontWeight: "800",
-    color: COLORS.border,
+    color: COLORS.text.muted,
     letterSpacing: -1,
   },
   upTime: {
     fontSize: 13,
     fontWeight: "700",
-    color: COLORS.textPrimary,
+    color: COLORS.text.blackWhite,
     letterSpacing: -0.3,
   },
 
@@ -168,7 +164,7 @@ export const styles = createThemedStyles(() => ({
   finBadgeText: {
     fontSize: 10,
     fontWeight: "600",
-    color: COLORS.textPrimary,
+    color: COLORS.text.subtle,
   },
   finCenterCol: {
     alignItems: "center",
@@ -178,7 +174,7 @@ export const styles = createThemedStyles(() => ({
   finScoreText: {
     fontSize: 30,
     fontWeight: "800",
-    color: COLORS.textPrimary,
+    color: COLORS.primary,
     letterSpacing: -1.5,
     lineHeight: 34,
   },
