@@ -40,7 +40,7 @@ export const styles = createThemedStyles(() => ({
     borderTopColor: COLORS.borders.muted,
   },
 
-  // ── LIVE card (variante D — consistente com baseCard) ────────────────────
+  // ── LIVE card ────────────────────────────────────────────────────────────
   liveCard: {
     backgroundColor: COLORS.backgrounds.screen,
     borderRadius: RADIUS.lg,
@@ -92,7 +92,7 @@ export const styles = createThemedStyles(() => ({
     flex: 1,
   },
 
-  // ── Base card (upcoming + finished) — variante C ──────────────────────────
+  // ── Base card (upcoming + finished) ──────────────────────────────────────
   baseCard: {
     backgroundColor: COLORS.backgrounds.screen,
     elevation: 1,

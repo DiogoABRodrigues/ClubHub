@@ -1,5 +1,5 @@
-import React, { useMemo, useCallback, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import React, { useMemo, useCallback, useState, useRef, useEffect } from "react";
+import { View, Text, TouchableOpacity, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./styles/MatchCard.styles";
 import { COLORS } from "../theme/colors";
@@ -122,6 +122,31 @@ export const MatchCard = React.memo(
     }, [location]);
 
     const result = useMemo(() => getResult(match), [match]);
+    const pulseOpacity = useRef(new Animated.Value(1)).current;
+
+    useEffect(() => {
+      if (match.status !== "live") return;
+      const animation = Animated.loop(
+            Animated.sequence([
+              Animated.timing(pulseOpacity, {
+                toValue: 0.5,
+                duration: 750,
+                useNativeDriver: true,
+              }),
+              Animated.timing(pulseOpacity, {
+                toValue: 1,
+                duration: 750,
+                useNativeDriver: true,
+              }),
+            ]),
+          );
+      
+          animation.start();
+      
+          return () => {
+            animation.stop();
+          };
+    }, [match.status]);
 
     // ── LIVE ─────────────────────────────────────────────────────────────────
     if (match.status === "live") {
@@ -147,9 +172,9 @@ export const MatchCard = React.memo(
             </View>
 
             <View style={styles.liveScoreCol}>
-              <Text style={styles.liveScoreText}>
+              <Animated.Text style={[styles.liveScoreText, { opacity: pulseOpacity }]}>
                 {homeScore ?? "-"} - {awayScore ?? "-"}
-              </Text>
+              </Animated.Text>
             </View>
 
             <View style={styles.teamCol}>
