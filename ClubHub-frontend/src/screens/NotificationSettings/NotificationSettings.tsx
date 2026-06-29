@@ -560,6 +560,28 @@ export const NotificationSettings = () => {
     });
   }, []);
 
+  const handleUpdatePreferences = useCallback(
+    (newPrefs: Partial<DevicePreferences>) => {
+      if (!deviceId) {
+        Alert.alert(
+          "Notificações desativadas",
+          "É necessário ativar as notificações para alterar as definições. Por favor, abra as definições do dispositivo e ative as notificações.",
+          [
+            { text: "Cancelar", style: "cancel" },
+            {
+              text: "Abrir definicoes",
+              onPress: () => Linking.openSettings(),
+            },
+          ],
+        );
+        return;
+      }
+
+      updatePreferences(newPrefs);
+    },
+    [deviceId, updatePreferences],
+  );
+
   return (
     <View style={styles.container}>
       {/* HEADER */}
@@ -685,7 +707,7 @@ export const NotificationSettings = () => {
               <Switch
                 value={safePrefs.news}
                 onValueChange={() =>
-                  updatePreferences({ news: !safePrefs.news })
+                  handleUpdatePreferences({ news: !safePrefs.news })
                 }
               />
             </View>
@@ -697,7 +719,7 @@ export const NotificationSettings = () => {
                 key={cfg.category}
                 cfg={cfg}
                 preferences={safePrefs}
-                updatePreferences={updatePreferences}
+                updatePreferences={handleUpdatePreferences}
                 defaultOpen={false}
               />
             ))}

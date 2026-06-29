@@ -169,7 +169,7 @@ export const AdminSettings = ({ navigation }: any) => {
               <Ionicons
                 name="megaphone-outline"
                 size={22}
-                color={COLORS.primary}
+                color={COLORS.text.info}
               />
             </View>
             <View style={styles.cardTextBlock}>
@@ -196,7 +196,7 @@ export const AdminSettings = ({ navigation }: any) => {
               <Ionicons
                 name="notifications-outline"
                 size={22}
-                color={COLORS.primary}
+                color={COLORS.text.info}
               />
             </View>
             <View style={styles.cardTextBlock}>
@@ -231,7 +231,7 @@ export const AdminSettings = ({ navigation }: any) => {
               <Ionicons
                 name="log-out-outline"
                 size={22}
-                color={COLORS.primary}
+                color={COLORS.text.info}
               />
             </View>
             <View style={styles.cardTextBlock}>

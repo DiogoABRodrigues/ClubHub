@@ -59,7 +59,7 @@ export const styles = createThemedStyles(() => ({
 
   // ── Card - fundo branco/neutro, sem primary ───────────────────────────────
   card: {
-    backgroundColor: COLORS.surfaceLight, // branco - não primary
+    backgroundColor: COLORS.backgrounds.screen, // branco - não primary
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     borderWidth: 1,
@@ -90,7 +90,7 @@ export const styles = createThemedStyles(() => ({
   cardTitle: {
     fontSize: FONT_SIZE.md,
     fontWeight: "700",
-    color: COLORS.text.primary, // quase preto - legível sobre branco
+    color: COLORS.text.blackWhite, // quase preto - legível sobre branco
     letterSpacing: -0.2,
   },
   cardDescription: {
