@@ -112,7 +112,7 @@ export const styles = createThemedStyles(() => ({
   },
   header: {
     backgroundColor: COLORS.surface,
-    paddingTop: SPACING.xl + 8, // espaço para status bar
+    paddingTop: SPACING.xl, 
     paddingBottom: SPACING.md,
     paddingHorizontal: SPACING.md,
   },

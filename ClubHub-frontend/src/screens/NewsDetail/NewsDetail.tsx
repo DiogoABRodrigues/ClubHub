@@ -101,16 +101,16 @@ export const NewsDetail = ({ route, navigation }: any) => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
+        <View style={styles.headerTop}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
             <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
           </TouchableOpacity>
-
-          <View style={styles.titleContainer}>
-            <Text style={styles.headerTitle}>News</Text>
+          <View>
+            <Text style={styles.eyebrow}> </Text>
+            <Text style={styles.headerTitle}>Notícias</Text>
           </View>
         </View>
       </View>

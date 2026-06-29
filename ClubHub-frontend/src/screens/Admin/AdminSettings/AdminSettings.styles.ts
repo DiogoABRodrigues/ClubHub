@@ -10,7 +10,7 @@ export const styles = createThemedStyles(() => ({
   // ── Header ───────────────────────────────────────────────────────────────
   header: {
     backgroundColor: COLORS.primary, // só o header fica primary
-    paddingTop: SPACING.xl + 8,
+    paddingTop: SPACING.xl,
     paddingBottom: SPACING.md,
     paddingHorizontal: SPACING.md,
   },

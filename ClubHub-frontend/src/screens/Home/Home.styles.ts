@@ -12,12 +12,9 @@ export const styles = createThemedStyles(() => ({
     paddingBottom: SPACING.sm,
   },
 
-  // ── Header ───────────────────────────────────────────────────────────────
-  // O header agora tem só padding - o layout interno (eyebrow + logo)
-  // é feito com localStyles em Home.tsx para não poluir este ficheiro.
   header: {
     backgroundColor: COLORS.surface,
-    paddingTop: SPACING.xl + 8, // espaço para status bar
+    paddingTop: SPACING.xl, // espaço para status bar
     paddingBottom: SPACING.md,
     paddingHorizontal: SPACING.md,
   },

@@ -11,7 +11,7 @@ export const styles = createThemedStyles(() => ({
   // ── Header ───────────────────────────────────────────────────────────────
   header: {
     backgroundColor: COLORS.surface,
-    paddingTop: SPACING.xl + 8, // espaço para status bar
+    paddingTop: SPACING.xl, // espaço para status bar
     paddingBottom: SPACING.md,
     paddingHorizontal: SPACING.md,
   },

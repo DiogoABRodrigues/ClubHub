@@ -26,13 +26,18 @@ export const styles = createThemedStyles(() => ({
     marginBottom: SPACING.xs,
   },
 
+  headerTop: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+  },
+  
   titleContainer: {
     justifyContent: "center",
     marginBottom: 0,
   },
 
   backButton: {
-    padding: 6,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -43,8 +48,8 @@ export const styles = createThemedStyles(() => ({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.xl + 16,
-    paddingBottom: SPACING.sm,
+    paddingTop: SPACING.xl,
+    paddingBottom: SPACING.md,
     backgroundColor: COLORS.surface,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,

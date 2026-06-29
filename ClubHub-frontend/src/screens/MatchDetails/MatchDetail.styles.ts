@@ -19,11 +19,9 @@ export const styles = createThemedStyles(() => ({
 
   // ── Header — variante C (tint rosado + linha maroon no topo) ─────────────
   header: {
-    borderTopWidth: 3,
-    borderTopColor: COLORS.primary,
     borderBottomWidth: 0.5,
     borderBottomColor: COLORS.borders.subtle,
-    paddingTop: SPACING.xl + 8,
+    paddingTop: SPACING.lg,
     paddingBottom: SPACING.md,
     paddingHorizontal: SPACING.md,
   },
@@ -31,7 +29,7 @@ export const styles = createThemedStyles(() => ({
   backButton: {
     position: "absolute",
     left: SPACING.md,
-    top: SPACING.xl + 8,
+    top: SPACING.xl,
     padding: 8,
     zIndex: 1,
   },
