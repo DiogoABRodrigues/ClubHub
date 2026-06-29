@@ -57,6 +57,22 @@ export const styles = createThemedStyles(() => ({
     paddingVertical: 3,
   },
 
+  phaseBadge: {
+    paddingHorizontal: 9,
+    paddingVertical: 3,
+    width: 120,
+    alignItems: "center",
+  },
+
+  phaseBadgeText: {
+    backgroundColor: COLORS.surfaceLight,
+    borderRadius: 20,
+    paddingHorizontal: 6,
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.text.blackWhite,
+    fontWeight: "700",
+  },
+
   fulltimeBadge: {
     backgroundColor: COLORS.surfaceLight,
     paddingHorizontal: 9,
@@ -87,59 +103,55 @@ export const styles = createThemedStyles(() => ({
   },
 
   // ── Score card ───────────────────────────────────────────────────────────
-  scoreCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: SPACING.md,
-  },
+scoreCard: {
+  marginBottom: SPACING.md,
+},
 
-  teamContainer: {
-    flex: 1,
-    alignItems: "center",
-    gap: SPACING.xs + 2,
-  },
+scoreRow: {
+  flexDirection: "row",
+  alignItems: "center",
+},
 
-  teamCircle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: COLORS.backgrounds.subtle,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+teamNamesRow: {
+  flexDirection: "row",
+  alignItems: "flex-start",
+  marginTop: SPACING.xs + 2,
+},
 
-  teamEmoji: {
-    fontSize: 24,
-  },
+teamSide: {
+  flex: 1,
+  alignItems: "center",
+},
 
-  teamName: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: "600",
-    color: COLORS.text.blackWhite,
-    textAlign: "center",
-  },
+scoreContainer: {
+  width: 120,
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 2,
+},
 
-  teamLogo: {
-    width: 50,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+scoreSpacer: {
+  width: 120,
+},
 
-  // ── Score numbers ─────────────────────────────────────────────────────────
-  scoreContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginHorizontal: SPACING.sm,
-    gap: 2,
-  },
+teamLogo: {
+  width: 50,
+  height: 50,
+},
+
+teamName: {
+  fontSize: FONT_SIZE.sm,
+  fontWeight: "600",
+  color: COLORS.text.blackWhite,
+  textAlign: "center",
+},
+
 
   scoreText: {
     fontSize: 44,
     fontWeight: "800",
     color: COLORS.text.info,
-    letterSpacing: -2,
   },
 
   colon: {

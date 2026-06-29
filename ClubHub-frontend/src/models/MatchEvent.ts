@@ -14,7 +14,7 @@ export type MatchEvent = {
   minute: number;
 
   /** Para eventos normais: fase do jogo em que ocorreu */
-  phase?: "1st" | "2nd" | "extra" | "penalties";
+  phase?: "1st" | "2nd" | "extra" | "penalties" | "interval";
 
   playerId?: number | null;
   playerInId?: number | null;

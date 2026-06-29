@@ -297,6 +297,7 @@ export const MatchCard = React.memo(
             <Text style={styles.finScoreText}>
               {homeScore ?? "-"} - {awayScore ?? "-"}
             </Text>
+            
             {match.decidedByPenalties && (
               <Text
                 style={{

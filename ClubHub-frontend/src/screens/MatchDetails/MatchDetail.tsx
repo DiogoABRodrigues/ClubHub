@@ -173,6 +173,11 @@ export const MatchDetail = () => {
           return acc;
         }
 
+        if (e.phase === "interval") {
+          acc.interval.push(e);
+          return acc;
+        }
+
         if (e.phase === "2nd" || (!e.phase && e.minute > 45)) {
           acc.secondHalf.push(e);
           return acc;
@@ -182,6 +187,10 @@ export const MatchDetail = () => {
           acc.extraTime.push(e);
         }
 
+        if (e.phase === "penalties") {
+          acc.penalties.push(e);
+        }
+
         return acc;
       },
       {
@@ -189,11 +198,12 @@ export const MatchDetail = () => {
         secondHalf: [] as any[],
         extraTime: [] as any[],
         penalties: [] as any[],
+        interval: [] as any[],
       },
     );
   }, [match.events]);
 
-  const { firstHalf, secondHalf, extraTime, penalties } = groupedEvents;
+  const { firstHalf, secondHalf, extraTime, penalties, interval } = groupedEvents;
 
   if (!loading && !loadedMatch) {
     return (
@@ -227,7 +237,7 @@ export const MatchDetail = () => {
         <Text style={styles.title}></Text>
 
         <View style={styles.statusContainer}>
-          {match.status === "live" && <LiveBadge interval={match.statusTime === "interval"} />}
+          {match.status === "live" && <LiveBadge interval={false} />}
           {match.status === "upcoming" && (
             <View style={styles.upcomingBadge}>
               <Text style={styles.badgeText}>Agendado</Text>
@@ -243,31 +253,46 @@ export const MatchDetail = () => {
         <Text style={styles.competition}>
           {competition?.name || ""} {match.round ? `- ${match.round}` : ""}
         </Text>
-
         {/* SCORE */}
         <View style={styles.scoreCard}>
-          <View style={styles.teamContainer}>
-            {hometeamLogo ? (
-              <Image source={{ uri: hometeamLogo }} style={styles.teamLogo} />
-            ) : (
-              <Text>🏆</Text>
-            )}
-            <Text style={styles.teamName}>{homeTeamName}</Text>
+          <View style={styles.scoreRow}>
+            <View style={styles.teamSide}>
+              <Image source={{ uri: hometeamLogo }} style={styles.teamLogo} resizeMode="contain" />
+            </View>
+
+            <View style={styles.scoreContainer}>
+              <Text style={styles.scoreText}>{homeScoreDisplay}</Text>
+              <Text style={styles.colon}>-</Text>
+              <Text style={styles.scoreText}>{awayScoreDisplay}</Text>
+            </View>
+
+            <View style={styles.teamSide}>
+              <Image source={{ uri: awayteamLogo }} style={styles.teamLogo} resizeMode="contain" />
+            </View>
           </View>
 
-          <View style={styles.scoreContainer}>
-            <Text style={styles.scoreText}>{homeScoreDisplay}</Text>
-            <Text style={styles.colon}>-</Text>
-            <Text style={styles.scoreText}>{awayScoreDisplay}</Text>
-          </View>
+          <View style={styles.teamNamesRow}>
+            <View style={styles.teamSide}>
+              <Text style={styles.teamName}>{homeTeamName}</Text>
+            </View>
 
-          <View style={styles.teamContainer}>
-            {awayteamLogo ? (
-              <Image source={{ uri: awayteamLogo }} style={styles.teamLogo} />
-            ) : (
-              <Text>🏆</Text>
-            )}
-            <Text style={styles.teamName}>{awayTeamName}</Text>
+            {match.status === "live" ? 
+            <View style={styles.phaseBadge}>
+              <Text style={styles.phaseBadgeText}>
+                {match.statusTime === "1st" && "1ª Parte"}
+                {match.statusTime === "interval" && "Intervalo"}
+                {match.statusTime === "2nd" && "2ª Parte"}
+                {match.statusTime === "extra" && "Prolongamento"}
+                {match.statusTime === "penalties" && "Penáltis"}
+              </Text>
+            </View>
+             : 
+            <View style={styles.scoreSpacer} />
+            }
+
+            <View style={styles.teamSide}>
+              <Text style={styles.teamName}>{awayTeamName}</Text>
+            </View>
           </View>
         </View>
         {/* Match Info */}
