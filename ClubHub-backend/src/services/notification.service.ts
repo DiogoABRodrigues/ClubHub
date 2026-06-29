@@ -4,19 +4,18 @@ import deviceService from "./device.service";
 
 class NotificationService {
   async create(data: { title: string; body: string; type: string }) {
-    const notification = await Notification.create(data);
-    await this.notify(notification);
-    return notification;
+    await this.notify(data);
+    return Notification.create(data);
   }
 
-  private async notify(news: any) {
+  private async notify(notification: { title: string; body: string }) {
     const devices = await deviceService.getAllDevices();
 
     if (!devices.length) return;
 
     const response = await pushService.sendToDevices(devices, {
-      title: news.title,
-      body: news.body,
+      title: notification.title,
+      body: notification.body,
     });
 
     await pushService.handleReceipts(response);

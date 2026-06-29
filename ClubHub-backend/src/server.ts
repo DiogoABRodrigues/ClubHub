@@ -4,10 +4,11 @@ import { sequelize } from "./config/database";
 import { connectRedis, redis } from "./config/redis";
 import { initAssociations } from "./models/associations";
 import { initSocket } from "./config/socket";
-import { startMatchReminderJob } from "./jobs/matchReminder.job";
+import { runMatchReminderJob, startMatchReminderJob } from "./jobs/matchReminder.job";
 import { wakeUpBackend } from "./jobs/wake-up";
 import { warmupBrowser, closeSharedBrowser } from "./utils/browser";
 import { env } from "./config/env";
+import { pushService } from "./services/push.service";
 
 const server = http.createServer(app);
 server.requestTimeout = 30_000;
@@ -17,13 +18,15 @@ server.maxRequestsPerSocket = 1_000;
 
 initAssociations();
 initSocket(server);
-startMatchReminderJob();
 wakeUpBackend();
 
 async function startServer() {
   try {
     await sequelize.authenticate();
     await connectRedis();
+    pushService.startWorker();
+    startMatchReminderJob();
+    void runMatchReminderJob();
 
     server.listen(env.PORT, async () => {
       console.log(`Servidor a correr em ${env.PORT}`);
@@ -50,6 +53,7 @@ async function shutdown(signal: string) {
   server.close(async () => {
     await Promise.allSettled([
       closeSharedBrowser(),
+      Promise.resolve(pushService.stopWorker()),
       redis.isOpen ? redis.quit() : Promise.resolve(),
       sequelize.close(),
     ]);
