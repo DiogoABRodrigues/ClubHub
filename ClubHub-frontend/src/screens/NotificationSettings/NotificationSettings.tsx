@@ -99,16 +99,12 @@ function EscalaoSection({
   return (
     <View
       style={{
-        backgroundColor: COLORS.surfaceLight,
+        backgroundColor: COLORS.backgrounds.screen,
         borderRadius: RADIUS.lg,
         borderWidth: 1,
         borderColor: COLORS.borders.default,
         marginBottom: SPACING.sm,
         overflow: "hidden",
-        shadowColor: COLORS.black,
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.04,
-        shadowRadius: 3,
         elevation: 1,
       }}
     >
@@ -121,7 +117,7 @@ function EscalaoSection({
           paddingHorizontal: SPACING.md,
           paddingVertical: SPACING.md,
           gap: SPACING.sm,
-          backgroundColor: COLORS.surfaceLight,
+          backgroundColor: COLORS.backgrounds.screen,
         }}
       >
         <View
@@ -137,7 +133,7 @@ function EscalaoSection({
           <Ionicons
             name="trophy-outline"
             size={16}
-            color={open ? COLORS.primary : COLORS.text.muted}
+            color={open ? COLORS.text.info : COLORS.text.muted}
           />
         </View>
         <Text
@@ -173,7 +169,7 @@ function EscalaoSection({
                   alignItems: "center",
                   paddingHorizontal: SPACING.md,
                   paddingVertical: SPACING.sm + 2,
-                  backgroundColor: COLORS.surfaceLight,
+                  backgroundColor: COLORS.backgrounds.screen,
                   borderTopWidth: i > 0 ? 1 : 0,
                   borderTopColor: COLORS.backgrounds.subtle,
                 }}
@@ -199,7 +195,7 @@ function EscalaoSection({
                     <Ionicons
                       name={icon as any}
                       size={15}
-                      color={value ? COLORS.primary : COLORS.text.muted}
+                      color={value ? COLORS.text.info : COLORS.text.muted}
                     />
                   </View>
                   <View style={{ flex: 1, paddingRight: SPACING.sm }}>
@@ -288,16 +284,12 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
   return (
     <View
       style={{
-        backgroundColor: COLORS.surfaceLight,
+        backgroundColor: COLORS.backgrounds.screen,
         borderRadius: RADIUS.lg,
         borderWidth: 1,
         borderColor: COLORS.borders.default,
         marginBottom: SPACING.sm,
         overflow: "hidden",
-        shadowColor: COLORS.black,
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.04,
-        shadowRadius: 3,
         elevation: 1,
       }}
     >
@@ -325,7 +317,7 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
           <Ionicons
             name="chatbubble-ellipses-outline"
             size={17}
-            color={COLORS.primary}
+            color={COLORS.text.info}
           />
         </View>
         <View style={{ flex: 1 }}>
@@ -365,7 +357,7 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
                   justifyContent: "center",
                   backgroundColor: active ? COLORS.primary : COLORS.backgrounds.subtle,
                   borderWidth: active ? 0 : 1,
-                  borderColor: COLORS.border,
+                  borderColor: COLORS.borders.subtle,
                 }}
               >
                 <Text
@@ -616,7 +608,7 @@ export const NotificationSettings = () => {
             {/* Pickers */}
             <View
               style={{
-                backgroundColor: COLORS.surfaceLight,
+                backgroundColor: COLORS.backgrounds.screen,
                 borderRadius: RADIUS.lg,
                 padding: SPACING.sm,
                 borderWidth: 1,
