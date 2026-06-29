@@ -430,7 +430,7 @@ export const adminStyles = createThemedStyles(() => ({
     borderBottomWidth: 0.8,
     borderBottomColor: COLORS.borders.default,
     gap: 10,
-    backgroundColor: COLORS.background.app,
+    backgroundColor: COLORS.backgrounds.screen,
   },
 
   lineupPhoto: {

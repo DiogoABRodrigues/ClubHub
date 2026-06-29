@@ -5,7 +5,7 @@ export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.backgrounds.screen,
   },
 
   // ── Header ───────────────────────────────────────────────────────────────
@@ -66,7 +66,7 @@ export const styles = createThemedStyles(() => ({
     flexDirection: "row",
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.xs,
-    backgroundColor: COLORS.background.app,
+    backgroundColor: COLORS.backgrounds.screen,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borders.subtle,
     gap: SPACING.xs,

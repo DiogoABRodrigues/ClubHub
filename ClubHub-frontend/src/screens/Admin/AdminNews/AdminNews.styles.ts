@@ -5,7 +5,7 @@ export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.backgrounds.screen,
   },
 
   // ── Header ───────────────────────────────────────────────────────────────

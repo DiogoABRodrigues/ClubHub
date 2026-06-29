@@ -5,7 +5,7 @@ export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.backgrounds.screen,
   },
 
   content: {
@@ -33,6 +33,7 @@ export const styles = createThemedStyles(() => ({
     color: COLORS.text.blackWhite,
     textTransform: "uppercase",
     letterSpacing: 0.5,
+    
   },
 
   // ── Texto de apoio ────────────────────────────────────────────────────────
@@ -49,6 +50,7 @@ export const styles = createThemedStyles(() => ({
     padding: SPACING.md,
     backgroundColor: COLORS.surfaceLight,
     marginTop: SPACING.md,
+    
   },
 
   legendTitle: {
@@ -155,6 +157,7 @@ export const styles = createThemedStyles(() => ({
     fontSize: FONT_SIZE.md,
     fontWeight: "700",
     color: COLORS.text.blackWhite,
+    alignSelf: "center",
   },
 
   // ── Tabela completa (wrapper) ──────────────────────────────────────────────

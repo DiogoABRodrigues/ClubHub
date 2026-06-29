@@ -5,7 +5,7 @@ export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.backgrounds.screen,
   },
 
   content: {
@@ -74,7 +74,7 @@ export const styles = createThemedStyles(() => ({
   // ── Secções ───────────────────────────────────────────────────────────────
   section: {
     paddingHorizontal: SPACING.md,
-    marginTop: SPACING.lg,
+    marginTop: SPACING.md,
   },
 
   sectionTitleRow: {

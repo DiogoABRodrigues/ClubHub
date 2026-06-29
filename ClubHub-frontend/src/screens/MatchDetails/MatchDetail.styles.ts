@@ -4,7 +4,6 @@ export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
 
   mutedText: {
@@ -18,9 +17,12 @@ export const styles = createThemedStyles(() => ({
     fontSize: FONT_SIZE.md,
   },
 
-  // ── Header  (fundo azul escuro - dá identidade ao ecrã) ──────────────────
+  // ── Header — variante C (tint rosado + linha maroon no topo) ─────────────
   header: {
-    backgroundColor: COLORS.primary,
+    borderTopWidth: 3,
+    borderTopColor: COLORS.primary,
+    borderBottomWidth: 0.5,
+    borderBottomColor: COLORS.borders.subtle,
     paddingTop: SPACING.xl + 8,
     paddingBottom: SPACING.md,
     paddingHorizontal: SPACING.md,
@@ -38,7 +40,7 @@ export const styles = createThemedStyles(() => ({
     textAlign: "center",
     fontSize: FONT_SIZE.md,
     fontWeight: "600",
-    color: COLORS.textPrimary,
+    color: COLORS.text.blackWhite,
     marginBottom: SPACING.xs,
   },
 
@@ -51,32 +53,39 @@ export const styles = createThemedStyles(() => ({
   },
 
   upcomingBadge: {
-    backgroundColor: COLORS.primaryLight,
-    paddingHorizontal: SPACING.sm,
+    backgroundColor: COLORS.brand.tint,
+    borderRadius: 20,
+    paddingHorizontal: 9,
     paddingVertical: 3,
-    borderRadius: RADIUS.xl,
   },
 
   fulltimeBadge: {
-    backgroundColor: COLORS.effect.whiteStrong,
-    paddingHorizontal: SPACING.sm,
+    backgroundColor: COLORS.surfaceLight,
+    paddingHorizontal: 9,
     paddingVertical: 3,
-    borderRadius: RADIUS.xl,
+    borderRadius: 20,
   },
 
   badgeText: {
-    fontSize: FONT_SIZE.xs,
-    color: COLORS.textPrimary,
+    fontSize: 10,
+    color: COLORS.text.info,
+    fontWeight: "700",
+  },
+
+  fulltimeBadgeText: {
+    fontSize: 10,
+    color: COLORS.text.subtle,
     fontWeight: "600",
   },
 
   competition: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textPrimary,
+    color: COLORS.text.info,
     textAlign: "center",
     marginBottom: SPACING.md,
     textTransform: "uppercase",
     letterSpacing: 0.6,
+    fontWeight: "600",
   },
 
   // ── Score card ───────────────────────────────────────────────────────────
@@ -94,22 +103,22 @@ export const styles = createThemedStyles(() => ({
   },
 
   teamCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: COLORS.effect.whiteMedium,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: COLORS.backgrounds.subtle,
     justifyContent: "center",
     alignItems: "center",
   },
 
   teamEmoji: {
-    fontSize: 28,
+    fontSize: 24,
   },
 
   teamName: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: COLORS.textPrimary,
+    color: COLORS.text.blackWhite,
     textAlign: "center",
   },
 
@@ -131,13 +140,13 @@ export const styles = createThemedStyles(() => ({
   scoreText: {
     fontSize: 44,
     fontWeight: "800",
-    color: COLORS.textPrimary,
+    color: COLORS.text.info,
     letterSpacing: -2,
   },
 
   colon: {
     fontSize: 28,
-    color: COLORS.textPrimary,
+    color: COLORS.text.info,
     marginHorizontal: 4,
   },
 
@@ -155,7 +164,7 @@ export const styles = createThemedStyles(() => ({
 
   infoText: {
     fontSize: FONT_SIZE.xs,
-    color: COLORS.textPrimary,
+    color: COLORS.text.subtle,
   },
 
   // ── Tabs ─────────────────────────────────────────────────────────────────
@@ -165,7 +174,7 @@ export const styles = createThemedStyles(() => ({
 
   tabsList: {
     flexDirection: "row",
-    backgroundColor: COLORS.background.app,
+    backgroundColor: COLORS.backgrounds.screen,
     borderBottomColor: COLORS.border,
   },
 
@@ -225,9 +234,9 @@ export const styles = createThemedStyles(() => ({
     paddingVertical: 8,
     minHeight: 40,
     borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: COLORS.borders.subtle,
     gap: 6,
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.backgrounds.elevated,
   },
 
   eventMinuteText: {
@@ -261,7 +270,7 @@ export const styles = createThemedStyles(() => ({
   eventPlayer: {
     fontSize: 13,
     fontWeight: "600",
-    color: COLORS.textPrimary,
+    color: COLORS.text.blackWhite,
   },
 
   eventAssist: {
@@ -300,7 +309,7 @@ export const styles = createThemedStyles(() => ({
   lineupSectionTitle: {
     fontSize: 11,
     fontWeight: "700",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     textTransform: "uppercase",
     letterSpacing: 0.6,
     paddingHorizontal: SPACING.md,
@@ -317,7 +326,7 @@ export const styles = createThemedStyles(() => ({
     borderBottomWidth: 0.8,
     borderBottomColor: COLORS.borders.default,
     gap: 10,
-    backgroundColor: COLORS.background.app,
+    backgroundColor: COLORS.backgrounds.screen,
   },
 
   lineupPhoto: {
@@ -355,10 +364,12 @@ export const styles = createThemedStyles(() => ({
 
   // ── Stats ─────────────────────────────────────────────────────────────────
   statsCard: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.backgrounds.elevated,
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     gap: SPACING.md,
+    borderWidth: 0.5,
+    borderColor: COLORS.borders.default,
   },
 
   statsRow: {
@@ -370,7 +381,7 @@ export const styles = createThemedStyles(() => ({
   statsValue: {
     fontSize: FONT_SIZE.sm,
     fontWeight: "600",
-    color: COLORS.textPrimary,
+    color: COLORS.text.blackWhite,
   },
 
   statsLabel: {

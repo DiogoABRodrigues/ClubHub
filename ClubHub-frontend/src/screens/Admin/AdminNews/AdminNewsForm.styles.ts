@@ -5,13 +5,13 @@ export const styles = createThemedStyles(() => ({
   // ── Layout base ──────────────────────────────────────────────────────────
   root: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.backgrounds.screen,
   },
 
   // ── Header ───────────────────────────────────────────────────────────────
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.backgrounds.screen,
   },
   content: {
     paddingHorizontal: SPACING.md,
@@ -181,7 +181,7 @@ export const styles = createThemedStyles(() => ({
 
   // ── Input ─────────────────────────────────────────────────────────────────
   input: {
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.backgrounds.screen,
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm + 2,

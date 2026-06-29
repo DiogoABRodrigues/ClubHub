@@ -21,11 +21,7 @@ export const styles = createThemedStyles(() => ({
     borderRadius: RADIUS.lg + 4,
     padding: SPACING.md,
     paddingTop: SPACING.lg,
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 12,
+    elevation: 1,
   },
 
   closeBtn: {

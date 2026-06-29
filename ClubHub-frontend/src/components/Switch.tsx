@@ -67,7 +67,7 @@ export const Switch: React.FC<SwitchProps> = React.memo(
               height: thumbSize,
               borderRadius: thumbSize / 2,
               transform: [{ translateX: translate }],
-              backgroundColor: COLORS.background,
+              backgroundColor: COLORS.backgrounds.screen,
             },
           ]}
         />

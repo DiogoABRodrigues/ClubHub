@@ -29,11 +29,7 @@ export const styles = createThemedStyles(() => ({
     backgroundColor: COLORS.backgroundWhite,
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
-    shadowRadius: 16,
-    elevation: 10,
+    elevation: 2,
   },
   sheetTitle: {
     fontSize: FONT_SIZE.md,

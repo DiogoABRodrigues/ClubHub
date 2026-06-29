@@ -7,13 +7,14 @@ const screenWidth = Dimensions.get("window").width;
 export const styles = createThemedStyles(() => ({
   // ── Featured (primeira notícia) ───────────────────────────────────────────
   featuredCard: {
-    backgroundColor: COLORS.backgrounds.elevated,
+    backgroundColor: COLORS.backgrounds.screen,
     borderRadius: 12,
     border: 0.5,
-    borderColor: COLORS.borders.default,
+    borderColor: COLORS.borders.inverse,
     overflow: "hidden",
     marginBottom: SPACING.md,
     borderWidth: 0.5,
+    elevation: 1,
   },
 
   featuredImage: {

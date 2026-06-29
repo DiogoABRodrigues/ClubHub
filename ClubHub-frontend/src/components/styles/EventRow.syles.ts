@@ -11,7 +11,7 @@ export const styles = createThemedStyles(() => ({
     borderBottomWidth: 0.8,
     borderBottomColor: COLORS.borders.default,
     gap: 6,
-    backgroundColor: COLORS.background.app,
+    backgroundColor: COLORS.backgrounds.screen,
   },
 
   // ── Minuto ────────────────────────────────────────────────────────────────

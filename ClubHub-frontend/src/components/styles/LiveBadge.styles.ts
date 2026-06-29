@@ -6,9 +6,10 @@ export const styles = createThemedStyles(() => ({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
+    backgroundColor: COLORS.effect.live,
+    paddingHorizontal: 9,
+    paddingVertical: 3,
+    borderRadius: 20,
   },
 
   dot: {

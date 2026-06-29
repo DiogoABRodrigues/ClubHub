@@ -101,11 +101,6 @@ export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
           <View style={styles.body}>
             {/* Coluna esquerda - foto */}
             <View style={styles.photoCol}>
-              {number !== undefined && (
-                <View style={styles.numberBadge}>
-                  <Text style={styles.numberBadgeText}>{number}</Text>
-                </View>
-              )}
               <Image
                 source={
                   display.photoUrl

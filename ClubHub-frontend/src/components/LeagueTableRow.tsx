@@ -81,7 +81,7 @@ export const LeagueTableRow = React.memo(
         // Adiciona transparência à cor do zerozero (30% opacidade)
         return standing.rowColor + "4D";
       }
-      return COLORS.background;
+      return COLORS.backgrounds.screen;
     }, [standing.rowColor, mode /*isAppTeam*/]);
 
     return (

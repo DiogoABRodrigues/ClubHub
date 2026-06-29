@@ -221,18 +221,22 @@ export const MatchDetail = () => {
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
-          <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
+          <Ionicons name="arrow-back" size={24} color={COLORS.text.blackWhite} />
         </TouchableOpacity>
 
-        <Text style={styles.title}>Detalhes do jogo</Text>
+        <Text style={styles.title}></Text>
 
         <View style={styles.statusContainer}>
           {match.status === "live" && <LiveBadge interval={match.statusTime === "interval"} />}
           {match.status === "upcoming" && (
-            <Text style={styles.badgeText}>Agendado</Text>
+            <View style={styles.upcomingBadge}>
+              <Text style={styles.badgeText}>Agendado</Text>
+            </View>
           )}
           {match.status === "finished" && (
-            <Text style={styles.badgeText}>Terminado</Text>
+            <View style={styles.fulltimeBadge}>
+              <Text style={styles.fulltimeBadgeText}>Terminado</Text>
+            </View>
           )}
         </View>
 
@@ -272,7 +276,7 @@ export const MatchDetail = () => {
             <Ionicons
               name="calendar-outline"
               size={16}
-              color={COLORS.textPrimary}
+              color={COLORS.text.subtle}
             />
             <Text style={styles.infoText}>
               {formatDateWithWeekdayPT(match.date)} • {match.time}
@@ -283,7 +287,7 @@ export const MatchDetail = () => {
               <Ionicons
                 name="location-outline"
                 size={16}
-                color={COLORS.textPrimary}
+                color={COLORS.text.subtle}
               />
               <Text style={styles.infoText}>{match.location}</Text>
             </View>

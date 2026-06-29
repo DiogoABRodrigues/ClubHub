@@ -18,7 +18,6 @@ import { useCategoryTransition } from "../hooks/useCategoryTransition";
 import { CategoryTransitionOverlay } from "../components/CategoryTransitionOverlay";
 import { useTheme } from "../contexts/ThemeContext";
 import { withThemeUpdates } from "./withThemeUpdates";
-
 const Tab = createBottomTabNavigator();
 const ThemedNotificationSettings = withThemeUpdates(NotificationSettings);
 const ThemedAdminSettings = withThemeUpdates(AdminSettings);
@@ -55,7 +54,7 @@ const AppContent = () => {
           color: colors.text.muted,
           textColor: colors.text.muted,
           tabBarStyle: {
-            backgroundColor: colors.backgrounds.elevated,
+            backgroundColor: colors.backgrounds.screen,
             borderTopColor: colors.borders.default,
           },
           tabBarLabelStyle: {
@@ -143,7 +142,7 @@ export const AppNavigator = () => {
       dark: mode === "dark",
       colors: {
         primary: colors.brand.primary,
-        background: colors.backgrounds.app,
+        background: colors.backgrounds.screen,
         card: colors.backgrounds.elevated,
         text: colors.text.primary,
         border: colors.borders.default,

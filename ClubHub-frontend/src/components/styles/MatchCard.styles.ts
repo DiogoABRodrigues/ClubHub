@@ -42,10 +42,11 @@ export const styles = createThemedStyles(() => ({
 
   // ── LIVE card (variante D — consistente com baseCard) ────────────────────
   liveCard: {
-    backgroundColor: COLORS.backgrounds.elevated,
+    backgroundColor: COLORS.backgrounds.screen,
     borderRadius: RADIUS.lg,
+    elevation: 1,
     borderWidth: 0.5,
-    borderColor: COLORS.brand.border,
+    borderColor: COLORS.borders.inverse,
     borderTopWidth: 2.5,
     borderTopColor: COLORS.primary,
     padding: 14,
@@ -55,7 +56,7 @@ export const styles = createThemedStyles(() => ({
   liveDecor: {},
   liveComp: {
     fontSize: 10,
-    color: COLORS.primary,
+    color: COLORS.text.info,
     letterSpacing: 0.4,
     fontWeight: "600",
     flex: 1,
@@ -76,7 +77,7 @@ export const styles = createThemedStyles(() => ({
   liveScoreText: {
     fontSize: 36,
     fontWeight: "800",
-    color: COLORS.primary,
+    color: COLORS.text.info,
     letterSpacing: -2,
     lineHeight: 40,
   },
@@ -93,10 +94,11 @@ export const styles = createThemedStyles(() => ({
 
   // ── Base card (upcoming + finished) — variante C ──────────────────────────
   baseCard: {
-    backgroundColor: COLORS.backgrounds.elevated,
+    backgroundColor: COLORS.backgrounds.screen,
+    elevation: 1,
     borderRadius: RADIUS.lg,
     borderWidth: 0.5,
-    borderColor: COLORS.brand.border,
+    borderColor: COLORS.borders.inverse,
     borderTopWidth: 2.5,
     borderTopColor: COLORS.primary,
     padding: 14,
@@ -104,7 +106,7 @@ export const styles = createThemedStyles(() => ({
   },
   baseComp: {
     fontSize: 10,
-    color: COLORS.primary,
+    color: COLORS.text.info,
     letterSpacing: 0.4,
     fontWeight: "600",
     flex: 1,
@@ -134,7 +136,7 @@ export const styles = createThemedStyles(() => ({
   upBadgeText: {
     fontSize: 10,
     fontWeight: "700",
-    color: COLORS.primary,
+    color: COLORS.text.info,
   },
   upCenterCol: {
     alignItems: "center",
@@ -174,7 +176,7 @@ export const styles = createThemedStyles(() => ({
   finScoreText: {
     fontSize: 30,
     fontWeight: "800",
-    color: COLORS.primary,
+    color: COLORS.text.info,
     letterSpacing: -1.5,
     lineHeight: 34,
   },

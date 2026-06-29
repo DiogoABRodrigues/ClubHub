@@ -4,7 +4,7 @@ import { COLORS, SPACING, RADIUS, FONT_SIZE, createThemedStyles } from "../../..
 export const styles = createThemedStyles(() => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.backgrounds.screen,
   },
 
   // ── Header ───────────────────────────────────────────────────────────────

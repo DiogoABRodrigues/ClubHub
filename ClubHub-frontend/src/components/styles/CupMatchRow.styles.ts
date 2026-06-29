@@ -8,7 +8,8 @@ export const styles = createThemedStyles(() => ({
     paddingVertical: SPACING.sm + 2,
     paddingHorizontal: SPACING.md,
     marginBottom: SPACING.sm,
-    backgroundColor: COLORS.background.app
+    backgroundColor: COLORS.backgrounds.screen,
+    elevation: 1,
   },
 
   row: {
@@ -41,7 +42,7 @@ export const styles = createThemedStyles(() => ({
   },
 
   scoreBox: {
-    backgroundColor: COLORS.background.app,
+    backgroundColor: COLORS.backgrounds.screen,
     borderRadius: RADIUS.sm,
     paddingVertical: 4,
     paddingHorizontal: SPACING.sm + 2,
