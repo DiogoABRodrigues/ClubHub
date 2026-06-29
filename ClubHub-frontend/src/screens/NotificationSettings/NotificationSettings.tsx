@@ -758,6 +758,7 @@ export const NotificationSettings = () => {
             <Text style={styles.modalTitle}>Acesso Admin</Text>
             <TextInput
               placeholder="Username"
+              placeholderTextColor={COLORS.text.muted}
               value={userName}
               onChangeText={setUserName}
               autoCapitalize="none"
@@ -765,6 +766,7 @@ export const NotificationSettings = () => {
             />
             <TextInput
               placeholder="Password"
+              placeholderTextColor={COLORS.text.muted}
               value={password}
               onChangeText={setPassword}
               secureTextEntry

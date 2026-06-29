@@ -231,7 +231,7 @@ export const styles = createThemedStyles(() => ({
   modalTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: COLORS.text.primary,
+    color: COLORS.text.blackWhite,
     marginBottom: 8,
   },
   input: {
@@ -239,7 +239,8 @@ export const styles = createThemedStyles(() => ({
     padding: 12,
     borderRadius: 10,
     fontSize: FONT_SIZE.sm,
-    color: COLORS.text.primary,
+    color: COLORS.text.blackWhite,
+    borderWidth: 1,
   },
   loginBtn: {
     backgroundColor: COLORS.primary,
@@ -251,7 +252,7 @@ export const styles = createThemedStyles(() => ({
   loginBtnText: { color: COLORS.white, fontWeight: "700", fontSize: FONT_SIZE.sm },
   cancelText: {
     textAlign: "center",
-    color: COLORS.text.muted,
+    color: COLORS.text.blackWhite,
     paddingVertical: 8,
     fontSize: FONT_SIZE.sm,
   },
