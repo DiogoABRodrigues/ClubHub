@@ -109,7 +109,7 @@ const PlayerPicker = React.memo(
             value={search}
             onChangeText={setSearch}
             placeholder="Procurar jogador"
-            placeholderTextColor={COLORS.textMuted}
+            placeholderTextColor={COLORS.text.muted}
           />
         )}
         {filtered.length > 0 ? (
@@ -470,7 +470,7 @@ export const AddEventModal = ({
                   placeholder={
                     MINUTE_PLACEHOLDER[form.phase ?? "1st"] ?? "1 até 45+"
                   }
-                  placeholderTextColor={COLORS.textMuted}
+                  placeholderTextColor={COLORS.text.muted}
                 />
 
                 {/* Auto-golo */}

@@ -513,7 +513,7 @@ export const eventStyles = {
   playerName: {
     flex: 1,
     fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
     fontWeight: "500" as const,
   },
   playerNameActive: {

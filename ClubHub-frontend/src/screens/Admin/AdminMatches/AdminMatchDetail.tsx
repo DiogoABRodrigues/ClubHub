@@ -542,58 +542,48 @@ export const AdminMatchDetail = () => {
           <Text style={styles.competition}>
             {competition?.name || ""} {match.round ? `- ${match.round}` : ""}
           </Text>
-          {/* Score */}
-          <View style={styles.scoreCard}>
-            <View style={styles.teamContainer}>
-              <View style={styles.teamLogo}>
-                {homeLogo ? (
-                  <Image
-                    source={{ uri: homeLogo }}
-                    style={{ width: 50, height: 50 }}
-                  />
-                ) : (
-                  <Text>🏆</Text>
-                )}
-              </View>
-              <Text style={styles.teamName}>{homeTeamName}</Text>
-            </View>
-            <View style={{ alignItems: "center", marginTop: 8 }}>
-              <View style={styles.scoreContainer}>
-                <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
-                  {homeScoreDisplay}
-                </Text>
-                <Text style={styles.colon}>-</Text>
-                <Text style={[styles.scoreText, { color: COLORS.textPrimary }]}>
-                  {awayScoreDisplay}
-                </Text>
-              </View>
-              {match.decidedByPenalties && (
-                <Text
-                  style={{
-                    fontSize: 11,
-                    color: COLORS.text.inverseMuted,
-                    marginTop: 2,
-                  }}
-                >
-                  após g.p.
-                </Text>
-              )}
-            </View>
-            <View style={styles.teamContainer}>
-              <View style={styles.teamLogo}>
-                {awayLogo ? (
-                  <Image
-                    source={{ uri: awayLogo }}
-                    style={{ width: 50, height: 50 }}
-                  />
-                ) : (
-                  <Text>🏆</Text>
-                )}
-              </View>
-              <Text style={styles.teamName}>{awayTeamName}</Text>
-            </View>
-          </View>
-
+          {/* SCORE */}
+                  <View style={styles.scoreCard}>
+                    <View style={styles.scoreRow}>
+                      <View style={styles.teamSide}>
+                        <Image source={{ uri: homeLogo }} style={styles.teamLogo} resizeMode="contain" />
+                      </View>
+          
+                      <View style={styles.scoreContainer}>
+                        <Text style={styles.scoreText}>{homeScoreDisplay}</Text>
+                        <Text style={styles.colon}>-</Text>
+                        <Text style={styles.scoreText}>{awayScoreDisplay}</Text>
+                      </View>
+          
+                      <View style={styles.teamSide}>
+                        <Image source={{ uri: awayLogo }} style={styles.teamLogo} resizeMode="contain" />
+                      </View>
+                    </View>
+          
+                    <View style={styles.teamNamesRow}>
+                      <View style={styles.teamSide}>
+                        <Text style={styles.teamName}>{homeTeamName}</Text>
+                      </View>
+          
+                      {match.status === "live" ? 
+                      <View style={styles.phaseBadge}>
+                        <Text style={styles.phaseBadgeText}>
+                          {match.statusTime === "1st" && "1ª Parte"}
+                          {match.statusTime === "interval" && "Intervalo"}
+                          {match.statusTime === "2nd" && "2ª Parte"}
+                          {match.statusTime === "extra" && "Prolongamento"}
+                          {match.statusTime === "penalties" && "Penáltis"}
+                        </Text>
+                      </View>
+                       : 
+                      <View style={styles.scoreSpacer} />
+                      }
+          
+                      <View style={styles.teamSide}>
+                        <Text style={styles.teamName}>{awayTeamName}</Text>
+                      </View>
+                    </View>
+                  </View>
           {/* Match Info */}
           <View style={styles.matchInfo}>
             <View style={styles.infoItem}>
@@ -605,7 +595,7 @@ export const AdminMatchDetail = () => {
                   <Ionicons
                     name="create-outline"
                     size={16}
-                    color={COLORS.textPrimary}
+                    color={COLORS.text.subtle}
                   />
                 </TouchableOpacity>
               )}
@@ -614,7 +604,7 @@ export const AdminMatchDetail = () => {
               <Ionicons
                 name="location-outline"
                 size={16}
-                color={COLORS.textPrimary}
+                color={COLORS.text.subtle}
               />
               <Text style={styles.infoText}>{location}</Text>
               {canEditDateTime && (
@@ -622,7 +612,7 @@ export const AdminMatchDetail = () => {
                   <Ionicons
                     name="create-outline"
                     size={16}
-                    color={COLORS.textPrimary}
+                    color={COLORS.text.subtle}
                   />
                 </TouchableOpacity>
               )}
@@ -870,7 +860,7 @@ export const AdminMatchDetail = () => {
                 <Text
                   style={[
                     styles.tabText,
-                    activeTab === tab.key && { color: COLORS.primary },
+                    activeTab === tab.key && { color: COLORS.text.blackWhite },
                   ]}
                 >
                   {tab.label}

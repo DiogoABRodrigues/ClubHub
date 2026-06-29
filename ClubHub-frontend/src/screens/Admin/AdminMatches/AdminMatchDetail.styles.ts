@@ -80,12 +80,12 @@ export const adminStyles = createThemedStyles(() => ({
   sheetTitle: {
     fontSize: FONT_SIZE.md,
     fontWeight: "700",
-    color: COLORS.textSecondary,
+    color: COLORS.text.blackWhite,
   },
 
   sheetSubtitle: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
+    color: COLORS.text.subtle,
     marginTop: 2,
   },
 
@@ -134,7 +134,7 @@ export const adminStyles = createThemedStyles(() => ({
 
   chipText: {
     fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
+    color: COLORS.text.subtle,
     fontWeight: "500",
   },
 
@@ -147,7 +147,7 @@ export const adminStyles = createThemedStyles(() => ({
   fieldLabel: {
     fontSize: FONT_SIZE.xs,
     fontWeight: "700",
-    color: COLORS.textSecondary,
+    color: COLORS.text.subtle,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: SPACING.sm,
@@ -158,7 +158,7 @@ export const adminStyles = createThemedStyles(() => ({
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm + 2,
     fontSize: FONT_SIZE.md,
-    color: COLORS.textSecondary,
+    color: COLORS.text.subtle,
     borderWidth: 1,
     borderColor: COLORS.primary,
   },
@@ -239,7 +239,7 @@ export const adminStyles = createThemedStyles(() => ({
   modalTitle: {
     fontSize: FONT_SIZE.md,
     fontWeight: "700",
-    color: COLORS.textPrimary,
+    color: COLORS.text.subtle,
   },
 
   modalCancelText: {
