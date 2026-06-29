@@ -101,8 +101,8 @@ function EscalaoSection({
       style={{
         backgroundColor: COLORS.backgrounds.screen,
         borderRadius: RADIUS.lg,
-        borderWidth: 1,
-        borderColor: COLORS.borders.default,
+        borderColor: COLORS.borders.inverse,
+        borderWidth: 0.5,
         marginBottom: SPACING.sm,
         overflow: "hidden",
         elevation: 1,
@@ -231,11 +231,18 @@ function EscalaoSection({
 
 // ── FeedbackBox ───────────────────────────────────────────────────────────────
 function FeedbackBox({ deviceId }: { deviceId: string | null }) {
+  const [open, setOpen] = useState(false);
   const [type, setType] = useState<FeedbackType>("suggestion");
   const [message, setMessage] = useState("");
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+
+  const toggle = () => {
+    if (Platform.OS !== "web")
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setOpen((v) => !v);
+  };
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -286,19 +293,21 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
       style={{
         backgroundColor: COLORS.backgrounds.screen,
         borderRadius: RADIUS.lg,
-        borderWidth: 1,
-        borderColor: COLORS.borders.default,
-        marginBottom: SPACING.sm,
+        borderWidth: 0.5,
+        borderColor: COLORS.borders.inverse,
+        marginBottom: SPACING.xs,
         overflow: "hidden",
         elevation: 1,
       }}
     >
-      {/* Título */}
-      <View
+      {/* Título (collapsible header) */}
+      <TouchableOpacity
+        onPress={toggle}
+        activeOpacity={0.7}
         style={{
           paddingHorizontal: SPACING.md,
           paddingTop: SPACING.md,
-          paddingBottom: SPACING.sm,
+          paddingBottom: SPACING.md,
           flexDirection: "row",
           alignItems: "center",
           gap: SPACING.sm,
@@ -309,7 +318,7 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
             width: 36,
             height: 36,
             borderRadius: 18,
-            backgroundColor: COLORS.brand.tint,
+            backgroundColor: open ? COLORS.brand.tint : COLORS.backgrounds.subtle,
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -317,7 +326,7 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
           <Ionicons
             name="chatbubble-ellipses-outline"
             size={17}
-            color={COLORS.text.info}
+            color={open ? COLORS.text.info : COLORS.text.muted}
           />
         </View>
         <View style={{ flex: 1 }}>
@@ -334,11 +343,18 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
             Ajuda-nos a melhorar a app
           </Text>
         </View>
-      </View>
+        <Ionicons
+          name={open ? "chevron-up" : "chevron-down"}
+          size={18}
+          color={COLORS.text.muted}
+        />
+      </TouchableOpacity>
 
-      <View style={{ height: 1, backgroundColor: COLORS.backgrounds.subtle }} />
+      {open && (
+        <>
+        <View style={{ height: 1, backgroundColor: COLORS.backgrounds.subtle }} />
 
-      <View style={{ padding: SPACING.md, gap: SPACING.sm }}>
+        <View style={{ padding: SPACING.md, gap: SPACING.sm }}>
         {/* Tipo: Sugestão / Erro */}
         <View style={{ flexDirection: "row", gap: 8 }}>
           {(["suggestion", "bug"] as FeedbackType[]).map((t) => {
@@ -390,8 +406,8 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
           style={{
             backgroundColor: COLORS.backgrounds.muted,
             borderRadius: RADIUS.md,
-            borderWidth: 1,
-            borderColor: COLORS.borders.default,
+            borderWidth: 0.5,
+            borderColor: COLORS.borders.inverse,
             padding: SPACING.sm,
             fontSize: FONT_SIZE.sm,
             color: COLORS.text.blackWhite,
@@ -438,8 +454,8 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
               paddingHorizontal: SPACING.sm,
               paddingVertical: 6,
               borderRadius: RADIUS.md,
-              borderWidth: 1,
-              borderColor: COLORS.borders.default,
+              borderWidth: 0.5,
+              borderColor: COLORS.borders.inverse,
               backgroundColor: COLORS.backgrounds.muted,
             }}
           >
@@ -492,6 +508,8 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
           </Text>
         </TouchableOpacity>
       </View>
+        </>
+      )}
     </View>
   );
 }
@@ -604,8 +622,8 @@ export const NotificationSettings = () => {
               width: 36,
               height: 36,
               borderRadius: RADIUS.md,
-              borderWidth: 1,
-              borderColor: COLORS.borders.default,
+              borderWidth: 0.5,
+              borderColor: COLORS.borders.inverse,
               alignItems: "center",
               justifyContent: "center",
               backgroundColor: COLORS.backgrounds.muted,
@@ -633,10 +651,11 @@ export const NotificationSettings = () => {
                 backgroundColor: COLORS.backgrounds.screen,
                 borderRadius: RADIUS.lg,
                 padding: SPACING.sm,
-                borderWidth: 1,
-                borderColor: COLORS.borders.default,
-                marginBottom: SPACING.lg,
+                borderColor: COLORS.borders.inverse,
+                borderWidth: 0.5,
+                marginBottom: SPACING.md,
                 alignSelf: "center",
+                elevation: 1,
               }}
             >
               <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-start" }}>
@@ -656,7 +675,7 @@ export const NotificationSettings = () => {
                   style={{
                     width: 1,
                     alignSelf: "stretch",
-                    backgroundColor: COLORS.borders.default,
+                    borderColor: COLORS.borders.inverse,
                     marginVertical: 2,
                   }}
                 />
@@ -677,7 +696,7 @@ export const NotificationSettings = () => {
 
             {/* Notícias */}
             <Text style={styles.sectionTitle}>Notícias</Text>
-            <View style={[styles.toggleCard, { marginBottom: SPACING.lg }]}>
+            <View style={[styles.toggleCard, { marginBottom: SPACING.md }]}>
               <View style={styles.toggleLeft}>
                 <View
                   style={{
@@ -723,7 +742,7 @@ export const NotificationSettings = () => {
             ))}
 
             {/* Sugestões & Erros */}
-            <Text style={[styles.sectionTitle, { marginTop: SPACING.lg }]}>
+            <Text style={[styles.sectionTitle, { marginTop: SPACING.sm }]}>
               Feedback
             </Text>
             <FeedbackBox deviceId={deviceId} />

@@ -58,8 +58,8 @@ export const styles = createThemedStyles(() => ({
     justifyContent: "center",
     backgroundColor: COLORS.white,
     borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.borders.default,
+    borderColor: COLORS.borders.inverse,
+    borderWidth: 0.5,
   },
 
   // ── Banner informativo ────────────────────────────────────────────────────
@@ -112,8 +112,8 @@ export const styles = createThemedStyles(() => ({
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
     marginBottom: SPACING.sm,
-    borderWidth: 1,
-    borderColor: COLORS.borders.default,
+    borderColor: COLORS.borders.inverse,
+    borderWidth: 0.5,
     elevation: 1,
   },
 
@@ -153,8 +153,8 @@ export const styles = createThemedStyles(() => ({
     height: 42,
     flexDirection: "row",
     borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.borders.default,
+    borderColor: COLORS.borders.inverse,
+    borderWidth: 0.5,
     backgroundColor: COLORS.backgrounds.muted,
     padding: 3,
     gap: 3,
@@ -174,8 +174,8 @@ export const styles = createThemedStyles(() => ({
     backgroundColor: COLORS.surfaceLight,
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.borders.default,
+    borderColor: COLORS.borders.inverse,
+    borderWidth: 0.5,
   },
 
   teamRow: {
