@@ -684,9 +684,7 @@ export const NotificationSettings = () => {
                     width: 40,
                     height: 40,
                     borderRadius: 20,
-                    backgroundColor: safePrefs.news
-                      ? COLORS.brand.tint
-                      : COLORS.backgrounds.subtle,
+                    backgroundColor: COLORS.backgrounds.subtle,
                     justifyContent: "center",
                     alignItems: "center",
                   }}
