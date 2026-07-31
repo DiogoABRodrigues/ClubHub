@@ -24,7 +24,10 @@ type PushJob = {
 const READY_QUEUE_KEY = "push:queue:ready";
 const PROCESSING_QUEUE_KEY = "push:queue:processing";
 const JOB_KEY_PREFIX = "push:queue:job:";
-const POLL_INTERVAL_MS = 5_000;
+// Rede de segurança apenas (retries e recuperação de jobs presos).
+// A entrega "normal" já não depende deste intervalo — ver enqueueToDevices(),
+// que dispara o processamento imediatamente a seguir a enfileirar um job.
+const POLL_INTERVAL_MS = 90_000;
 const PROCESSING_TIMEOUT_MS = 120_000;
 const MAX_JOBS_PER_TICK = 10;
 const DEFAULT_MAX_ATTEMPTS = 5;
@@ -53,6 +56,7 @@ function jobKey(id: string) {
 class PushService {
   private worker?: NodeJS.Timeout;
   private processing = false;
+  private rerunRequested = false;
 
   private tokensFromDevices(devices: any[]) {
     const tokens = Array.from(
@@ -90,6 +94,10 @@ class PushService {
     await redis.set(jobKey(job.id), JSON.stringify(job));
     await redis.zAdd(READY_QUEUE_KEY, { score: now, value: job.id });
 
+    // "Campainha": processa já este job em vez de esperar pela próxima ronda
+    // do worker (até 90s depois). Não bloqueia quem chamou sendToDevices.
+    void this.processDueJobs();
+
     return { id: job.id, queued: tokens.length };
   }
 
@@ -109,7 +117,14 @@ class PushService {
   }
 
   private async processDueJobs() {
-    if (this.processing || !redis.isOpen) return;
+    if (this.processing) {
+      // Já há uma ronda a correr (ex: a processar um golo anterior).
+      // Pede uma nova ronda imediata assim que esta terminar, em vez de
+      // deixar este job à espera do intervalo de segurança.
+      this.rerunRequested = true;
+      return;
+    }
+    if (!redis.isOpen) return;
     this.processing = true;
 
     try {
@@ -135,6 +150,10 @@ class PushService {
       console.error("Erro no worker de notificações push:", error);
     } finally {
       this.processing = false;
+      if (this.rerunRequested) {
+        this.rerunRequested = false;
+        void this.processDueJobs();
+      }
     }
   }
 
