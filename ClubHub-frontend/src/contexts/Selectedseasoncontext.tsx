@@ -28,8 +28,8 @@ const SelectedSeasonContext = createContext<SelectedSeasonContextType>({
 export const SelectedSeasonProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const { selectedCategory, triggerTransition } = useCategory();
-  const { seasons } = useSeasonsByCategory(selectedCategory);
+  const { selectedCategory, triggerTransition, isReady } = useCategory();
+  const { seasons } = useSeasonsByCategory(selectedCategory, isReady);
   const [selectedSeason, setSelectedSeason] = useState<Season | null>(null);
   const prevCategory = useRef(selectedCategory);
 

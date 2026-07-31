@@ -21,11 +21,12 @@ export const useSeasons = () => {
 };
 
 /** Seasons disponíveis para uma categoria específica */
-export const useSeasonsByCategory = (category: string) => {
+export const useSeasonsByCategory = (category: string, enabled = true) => {
   const query = useQuery<Season[]>({
     queryKey: ["seasons", "byCategory", category],
     queryFn: () => SeasonService.getByCategory(category),
     staleTime: Infinity,
+    enabled,
   });
 
   return {
