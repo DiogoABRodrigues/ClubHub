@@ -428,6 +428,7 @@ teamName: {
   },
     centeredText: {
     textAlign: "center" as const,
+    textColor: COLORS.text.blackWhite,
   },
 }));
 

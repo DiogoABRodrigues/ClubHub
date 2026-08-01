@@ -14,6 +14,7 @@ import { useTeams } from "../../hooks/useTeams";
 import { useCompetitions } from "../../hooks/useCompetitions";
 import { useAuth } from "../../contexts/AuthContext";
 import { EmptyState } from "../../components/EmptyState";
+import { useTheme } from "../../contexts/ThemeContext";
 
 type TabKey = "upcoming" | "finished";
 
@@ -72,27 +73,38 @@ const TAB_LABELS: Record<TabKey, string> = {
   finished: "Resultados",
 };
 
-const TabBar = React.memo(({ activeTab, onChange }: TabBarProps) => (
-  <View style={localStyles.tabsContainer}>
-    {(Object.keys(TAB_LABELS) as TabKey[]).map((key) => {
-      const active = activeTab === key;
-      return (
-        <TouchableOpacity
-          key={key}
-          style={[localStyles.tab, active && localStyles.tabActive]}
-          onPress={() => onChange(key)}
-          activeOpacity={0.7}
-        >
-          <Text style={[localStyles.tabText, active && localStyles.tabTextActive]}>
-            {TAB_LABELS[key]}
-          </Text>
-        </TouchableOpacity>
-      );
-    })}
-  </View>
-));
+const TabBar = React.memo(({ activeTab, onChange }: TabBarProps) => {
+  // Garante atualização mesmo quando só o tema muda e as props são iguais.
+  useTheme();
+
+  return (
+    <View style={localStyles.tabsContainer}>
+      {(Object.keys(TAB_LABELS) as TabKey[]).map((key) => {
+        const active = activeTab === key;
+        return (
+          <TouchableOpacity
+            key={key}
+            style={[localStyles.tab, active && localStyles.tabActive]}
+            onPress={() => onChange(key)}
+            activeOpacity={0.7}
+          >
+            <Text
+              style={[
+                localStyles.tabText,
+                active && localStyles.tabTextActive,
+              ]}
+            >
+              {TAB_LABELS[key]}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+});
 
 export const Matches = ({ navigation }: any) => {
+  useTheme();
   const { matches, refreshMatches } = useMatches();
   const { teams, refreshTeams } = useTeams();
   const { competitions, refreshCompetitions } = useCompetitions();

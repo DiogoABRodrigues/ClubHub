@@ -1,4 +1,3 @@
-import { StyleSheet } from "react-native";
 import { COLORS, SPACING, FONT_SIZE, RADIUS, createThemedStyles } from "../../theme/colors";
 
 export const styles = createThemedStyles(() => ({
@@ -199,7 +198,7 @@ export const styles = createThemedStyles(() => ({
   },
 }));
 
-export const localStyles = StyleSheet.create({
+export const localStyles = createThemedStyles(() => ({
   // Envolve o cartão "Em direto" com as mesmas margens laterais do resto do
   // conteúdo, já que este bloco fica fora da FlatList (que tem o seu próprio
   // paddingHorizontal via styles.content).
@@ -238,4 +237,4 @@ export const localStyles = StyleSheet.create({
     color: COLORS.text.blackWhite,
     fontWeight: "700",
   },
-});
+}));
