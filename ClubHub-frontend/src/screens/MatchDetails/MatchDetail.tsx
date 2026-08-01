@@ -435,9 +435,11 @@ export const MatchDetail = () => {
 
                       return (
                         <View key={e.playerId} style={styles.lineupRow}>
-                          {player.photoUrl ? (
+                          {player.squadPhotoUrl ?? player.photoUrl ? (
                             <Image
-                              source={{ uri: player.photoUrl }}
+                              source={{
+                                uri: player.squadPhotoUrl ?? player.photoUrl,
+                              }}
                               style={styles.lineupPhoto}
                               //resizeMode="contain"
                             />
@@ -469,9 +471,11 @@ export const MatchDetail = () => {
 
                       return (
                         <View key={e.playerId} style={styles.lineupRow}>
-                          {player.photoUrl ? (
+                          {player.squadPhotoUrl ?? player.photoUrl ? (
                             <Image
-                              source={{ uri: player.photoUrl }}
+                              source={{
+                                uri: player.squadPhotoUrl ?? player.photoUrl,
+                              }}
                               style={styles.lineupPhoto}
                               //resizeMode="contain"
                             />

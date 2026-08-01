@@ -992,9 +992,11 @@ export const AdminMatchDetail = () => {
                         if (!player) return null;
                         return (
                           <View key={e.playerId} style={adminStyles.lineupRow}>
-                            {player.photoUrl ? (
+                            {player.squadPhotoUrl ?? player.photoUrl ? (
                               <Image
-                                source={{ uri: player.photoUrl }}
+                                source={{
+                                  uri: player.squadPhotoUrl ?? player.photoUrl!,
+                                }}
                                 style={adminStyles.lineupPhoto}
                               />
                             ) : (
@@ -1030,9 +1032,11 @@ export const AdminMatchDetail = () => {
                         if (!player) return null;
                         return (
                           <View key={e.playerId} style={adminStyles.lineupRow}>
-                            {player.photoUrl ? (
+                            {player.squadPhotoUrl ?? player.photoUrl ? (
                               <Image
-                                source={{ uri: player.photoUrl }}
+                                source={{
+                                  uri: player.squadPhotoUrl ?? player.photoUrl!,
+                                }}
                                 style={adminStyles.lineupPhoto}
                               />
                             ) : (

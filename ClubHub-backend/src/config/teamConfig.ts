@@ -78,7 +78,7 @@ export function getCategoryConfig(
   return teamConfig.categories.find((c) => c.category === category);
 }
 
-function getCurrentSeason() {
+export function getCurrentSeason() {
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth() + 1;

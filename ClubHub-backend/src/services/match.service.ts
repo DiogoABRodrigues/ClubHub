@@ -1,7 +1,9 @@
+import { Op } from "sequelize";
 import Lineup from "../models/Lineup";
 import Match from "../models/Match";
 import MatchEvent from "../models/MatchEvent";
 import Player from "../models/Player";
+import Squad from "../models/Squad";
 import Season from "../models/Season";
 import SeasonService from "./season.service";
 import cache from "./cache.service";
@@ -37,7 +39,9 @@ export default class MatchService {
   private detailedInclude = [
     {
       model: Lineup,
-      include: [{ model: Player, attributes: ["id", "name", "photoUrl"] }],
+      include: [
+        { model: Player, attributes: ["id", "externalId", "name", "photoUrl"] },
+      ],
     },
     {
       model: MatchEvent,
@@ -53,12 +57,12 @@ export default class MatchService {
 
   async getBySeasonId(seasonId: number, category = "over19") {
     const key = CacheKeys.matches.bySeason(seasonId, category);
-    return cache.remember(key, () =>
-      Match.findAll({
+    return cache.remember(key, async () =>
+      this.withSeasonalLineupPhotos(await Match.findAll({
         where: { seasonId, category },
         include: this.detailedInclude as any,
         order: [["date", "DESC"], ["time", "DESC"]],
-      }),
+      })),
     );
   }
 
@@ -78,9 +82,10 @@ export default class MatchService {
     const cached = await cache.get(key);
     if (cached) return cached;
 
-    const match = await Match.findByPk(id, {
+    const rawMatch = await Match.findByPk(id, {
       include: this.detailedInclude as any,
     });
+    const match = rawMatch ? await this.withSeasonalLineupPhotos(rawMatch) : null;
     if (match) await cache.setPermanent(key, match);
     return match;
   }
@@ -181,12 +186,15 @@ export default class MatchService {
   }
 
   async refreshAndBroadcast(id: number) {
-    const uncached = await Match.findByPk(id, {
+    const rawMatch = await Match.findByPk(id, {
       include: this.detailedInclude as any,
     });
-    if (!uncached) return null;
+    const uncached = rawMatch
+      ? await this.withSeasonalLineupPhotos(rawMatch)
+      : null;
+    if (!rawMatch || !uncached) return null;
 
-    await this.invalidateMatchCaches(uncached);
+    await this.invalidateMatchCaches(rawMatch);
     await cache.setPermanent(CacheKeys.matches.byId(id), uncached);
     socketService.emitMatchUpdate(uncached);
     return uncached;
@@ -206,6 +214,52 @@ export default class MatchService {
       keys.push(CacheKeys.matches.byCompetition(match.competitionId));
     }
     await cache.delMany(keys);
+  }
+
+  /** Acrescenta ao jogador do alinhamento a foto do seu Squad nessa época. */
+  private async withSeasonalLineupPhotos(value: any): Promise<any> {
+    const rawMatches = Array.isArray(value) ? value : [value];
+    const matches = rawMatches.map((match) =>
+      typeof match?.toJSON === "function" ? match.toJSON() : match,
+    );
+    const playerExternalIds = new Set<number>();
+
+    for (const match of matches) {
+      for (const lineup of match.Lineups ?? []) {
+        if (lineup.Player?.externalId != null) {
+          playerExternalIds.add(lineup.Player.externalId);
+        }
+      }
+    }
+
+    if (playerExternalIds.size === 0) {
+      return Array.isArray(value) ? matches : matches[0];
+    }
+
+    const squads = await Squad.findAll({
+      where: { playerExternalId: { [Op.in]: [...playerExternalIds] } },
+      attributes: ["playerExternalId", "seasonId", "category", "photoUrl"],
+    });
+    const squadPhotoByContext = new Map(
+      squads.map((squad) => [
+        `${squad.playerExternalId}:${squad.seasonId}:${squad.category}`,
+        squad.photoUrl,
+      ]),
+    );
+
+    for (const match of matches) {
+      const category = match.category ?? "over19";
+      for (const lineup of match.Lineups ?? []) {
+        const player = lineup.Player;
+        if (!player) continue;
+        player.squadPhotoUrl =
+          squadPhotoByContext.get(
+            `${player.externalId}:${match.seasonId}:${category}`,
+          ) ?? null;
+      }
+    }
+
+    return Array.isArray(value) ? matches : matches[0];
   }
 
   private async notifyResult(match: Match) {

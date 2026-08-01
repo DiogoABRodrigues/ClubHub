@@ -204,6 +204,7 @@ export async function savePlayersAndSquad(
       seasonId: season.id,
       number: p.number,
       position: p.position,
+      photoUrl: p.photoUrl,
       category,
     });
 

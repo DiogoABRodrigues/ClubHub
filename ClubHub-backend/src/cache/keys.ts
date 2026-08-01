@@ -13,19 +13,19 @@ export const CacheKeys = {
 
   matches: {
     bySeason: (seasonId: number, category: string = "over19") =>
-      `app:matches:season:${seasonId}:${category}`,
+      `app:matches:v2:season:${seasonId}:${category}`,
     summaryBySeason: (seasonId: number, category: string = "over19") =>
       `app:matches:summary:${seasonId}:${category}`,
-    byId: (matchId: number) => `app:match:${matchId}`,
+    byId: (matchId: number) => `app:match:v2:${matchId}`,
     byCompetition: (competitionId: number) =>
       `app:matches:competition:${competitionId}`,
   },
 
   players: {
     bySeason: (seasonId: number, category: string = "over19") =>
-      `app:players:season:${seasonId}:${category}`,
+      `app:players:v2:season:${seasonId}:${category}`,
     adminBySeason: (seasonId: number, category: string = "over19") =>
-      `app:players:season:${seasonId}:${category}:admin`,
+      `app:players:v2:season:${seasonId}:${category}:admin`,
     allStatsByPlayer: (playerId: number) =>
       `app:player:${playerId}:allstats`,
   },

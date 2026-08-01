@@ -103,8 +103,8 @@ export const PlayerCardModal: React.FC<PlayerCardModalProps> = ({
             <View style={styles.photoCol}>
               <Image
                 source={
-                  display.photoUrl
-                    ? { uri: display.photoUrl }
+                  player.squadPhotoUrl ?? player.photoUrl
+                    ? { uri: player.squadPhotoUrl ?? player.photoUrl! }
                     : defaultPlayerImage
                 }
                 style={styles.photo}

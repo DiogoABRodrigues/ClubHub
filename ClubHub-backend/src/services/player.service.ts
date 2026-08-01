@@ -22,7 +22,13 @@ async function fetchPlayersWithSquad(
       {
         model: Squad,
         where: squadWhere,
-        attributes: ["status", "position", "number", "isFieldPlayer"],
+        attributes: [
+          "status",
+          "position",
+          "number",
+          "isFieldPlayer",
+          "photoUrl",
+        ],
         required: true,
       },
       {
@@ -39,6 +45,9 @@ async function fetchPlayersWithSquad(
       plain.position = squad.position ?? null;
       plain.number = squad.number ?? null;
       plain.isFieldPlayer = squad.isFieldPlayer ?? false;
+      // A foto do plantel tem precedência; a do Player mantém-se como fallback
+      // para dados legados que ainda não tenham sido migrados.
+      plain.squadPhotoUrl = squad.photoUrl ?? null;
       delete plain.Squad;
       delete plain.Squads;
       return plain;

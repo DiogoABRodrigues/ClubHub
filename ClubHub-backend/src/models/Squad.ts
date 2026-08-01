@@ -15,6 +15,8 @@ class Squad extends Model {
   declare category: string;
   declare number: number | null;
   declare position: string | null;
+  /** Foto do jogador nesta época e escalão. */
+  declare photoUrl: string | null;
   declare status: SquadStatus;
   declare isFieldPlayer: boolean;
 }
@@ -39,6 +41,10 @@ Squad.init(
       allowNull: true,
     },
     position: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    photoUrl: {
       type: DataTypes.STRING,
       allowNull: true,
     },

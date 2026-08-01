@@ -49,9 +49,9 @@ const PlayerCard = React.memo(
         onPress={onPress}
         activeOpacity={0.7}
       >
-        {player.photoUrl ? (
+        {player.squadPhotoUrl ?? player.photoUrl ? (
           <Image
-            source={{ uri: player.photoUrl }}
+            source={{ uri: player.squadPhotoUrl ?? player.photoUrl }}
             style={adminStyles.playerCardPhoto}
           />
         ) : (

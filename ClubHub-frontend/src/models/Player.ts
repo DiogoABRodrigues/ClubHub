@@ -7,6 +7,9 @@ export type Player = {
   id: number;
   externalId: number;
   name: string;
+  /** Foto específica da época e escalão selecionados (vem do Squad). */
+  squadPhotoUrl?: string | null;
+  /** Foto global legada, apenas usada como fallback. */
   photoUrl?: string | null;
   age: number | null;
   /** Status deste jogador nesta época específica, injetado pelo backend */

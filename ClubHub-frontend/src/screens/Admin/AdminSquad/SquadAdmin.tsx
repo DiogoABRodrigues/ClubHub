@@ -61,7 +61,9 @@ const PlayerCard = React.memo(
       >
         <Image
           source={
-            player.photoUrl ? { uri: player.photoUrl } : defaultPlayerImage
+            player.squadPhotoUrl ?? player.photoUrl
+              ? { uri: player.squadPhotoUrl ?? player.photoUrl! }
+              : defaultPlayerImage
           }
           style={styles.playerImage}
           resizeMode="contain"

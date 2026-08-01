@@ -139,7 +139,9 @@ export const SquadStats = React.memo(function SquadStats() {
           <View style={globalStyles.playerInfo}>
             <Image
               source={
-                item.photoUrl ? { uri: item.photoUrl } : defaultPlayerImage
+                item.squadPhotoUrl ?? item.photoUrl
+                  ? { uri: item.squadPhotoUrl ?? item.photoUrl! }
+                  : defaultPlayerImage
               }
               style={globalStyles.statsPhoto}
               resizeMode="contain"
