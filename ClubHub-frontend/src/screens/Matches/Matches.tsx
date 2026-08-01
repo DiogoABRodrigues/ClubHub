@@ -199,14 +199,6 @@ export const Matches = ({ navigation }: any) => {
         />
       )}
 
-      {isEmpty && (
-        <EmptyState
-          title="Não foi possível encontrar informação"
-          message="Por favor tenta novamente mais tarde."
-          onRetry={onRefresh}
-          retryLabel="Atualizar"
-        />
-      )}
     </View>
   );
 

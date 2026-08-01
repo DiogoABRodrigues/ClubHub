@@ -3,7 +3,7 @@ export const CacheKeys = {
     all: "app:seasons:all",
     current: "app:season:current",
     byId: (seasonId: number) => `app:season:${seasonId}`,
-    byCategory: (category: string) => `app:seasons:category:${category}`,
+    byCategory: (category: string) => `app:seasons:v2:category:${category}`,
   },
 
   competitions: {

@@ -15,8 +15,9 @@ import {
 import { ArrowUp, ArrowDown } from "lucide-react-native";
 import { usePlayers } from "../../hooks/usePlayers";
 import { Player } from "../../models/Player";
-import { styles as globalStyles } from "./Stats.styles";
+import { styles as globalStyles, styles } from "./Stats.styles";
 import { useTheme } from "../../contexts/ThemeContext";
+import { EmptyState } from "../../components/EmptyState";
 
 type SortField = "games" | "minutes" | "goals";
 type SortOrder = "asc" | "desc";
@@ -160,6 +161,17 @@ export const SquadStats = React.memo(function SquadStats() {
     },
     [mode],
   );
+
+  if (statsSortedPlayers.length === 0) {
+    return (
+      <View style={[styles.container, { justifyContent: "center" }]}>
+        <EmptyState
+          title="Sem informação disponível"
+          message="Parece que ainda não há informação de estatísticas para esta época. Volta mais tarde."
+        />
+      </View>
+    );
+  }
 
   return (
     <FlatList

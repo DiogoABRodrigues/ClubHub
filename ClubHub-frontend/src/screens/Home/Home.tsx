@@ -175,11 +175,6 @@ export const Home = ({ navigation }: any) => {
         {
           <View style={styles.section}>
             <View style={styles.sectionTitleRow}>
-              {/*<Ionicons
-                name="calendar-outline"
-                size={12}
-                color={COLORS.secondary}
-              />*/}
               <Text style={styles.sectionTitle}>Próximo Jogo</Text>
             </View>
             {(nextMatch && (
@@ -200,16 +195,12 @@ export const Home = ({ navigation }: any) => {
         }
 
         {/* ÚLTIMO JOGO */}
-        {recentMatch && (
-          <View style={styles.section}>
-            <View style={styles.sectionTitleRow}>
-              {/*<Ionicons
-                name="time-outline"
-                size={16}
-                color={COLORS.secondary}
-              />*/}
-              <Text style={styles.sectionTitle}>Último Jogo</Text>
-            </View>
+        {
+        <View style={styles.section}>
+          <View style={styles.sectionTitleRow}>
+            <Text style={styles.sectionTitle}>Último Jogo</Text>
+          </View>
+        {(recentMatch && (
             <MatchCard
               match={recentMatch}
               homeLogo={getTeamLogo(getHomeTeam(recentMatch)) || ""}
@@ -217,8 +208,15 @@ export const Home = ({ navigation }: any) => {
               onPress={() => navigateToMatchDetail(recentMatch.id)}
               competition={competitionsMap.get(recentMatch.competitionId)}
             />
+            )) || (
+              <EmptyState
+                title="Sem jogos jogados"
+                message="Volta mais tarde para veres os últimos resultados."
+              />
+            )}
           </View>
-        )}
+        }
+
 
         {/* NOTÍCIAS */}
         {!loading && recentNews.length > 0 && (

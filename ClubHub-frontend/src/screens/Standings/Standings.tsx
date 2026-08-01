@@ -290,8 +290,8 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
     return (
       <View style={[styles.container, { justifyContent: "center" }]}>
         <EmptyState
-          title="Não foi possível encontrar informação"
-          message="Por favor tenta novamente mais tarde."
+          title="Sem informação disponível"
+          message="Parece que ainda não há informação de classificações ou jogos para esta época. Volta mais tarde."
         />
       </View>
     );

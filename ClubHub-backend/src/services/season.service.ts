@@ -2,7 +2,7 @@ import { Op } from "sequelize";
 import cache from "../services/cache.service";
 import { CacheKeys } from "../cache/keys";
 import Season from "../models/Season";
-import Match from "../models/Match";
+import Squad from "../models/Squad";
 
 export default class SeasonService {
   async getAll() {
@@ -46,14 +46,14 @@ export default class SeasonService {
     return season;
   }
 
-  /** Seasons que têm pelo menos 1 jogo na categoria dada */
+  /** Seasons que têm pelo menos um jogador no plantel da categoria dada. */
   async getByCategory(category: string): Promise<Season[]> {
     const key = CacheKeys.season.byCategory(category);
 
     const cached = await cache.get(key);
     if (cached) return cached as Season[];
 
-    const rows = (await Match.findAll({
+    const rows = (await Squad.findAll({
       attributes: ["seasonId"],
       where: { category, seasonId: { [Op.ne]: null } },
       group: ["seasonId"],
@@ -68,7 +68,7 @@ export default class SeasonService {
       order: [["id", "ASC"]],
     });
 
-    // Persiste sem TTL — só muda quando o scrapper corre e adiciona jogos de nova época
+    // Persiste até o scraper atualizar o plantel dessa categoria.
     await cache.setPermanent(key, seasons);
     return seasons;
   }

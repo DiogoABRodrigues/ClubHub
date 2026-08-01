@@ -5,6 +5,8 @@ import Season from "../models/Season";
 import Stats from "../models/Stats";
 import { teamConfig, CategoryConfig } from "../config/teamConfig";
 import { getSharedBrowser } from "../utils/browser";
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
 
 async function getOrCreateSeason() {
   const [season] = await Season.findOrCreate({
@@ -32,13 +34,24 @@ function parseAge(
   return m ? parseInt(m[0]) : null;
 }
 
+const ZEROZERO_CDN_BASE = "https://cdn-img.staticzz.com";
+
+function normalizePhotoUrl(url: string | null): string | null {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  // Vem só o path (ex: "/img/jogadores/...") — completa com o domínio do CDN.
+  return `${ZEROZERO_CDN_BASE}${trimmed.startsWith("/") ? "" : "/"}${trimmed}`;
+}
+
 function parsePhoto(
   el: cheerio.Cheerio<any>,
   $: cheerio.CheerioAPI,
 ): string | null {
   const style = $(el).find(".photo").attr("style") ?? "";
-  const m = style.match(/url\(['"]?(.*?)['"']?\)/);
-  return m ? m[1] : null;
+  const m = style.match(/url\(['"]?(.*?)['"]?\)/);
+  return normalizePhotoUrl(m ? m[1] : null);
 }
 
 export async function scrapeTeamPlayers(cfg?: CategoryConfig) {
@@ -73,7 +86,7 @@ export async function scrapeTeamPlayers(cfg?: CategoryConfig) {
     } catch {}
 
     try {
-      await page.waitForSelector("#team_squad .staff, #team_squad .innerbox", {
+      await page.waitForSelector("#team_squad .staff", {
         timeout: 30000,
       });
     } catch {
@@ -84,37 +97,46 @@ export async function scrapeTeamPlayers(cfg?: CategoryConfig) {
     const $ = cheerio.load(html);
     const players: any[] = [];
 
-    const squadBox = $("#team_squad .innerbox").length
-      ? $("#team_squad .innerbox")
-      : null;
+    // #team_squad é uma lista plana: <div class="section">Posição</div> seguido
+    // de <div class="staff_line"> com os jogadores dessa posição, repetido.
+    // (Não existe .innerbox aqui — só #team_staff é que tem essa estrutura.)
+    const squadRoot = $("#team_squad");
 
-    if (squadBox && squadBox.length > 0) {
-      squadBox.each((_, box) => {
-        const position = $(box).find(".section").text().trim() || "Unknown";
-        $(box)
-          .find(".staff")
-          .each((_, el) => {
-            const numberText = $(el).find(".number").text().trim();
-            const number =
-              numberText && numberText !== "-" ? parseInt(numberText) : null;
-            const nameLink = $(el).find(".name a[href*='/jogador/']").length
-              ? $(el).find(".name a[href*='/jogador/']")
-              : $(el).find("a[href*='/jogador/']");
-            const name = nameLink.text().trim();
-            const href = nameLink.attr("href") ?? "";
-            const externalId = parsePlayerId(href);
-            const age = parseAge($(el), $);
-            const photoUrl = parsePhoto($(el), $);
-            if (name && externalId)
-              players.push({
-                externalId,
-                name,
-                number,
-                position,
-                age,
-                photoUrl,
-              });
-          });
+    if (squadRoot.length > 0 && squadRoot.find(".staff_line").length > 0) {
+      let currentPosition = "Unknown";
+
+      squadRoot.children().each((_, child) => {
+        const $child = $(child);
+
+        if ($child.hasClass("section")) {
+          currentPosition = $child.text().trim() || "Unknown";
+          return;
+        }
+
+        if (!$child.hasClass("staff_line")) return;
+
+        $child.find(".staff").each((_, el) => {
+          const numberText = $(el).find(".number").text().trim();
+          const number =
+            numberText && numberText !== "-" ? parseInt(numberText) : null;
+          const nameLink = $(el).find(".name a[href*='/jogador/']").length
+            ? $(el).find(".name a[href*='/jogador/']")
+            : $(el).find("a[href*='/jogador/']");
+          const name = nameLink.text().trim();
+          const href = nameLink.attr("href") ?? "";
+          const externalId = parsePlayerId(href);
+          const age = parseAge($(el), $);
+          const photoUrl = parsePhoto($(el), $);
+          if (name && externalId)
+            players.push({
+              externalId,
+              name,
+              number,
+              position: currentPosition,
+              age,
+              photoUrl,
+            });
+        });
       });
     } else {
       $("a[href*='/jogador/']").each((_, el) => {
@@ -218,4 +240,18 @@ export async function savePlayersAndSquad(
       category,
     });
   }
+
+  // Uma época passa a estar disponível no seletor assim que tem plantel.
+  await Promise.all([
+    cache.del(CacheKeys.season.byCategory(category)),
+    cache.del(CacheKeys.season.all),
+    cache.del(CacheKeys.season.current),
+    // Estas são as chaves que o player.service/squad.service/stats.service
+    // realmente leem — sem isto os dados na app ficam presos ao valor antigo
+    // em cache (até o TTL de 24h expirar), mesmo com a BD já atualizada.
+    cache.del(CacheKeys.players.bySeason(season.id, category)),
+    cache.del(CacheKeys.players.adminBySeason(season.id, category)),
+    cache.del(CacheKeys.squad.bySeason(season.id, category)),
+    cache.del(CacheKeys.stats.bySeason(season.id, category)),
+  ]);
 }
