@@ -198,3 +198,44 @@ export const styles = createThemedStyles(() => ({
     color: COLORS.white,
   },
 }));
+
+export const localStyles = StyleSheet.create({
+  // Envolve o cartão "Em direto" com as mesmas margens laterais do resto do
+  // conteúdo, já que este bloco fica fora da FlatList (que tem o seu próprio
+  // paddingHorizontal via styles.content).
+  liveBannerWrapper: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
+    marginBottom: SPACING.sm,
+  },
+  tabsContainer: {
+    flexDirection: "row",
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
+    backgroundColor: COLORS.backgrounds.screen,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+    gap: SPACING.xs,
+  },
+  tab: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: SPACING.sm,
+    borderBottomWidth: 2,
+    borderBottomColor: "transparent",
+  },
+  tabActive: {
+    borderBottomColor: COLORS.text.blackWhite,
+  },
+  tabText: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: "600",
+    color: COLORS.text.blackWhite,
+  },
+  tabTextActive: {
+    color: COLORS.text.blackWhite,
+    fontWeight: "700",
+  },
+});

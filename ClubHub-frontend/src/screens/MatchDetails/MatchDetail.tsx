@@ -355,7 +355,7 @@ export const MatchDetail = () => {
               </View>
             ) : match.events?.length ? (
               <>
-                {firstHalf.length > 0 && (
+                {(firstHalf.length > 0 && (
                   <>
                   <View style={[styles.halfHeader]}>
                     <Text style={styles.halfHeaderText}>1ª Parte</Text>
@@ -368,9 +368,18 @@ export const MatchDetail = () => {
                       />
                     ))}
                   </>
-                )}
+                )) ||
+                <>
+                  <View style={[styles.halfHeader]}>
+                    <Text style={styles.halfHeaderText}>1ª Parte</Text>
+                  </View>
+                  <View >
+                  <Text style={styles.centeredText}>-</Text>
+                  </View>
+                </>
+                }
 
-                {secondHalf.length > 0 && (
+                {(secondHalf.length > 0 && (
                   <>
                     <View style={[styles.halfHeader]}>
                       <Text style={styles.halfHeaderText}>2ª Parte</Text>
@@ -383,7 +392,16 @@ export const MatchDetail = () => {
                       />
                     ))}
                   </>
-                )}
+                )) ||
+                <>
+                  <View style={[styles.halfHeader]}>
+                    <Text style={styles.halfHeaderText}>2ª Parte</Text>
+                  </View>
+                  <View >
+                  <Text style={styles.centeredText}>-</Text>
+                  </View>
+                </>
+                  }
 
                 {extraTime.length > 0 && (
                   <>

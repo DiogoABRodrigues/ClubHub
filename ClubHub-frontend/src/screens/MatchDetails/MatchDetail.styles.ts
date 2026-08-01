@@ -426,6 +426,9 @@ teamName: {
     paddingVertical: 56,
     gap: SPACING.sm,
   },
+    centeredText: {
+    textAlign: "center" as const,
+  },
 }));
 
 // ─── Picker de jogadores ────────────────────────────────────────────────────
