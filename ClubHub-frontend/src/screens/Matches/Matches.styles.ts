@@ -213,7 +213,7 @@ export const localStyles = createThemedStyles(() => ({
     paddingVertical: SPACING.xs,
     backgroundColor: COLORS.backgrounds.screen,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: COLORS.borders.subtle,
     gap: SPACING.xs,
   },
   tab: {
