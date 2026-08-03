@@ -5,11 +5,14 @@ import Standing from "../models/Standing";
 import Season from "../models/Season";
 import Competition from "../models/Competition";
 import { getSharedBrowser } from "../utils/browser";
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
 
 export interface StandingRow {
   position: number;
   teamName: string;
   teamUrl?: string;
+  teamExternalId: number | null;
   points: number;
   matchesPlayed: number;
   wins: number;
@@ -67,6 +70,12 @@ function extractRowColor($: cheerio.CheerioAPI, posCell: any): string | null {
 function extractExternalId(url: string): number | null {
   const m = url.match(/\/(\d+)(?:\/[^/]*)?$/);
   return m ? parseInt(m[1]) : null;
+}
+
+function extractTeamExternalId(url: string | undefined): number | null {
+  if (!url) return null;
+  const match = url.match(/\/equipa\/[^/]+\/(\d+)(?:[/?#]|$)/);
+  return match ? Number(match[1]) : null;
 }
 
 export async function scrapeStandings(
@@ -225,6 +234,7 @@ export async function scrapeStandings(
         position,
         teamName,
         teamUrl,
+        teamExternalId: extractTeamExternalId(teamUrl),
         points,
         matchesPlayed,
         wins,
@@ -314,12 +324,24 @@ export async function saveStandings(
   const data = [];
 
   for (const row of standings) {
-    let team = await Team.findOne({ where: { name: row.teamName } });
+    let team = row.teamExternalId
+      ? await Team.findOne({ where: { externalId: row.teamExternalId } })
+      : null;
+
+    if (!team) {
+      const legacyMatches = await Team.findAll({
+        where: { name: row.teamName, externalId: null },
+      });
+      if (legacyMatches.length === 1) team = legacyMatches[0];
+    }
+
     if (!team) {
       team = await Team.create({
         name: row.teamName,
-        externalUrl: row.teamUrl,
+        externalId: row.teamExternalId,
       });
+    } else if (row.teamExternalId) {
+      await team.update({ name: row.teamName, externalId: row.teamExternalId });
     }
 
     data.push({
@@ -342,6 +364,7 @@ export async function saveStandings(
 
   await Standing.destroy({ where: { competitionId, seasonId, category } });
   await Standing.bulkCreate(data);
+  await cache.del(CacheKeys.teams.all);
 
   console.log(
     `✅ Standings guardadas (competição ${competitionId}, season ${seasonId}, ${category})`,

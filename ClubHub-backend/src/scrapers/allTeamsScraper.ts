@@ -2,16 +2,27 @@ import * as cheerio from "cheerio";
 import Team from "../models/Team";
 import { teamConfig } from "../config/teamConfig";
 import { getSharedBrowser } from "../utils/browser";
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
 
 export interface ScrapedTeam {
+  externalId: number;
   name: string;
   abbreviation?: string;
   logoUrl?: string;
 }
 
-// Usa as URLs de equipas do escalão over19
-const over19Config = teamConfig.categories.find((c) => c.category === "over19");
-const competitions = (over19Config?.teams_urls ?? []).map((url) => ({ url }));
+const competitions = teamConfig.categories
+  .filter((category) => category.enabled)
+  .flatMap((category) => category.teams_urls)
+  .filter((url, index, urls) => urls.indexOf(url) === index)
+  .map((url) => ({ url }));
+
+function extractTeamExternalId(href: string | undefined): number | null {
+  if (!href) return null;
+  const match = href.match(/\/equipa\/[^/]+\/(\d+)(?:[/?#]|$)/);
+  return match ? Number(match[1]) : null;
+}
 
 export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
   const browser = await getSharedBrowser();
@@ -67,19 +78,26 @@ export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
         }
 
         let teamName = "";
-        const nameLink = $(cells[2]).find("a");
+        let teamExternalId: number | null = null;
+        const nameLink = $(cells[2]).find("a[href*='/equipa/']").first();
         if (nameLink.length) teamName = nameLink.text().trim();
+        teamExternalId = extractTeamExternalId(nameLink.attr("href"));
 
-        if (!teamName) {
-          const altLink = $(cells[1]).find("a");
-          if (altLink.length && altLink.text().trim().length > 2) {
+        if (!teamName || !teamExternalId) {
+          const altLink = $(cells[1]).find("a[href*='/equipa/']").first();
+          if (!teamName && altLink.length && altLink.text().trim().length > 2) {
             teamName = altLink.text().trim();
           }
+          teamExternalId ??= extractTeamExternalId(altLink.attr("href"));
         }
 
-        if (teamName && teamName.length > 2) {
-          if (!compTeams.some((t) => t.name === teamName)) {
-            compTeams.push({ name: teamName, logoUrl: logoUrl || undefined });
+        if (teamName && teamName.length > 2 && teamExternalId) {
+          if (!compTeams.some((t) => t.externalId === teamExternalId)) {
+            compTeams.push({
+              externalId: teamExternalId,
+              name: teamName,
+              logoUrl: logoUrl || undefined,
+            });
           }
         }
       });
@@ -95,7 +113,7 @@ export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
 
   const uniqueTeams = allTeams.filter(
     (team, index, self) =>
-      index === self.findIndex((t) => t.name === team.name),
+      index === self.findIndex((t) => t.externalId === team.externalId),
   );
 
   console.log(`\n📊 Total de equipas únicas: ${uniqueTeams.length}`);
@@ -109,11 +127,35 @@ export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
 
 export async function saveAllTeams(teams: ScrapedTeam[]) {
   for (const team of teams) {
-    await Team.upsert({
-      name: team.name,
-      abbreviation: team.abbreviation,
-      logoUrl: team.logoUrl,
+    const existingByExternalId = await Team.findOne({
+      where: { externalId: team.externalId },
     });
+
+    // Reaproveita um registo anterior à migração quando ainda não tem ID. Só
+    // o fazemos quando há exactamente um candidato, pois o mesmo nome pode
+    // existir em vários escalões.
+    const legacyMatches = existingByExternalId
+      ? []
+      : await Team.findAll({ where: { name: team.name, externalId: null } });
+    const existing = existingByExternalId ??
+      (legacyMatches.length === 1 ? legacyMatches[0] : null);
+
+    if (existing) {
+      await existing.update({
+        name: team.name,
+        abbreviation: team.abbreviation,
+        logoUrl: team.logoUrl,
+        externalId: team.externalId,
+      });
+    } else {
+      await Team.create({
+        externalId: team.externalId,
+        name: team.name,
+        abbreviation: team.abbreviation,
+        logoUrl: team.logoUrl,
+      });
+    }
   }
+  await cache.del(CacheKeys.teams.all);
   console.log(`✅ ${teams.length} equipas guardadas/atualizadas na BD`);
 }

@@ -5,6 +5,7 @@ export interface CategoryConfig {
   label: string;
   enabled: boolean;
   teamName: string;
+  teamExternalId: number;
   players_url: string;
   matches_url: string;
   standings_url: string;
@@ -24,6 +25,7 @@ export const teamConfig = {
       label: "Seniores",
       enabled: true,
       teamName: "Adecas",
+      teamExternalId: 18231,
       players_url: "https://www.zerozero.pt/equipa/adecas/18231",
       matches_url: "https://www.zerozero.pt/equipa/adecas/18231/jogos?grp=1",
       standings_url:
@@ -40,6 +42,7 @@ export const teamConfig = {
       label: "Sub-15",
       enabled: true,
       teamName: "Adecas",
+      teamExternalId: 32764,
       players_url: "https://www.zerozero.pt/equipa/adecas/32764?epoca_id=155",
       matches_url: "https://www.zerozero.pt/equipa/adecas/32764/jogos?grp=1",
       standings_url:
@@ -55,6 +58,7 @@ export const teamConfig = {
       label: "Sub-13",
       enabled: false,
       teamName: "Adecas",
+      teamExternalId: 333884,
       players_url: "https://www.zerozero.pt/equipa/adecas/333884?epoca_id=155",
       matches_url: "https://www.zerozero.pt/equipa/adecas/333884/jogos",
       standings_url:
