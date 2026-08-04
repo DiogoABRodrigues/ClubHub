@@ -23,19 +23,19 @@ export const teamConfig = {
 
   categories: [
     {
-      category: "over19" as Category,
+      category: "over19",
       label: "Seniores",
-      enabled: true,
+      enabled: true,  
       teamName: "Adecas",
       teamExternalId: 18231,
-      players_url: "htaatps://www.zerozero.pt/equipa/adecas/18231?epoca_id=156",
-      matches_url: "httaaps://www.zerozero.pt/equipa/adecas/18231/jogos",
-      standings_url: "htaatps://www.zerozero.pt/edicao/af-viana-do-castelo-2-divisao-2026-2027-2-divisao-mka/221710",
-      stats_url: "httaaps://www.zerozero.pt/equipa/adecas/18231/jogadores?pos=0&pais=0&epoca_stats_id=156&comp_id=0&menu=",
+      players_url: "https://www.zerozero.pt/equipa/adecas/18231?epoca_id=156",
+      matches_url: "https://www.zerozero.pt/equipa/adecas/18231/jogos",
+      standings_url: "https://www.zerozero.pt/edicao/af-viana-do-castelo-2-divisao-2026-2027-2-divisao-mka/221710",
+      stats_url: " https://www.zerozero.pt/equipa/adecas/18231/jogadores?pos=0&pais=0&epoca_stats_id=156&comp_id=0&menu=",
       teams_urls: [
-    "https://www.zerozero.pt/edicao/af-viana-do-castelo-2-divisao-2026-2027-2-divisao-mka/221710/equipas",
-    "https://www.zerozero.pt/edicao/af-viana-do-castelo-1-divisao-2026-2027-1-divisao-sabseg/221704/equipas"
-  ],
+        "https://www.zerozero.pt/edicao/af-viana-do-castelo-taca-2026-27/221737/equipas",
+        "https://www.zerozero.pt/edicao/af-viana-do-castelo-2-divisao-mka-2026-2027/221710/equipas",
+      ],
     },
     {
       category: "sub15" as Category,
@@ -43,12 +43,12 @@ export const teamConfig = {
       enabled: true,
       teamName: "Adecas",
       teamExternalId: 32764,
-      players_url: "httaaps://www.zerozero.pt/equipa/adecas/32764?epoca_id=155",
-      matches_url: "httaaps://www.zerozero.pt/equipa/adecas/32764/jogos?grp=1&ond=&epoca_id=156&compet_id_jogos=0&ved=&epoca_id=155&comfim=0&equipa_1=32764&menu=allmatches&type=season&op=ver_confronto",
+      players_url: "https://www.zerozero.pt/equipa/adecas/32764?epoca_id=156",
+      matches_url: "https://www.zerozero.pt/equipa/adecas/32764/jogos?grp=1&ond=&epoca_id=157&compet_id_jogos=0&ved=&epoca_id=156&comfim=0&equipa_1=32764&menu=allmatches&type=season&op=ver_confronto",
       standings_url:
-        "httaaps://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764",
+        "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764",
       stats_url:
-        "htaatps://www.zerozero.pt/equipa/adecas/32764/jogadores?compet_id_jogos=0&pais=0&epoca_stats_id=155&pos=0&o=min",
+        "https://www.zerozero.pt/equipa/adecas/32764/jogadores?compet_id_jogos=0&pais=0&epoca_stats_id=155&pos=0&o=min",
   teams_urls: [
     "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764/equipas",
     "https://www.zerozero.pt/edicao/af-v-castelo-juniores-c-taca-2025-26/204871/equipas",

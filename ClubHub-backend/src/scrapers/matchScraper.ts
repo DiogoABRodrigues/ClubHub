@@ -919,7 +919,10 @@ export async function scrapeTeamMatches(
 
   const finishedMatches = scrapedMatches.filter((m) => !!m.result);
 
-  const awayMatches = finishedMatches.filter((m) => m.homeOrAway === "F");
+  // Os jogos da época em curso ainda podem não ter resultado, mas a ficha
+  // do jogo já indica o estádio quando se joga fora. Não limitar esta lista
+  // aos terminados, senão esses locais nunca chegam a ser persistidos.
+  const awayMatches = scrapedMatches.filter((m) => m.homeOrAway === "F");
   const knownLocations = await getKnownLocations(
     config.teamName,
     config.category,
@@ -930,7 +933,14 @@ export async function scrapeTeamMatches(
     if (known) m.location = known;
   }
 
-  const matchesToVisit = finishedMatches.filter((m)=>!!m.matchUrl);
+  // Mantemos a visita aos terminados para recolher eventos e formações, e
+  // visitamos também os jogos fora ainda por disputar quando não conhecemos
+  // a localização. Assim evitamos abrir fichas de jogos em casa futuros.
+  const matchesToVisit = scrapedMatches.filter(
+    (m) =>
+      !!m.matchUrl &&
+      (!!m.result || (m.homeOrAway === "F" && !m.location)),
+  );
 
   if (matchesToVisit.length > 0) {
     console.log(

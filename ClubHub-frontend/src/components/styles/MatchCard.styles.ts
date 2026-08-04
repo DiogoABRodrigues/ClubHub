@@ -42,13 +42,13 @@ export const styles = createThemedStyles(() => ({
 
   // ── LIVE card ────────────────────────────────────────────────────────────
   liveCard: {
-    backgroundColor: COLORS.backgrounds.screen,
+    backgroundColor: COLORS.backgrounds.elevated,
     borderRadius: RADIUS.lg,
-    elevation: 1,
-    borderWidth: 0.5,
-    borderColor: COLORS.borders.inverse,
-    borderTopWidth: 2.5,
-    borderTopColor: COLORS.primary,
+    elevation: 2,
+    shadowColor: COLORS.effect.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.12,
+    shadowRadius: 3,
     padding: 14,
     marginBottom: SPACING.sm,
     overflow: "hidden",
@@ -94,13 +94,13 @@ export const styles = createThemedStyles(() => ({
 
   // ── Base card (upcoming + finished) ──────────────────────────────────────
   baseCard: {
-    backgroundColor: COLORS.backgrounds.screen,
-    elevation: 1,
+    backgroundColor: COLORS.backgrounds.elevated,
+    elevation: 0,
     borderRadius: RADIUS.lg,
-    borderWidth: 0.5,
-    borderColor: COLORS.borders.inverse,
-    borderTopWidth: 2.5,
-    borderTopColor: COLORS.primary,
+    shadowColor: COLORS.effect.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.12,
+    shadowRadius: 3,
     padding: 14,
     marginBottom: SPACING.sm,
   },
