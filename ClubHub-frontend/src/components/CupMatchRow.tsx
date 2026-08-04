@@ -61,7 +61,6 @@ export const CupMatchRow = React.memo(({ match, onPress }: Props) => {
     const penaltyDisplay = getPenaltyDisplayScore(
       match.result,
       match.outcome,
-      match.homeOrAway,
       match.decidedByPenalties,
     );
     if (penaltyDisplay) return penaltyDisplay;
@@ -70,18 +69,22 @@ export const CupMatchRow = React.memo(({ match, onPress }: Props) => {
   }, [match.result, match.outcome, match.homeOrAway, match.decidedByPenalties]);
 
   const teamMap = useMemo(() => {
-    const map: Record<string, any> = {};
+    const map = new Map<number, string>();
 
     teams.forEach((t) => {
-      map[t.name.trim().toLowerCase()] = t;
+      if (t.externalId != null) map.set(t.externalId, t.logoUrl ?? "");
     });
 
     return map;
   }, [teams]);
 
-  const homeLogo = teamMap[homeTeam.trim().toLowerCase()]?.logoUrl;
+  const homeLogo = teamMap.get(
+    match.homeOrAway === "C" ? match.teamExternalId ?? -1 : match.opponentExternalId ?? -1,
+  );
 
-  const awayLogo = teamMap[awayTeam.trim().toLowerCase()]?.logoUrl;
+  const awayLogo = teamMap.get(
+    match.homeOrAway === "F" ? match.teamExternalId ?? -1 : match.opponentExternalId ?? -1,
+  );
 
   const isFinished = match.status === "finished";
 
@@ -161,7 +164,7 @@ export const CupMatchRow = React.memo(({ match, onPress }: Props) => {
                 <Text
                   style={{
                     fontSize: 10,
-                    color: COLORS.textMuted,
+                    color: COLORS.subText,
                     textAlign: "center",
                   }}
                 >

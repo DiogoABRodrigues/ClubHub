@@ -10,6 +10,7 @@ export interface ScrapedTeam {
   name: string;
   abbreviation?: string;
   logoUrl?: string;
+  profileUrl?: string;
 }
 
 const competitions = teamConfig.categories
@@ -24,6 +25,62 @@ function extractTeamExternalId(href: string | undefined): number | null {
   return match ? Number(match[1]) : null;
 }
 
+async function ensureZeroZeroPageIsAvailable(
+  page: import("puppeteer").Page,
+) {
+  const title = await page.title();
+  const pageText = await page.evaluate(() => document.body?.innerText ?? "");
+
+  if (
+    title.toLowerCase().includes("attention required") ||
+    /cloudflare|just a moment/i.test(pageText)
+  ) {
+    throw new Error(
+      "O ZeroZero bloqueou este pedido com Cloudflare. Nenhuma equipa foi lida; tenta novamente mais tarde.",
+    );
+  }
+}
+
+function extractLogoUrlFromHtml(html: string): string | undefined {
+  const $ = cheerio.load(html);
+  const image = $("img[src*='/img/logos/equipas/'], img[data-src*='/img/logos/equipas/']").first();
+  const imageUrl = image.attr("src") || image.attr("data-src");
+  if (imageUrl) {
+    return imageUrl.startsWith("http")
+      ? imageUrl
+      : `https://www.zerozero.pt${imageUrl}`;
+  }
+
+  const background = $("[style*='/img/logos/equipas/']")
+    .first()
+    .attr("style")
+    ?.match(/url\(["']?([^"')]+)["']?\)/i)?.[1];
+  return background
+    ? background.startsWith("http")
+      ? background
+      : `https://www.zerozero.pt${background}`
+    : undefined;
+}
+
+async function fetchTeamLogo(profileUrl: string): Promise<string | undefined> {
+  const browser = await getSharedBrowser();
+  const page = await browser.newPage();
+  try {
+    await page.setUserAgent(
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+    );
+    await page.setExtraHTTPHeaders({ "Accept-Language": "pt-PT,pt;q=0.9" });
+    await page.goto(profileUrl, { waitUntil: "domcontentloaded", timeout: 90000 });
+    await ensureZeroZeroPageIsAvailable(page);
+    return extractLogoUrlFromHtml(await page.content());
+  } catch (error) {
+    console.warn(`Não foi possível obter o logo de ${profileUrl}:`, error);
+    return undefined;
+  } finally {
+    await page.close();
+  }
+}
+
 export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
   const browser = await getSharedBrowser();
   const allTeams: ScrapedTeam[] = [];
@@ -35,11 +92,16 @@ export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
       await page.setUserAgent(
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
       );
+      await page.setExtraHTTPHeaders({ "Accept-Language": "pt-PT,pt;q=0.9" });
+      await page.evaluateOnNewDocument(() => {
+        Object.defineProperty(navigator, "webdriver", { get: () => false });
+      });
 
       await page.goto(comp.url, {
         waitUntil: "domcontentloaded",
         timeout: 90000,
       });
+      await ensureZeroZeroPageIsAvailable(page);
 
       // Aceitar cookies
       try {
@@ -54,53 +116,79 @@ export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
         });
       } catch {}
 
-      // Aguardar pela tabela
-      await page.waitForSelector("table tbody tr", { timeout: 30000 });
+      await page.waitForSelector("a[href*='/equipa/']", { timeout: 30000 });
+      await ensureZeroZeroPageIsAvailable(page);
 
       const html = await page.content();
       const $ = cheerio.load(html);
       const compTeams: ScrapedTeam[] = [];
 
-      $("#DataTables_Table_0 tbody tr").each((_, row) => {
-        const cells = $(row).find("td");
-        if (cells.length < 3) return;
+      const toAbsoluteUrl = (url?: string) =>
+        url && !url.startsWith("http") ? `https://www.zerozero.pt${url}` : url;
 
-        const firstCellText = $(cells[0]).text().trim();
-        if (!/^\d+$/.test(firstCellText)) return;
-
-        let logoUrl: string | null = null;
-        const logoImg = $(cells[1]).find("img");
-        if (logoImg.length) {
-          logoUrl = logoImg.attr("src") || logoImg.attr("data-src") || null;
-          if (logoUrl && !logoUrl.startsWith("http")) {
-            logoUrl = "https://www.zerozero.pt" + logoUrl;
-          }
+      const addTeam = (
+        href: string | undefined,
+        name: string | undefined,
+        logoUrl?: string,
+      ) => {
+        const externalId = extractTeamExternalId(href);
+        const cleanName = name?.replace(/\s+/g, " ").trim();
+        if (
+          !externalId ||
+          !cleanName ||
+          cleanName.length <= 2 ||
+          compTeams.some((team) => team.externalId === externalId)
+        ) {
+          return;
         }
 
-        let teamName = "";
-        let teamExternalId: number | null = null;
-        const nameLink = $(cells[2]).find("a[href*='/equipa/']").first();
-        if (nameLink.length) teamName = nameLink.text().trim();
-        teamExternalId = extractTeamExternalId(nameLink.attr("href"));
+        compTeams.push({
+          externalId,
+          name: cleanName,
+          logoUrl: toAbsoluteUrl(logoUrl),
+          profileUrl: toAbsoluteUrl(href),
+        });
+      };
 
-        if (!teamName || !teamExternalId) {
-          const altLink = $(cells[1]).find("a[href*='/equipa/']").first();
-          if (!teamName && altLink.length && altLink.text().trim().length > 2) {
-            teamName = altLink.text().trim();
-          }
-          teamExternalId ??= extractTeamExternalId(altLink.attr("href"));
-        }
+      // Formato recente: cartões. O texto do <a> contém também "xª participação",
+      // por isso o nome tem obrigatoriamente de vir do span .first_name.
+      $(".zz_stats_card").each((_, card) => {
+        const teamLink = $(card).find("a[href*='/equipa/']").first();
+        const logoLink = $(card).find(".photo-team a[href*='/equipa/']").first();
+        const backgroundImage = logoLink.attr("style")?.match(
+          /background:\s*url\(["']?([^"')]+)["']?\)/i,
+        )?.[1];
 
-        if (teamName && teamName.length > 2 && teamExternalId) {
-          if (!compTeams.some((t) => t.externalId === teamExternalId)) {
-            compTeams.push({
-              externalId: teamExternalId,
-              name: teamName,
-              logoUrl: logoUrl || undefined,
-            });
-          }
-        }
+        addTeam(
+          teamLink.attr("href") || logoLink.attr("href"),
+          $(card).find(".first_name").first().text(),
+          backgroundImage,
+        );
       });
+
+      // Formato antigo: tabela. A equipa está sempre na primeira coluna; os
+      // restantes links são "Plantel", "Histórico", etc. e não são equipas novas.
+      $("table.zztable.zzlist tbody tr").each((_, row) => {
+        const teamLink = $(row)
+          .find("td")
+          .first()
+          .find("a[href*='/equipa/']")
+          .first();
+        addTeam(teamLink.attr("href"), teamLink.text());
+      });
+
+      // Compatibilidade com o formato DataTables que algumas páginas antigas usam.
+      if (compTeams.length === 0) {
+        $("#DataTables_Table_0 tbody tr").each((_, row) => {
+          const teamLink = $(row).find("a[href*='/equipa/']").first();
+          const logoImg = $(row).find("img").first();
+          addTeam(
+            teamLink.attr("href"),
+            teamLink.text() || logoImg.attr("alt"),
+            logoImg.attr("src") || logoImg.attr("data-src"),
+          );
+        });
+      }
 
       allTeams.push(...compTeams);
       console.log(`✅ ${compTeams.length} equipas extraídas de ${comp.url}`);
@@ -139,20 +227,29 @@ export async function saveAllTeams(teams: ScrapedTeam[]) {
       : await Team.findAll({ where: { name: team.name, externalId: null } });
     const existing = existingByExternalId ??
       (legacyMatches.length === 1 ? legacyMatches[0] : null);
+    const logoUrl =
+      team.logoUrl || existing?.logoUrl ||
+      (team.profileUrl ? await fetchTeamLogo(team.profileUrl) : undefined);
 
     if (existing) {
-      await existing.update({
+      const updates: Partial<Team> = {
         name: team.name,
         abbreviation: team.abbreviation,
-        logoUrl: team.logoUrl,
         externalId: team.externalId,
-      });
+      };
+
+      // O formato em tabela do ZeroZero não inclui o emblema da equipa. Não
+      // podemos substituir um logo já guardado por undefined só porque esta
+      // fonte não o disponibiliza.
+      if (logoUrl) updates.logoUrl = logoUrl;
+
+      await existing.update(updates);
     } else {
       await Team.create({
         externalId: team.externalId,
         name: team.name,
         abbreviation: team.abbreviation,
-        logoUrl: team.logoUrl,
+        logoUrl,
       });
     }
   }

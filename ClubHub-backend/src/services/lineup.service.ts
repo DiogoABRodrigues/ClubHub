@@ -1,5 +1,6 @@
 import Lineup from "../models/Lineup";
 import Match from "../models/Match";
+import Player from "../models/Player";
 import { sequelize } from "../config/database";
 import cache from "./cache.service";
 import { CacheKeys } from "../cache/keys";
@@ -19,8 +20,16 @@ export default class LineupService {
   }
 
   async create(data: LineupEntry & { matchId: number }) {
-    const lineup = await Lineup.create(data);
-    const match = await Match.findByPk(data.matchId);
+    const [match, player] = await Promise.all([
+      Match.findByPk(data.matchId),
+      Player.findByPk(data.playerId),
+    ]);
+    if (!match || !player) throw new AppError("Match or player not found", 404);
+    const lineup = await Lineup.create({
+      ...data,
+      matchExternalId: match.externalId,
+      playerExternalId: player.externalId,
+    });
     if (match) await this.invalidateMatch(match);
     return lineup;
   }
@@ -55,11 +64,21 @@ export default class LineupService {
       if (!match) throw new AppError("Match not found", 404);
 
       await Lineup.destroy({ where: { matchId }, transaction });
+      const players = await Player.findAll({
+        where: { id: [...uniquePlayerIds] },
+        attributes: ["id", "externalId"],
+        transaction,
+      });
+      const externalIdByPlayerId = new Map(
+        players.map((player) => [player.id, player.externalId]),
+      );
       const lineups = entries.length
         ? await Lineup.bulkCreate(
             entries.map((entry) => ({
               matchId,
+              matchExternalId: match.externalId,
               playerId: entry.playerId,
+              playerExternalId: externalIdByPlayerId.get(entry.playerId) ?? null,
               isStarting: entry.isStarting ?? true,
             })),
             { transaction, returning: true },

@@ -4,6 +4,8 @@ export interface CategoryConfig {
   category: Category;
   label: string;
   enabled: boolean;
+  /** Opcional para scrapes históricos; prevalece sobre currentSeason. */
+  seasonYear?: string;
   teamName: string;
   teamExternalId: number;
   players_url: string;
@@ -26,16 +28,14 @@ export const teamConfig = {
       enabled: true,
       teamName: "Adecas",
       teamExternalId: 18231,
-      players_url: "https://www.zerozero.pt/equipa/adecas/18231",
-      matches_url: "https://www.zerozero.pt/equipa/adecas/18231/jogos?grp=1",
-      standings_url:
-        "https://www.zerozero.pt/competicao/af-viana-do-castelo-2-divisao",
-      stats_url:
-        "https://www.zerozero.pt/equipa/adecas/18231/jogadores?epoca_stats_id=155&o=j",
+      players_url: "htaatps://www.zerozero.pt/equipa/adecas/18231?epoca_id=156",
+      matches_url: "httaaps://www.zerozero.pt/equipa/adecas/18231/jogos",
+      standings_url: "htaatps://www.zerozero.pt/edicao/af-viana-do-castelo-2-divisao-2026-2027-2-divisao-mka/221710",
+      stats_url: "httaaps://www.zerozero.pt/equipa/adecas/18231/jogadores?pos=0&pais=0&epoca_stats_id=156&comp_id=0&menu=",
       teams_urls: [
-        "https://www.zerozero.pt/competicao/af-viana-do-castelo-1-divisao",
-        "https://www.zerozero.pt/competicao/af-viana-do-castelo-2-divisao",
-      ],
+    "https://www.zerozero.pt/edicao/af-viana-do-castelo-2-divisao-2026-2027-2-divisao-mka/221710/equipas",
+    "https://www.zerozero.pt/edicao/af-viana-do-castelo-1-divisao-2026-2027-1-divisao-sabseg/221704/equipas"
+  ],
     },
     {
       category: "sub15" as Category,
@@ -43,15 +43,17 @@ export const teamConfig = {
       enabled: true,
       teamName: "Adecas",
       teamExternalId: 32764,
-      players_url: "https://www.zerozero.pt/equipa/adecas/32764?epoca_id=155",
-      matches_url: "https://www.zerozero.pt/equipa/adecas/32764/jogos?grp=1",
+      players_url: "httaaps://www.zerozero.pt/equipa/adecas/32764?epoca_id=155",
+      matches_url: "httaaps://www.zerozero.pt/equipa/adecas/32764/jogos?grp=1&ond=&epoca_id=156&compet_id_jogos=0&ved=&epoca_id=155&comfim=0&equipa_1=32764&menu=allmatches&type=season&op=ver_confronto",
       standings_url:
-        "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764",
+        "httaaps://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764",
       stats_url:
-        "https://www.zerozero.pt/equipa/adecas/32764/jogadores?compet_id_jogos=0&pais=0&epoca_stats_id=155&pos=0&o=min",
-      teams_urls: [
-        "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764/equipas",
-      ],
+        "htaatps://www.zerozero.pt/equipa/adecas/32764/jogadores?compet_id_jogos=0&pais=0&epoca_stats_id=155&pos=0&o=min",
+  teams_urls: [
+    "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764/equipas",
+    "https://www.zerozero.pt/edicao/af-v-castelo-juniores-c-taca-2025-26/204871/equipas",
+    "https://www.zerozero.pt/edicao/af-v-castelo-jun-c-tor-extraordinario-2-div-liga-2-25-26/213106/equipas"
+  ],
     },
     {
       category: "sub13" as Category,

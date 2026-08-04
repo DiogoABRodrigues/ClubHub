@@ -22,12 +22,14 @@ const ICON: Record<string, string> = {
 };
 
 const CardIcon = ({ type }: { type: string }) => (
-  <View
-    style={[
-      styles.cardIcon,
-      { backgroundColor: type === "yellow_card" ? COLORS.status.yellowCard : COLORS.error },
-    ]}
-  />
+  <View style={styles.cardIconSlot}>
+    <View
+      style={[
+        styles.cardIcon,
+        { backgroundColor: type === "yellow_card" ? COLORS.status.yellowCard : COLORS.error },
+      ]}
+    />
+  </View>
 );
 
 export const EventRow = ({

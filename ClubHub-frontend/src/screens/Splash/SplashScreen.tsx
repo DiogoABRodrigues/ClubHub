@@ -1,20 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   Animated,
-  Dimensions,
   Modal,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { useIsFetching, useQueryClient } from "@tanstack/react-query";
-
-import { Home } from "../Home/Home";
-import { Matches } from "../Matches/Matches";
-import { SeasonScreen } from "../Season/SeasonScreen";
-import { News } from "../News/News";
-import { NotificationSettings } from "../NotificationSettings/NotificationSettings";
+import { useQueryClient } from "@tanstack/react-query";
 import { useCategory } from "../../contexts/CategoryContext";
 import { healthApi } from "../../services/api";
 import { styles } from "./Splash.styles";
@@ -23,56 +15,9 @@ interface SplashScreenProps {
   onFinish: () => void;
 }
 
-const { width, height } = Dimensions.get("window");
-
-const noopNavigation = {
-  navigate: () => {},
-  goBack: () => {},
-  push: () => {},
-  replace: () => {},
-  dispatch: () => {},
-  setOptions: () => {},
-  addListener: () => () => {},
-  removeListener: () => {},
-  isFocused: () => false,
-  canGoBack: () => false,
-  getParent: () => null,
-  getState: () => null,
-};
-
-const PreWarm = () => {
-  const nav = useMemo(() => noopNavigation, []);
-
-  return (
-    <View
-      style={styles.preWarm}
-      pointerEvents="none"
-      accessibilityElementsHidden
-      importantForAccessibility="no-hide-descendants"
-    >
-      <View style={{ width, height }}>
-        <Home navigation={nav as any} />
-      </View>
-      <View style={{ width, height }}>
-        <Matches navigation={nav as any} />
-      </View>
-      <View style={{ width, height }}>
-        <SeasonScreen navigation={nav as any} />
-      </View>
-      <View style={{ width, height }}>
-        <News navigation={nav as any} />
-      </View>
-      <View style={{ width, height }}>
-        <NotificationSettings />
-      </View>
-    </View>
-  );
-};
-
 export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
   const { isReady } = useCategory();
   const queryClient = useQueryClient();
-  const isFetching = useIsFetching();
 
   const opacity = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(0.8)).current;
@@ -117,7 +62,10 @@ export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
         await queryClient.resetQueries({
           predicate: (query) => query.state.status === "error",
         });
-        if (!cancelled) setBackendReady(true);
+        if (!cancelled) {
+          setBackendReady(true);
+          setDataReady(true);
+        }
       } catch {
         if (!cancelled) setHasError(true);
       }
@@ -131,7 +79,7 @@ export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
   }, [attempt, isReady, queryClient]);
 
   useEffect(() => {
-    if (!backendReady || hasError || dataReady || isFetching > 0) return;
+    if (!backendReady || hasError || dataReady) return;
 
     // Dá tempo às queries dependentes (por exemplo, época -> jogos) para arrancarem.
     const settleTimer = setTimeout(() => {
@@ -148,7 +96,7 @@ export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
     }, 400);
 
     return () => clearTimeout(settleTimer);
-  }, [backendReady, dataReady, hasError, isFetching, queryClient]);
+  }, [backendReady, dataReady, hasError, queryClient]);
 
   useEffect(() => {
     if (animationDone && dataReady) onFinish();
@@ -166,8 +114,6 @@ export const SplashScreen = ({ onFinish }: SplashScreenProps) => {
           },
         ]}
       />
-
-      {backendReady && !hasError && <PreWarm />}
 
       <Modal
         visible={hasError}

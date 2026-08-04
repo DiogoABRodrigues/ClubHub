@@ -5,6 +5,7 @@ import { sequelize } from "../config/database";
 class MatchEvent extends Model {
   public id!: number;
   public matchId!: number;
+  public matchExternalId!: number | null;
   public type!:
     | "goal"
     | "yellow_card"
@@ -17,6 +18,9 @@ class MatchEvent extends Model {
   public playerId?: number | null;
   public playerInId?: number | null;
   public playerOutId?: number | null;
+  public playerExternalId?: number | null;
+  public playerInExternalId?: number | null;
+  public playerOutExternalId?: number | null;
 
   public isOpponent!: boolean;
   public isOwnGoal?: boolean;
@@ -43,6 +47,7 @@ MatchEvent.init(
       },
       onDelete: "CASCADE",
     },
+    matchExternalId: { type: DataTypes.INTEGER, allowNull: true },
 
     type: {
       type: DataTypes.ENUM(
@@ -80,6 +85,9 @@ MatchEvent.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    playerExternalId: { type: DataTypes.INTEGER, allowNull: true },
+    playerInExternalId: { type: DataTypes.INTEGER, allowNull: true },
+    playerOutExternalId: { type: DataTypes.INTEGER, allowNull: true },
 
     isOpponent: {
       type: DataTypes.BOOLEAN,

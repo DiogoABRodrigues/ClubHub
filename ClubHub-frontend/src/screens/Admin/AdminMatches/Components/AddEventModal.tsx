@@ -474,7 +474,7 @@ export const AddEventModal = ({
                 />
 
                 {/* Auto-golo */}
-                {form.type === "goal" && !isOpponent && (
+                {form.type === "goal" && (
                   <View style={adminStyles.switchRow}>
                     <Text style={adminStyles.fieldLabel}>Auto-golo</Text>
                     <Switch

@@ -6,8 +6,11 @@ import Competition from "./Competition";
 class Standing extends Model {
   public id!: number;
   public teamName!: string;
+  public teamExternalId!: number | null;
+  public competitionExternalId!: number | null;
   public competitionId!: number;
   public seasonId!: number;
+  public seasonYear!: string | null;
   public category!: string;
 
   public position!: number;
@@ -43,12 +46,19 @@ Standing.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    teamExternalId: { type: DataTypes.INTEGER, allowNull: true },
+
+    competitionExternalId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
 
     seasonId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: { model: Season, key: "id" }, // foreign key para seasons
     },
+    seasonYear: { type: DataTypes.STRING, allowNull: true },
 
     category: {
       type: DataTypes.STRING(10),
@@ -114,8 +124,16 @@ Standing.init(
     timestamps: true,
     indexes: [
       {
+        name: "standings_team_external_id_idx",
+        fields: ["teamExternalId"],
+      },
+      {
         name: "standings_season_category_idx",
         fields: ["seasonId", "category"],
+      },
+      {
+        name: "standings_competition_external_id_idx",
+        fields: ["competitionExternalId"],
       },
       {
         name: "standings_competition_season_category_idx",

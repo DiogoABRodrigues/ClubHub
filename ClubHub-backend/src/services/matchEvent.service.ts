@@ -26,8 +26,9 @@ class MatchEventService {
       });
       if (!match) throw new AppError("Match not found", 404);
 
+      const externalFields = await this.resolveExternalFields(data, match.externalId);
       const event = await MatchEvent.create(
-        { ...data, matchId },
+        { ...data, ...externalFields, matchId },
         { transaction },
       );
       await this.recalculateScore(match, transaction);
@@ -35,7 +36,9 @@ class MatchEventService {
     });
 
     await this.matchService.refreshAndBroadcast(matchId);
-    await this.notify(event, "create", match);
+    if (match.status === "live") {
+      await this.notify(event, "create", match);
+    }
     return event;
   }
 
@@ -53,7 +56,8 @@ class MatchEventService {
       });
       if (!match) throw new AppError("Match not found", 404);
 
-      await event.update(data, { transaction });
+      const externalFields = await this.resolveExternalFields(data, match.externalId);
+      await event.update({ ...data, ...externalFields }, { transaction });
       await this.recalculateScore(match, transaction);
       return { event, match };
     });
@@ -82,7 +86,7 @@ class MatchEventService {
     });
 
     await this.matchService.refreshAndBroadcast(match.id);
-    if (match.status !== "finished") {
+    if (match.status === "live") {
       await this.notify(event, "delete", match);
     }
     return true;
@@ -108,6 +112,21 @@ class MatchEventService {
         ? `${ourGoals}-${opponentGoals}`
         : `${opponentGoals}-${ourGoals}`;
     await match.update({ result }, { transaction });
+  }
+
+  private async resolveExternalFields(data: any, matchExternalId: number | null) {
+    const ids = [data.playerId, data.playerInId, data.playerOutId]
+      .filter((id): id is number => Number.isInteger(id));
+    const players = ids.length
+      ? await Player.findAll({ where: { id: ids }, attributes: ["id", "externalId"] })
+      : [];
+    const externalIdById = new Map(players.map((player) => [player.id, player.externalId]));
+    return {
+      matchExternalId,
+      playerExternalId: data.playerId == null ? null : externalIdById.get(data.playerId) ?? null,
+      playerInExternalId: data.playerInId == null ? null : externalIdById.get(data.playerInId) ?? null,
+      playerOutExternalId: data.playerOutId == null ? null : externalIdById.get(data.playerOutId) ?? null,
+    };
   }
 
   private async notify(

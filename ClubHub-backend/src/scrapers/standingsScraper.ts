@@ -249,7 +249,9 @@ export async function scrapeStandings(
 
     console.log(`✅ ${standings.length} equipas extraídas`);
 
-    const season = await getOrCreateSeason(teamConfig.currentSeason);
+    const season = await getOrCreateSeason(
+      config.seasonYear ?? teamConfig.currentSeason,
+    );
 
     // ── Encontra ou cria a Competition pelo externalId (estável entre seasons) ──
     // Se o URL não tiver ID numérico, faz fallback por seasonId + category + name
@@ -265,10 +267,22 @@ export async function scrapeStandings(
     }
 
     if (!competition) {
+      competition = await Competition.findOne({
+        where: {
+          name: competitionName,
+          seasonId: season.id,
+          seasonYear: season.year,
+          category: config.category,
+        },
+      });
+    }
+
+    if (!competition) {
       console.log(`🆕 Nova competition: ${competitionName}`);
       competition = await Competition.create({
         name: competitionName,
         seasonId: season.id,
+        seasonYear: season.year,
         category: config.category,
         externalId,
       });
@@ -276,6 +290,7 @@ export async function scrapeStandings(
       // Atualiza seasonId e category caso tenham mudado (nova season, mesmo externalId)
       await competition.update({
         seasonId: season.id,
+        seasonYear: season.year,
         category: config.category,
       });
     }
@@ -284,7 +299,9 @@ export async function scrapeStandings(
       await saveStandings(
         standings,
         competition.id,
+        competition.externalId,
         season.id,
+        season.year,
         config.category,
       );
     }
@@ -318,7 +335,9 @@ export async function scrapeStandings(
 export async function saveStandings(
   standings: StandingRow[],
   competitionId: number,
+  competitionExternalId: number | null,
   seasonId: number,
+  seasonYear: string,
   category: string = "sub15",
 ) {
   const data = [];
@@ -346,8 +365,11 @@ export async function saveStandings(
 
     data.push({
       teamName: team.name,
+      teamExternalId: row.teamExternalId,
       competitionId,
+      competitionExternalId,
       seasonId,
+      seasonYear,
       category,
       position: row.position,
       points: row.points,
@@ -364,7 +386,15 @@ export async function saveStandings(
 
   await Standing.destroy({ where: { competitionId, seasonId, category } });
   await Standing.bulkCreate(data);
-  await cache.del(CacheKeys.teams.all);
+  await Promise.all([
+    cache.del(CacheKeys.teams.all),
+    cache.del(CacheKeys.standings.all),
+    cache.del(CacheKeys.standings.bySeason(seasonId, category)),
+    cache.del(CacheKeys.competitions.all),
+    cache.del(CacheKeys.competitions.bySeason(seasonId)),
+    cache.del(CacheKeys.season.all),
+    cache.del(CacheKeys.season.byId(seasonId)),
+  ]);
 
   console.log(
     `✅ Standings guardadas (competição ${competitionId}, season ${seasonId}, ${category})`,

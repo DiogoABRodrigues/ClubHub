@@ -18,12 +18,16 @@ import { AppError } from "../errors/AppError";
 
 const MATCH_SUMMARY_ATTRIBUTES = [
   "id",
+  "externalId",
+  "teamExternalId",
   "teamName",
   "date",
   "time",
   "homeOrAway",
   "opponent",
+  "opponentExternalId",
   "result",
+  "competitionExternalId",
   "competitionId",
   "seasonId",
   "round",
@@ -145,13 +149,17 @@ export default class MatchService {
     if (!match) throw new AppError("Match not found", 404);
 
     const previousStatus = match.status;
-    await match.update(updates);
+    const penaltyResult = this.resultWithPenaltyWinner(match, updates);
+    await match.update({
+      ...updates,
+      ...(penaltyResult ? { result: penaltyResult } : {}),
+    });
     await this.invalidateMatchCaches(match);
 
     const detailedMatch = await this.getById(id);
     if (detailedMatch) socketService.emitMatchUpdate(detailedMatch);
 
-    if (previousStatus !== "finished" && match.status === "finished") {
+    if (previousStatus === "live" && match.status === "finished") {
       await this.notifyResult(match);
     }
 
@@ -198,6 +206,36 @@ export default class MatchService {
     await cache.setPermanent(CacheKeys.matches.byId(id), uncached);
     socketService.emitMatchUpdate(uncached);
     return uncached;
+  }
+
+  private resultWithPenaltyWinner(
+    match: Match,
+    updates: Record<string, unknown>,
+  ): string | null {
+    const isNewPenaltyFinish =
+      match.status !== "finished" &&
+      updates.status === "finished" &&
+      updates.decidedByPenalties === true;
+    const outcome = updates.outcome;
+
+    if (
+      !isNewPenaltyFinish ||
+      !match.result ||
+      (outcome !== "V" && outcome !== "D")
+    ) {
+      return null;
+    }
+
+    const [homeRaw, awayRaw] = match.result.split("-");
+    const home = Number.parseInt(homeRaw, 10);
+    const away = Number.parseInt(awayRaw, 10);
+    if (!Number.isInteger(home) || !Number.isInteger(away) || home !== away) {
+      return null;
+    }
+
+    const weAreHome = match.homeOrAway === "C";
+    const homeWon = outcome === "V" ? weAreHome : !weAreHome;
+    return homeWon ? `${home + 1}-${away}` : `${home}-${away + 1}`;
   }
 
   private async invalidateMatchCaches(match: Match) {

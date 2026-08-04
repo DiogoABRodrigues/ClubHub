@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -15,15 +15,16 @@ import { useCompetitions } from "../../hooks/useCompetitions";
 import { useAuth } from "../../contexts/AuthContext";
 import { EmptyState } from "../../components/EmptyState";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useSelectedSeason } from "../../contexts/Selectedseasoncontext";
 
 type TabKey = "upcoming" | "finished";
 
 interface LiveBannerProps {
   matches: any[];
-  getTeamLogo: (teamName: string) => string | undefined;
+  getTeamLogo: (teamExternalId: number | null | undefined) => string | undefined;
   navigation: any;
-  getHomeTeam: (match: any) => string;
-  getAwayTeam: (match: any) => string;
+  getHomeTeamExternalId: (match: any) => number | null | undefined;
+  getAwayTeamExternalId: (match: any) => number | null | undefined;
   competitionsMap: Map<any, any>;
   onPressMatch: (matchId: string) => void;
 }
@@ -32,8 +33,8 @@ const LiveBanner = React.memo(
   ({
     matches,
     getTeamLogo,
-    getHomeTeam,
-    getAwayTeam,
+    getHomeTeamExternalId,
+    getAwayTeamExternalId,
     competitionsMap,
     onPressMatch,
   }: LiveBannerProps) => {
@@ -52,10 +53,10 @@ const LiveBanner = React.memo(
           <MatchCard
             key={match.id}
             match={match}
-            homeLogo={getTeamLogo(getHomeTeam(match)) || ""}
-            awayLogo={getTeamLogo(getAwayTeam(match)) || ""}
+            homeLogo={getTeamLogo(getHomeTeamExternalId(match)) || ""}
+            awayLogo={getTeamLogo(getAwayTeamExternalId(match)) || ""}
             onPress={() => onPressMatch(match.id)}
-            competition={competitionsMap.get(match.competitionId)}
+            competition={competitionsMap.get(match.competitionExternalId)}
           />
         ))}
       </View>
@@ -109,16 +110,21 @@ export const Matches = ({ navigation }: any) => {
   const { teams, refreshTeams } = useTeams();
   const { competitions, refreshCompetitions } = useCompetitions();
   const { adminMode } = useAuth();
+  const { selectedSeasonId } = useSelectedSeason();
 
   const teamsMap = useMemo(() => {
     const map = new Map();
-    for (const t of teams) map.set(t.name.trim().toLowerCase(), t.logoUrl);
+    for (const t of teams) {
+      if (t.externalId != null) map.set(t.externalId, t.logoUrl);
+    }
     return map;
   }, [teams]);
 
   const competitionsMap = useMemo(() => {
     const map = new Map();
-    for (const c of competitions) map.set(c.id, c);
+    for (const c of competitions) {
+      if (c.externalId != null) map.set(c.externalId, c);
+    }
     return map;
   }, [competitions]);
 
@@ -138,6 +144,12 @@ export const Matches = ({ navigation }: any) => {
     [matches],
   );
 
+  useEffect(() => {
+    if (upcomingMatches.length === 0 && finishedMatches.length > 0) {
+      setActiveTab("finished");
+    }
+  }, [selectedSeasonId, upcomingMatches.length, finishedMatches.length]);
+
   const activeList =
     activeTab === "upcoming" ? upcomingMatches : finishedMatches;
 
@@ -155,19 +167,20 @@ export const Matches = ({ navigation }: any) => {
   }, [refreshMatches, refreshCompetitions, refreshTeams]);
 
   const getTeamLogo = useCallback(
-    (teamName: string) => teamsMap.get(teamName.trim().toLowerCase()),
+    (teamExternalId: number | null | undefined) =>
+      teamExternalId == null ? undefined : teamsMap.get(teamExternalId),
     [teamsMap],
   );
 
-  const getHomeTeam = useCallback(
+  const getHomeTeamExternalId = useCallback(
     (match: any) =>
-      match.homeOrAway === "C" ? match.teamName : match.opponent,
+      match.homeOrAway === "C" ? match.teamExternalId : match.opponentExternalId,
     [],
   );
 
-  const getAwayTeam = useCallback(
+  const getAwayTeamExternalId = useCallback(
     (match: any) =>
-      match.homeOrAway === "F" ? match.teamName : match.opponent,
+      match.homeOrAway === "F" ? match.teamExternalId : match.opponentExternalId,
     [],
   );
 
@@ -184,13 +197,13 @@ export const Matches = ({ navigation }: any) => {
     ({ item: match }: { item: any }) => (
       <MatchCard
         match={match}
-        homeLogo={getTeamLogo(getHomeTeam(match)) || ""}
-        awayLogo={getTeamLogo(getAwayTeam(match)) || ""}
+        homeLogo={getTeamLogo(getHomeTeamExternalId(match)) || ""}
+        awayLogo={getTeamLogo(getAwayTeamExternalId(match)) || ""}
         onPress={() => navigateToMatchDetail(match.id)}
-        competition={competitionsMap.get(match.competitionId)}
+        competition={competitionsMap.get(match.competitionExternalId)}
       />
     ),
-    [getTeamLogo, getHomeTeam, getAwayTeam, navigateToMatchDetail, competitionsMap],
+    [getTeamLogo, getHomeTeamExternalId, getAwayTeamExternalId, navigateToMatchDetail, competitionsMap],
   );
 
   const emptyMessage =
@@ -219,8 +232,8 @@ export const Matches = ({ navigation }: any) => {
         matches={liveMatches}
         getTeamLogo={getTeamLogo}
         navigation={navigation}
-        getHomeTeam={getHomeTeam}
-        getAwayTeam={getAwayTeam}
+        getHomeTeamExternalId={getHomeTeamExternalId}
+        getAwayTeamExternalId={getAwayTeamExternalId}
         competitionsMap={competitionsMap}
         onPressMatch={navigateToMatchDetail}
       />

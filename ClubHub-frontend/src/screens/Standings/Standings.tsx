@@ -17,7 +17,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 
 type LeagueSection = {
   type: "league";
-  competitionId: number;
+  competitionExternalId: number | null;
   competitionName: string;
   legend: LegendItem[];
   data: any[];
@@ -30,7 +30,7 @@ type CupRound = {
 
 type CupSection = {
   type: "cup";
-  competitionId: number;
+  competitionExternalId: number | null;
   competitionName: string;
   rounds: CupRound[];
   data: CupRound[];
@@ -94,8 +94,12 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
   const sections = useMemo<Section[]>(() => {
     if (!currentSeason || !competitions.length) return [];
 
-    const seasonCompetitions = competitions.filter(
-      (c) => c.seasonId === currentSeason.id,
+  const seasonCompetitions = competitions
+    .filter((c) => c.seasonId === currentSeason.id && c.externalId != null)
+    .sort(
+      (a, b) =>
+        Number(a.name.toLowerCase().includes("taça")) -
+        Number(b.name.toLowerCase().includes("taça")),
     );
 
     const result: Section[] = [];
@@ -105,7 +109,7 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
 
       if (isCup) {
         const competitionMatches = matches.filter(
-          (m) => m.competitionId === comp.id,
+          (m) => m.competitionExternalId === comp.externalId,
         );
 
         if (competitionMatches.length === 0) continue;
@@ -133,21 +137,21 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
 
         result.push({
           type: "cup",
-          competitionId: comp.id,
+          competitionExternalId: comp.externalId,
           competitionName: comp.name,
           rounds,
           data: rounds,
         });
       } else {
         const competitionStandings = standings
-          .filter((s) => s.competitionId === comp.id)
+          .filter((s) => s.competitionExternalId === comp.externalId)
           .sort((a, b) => a.position - b.position);
 
         if (competitionStandings.length === 0) continue;
 
         result.push({
           type: "league",
-          competitionId: comp.id,
+          competitionExternalId: comp.externalId,
           competitionName: comp.name,
           legend: comp.legend ?? [],
           data: competitionStandings,
@@ -182,7 +186,7 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
               />
             ))}
           </View>
-        <View style={styles.sectionSeparator} />
+        <View />
       </>
     );
   };
@@ -271,7 +275,7 @@ export const Standings = React.memo(function Standings({ navigation }: any) {
                 ))}
               </View>
             </View>
-          <View style={styles.sectionSeparator} />
+          <View/>
         </>
       );
     },

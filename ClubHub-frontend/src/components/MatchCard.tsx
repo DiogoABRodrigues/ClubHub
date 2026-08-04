@@ -90,7 +90,6 @@ export const MatchCard = React.memo(
       const penaltyDisplay = getPenaltyDisplayScore(
         match.result,
         match.outcome,
-        match.homeOrAway,
         match.decidedByPenalties,
       );
       if (penaltyDisplay) return penaltyDisplay;
@@ -302,7 +301,7 @@ export const MatchCard = React.memo(
               <Text
                 style={{
                   fontSize: 10,
-                  color: COLORS.textMuted,
+                  color: COLORS.subText,
                   textAlign: "center",
                   marginTop: 1,
                 }}

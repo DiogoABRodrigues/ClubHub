@@ -10,6 +10,7 @@ class Competition extends Model {
   declare id: number;
   declare name: string;
   declare seasonId: number;
+  declare seasonYear: string | null;
   declare category: string;
   declare legend: LegendItem[] | null;
   declare externalId: number | null;
@@ -20,6 +21,7 @@ Competition.init(
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     name: { type: DataTypes.STRING, allowNull: false },
     seasonId: { type: DataTypes.INTEGER, allowNull: false },
+    seasonYear: { type: DataTypes.STRING, allowNull: true },
     category: {
       type: DataTypes.STRING(10),
       allowNull: false,
@@ -43,11 +45,16 @@ Competition.init(
     timestamps: true,
     indexes: [
       {
+        name: "competitions_season_year_category_idx",
+        fields: ["seasonYear", "category"],
+      },
+      {
         name: "competitions_season_category_idx",
         fields: ["seasonId", "category"],
       },
       {
         name: "competitions_external_id_idx",
+        unique: true,
         fields: ["externalId"],
       },
     ],

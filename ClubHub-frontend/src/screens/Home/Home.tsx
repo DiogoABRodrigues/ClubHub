@@ -26,7 +26,9 @@ export const Home = ({ navigation }: any) => {
 
   const competitionsMap = useMemo(() => {
     const map = new Map();
-    for (const c of competitions) map.set(c.id, c);
+    for (const c of competitions) {
+      if (c.externalId != null) map.set(c.externalId, c);
+    }
     return map;
   }, [competitions]);
 
@@ -52,9 +54,10 @@ export const Home = ({ navigation }: any) => {
   const { teams } = useTeams();
 
   const teamsMap = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const t of teams)
-      map.set(t.name.trim().toLowerCase(), t.logoUrl || "");
+    const map = new Map<number, string>();
+    for (const t of teams) {
+      if (t.externalId != null) map.set(t.externalId, t.logoUrl || "");
+    }
     return map;
   }, [teams]);
 
@@ -69,19 +72,20 @@ export const Home = ({ navigation }: any) => {
   );
 
   const getTeamLogo = useCallback(
-    (teamName: string) => teamsMap.get(teamName.trim().toLowerCase()),
+    (teamExternalId: number | null | undefined) =>
+      teamExternalId == null ? undefined : teamsMap.get(teamExternalId),
     [teamsMap],
   );
 
-  const getHomeTeam = useCallback(
+  const getHomeTeamExternalId = useCallback(
     (match: any) =>
-      match.homeOrAway === "C" ? match.teamName : match.opponent,
+      match.homeOrAway === "C" ? match.teamExternalId : match.opponentExternalId,
     [],
   );
 
-  const getAwayTeam = useCallback(
+  const getAwayTeamExternalId = useCallback(
     (match: any) =>
-      match.homeOrAway === "F" ? match.teamName : match.opponent,
+      match.homeOrAway === "F" ? match.teamExternalId : match.opponentExternalId,
     [],
   );
 
@@ -162,10 +166,10 @@ export const Home = ({ navigation }: any) => {
               <MatchCard
                 key={match.id}
                 match={match}
-                homeLogo={getTeamLogo(getHomeTeam(match)) || ""}
-                awayLogo={getTeamLogo(getAwayTeam(match)) || ""}
+                homeLogo={getTeamLogo(getHomeTeamExternalId(match)) || ""}
+                awayLogo={getTeamLogo(getAwayTeamExternalId(match)) || ""}
                 onPress={() => navigateToMatchDetail(match.id)}
-                competition={competitionsMap.get(match.competitionId)}
+                competition={competitionsMap.get(match.competitionExternalId)}
               />
             ))}
           </View>
@@ -180,10 +184,10 @@ export const Home = ({ navigation }: any) => {
             {(nextMatch && (
               <MatchCard
                 match={nextMatch}
-                homeLogo={getTeamLogo(getHomeTeam(nextMatch)) || ""}
-                awayLogo={getTeamLogo(getAwayTeam(nextMatch)) || ""}
+                homeLogo={getTeamLogo(getHomeTeamExternalId(nextMatch)) || ""}
+                awayLogo={getTeamLogo(getAwayTeamExternalId(nextMatch)) || ""}
                 onPress={() => navigateToMatchDetail(nextMatch.id)}
-                competition={competitionsMap.get(nextMatch.competitionId)}
+                competition={competitionsMap.get(nextMatch.competitionExternalId)}
               />
             )) || (
               <EmptyState
@@ -203,10 +207,10 @@ export const Home = ({ navigation }: any) => {
         {(recentMatch && (
             <MatchCard
               match={recentMatch}
-              homeLogo={getTeamLogo(getHomeTeam(recentMatch)) || ""}
-              awayLogo={getTeamLogo(getAwayTeam(recentMatch)) || ""}
+              homeLogo={getTeamLogo(getHomeTeamExternalId(recentMatch)) || ""}
+              awayLogo={getTeamLogo(getAwayTeamExternalId(recentMatch)) || ""}
               onPress={() => navigateToMatchDetail(recentMatch.id)}
-              competition={competitionsMap.get(recentMatch.competitionId)}
+              competition={competitionsMap.get(recentMatch.competitionExternalId)}
             />
             )) || (
               <EmptyState

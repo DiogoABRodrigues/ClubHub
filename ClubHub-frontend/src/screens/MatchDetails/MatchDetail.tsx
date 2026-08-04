@@ -103,29 +103,30 @@ export const MatchDetail = () => {
 
   const competition = useMemo(() => {
     return competitions.find(
-      (c) => c.id === match.competitionId,
+      (c) => c.externalId === match.competitionExternalId,
     ) as Competition;
-  }, [match.competitionId, competitions]);
+  }, [match.competitionExternalId, competitions]);
 
   const getTeamteamLogo = useCallback(
-    (teamName: string) => {
-      const normalized = teamName.trim().toLowerCase();
-      return teams.find(
-        (t) => t.name.trim().toLowerCase() === normalized,
-      )?.logoUrl;
+    (teamExternalId: number | null | undefined) => {
+      if (teamExternalId == null) return undefined;
+      return teams.find((t) => t.externalId === teamExternalId)?.logoUrl;
     },
     [teams],
   );
 
-  const hometeamLogo = getTeamteamLogo(homeTeamName);
-  const awayteamLogo = getTeamteamLogo(awayTeamName);
+  const hometeamLogo = getTeamteamLogo(
+    match.homeOrAway === "C" ? match.teamExternalId : match.opponentExternalId,
+  );
+  const awayteamLogo = getTeamteamLogo(
+    match.homeOrAway === "F" ? match.teamExternalId : match.opponentExternalId,
+  );
 
   const penaltyDisplay = useMemo(
     () =>
       getPenaltyDisplayScore(
         match.result,
         match.outcome,
-        match.homeOrAway,
         match.decidedByPenalties,
       ),
     [
@@ -260,10 +261,15 @@ export const MatchDetail = () => {
               <Image source={{ uri: hometeamLogo }} style={styles.teamLogo} resizeMode="contain" />
             </View>
 
-            <View style={styles.scoreContainer}>
-              <Text style={styles.scoreText}>{homeScoreDisplay}</Text>
-              <Text style={styles.colon}>-</Text>
-              <Text style={styles.scoreText}>{awayScoreDisplay}</Text>
+            <View style={styles.scoreColumn}>
+              <View style={styles.scoreContainer}>
+                <Text style={styles.scoreText}>{homeScoreDisplay}</Text>
+                <Text style={styles.colon}>-</Text>
+                <Text style={styles.scoreText}>{awayScoreDisplay}</Text>
+              </View>
+              {match.decidedByPenalties && (
+                <Text style={styles.penaltiesLabel}>Após g.p.</Text>
+              )}
             </View>
 
             <View style={styles.teamSide}>

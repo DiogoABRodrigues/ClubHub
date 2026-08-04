@@ -8,9 +8,9 @@ import { getSharedBrowser } from "../utils/browser";
 import cache from "../services/cache.service";
 import { CacheKeys } from "../cache/keys";
 
-async function getOrCreateSeason() {
+async function getOrCreateSeason(seasonYear: string) {
   const [season] = await Season.findOrCreate({
-    where: { year: teamConfig.currentSeason },
+    where: { year: seasonYear },
   });
   return season;
 }
@@ -197,7 +197,11 @@ export async function scrapeTeamPlayers(cfg?: CategoryConfig) {
     console.log(`✅ Total encontrado: ${players.length} [${config.category}]`);
 
     if (players.length > 0) {
-      await savePlayersAndSquad(players, config.category);
+      await savePlayersAndSquad(
+        players,
+        config.category,
+        config.seasonYear ?? teamConfig.currentSeason,
+      );
     }
 
     return players;
@@ -209,8 +213,9 @@ export async function scrapeTeamPlayers(cfg?: CategoryConfig) {
 export async function savePlayersAndSquad(
   players: any[],
   category: string = "over19",
+  seasonYear: string = teamConfig.currentSeason,
 ) {
-  const season = await getOrCreateSeason();
+  const season = await getOrCreateSeason(seasonYear);
 
   for (const p of players) {
     await Player.upsert({
@@ -224,6 +229,7 @@ export async function savePlayersAndSquad(
     await Squad.upsert({
       playerExternalId: p.externalId,
       seasonId: season.id,
+      seasonYear: season.year,
       number: p.number,
       position: p.position,
       photoUrl: p.photoUrl,
@@ -233,6 +239,7 @@ export async function savePlayersAndSquad(
     await Stats.upsert({
       playerExternalId: p.externalId,
       seasonId: season.id,
+      seasonYear: season.year,
       gamesPlayed: 0,
       goals: 0,
       minutesPlayed: 0,
@@ -246,6 +253,7 @@ export async function savePlayersAndSquad(
     cache.del(CacheKeys.season.byCategory(category)),
     cache.del(CacheKeys.season.all),
     cache.del(CacheKeys.season.current),
+    cache.del(CacheKeys.season.byId(season.id)),
     // Estas são as chaves que o player.service/squad.service/stats.service
     // realmente leem — sem isto os dados na app ficam presos ao valor antigo
     // em cache (até o TTL de 24h expirar), mesmo com a BD já atualizada.
@@ -253,5 +261,6 @@ export async function savePlayersAndSquad(
     cache.del(CacheKeys.players.adminBySeason(season.id, category)),
     cache.del(CacheKeys.squad.bySeason(season.id, category)),
     cache.del(CacheKeys.stats.bySeason(season.id, category)),
+    cache.clearPattern("app:player:*:allstats"),
   ]);
 }

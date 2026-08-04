@@ -8,6 +8,8 @@ import Player from "../models/Player";
 import Lineup from "../models/Lineup";
 import MatchEvent from "../models/MatchEvent";
 import { getSharedBrowser } from "../utils/browser";
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
 
 const ZEROZERO_BASE_URL = "https://www.zerozero.pt";
 
@@ -32,18 +34,33 @@ export interface ScrapedFormations {
 }
 
 export interface ScrapedMatch {
+  externalId: number | null;
   date: string;
   time: string;
   homeOrAway: "C" | "F";
   opponent: string;
+  opponentExternalId: number | null;
   result: string | null;
   competition: string;
+  competitionExternalId: number | null;
   seasonId: number;
   round: string;
   outcome: "V" | "E" | "D" | null;
   matchUrl: string | null;
   location: string | null;
   formations: ScrapedFormations | null;
+}
+
+function extractExternalId(href: string | null | undefined): number | null {
+  if (!href) return null;
+  const match = href.match(/\/(\d+)(?:[/?#]|$)/);
+  return match ? Number(match[1]) : null;
+}
+
+function extractTeamExternalId(href: string | null | undefined): number | null {
+  if (!href) return null;
+  const match = href.match(/\/equipa\/[^/]+\/(\d+)(?:[/?#]|$)/);
+  return match ? Number(match[1]) : null;
 }
 
 function parseCompetition(competitionStr: string): {
@@ -98,20 +115,34 @@ async function getOrCreateSeason(seasonName: string) {
 async function getOrCreateCompetition(
   competitionStr: string,
   category: string,
+  externalId: number | null,
 ) {
   const { name, season: seasonName } = parseCompetition(competitionStr);
   const season = await getOrCreateSeason(seasonName);
 
-  let competition = await Competition.findOne({
+  let competition = externalId
+    ? await Competition.findOne({ where: { externalId } })
+    : null;
+  competition ??= await Competition.findOne({
     where: { name, seasonId: season.id, category },
   });
+
   if (!competition) {
     console.log(`   🆕 Nova competição: ${name} (${seasonName}) [${category}]`);
-    
     competition = await Competition.create({
       name,
       seasonId: season.id,
+      seasonYear: seasonName,
       category,
+      externalId,
+    });
+  } else {
+    await competition.update({
+      name,
+      seasonId: season.id,
+      seasonYear: seasonName,
+      category,
+      ...(externalId ? { externalId } : {}),
     });
   }
   return competition;
@@ -480,6 +511,7 @@ function extractPlayerEvents(
 
 async function saveFormations(
   matchId: number,
+  matchExternalId: number | null,
   formations: ScrapedFormations,
   expectedGoals: { our: number; opponent: number } | null,
 ) {
@@ -507,7 +539,9 @@ for (const entry of formations.lineup) {
 
     lineupToCreate.push({
         matchId,
+        matchExternalId,
         playerId: player.id,
+        playerExternalId: entry.externalId,
         isStarting: entry.isStarting,
     });
 }
@@ -593,10 +627,12 @@ for (const ev of formations.events) {
 
   eventsToCreate.push({
     matchId,
+    matchExternalId,
     type: ev.type,
     minute: ev.minute,
     phase: ev.phase,
     playerId,
+    playerExternalId: ev.externalId,
     isOpponent: ev.isOpponent,
     isOwnGoal: ev.isOwnGoal,
   });
@@ -678,46 +714,100 @@ if (eventsChanged) {
 
 export async function saveMatches(
   teamName: string,
+  teamExternalId: number,
   scrapedMatches: ScrapedMatch[],
   category: string,
 ) {
+  const seasonIds = new Set<number>();
+  const competitionIds = new Set<number>();
+  const matchIds = new Set<number>();
+
   for (const match of scrapedMatches) {
     let competitionId: number | null = null;
     let seasonId: number | null = null;
+    let seasonYear: string | null = null;
 
     if (match.competition) {
       const competition = await getOrCreateCompetition(
         match.competition,
         category,
+        match.competitionExternalId,
       );
       competitionId = competition.id;
       seasonId = competition.seasonId;
+      seasonYear = competition.seasonYear;
+      competitionIds.add(competition.id);
+      seasonIds.add(competition.seasonId);
     }
 
     const location =
       match.homeOrAway === "C" ? teamConfig.teamLocation : match.location;
 
-    const [matchRow] = await Match.upsert({
+    const values = {
+      externalId: match.externalId,
+      teamExternalId,
       teamName,
       date: match.date,
       time: match.time,
       homeOrAway: match.homeOrAway,
       opponent: match.opponent,
+      opponentExternalId: match.opponentExternalId,
       result: match.result,
+      competitionExternalId: match.competitionExternalId,
       competitionId,
       seasonId,
+      seasonYear,
       round: match.round,
       outcome: match.outcome,
-      status: match.result ? "finished" : "upcoming",
+      status: match.result ? "finished" as const : "upcoming" as const,
       location,
       category,
-    });
+    };
+
+    const existingByExternalId = match.externalId
+      ? await Match.findOne({ where: { externalId: match.externalId } })
+      : null;
+    const existing = existingByExternalId ?? await Match.findOne({
+          where: {
+            teamName,
+            opponent: match.opponent,
+            homeOrAway: match.homeOrAway,
+            date: match.date,
+            category,
+            externalId: null,
+          },
+        });
+    const matchRow = existing
+      ? await existing.update(values)
+      : await Match.create(values);
+    matchIds.add(matchRow.id);
 
     if (match.formations) {
       const expectedGoals = parseExpectedGoals(match.result, match.homeOrAway);
-      await saveFormations(matchRow.id, match.formations, expectedGoals);
+      await saveFormations(
+        matchRow.id,
+        matchRow.externalId,
+        match.formations,
+        expectedGoals,
+      );
     }
   }
+  const cacheKeys = [CacheKeys.season.all, CacheKeys.season.current];
+  for (const seasonId of seasonIds) {
+    cacheKeys.push(
+      CacheKeys.season.byId(seasonId),
+      CacheKeys.season.byCategory(category),
+      CacheKeys.competitions.bySeason(seasonId),
+      CacheKeys.matches.bySeason(seasonId, category),
+      CacheKeys.matches.summaryBySeason(seasonId, category),
+    );
+  }
+  for (const competitionId of competitionIds) {
+    cacheKeys.push(CacheKeys.matches.byCompetition(competitionId));
+  }
+  for (const matchId of matchIds) cacheKeys.push(CacheKeys.matches.byId(matchId));
+  await cache.delMany(cacheKeys);
+  await cache.del(CacheKeys.competitions.all);
   console.log(
     `✅ ${scrapedMatches.length} jogos guardados para ${teamName} [${category}]`,
   );
@@ -779,18 +869,22 @@ export async function scrapeTeamMatches(
     const homeOrAway: "C" | "F" =
       $(cells[3]).text().trim() === "(F)" ? "F" : "C";
 
-    let opponent =
-      $(cells[5]).find("a").text().trim() || $(cells[5]).text().trim();
+    const opponentLink = $(cells[5]).find("a[href*='/equipa/']").first();
+    let opponent = opponentLink.text().trim() || $(cells[5]).text().trim();
     opponent = opponent.replace(/\s+B$/, "").trim();
+    const opponentExternalId = extractTeamExternalId(opponentLink.attr("href"));
 
     let result = $(cells[6]).text().trim() || null;
     if (result === "-" || result === "") result = null;
 
     const matchHref = $(cells[6]).find("a").attr("href") || null;
     const matchUrl = matchHref ? `${ZEROZERO_BASE_URL}${matchHref}` : null;
+    const externalId = extractExternalId(matchHref);
 
+    const competitionLink = $(cells[7]).find("a").first();
     const competition =
-      $(cells[7]).find("a").text().trim() || $(cells[7]).text().trim();
+      competitionLink.text().trim() || $(cells[7]).text().trim();
+    const competitionExternalId = extractExternalId(competitionLink.attr("href"));
 
     let round = $(cells[8]).text().trim();
     if (!round) {
@@ -801,12 +895,15 @@ export async function scrapeTeamMatches(
     if (!date || !opponent) return;
 
     scrapedMatches.push({
+      externalId,
       date,
       time,
       homeOrAway,
       opponent,
+      opponentExternalId,
       result,
       competition,
+      competitionExternalId,
       round,
       outcome,
       seasonId: 0,
@@ -859,7 +956,12 @@ export async function scrapeTeamMatches(
   }
 
   if (scrapedMatches.length > 0) {
-    await saveMatches(config.teamName, scrapedMatches, config.category);
+    await saveMatches(
+      config.teamName,
+      config.teamExternalId,
+      scrapedMatches,
+      config.category,
+    );
   }
 
   return scrapedMatches;

@@ -4,13 +4,18 @@ import { sequelize } from "../config/database";
 
 class Match extends Model {
   public id!: number;
+  public externalId!: number | null;
+  public teamExternalId!: number | null;
   public teamName!: string;
   public date!: Date;
   public time!: string;
   public homeOrAway!: "C" | "F";
   public opponent!: string;
+  public opponentExternalId!: number | null;
   public result!: string | null;
+  public competitionExternalId!: number | null;
   public competitionId!: number | null;
+  public seasonYear!: string | null;
   public seasonId!: number | null;
   public round!: string;
   public outcome!: "V" | "E" | "D" | null;
@@ -29,6 +34,15 @@ Match.init(
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
+    },
+    externalId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      unique: true,
+    },
+    teamExternalId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
     teamName: {
       type: DataTypes.STRING,
@@ -53,6 +67,14 @@ Match.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    opponentExternalId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    competitionExternalId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     result: {
       type: DataTypes.STRING(10),
       allowNull: true,
@@ -73,6 +95,7 @@ Match.init(
         key: "id",
       },
     },
+    seasonYear: { type: DataTypes.STRING, allowNull: true },
     round: {
       type: DataTypes.STRING(10),
       allowNull: true,
@@ -111,22 +134,16 @@ Match.init(
     tableName: "matches",
     indexes: [
       {
-        name: "matches_identity_unique",
-        unique: true,
-        fields: [
-          "teamName",
-          "opponent",
-          "homeOrAway",
-          "competitionId",
-          "date",
-          "category",
-        ],
+        fields: ["competitionExternalId"],
       },
       {
         fields: ["competitionId"],
       },
       {
         fields: ["status"],
+      },
+      {
+        fields: ["seasonYear", "category", "date"],
       },
       {
         name: "matches_season_category_date_idx",

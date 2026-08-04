@@ -71,6 +71,7 @@ app.use(
     allowedHeaders: [
       "Authorization",
       "Content-Type",
+      "Cache-Control",
       "X-Request-Id",
       "X-Device-Token",
     ],

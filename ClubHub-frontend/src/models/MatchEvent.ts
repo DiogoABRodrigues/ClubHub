@@ -8,6 +8,7 @@ export type MatchEventType =
 export type MatchEvent = {
   id?: number;
   matchId: number;
+  matchExternalId?: number | null;
 
   type: MatchEventType;
 
@@ -19,6 +20,9 @@ export type MatchEvent = {
   playerId?: number | null;
   playerInId?: number | null;
   playerOutId?: number | null;
+  playerExternalId?: number | null;
+  playerInExternalId?: number | null;
+  playerOutExternalId?: number | null;
 
   isOpponent: boolean;
   isOwnGoal?: boolean;

@@ -7,6 +7,8 @@ import {
   Image,
   Alert,
   RefreshControl,
+  Modal,
+  TextInput,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { LiveBadge } from "../../../components/LiveBadge";
@@ -91,6 +93,8 @@ export const AdminMatchDetail = () => {
   const [showLineupModal, setShowLineupModal] = useState(false);
   const [showDateModal, setShowDateModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
+  const [showScoreModal, setShowScoreModal] = useState(false);
+  const [manualResult, setManualResult] = useState("");
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -127,10 +131,9 @@ export const AdminMatchDetail = () => {
   );
 
   const getTeamLogo = useCallback(
-    (teamName: string) => {
-      const normalized = teamName.trim().toLowerCase();
-      return teams.find((t) => t.name.trim().toLowerCase() === normalized)
-        ?.logoUrl;
+    (teamExternalId: number | null | undefined) => {
+      if (teamExternalId == null) return undefined;
+      return teams.find((t) => t.externalId === teamExternalId)?.logoUrl;
     },
     [teams],
   );
@@ -204,6 +207,29 @@ export const AdminMatchDetail = () => {
     [match.id, updateMatch],
   );
 
+  const openScoreEditor = useCallback(() => {
+    setManualResult(match.result ?? "0-0");
+    setShowScoreModal(true);
+  }, [match.result]);
+
+  const handleSaveManualResult = useCallback(async () => {
+    const result = manualResult.trim().replace(/\s+/g, "");
+    if (!/^\d+-\d+$/.test(result)) {
+      Alert.alert("Resultado invÃ¡lido", "Usa o formato 0-0.");
+      return;
+    }
+
+    const [home, away] = result.split("-").map(Number);
+    const outcome =
+      home === away
+        ? "E"
+        : (home > away) === (match.homeOrAway === "C")
+          ? "V"
+          : "D";
+    await updateMatch({ id: match.id, data: { result, outcome } });
+    setShowScoreModal(false);
+  }, [manualResult, match.id, updateMatch]);
+
   const handleFinishMatch = useCallback(() => {
     if (!match) return;
 
@@ -255,8 +281,12 @@ export const AdminMatchDetail = () => {
     match.homeOrAway === "C" ? match.teamName : match.opponent;
   const awayTeamName =
     match.homeOrAway === "F" ? match.teamName : match.opponent;
-  const homeLogo = getTeamLogo(homeTeamName);
-  const awayLogo = getTeamLogo(awayTeamName);
+  const homeLogo = getTeamLogo(
+    match?.homeOrAway === "C" ? match.teamExternalId : match?.opponentExternalId,
+  );
+  const awayLogo = getTeamLogo(
+    match?.homeOrAway === "F" ? match.teamExternalId : match?.opponentExternalId,
+  );
   const location = match.location;
 
   // Formação existente para pré-selecionar no modal
@@ -320,7 +350,7 @@ export const AdminMatchDetail = () => {
   );
 
   const isLive = match.status === "live";
-  const isHalftime = match.statusTime === "interval";
+  const isHalftime = isLive && match.statusTime === "interval";
   const isUpcoming = match.status === "upcoming";
   const isFinished = match.status === "finished";
   const canEditDateTime = isLive || isUpcoming || isFinished;
@@ -342,16 +372,15 @@ export const AdminMatchDetail = () => {
 
   const competition = useMemo(() => {
     return competitions.find(
-      (c) => c.id === match.competitionId,
+      (c) => c.externalId === match.competitionExternalId,
     ) as Competition;
-  }, [match.competitionId, competitions]);
+  }, [match.competitionExternalId, competitions]);
 
   const penaltyDisplay = useMemo(
     () =>
       getPenaltyDisplayScore(
         match.result,
         match.outcome,
-        match.homeOrAway,
         match.decidedByPenalties,
       ),
     [match.result, match.outcome, match.homeOrAway, match.decidedByPenalties],
@@ -814,6 +843,44 @@ export const AdminMatchDetail = () => {
             </View>
           )}
 
+          {isFinished && (
+            <View style={adminStyles.adminActions}>
+              <TouchableOpacity
+                style={adminStyles.adminBtn}
+                onPress={() => setShowEventModal(true)}
+              >
+                <Ionicons
+                  name="add-circle-outline"
+                  size={16}
+                  color={COLORS.primary}
+                />
+                <Text style={adminStyles.adminBtnText}>Evento</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={adminStyles.adminBtn}
+                onPress={() => setShowLineupModal(true)}
+              >
+                <Ionicons
+                  name="people-outline"
+                  size={16}
+                  color={COLORS.primary}
+                />
+                <Text style={adminStyles.adminBtnText}>FormaÃ§Ã£o</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={adminStyles.adminBtn}
+                onPress={openScoreEditor}
+              >
+                <Ionicons
+                  name="create-outline"
+                  size={16}
+                  color={COLORS.primary}
+                />
+                <Text style={adminStyles.adminBtnText}>Resultado</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
           {/* Controlo - halftime */}
           {isHalftime && (
             <View style={adminStyles.adminActions}>
@@ -1118,6 +1185,56 @@ export const AdminMatchDetail = () => {
         onClose={() => setShowLocationModal(false)}
         onSave={handleSaveLocation}
       />
+      <Modal
+        visible={showScoreModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowScoreModal(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            padding: 24,
+            backgroundColor: "rgba(0, 0, 0, 0.45)",
+          }}
+        >
+          <View
+            style={{
+              borderRadius: 12,
+              padding: 20,
+              backgroundColor: COLORS.backgrounds.screen,
+            }}
+          >
+            <Text style={adminStyles.sheetTitle}>Editar resultado</Text>
+            <Text style={[adminStyles.sheetSubtitle, { marginBottom: 12 }]}>
+              Esta alteraÃ§Ã£o nÃ£o modifica os eventos do jogo.
+            </Text>
+            <TextInput
+              value={manualResult}
+              onChangeText={setManualResult}
+              placeholder="0-0"
+              keyboardType="number-pad"
+              style={adminStyles.input}
+              autoFocus
+            />
+            <View style={[adminStyles.adminActions, { marginTop: 16 }]}>
+              <TouchableOpacity
+                style={adminStyles.adminBtn}
+                onPress={() => setShowScoreModal(false)}
+              >
+                <Text style={adminStyles.adminBtnText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={adminStyles.saveBtn}
+                onPress={handleSaveManualResult}
+              >
+                <Text style={adminStyles.saveBtnText}>Guardar resultado</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };

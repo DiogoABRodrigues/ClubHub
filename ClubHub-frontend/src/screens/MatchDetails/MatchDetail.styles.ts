@@ -131,6 +131,18 @@ scoreContainer: {
   gap: 2,
 },
 
+scoreColumn: {
+  width: 120,
+  alignItems: "center",
+},
+
+penaltiesLabel: {
+  marginTop: -4,
+  fontSize: 10,
+  color: COLORS.subText,
+  textAlign: "center",
+},
+
 scoreSpacer: {
   width: 120,
 },

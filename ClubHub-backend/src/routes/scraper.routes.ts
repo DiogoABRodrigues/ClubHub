@@ -6,7 +6,6 @@ import { scrapeTeamStats } from "../scrapers/statsScraper";
 import { scrapeAllTeams } from "../scrapers/allTeamsScraper";
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { authorizeRoles } from "../middlewares/authorizeRoles";
-import { redis } from "../config/redis";
 import { closeSharedBrowser } from "../utils/browser";
 import { getEnabledCategories } from "../config/teamConfig";
 import socketService from "../services/socket.service";
@@ -53,7 +52,6 @@ router.post(
       // Scrape de todas as equipas (só over19 para classificação)
       const teams = await scrapeAllTeams();
 
-      await redis.flushDb();
       socketService.emitDataUpdated();
 
       res.json({
@@ -105,7 +103,6 @@ router.post(
 
       const stats = await scrapeTeamStats(cfg);
 
-      await redis.flushDb();
       socketService.emitDataUpdated();
 
       res.json({

@@ -82,6 +82,13 @@ export const styles = createThemedStyles(() => ({
     borderRadius: 2,
   },
 
+  // Mantém o cartão na mesma coluna dos restantes ícones (bola/substituição).
+  cardIconSlot: {
+    width: 37,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
   // ── Estado vazio ─────────────────────────────────────────────────────────
   emptyState: {
     alignItems: "center",

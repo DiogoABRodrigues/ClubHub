@@ -9,8 +9,6 @@ import { wakeUpBackend } from "./jobs/wake-up";
 import { warmupBrowser, closeSharedBrowser } from "./utils/browser";
 import { env } from "./config/env";
 import { pushService } from "./services/push.service";
-import { scrapeTeamMatches } from "./scrapers/matchScraper";
-import { CategoryConfig } from "./config/teamConfig";
 
 const server = http.createServer(app);
 server.requestTimeout = 30_000;
@@ -22,22 +20,6 @@ initAssociations();
 initSocket(server);
 wakeUpBackend();
 
-const confog: CategoryConfig = {
-  category: "over19",
-  label: "Seniores",
-  enabled: true,  
-  teamName: "Adecas",
-  teamExternalId: 18231,
-  players_url: "htsdsdtps://www.zerozero.pt/equipa/adecas/18231",
-  matches_url: "https://www.zerozero.pt/equipa/adecas/18231/jogos?grp=1&ond=&epoca_id=154&compet_id_jogos=0&ved=&epoca_id=155&comfim=0&equipa_1=18231&menu=allmatches&type=season&op=ver_confronto",
-  standings_url: "https://sdwww.zerozero.pt/competicao/af-viana-do-castelo-2-divisao",
-  stats_url: "httdsdps://wsdsww.zerozero.pt/equipa/adecas/18231/jogadores?epoca_stats_id=155&o=j",
-  teams_urls: [
-    "https://www.zsdserozero.pt/competicao/af-viana-do-castelo-1-divisao",
-    "https://wsdsw.sdsdzerozero.pt/competicao/af-viana-do-castelo-2-divisao",
-  ],
-};
-
 async function startServer() {
   try {
     await sequelize.authenticate();
@@ -45,11 +27,9 @@ async function startServer() {
     pushService.startWorker();
     startMatchReminderJob();
     void runMatchReminderJob();
-    void scrapeTeamMatches(confog);
 
     server.listen(env.PORT, async () => {
       console.log(`Servidor a correr em ${env.PORT}`);
-      await warmupBrowser();
     });
   } catch (error) {
     console.error("Erro ao iniciar o backend:", error);

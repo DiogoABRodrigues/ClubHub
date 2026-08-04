@@ -12,6 +12,7 @@ export type SquadStatus = "active" | "left" | "error";
 class Squad extends Model {
   declare playerExternalId: number;
   declare seasonId: number;
+  declare seasonYear: string | null;
   declare category: string;
   declare number: number | null;
   declare position: string | null;
@@ -31,6 +32,7 @@ Squad.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    seasonYear: { type: DataTypes.STRING, allowNull: true },
     category: {
       type: DataTypes.STRING(10),
       allowNull: false,
@@ -67,6 +69,9 @@ Squad.init(
       {
         unique: true,
         fields: ["playerExternalId", "seasonId", "category"],
+      },
+      {
+        fields: ["playerExternalId", "seasonYear", "category"],
       },
     ],
   },

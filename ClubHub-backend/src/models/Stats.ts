@@ -5,6 +5,7 @@ import { sequelize } from "../config/database";
 class Stats extends Model {
   declare playerExternalId: number;
   declare seasonId: number;
+  declare seasonYear: string | null;
   declare category: string;
 
   declare gamesPlayed: number;
@@ -19,6 +20,7 @@ Stats.init(
   {
     playerExternalId: { type: DataTypes.INTEGER, allowNull: false },
     seasonId: { type: DataTypes.INTEGER, allowNull: false },
+    seasonYear: { type: DataTypes.STRING, allowNull: true },
     category: {
       type: DataTypes.STRING(10),
       allowNull: false,
@@ -39,6 +41,9 @@ Stats.init(
       {
         unique: true,
         fields: ["playerExternalId", "seasonId", "category"],
+      },
+      {
+        fields: ["playerExternalId", "seasonYear", "category"],
       },
     ],
   },

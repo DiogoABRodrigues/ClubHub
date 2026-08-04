@@ -1,4 +1,5 @@
 import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
 
 const ACCESS = "accessToken";
 const REFRESH = "refreshToken";
@@ -7,23 +8,50 @@ const OPTIONS: SecureStore.SecureStoreOptions = {
   keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
 };
 
+const isWeb = Platform.OS === "web";
+
+function webStorage() {
+  return typeof window === "undefined" ? null : window.localStorage;
+}
+
+async function setItem(key: string, value: string) {
+  if (isWeb) {
+    webStorage()?.setItem(key, value);
+    return;
+  }
+  await SecureStore.setItemAsync(key, value, OPTIONS);
+}
+
+async function getItem(key: string) {
+  if (isWeb) return webStorage()?.getItem(key) ?? null;
+  return SecureStore.getItemAsync(key);
+}
+
+async function deleteItem(key: string) {
+  if (isWeb) {
+    webStorage()?.removeItem(key);
+    return;
+  }
+  await SecureStore.deleteItemAsync(key);
+}
+
 export const saveTokens = async (access: string, refresh: string) => {
   await Promise.all([
-    SecureStore.setItemAsync(ACCESS, access, OPTIONS),
-    SecureStore.setItemAsync(REFRESH, refresh, OPTIONS),
+    setItem(ACCESS, access),
+    setItem(REFRESH, refresh),
   ]);
 };
 
-export const getAccessToken = () => SecureStore.getItemAsync(ACCESS);
-export const getRefreshToken = () => SecureStore.getItemAsync(REFRESH);
+export const getAccessToken = () => getItem(ACCESS);
+export const getRefreshToken = () => getItem(REFRESH);
 export const saveDeviceAccessToken = (token: string) =>
-  SecureStore.setItemAsync(DEVICE_ACCESS, token, OPTIONS);
+  setItem(DEVICE_ACCESS, token);
 export const getDeviceAccessToken = () =>
-  SecureStore.getItemAsync(DEVICE_ACCESS);
+  getItem(DEVICE_ACCESS);
 
 export const clearTokens = async () => {
   await Promise.all([
-    SecureStore.deleteItemAsync(ACCESS),
-    SecureStore.deleteItemAsync(REFRESH),
+    deleteItem(ACCESS),
+    deleteItem(REFRESH),
   ]);
 };

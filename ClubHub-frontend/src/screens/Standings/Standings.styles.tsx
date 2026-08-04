@@ -19,7 +19,7 @@ export const styles = createThemedStyles(() => ({
     paddingVertical: SPACING.sm + 2,
     paddingHorizontal: SPACING.sm + 2,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: COLORS.surfaceLight,
     marginBottom: SPACING.xs,
   },
 
@@ -158,6 +158,8 @@ export const styles = createThemedStyles(() => ({
     fontWeight: "700",
     color: COLORS.text.blackWhite,
     alignSelf: "center",
+    borderBottomWidth: 1,
+    borderColor: COLORS.borders.brandSoft,
   },
 
   // ── Tabela completa (wrapper) ──────────────────────────────────────────────

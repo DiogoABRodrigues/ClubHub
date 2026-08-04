@@ -3,10 +3,12 @@ import Stats from "../models/Stats";
 import Season from "../models/Season";
 import { teamConfig, CategoryConfig } from "../config/teamConfig";
 import { getSharedBrowser } from "../utils/browser";
+import cache from "../services/cache.service";
+import { CacheKeys } from "../cache/keys";
 
-async function getOrCreateSeason() {
+async function getOrCreateSeason(seasonYear: string) {
   const [season] = await Season.findOrCreate({
-    where: { year: teamConfig.currentSeason },
+    where: { year: seasonYear },
   });
   return season;
 }
@@ -79,12 +81,15 @@ export async function scrapeTeamStats(cfg?: CategoryConfig) {
       `✅ Estatísticas encontradas: ${stats.length} [${config.category}]`,
     );
 
-    const season = await getOrCreateSeason();
+    const season = await getOrCreateSeason(
+      config.seasonYear ?? teamConfig.currentSeason,
+    );
 
     for (const s of stats) {
       await Stats.upsert({
         playerExternalId: s.externalId,
         seasonId: season.id,
+        seasonYear: season.year,
         gamesPlayed: s.gamesPlayed,
         goals: s.goals,
         minutesPlayed: s.minutesPlayed,
@@ -93,6 +98,18 @@ export async function scrapeTeamStats(cfg?: CategoryConfig) {
       });
     }
 
+    // As fichas de jogadores incluem Stats; por isso ambas as famílias têm de
+    // ser invalidadas para a época que foi realmente raspada.
+    await Promise.all([
+      cache.del(CacheKeys.stats.bySeason(season.id, config.category)),
+      cache.del(CacheKeys.players.bySeason(season.id, config.category)),
+      cache.del(CacheKeys.players.adminBySeason(season.id, config.category)),
+      cache.clearPattern("app:player:*:allstats"),
+    ]);
+
+    console.log(
+      `✅ Estatísticas guardadas e cache invalidada para a época ${season.year} [${config.category}]`,
+    );
     return stats;
   } finally {
     await page.close();
