@@ -125,6 +125,7 @@ export const LIGHT_COLORS = withLegacyAliases({
   backgrounds: {
     app: basePalette.gray150,
     screen: basePalette.white,
+    matchCard: basePalette.white,
     elevated: basePalette.white,
     brandSurface: CLUB_MAROON,
     brandSecondary: CLUB_MAROON,
@@ -153,6 +154,7 @@ export const LIGHT_COLORS = withLegacyAliases({
     blackWhite: basePalette.black,
     whiteBlack: basePalette.white,
     info: CLUB_MAROON,
+    black: basePalette.night700,
   },
   borders: {
     default: basePalette.gray300,
@@ -213,6 +215,7 @@ export const DARK_COLORS = withLegacyAliases({
   backgrounds: {
     app: basePalette.blackSteal,
     screen: "#1d1e20",
+    matchCard: "#111111",
     elevated: "#292828",
     brandSurface: CLUB_MAROON,
     brandSecondary: "#c99700",
@@ -240,6 +243,7 @@ export const DARK_COLORS = withLegacyAliases({
     blackWhite: basePalette.gray100,
     whiteBlack: basePalette.black,
     info: basePalette.gray100,
+    black: basePalette.night700,
   },
   borders: {
     default: "#253044",

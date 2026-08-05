@@ -63,7 +63,7 @@ const PreWarm = () => {
         <News navigation={nav as any} />
       </View>
       <View style={{ width, height }}>
-        <NotificationSettings />
+        <NotificationSettings navigation={nav as any}/>
       </View>
     </View>
   );

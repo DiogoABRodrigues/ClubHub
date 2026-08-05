@@ -101,11 +101,15 @@ function EscalaoSection({
       style={{
         backgroundColor: COLORS.backgrounds.screen,
         borderRadius: RADIUS.lg,
-        borderColor: COLORS.borders.inverse,
+        borderColor: COLORS.backgrounds.matchCard,
         borderWidth: 0.5,
         marginBottom: SPACING.sm,
         overflow: "hidden",
         elevation: 1,
+        shadowColor: COLORS.effect.shadow,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.12,
+        shadowRadius: 3,
       }}
     >
       <TouchableOpacity
@@ -294,10 +298,14 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
         backgroundColor: COLORS.backgrounds.screen,
         borderRadius: RADIUS.lg,
         borderWidth: 0.5,
-        borderColor: COLORS.borders.inverse,
+        borderColor: COLORS.backgrounds.matchCard,
         marginBottom: SPACING.xs,
         overflow: "hidden",
         elevation: 1,
+        shadowColor: COLORS.effect.shadow,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.12,
+        shadowRadius: 3,
       }}
     >
       {/* Título (collapsible header) */}
@@ -407,7 +415,7 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
             backgroundColor: COLORS.backgrounds.muted,
             borderRadius: RADIUS.md,
             borderWidth: 0.5,
-            borderColor: COLORS.borders.inverse,
+            borderColor: COLORS.backgrounds.matchCard,
             padding: SPACING.sm,
             fontSize: FONT_SIZE.sm,
             color: COLORS.text.blackWhite,
@@ -455,7 +463,7 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
               paddingVertical: 6,
               borderRadius: RADIUS.md,
               borderWidth: 0.5,
-              borderColor: COLORS.borders.inverse,
+              borderColor: COLORS.backgrounds.matchCard,
               backgroundColor: COLORS.backgrounds.muted,
             }}
           >
@@ -515,7 +523,7 @@ function FeedbackBox({ deviceId }: { deviceId: string | null }) {
 }
 
 // ── NotificationSettings ──────────────────────────────────────────────────────
-export const NotificationSettings = () => {
+export const NotificationSettings = ({ navigation }: any) => {
   const { loginAsAdmin, setAdminMode } = useAuth();
   const { categories, isLoading: categoriesLoading } = useHelper();
   const { isReady: categoryReady } = useCategory();
@@ -539,12 +547,16 @@ export const NotificationSettings = () => {
   const { preferences, loading: preferencesLoading, updatePreferences } =
     useDevicePreferences(deviceId);
 
-  const isInitialLoading =
-    !hasLoadedOnce.current &&
-    (!deviceIdReady ||
-      (!!deviceId && preferencesLoading && !preferences));
+  // Loading rápido: só espera pela leitura do deviceId no AsyncStorage.
+  // Bloqueia a página inteira apenas neste arranque inicial.
+  const isInitialLoading = !hasLoadedOnce.current && !deviceIdReady;
 
-  if (!isInitialLoading && deviceIdReady) hasLoadedOnce.current = true;
+  // Loading das preferências de notificação em si — só afeta as
+  // secções que dependem delas (switch de Notícias e lista por escalão),
+  // nunca a página toda.
+  const prefsLoading = !!deviceId && preferencesLoading && !preferences;
+
+  if (!isInitialLoading) hasLoadedOnce.current = true;
 
   const safePrefs: DevicePreferences = preferences ?? {
     news: true,
@@ -581,17 +593,17 @@ export const NotificationSettings = () => {
   const handleUpdatePreferences = useCallback(
     (newPrefs: Partial<DevicePreferences>) => {
       if (!deviceId) {
-        Alert.alert(
-          "Notificações desativadas",
-          "É necessário ativar as notificações para alterar as definições. Por favor, abra as definições do dispositivo e ative as notificações.",
-          [
-            { text: "Cancelar", style: "cancel" },
-            {
-              text: "Abrir definicoes",
-              onPress: () => Linking.openSettings(),
-            },
-          ],
-        );
+      Alert.alert(
+        "Notificações desativadas",
+        "É necessário ativar as notificações para alterar as definições. Abra as definições do dispositivo, ative as notificações e depois reinicie a app.",
+        [
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: "Abrir definições",
+            onPress: () => Linking.openSettings(),
+          },
+        ],
+      );
         return;
       }
 
@@ -622,8 +634,6 @@ export const NotificationSettings = () => {
               width: 36,
               height: 36,
               borderRadius: RADIUS.md,
-              borderWidth: 0.5,
-              borderColor: COLORS.borders.inverse,
               alignItems: "center",
               justifyContent: "center",
               backgroundColor: COLORS.backgrounds.muted,
@@ -651,11 +661,15 @@ export const NotificationSettings = () => {
                 backgroundColor: COLORS.backgrounds.screen,
                 borderRadius: RADIUS.lg,
                 padding: SPACING.sm,
-                borderColor: COLORS.borders.inverse,
+                borderColor: COLORS.backgrounds.matchCard,
                 borderWidth: 0.5,
                 marginBottom: SPACING.md,
                 alignSelf: "center",
                 elevation: 1,
+                shadowColor: COLORS.effect.shadow,
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.12,
+                shadowRadius: 3,
               }}
             >
               <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-start" }}>
@@ -675,7 +689,7 @@ export const NotificationSettings = () => {
                   style={{
                     width: 1,
                     alignSelf: "stretch",
-                    borderColor: COLORS.borders.inverse,
+                    borderColor: COLORS.backgrounds.matchCard,
                     marginVertical: 2,
                   }}
                 />
@@ -721,25 +735,35 @@ export const NotificationSettings = () => {
                   </Text>
                 </View>
               </View>
-              <Switch
-                value={safePrefs.news}
-                onValueChange={() =>
-                  handleUpdatePreferences({ news: !safePrefs.news })
-                }
-              />
+              {prefsLoading ? (
+                <ActivityIndicator size="small" color={COLORS.primary} />
+              ) : (
+                <Switch
+                  value={safePrefs.news}
+                  onValueChange={() =>
+                    handleUpdatePreferences({ news: !safePrefs.news })
+                  }
+                />
+              )}
             </View>
 
             {/* Por escalão */}
             <Text style={styles.sectionTitle}>Notificações Por escalão</Text>
-            {categories?.map((cfg: CategoryConfig) => (
-              <EscalaoSection
-                key={cfg.category}
-                cfg={cfg}
-                preferences={safePrefs}
-                updatePreferences={handleUpdatePreferences}
-                defaultOpen={false}
-              />
-            ))}
+            {categoriesLoading || prefsLoading ? (
+              <View style={styles.loadingCard}>
+                <ActivityIndicator size="small" color={COLORS.primary} />
+              </View>
+            ) : (
+              categories?.map((cfg: CategoryConfig) => (
+                <EscalaoSection
+                  key={cfg.category}
+                  cfg={cfg}
+                  preferences={safePrefs}
+                  updatePreferences={handleUpdatePreferences}
+                  defaultOpen={false}
+                />
+              ))
+            )}
 
             {/* Sugestões & Erros */}
             <Text style={[styles.sectionTitle, { marginTop: SPACING.sm }]}>
