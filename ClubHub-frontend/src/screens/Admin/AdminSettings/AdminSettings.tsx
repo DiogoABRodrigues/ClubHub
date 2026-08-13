@@ -50,7 +50,14 @@ export const AdminSettings = ({ navigation }: any) => {
     setIsUpdating(true);
     setUpdateDone(false);
     try {
-      await ScrapperService.scrapAll();
+      let job = await ScrapperService.scrapAll();
+      while (job.status === "queued" || job.status === "running") {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        job = await ScrapperService.getJob(job.id);
+      }
+      if (job.status === "failed") {
+        throw new Error(job.error ?? "O scraper falhou.");
+      }
       await queryClient.invalidateQueries();
       setUpdateDone(true);
     } catch (error) {

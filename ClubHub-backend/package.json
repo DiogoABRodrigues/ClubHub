@@ -20,7 +20,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@sparticuz/chromium-min": "^147.0.0",
     "@supabase/supabase-js": "^2.108.2",
     "bcrypt": "^6.0.0",
     "cheerio": "^1.2.0",

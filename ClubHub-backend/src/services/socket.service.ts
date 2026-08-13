@@ -11,6 +11,10 @@ class SocketService {
     io.emit("data:updated");
   }
 
+  emitScrapeJobUpdate(job: unknown) {
+    getIO().emit("scrape:job", job);
+  }
+
   emitMatchEvent(matchId: number, event: any) {
     const io = getIO();
 
