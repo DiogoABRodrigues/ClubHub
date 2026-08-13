@@ -215,7 +215,7 @@ export const AdminMatchDetail = () => {
   const handleSaveManualResult = useCallback(async () => {
     const result = manualResult.trim().replace(/\s+/g, "");
     if (!/^\d+-\d+$/.test(result)) {
-      Alert.alert("Resultado invÃ¡lido", "Usa o formato 0-0.");
+      Alert.alert("Resultado Inválido", "Usa o formato 0-0.");
       return;
     }
 
@@ -865,7 +865,7 @@ export const AdminMatchDetail = () => {
                   size={16}
                   color={COLORS.primary}
                 />
-                <Text style={adminStyles.adminBtnText}>FormaÃ§Ã£o</Text>
+                <Text style={adminStyles.adminBtnText}>Formação</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={adminStyles.adminBtn}
@@ -1208,7 +1208,7 @@ export const AdminMatchDetail = () => {
           >
             <Text style={adminStyles.sheetTitle}>Editar resultado</Text>
             <Text style={[adminStyles.sheetSubtitle, { marginBottom: 12 }]}>
-              Esta alteraÃ§Ã£o nÃ£o modifica os eventos do jogo.
+              Esta alteração não modifica os eventos do jogo.
             </Text>
             <TextInput
               value={manualResult}

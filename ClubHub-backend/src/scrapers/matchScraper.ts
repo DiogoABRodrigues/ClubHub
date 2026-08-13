@@ -43,6 +43,7 @@ export interface ScrapedMatch {
   result: string | null;
   competition: string;
   competitionExternalId: number | null;
+  competitionUrl: string | null;
   seasonId: number;
   round: string;
   outcome: "V" | "E" | "D" | null;
@@ -816,8 +817,8 @@ export async function saveMatches(
 export async function scrapeTeamMatches(
   cfg?: CategoryConfig,
 ): Promise<ScrapedMatch[]> {
-  const config =
-    cfg ?? teamConfig.categories.find((c) => c.category === "over19")!;
+  if (!cfg) throw new Error("scrapeTeamMatches requer uma equipa descoberta.");
+  const config = cfg;
 
   const browser = await getSharedBrowser();
   const page = await browser.newPage();
@@ -884,7 +885,13 @@ export async function scrapeTeamMatches(
     const competitionLink = $(cells[7]).find("a").first();
     const competition =
       competitionLink.text().trim() || $(cells[7]).text().trim();
-    const competitionExternalId = extractExternalId(competitionLink.attr("href"));
+    const competitionHref = competitionLink.attr("href");
+    const competitionExternalId = extractExternalId(competitionHref);
+    const competitionUrl = competitionHref
+      ? competitionHref.startsWith("http")
+        ? competitionHref
+        : `${ZEROZERO_BASE_URL}${competitionHref}`
+      : null;
 
     let round = $(cells[8]).text().trim();
     if (!round) {
@@ -904,6 +911,7 @@ export async function scrapeTeamMatches(
       result,
       competition,
       competitionExternalId,
+      competitionUrl,
       round,
       outcome,
       seasonId: 0,

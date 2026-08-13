@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-08-13T22:37:04.772Z",
+  "source": "ZeroZero (modo apenas de leitura; nenhuma escrita na base de dados)",
+  "primaryTeamUrl": "config.teamConfig.primaryTeamUrl",
+  "categories": [
+    {
+      "category": "over19",
+      "label": "Seniores",
+      "teamExternalId": 18231,
+      "playersUrl": "https://www.zerozero.pt/equipa/adecas/18231?epoca_id=156",
+      "matchesUrl": "https://www.zerozero.pt/equipa/adecas/18231/jogos?epoca_id=156",
+      "statsUrl": "https://www.zerozero.pt/equipa/adecas/18231/jogadores?epoca_stats_id=156&compet_id_jogos=0&pais=0&pos=0",
+      "competitionUrls": [
+        "https://www.zerozero.pt/edicao/af-viana-do-castelo-2-divisao-mka-2026-2027/221710",
+        "https://www.zerozero.pt/edicao/af-viana-do-castelo-taca-2026-27/221737"
+      ]
+    },
+    {
+      "category": "sub15",
+      "label": "Sub-15",
+      "teamExternalId": 32764,
+      "playersUrl": "https://www.zerozero.pt/equipa/adecas/32764?epoca_id=156",
+      "matchesUrl": "https://www.zerozero.pt/equipa/adecas/32764/jogos?epoca_id=156",
+      "statsUrl": "https://www.zerozero.pt/equipa/adecas/32764/jogadores?epoca_stats_id=156&compet_id_jogos=0&pais=0&pos=0",
+      "competitionUrls": []
+    },
+    {
+      "category": "sub13",
+      "label": "Sub-13",
+      "teamExternalId": 333884,
+      "playersUrl": "https://www.zerozero.pt/equipa/adecas/333884?epoca_id=156",
+      "matchesUrl": "https://www.zerozero.pt/equipa/adecas/333884/jogos?epoca_id=156",
+      "statsUrl": "https://www.zerozero.pt/equipa/adecas/333884/jogadores?epoca_stats_id=156&compet_id_jogos=0&pais=0&pos=0",
+      "competitionUrls": []
+    }
+  ]
+}

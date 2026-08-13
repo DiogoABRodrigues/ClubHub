@@ -81,8 +81,8 @@ function extractTeamExternalId(url: string | undefined): number | null {
 export async function scrapeStandings(
   cfg?: CategoryConfig,
 ): Promise<StandingRow[]> {
-  const config =
-    cfg ?? teamConfig.categories.find((c) => c.category === "sub15")!;
+  if (!cfg) throw new Error("scrapeStandings requer uma equipa e competi\u00e7\u00e3o descobertas.");
+  const config = cfg;
   const browser = await getSharedBrowser();
   const page = await browser.newPage();
   page.setDefaultTimeout(60000);

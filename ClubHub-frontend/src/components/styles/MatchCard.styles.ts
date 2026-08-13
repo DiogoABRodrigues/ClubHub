@@ -95,7 +95,7 @@ export const styles = createThemedStyles(() => ({
   // ── Base card (upcoming + finished) ──────────────────────────────────────
   baseCard: {
     backgroundColor: COLORS.backgrounds.screen,
-    elevation: 0,
+    elevation: 1,
     borderRadius: RADIUS.lg,
     shadowColor: COLORS.effect.shadow,
     shadowOffset: { width: 0, height: 1 },

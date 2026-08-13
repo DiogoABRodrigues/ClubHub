@@ -14,8 +14,8 @@ async function getOrCreateSeason(seasonYear: string) {
 }
 
 export async function scrapeTeamStats(cfg?: CategoryConfig) {
-  const config =
-    cfg ?? teamConfig.categories.find((c) => c.category === "over19")!;
+  if (!cfg) throw new Error("scrapeTeamStats requer uma equipa descoberta.");
+  const config = cfg;
 
   const browser = await getSharedBrowser();
   const page = await browser.newPage();

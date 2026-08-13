@@ -7,7 +7,7 @@ import { scrapeAllTeams } from "../scrapers/allTeamsScraper";
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { authorizeRoles } from "../middlewares/authorizeRoles";
 import { closeSharedBrowser } from "../utils/browser";
-import { getEnabledCategories } from "../config/teamConfig";
+import { discoverTeamCategories, getCompetitionUrlsFromMatches } from "../scrapers/teamDiscoveryScraper";
 import socketService from "../services/socket.service";
 
 const router = Router();
@@ -17,6 +17,30 @@ async function restartBrowser() {
   await new Promise((r) => setTimeout(r, 2000));
 }
 
+async function scrapeCategory(cfg: Awaited<ReturnType<typeof discoverTeamCategories>>[number]) {
+  const matches = await scrapeTeamMatches(cfg);
+  const competitionUrls = getCompetitionUrlsFromMatches(matches);
+  let standingsCount = 0;
+
+  // Ta\u00e7as nem sempre t\u00eam tabela classificativa. Uma falha numa delas n\u00e3o
+  // pode impedir a recolha da liga nem dos restantes escal\u00f5es.
+  for (const standingsUrl of competitionUrls) {
+    try {
+      const standings = await scrapeStandings({ ...cfg, standings_url: standingsUrl });
+      standingsCount += standings.length;
+    } catch (error) {
+      console.warn(`Classifica\u00e7\u00e3o indispon\u00edvel em ${standingsUrl}:`, error);
+    }
+  }
+  await restartBrowser();
+
+  const players = await scrapeTeamPlayers(cfg);
+  await restartBrowser();
+  const stats = await scrapeTeamStats(cfg);
+
+  return { matches, standingsCount, players, stats, competitionUrls };
+}
+
 // Scrape de todos os escalões activos
 router.post(
   "/allInfo",
@@ -24,33 +48,28 @@ router.post(
   authorizeRoles("admin"),
   async (_req, res) => {
     try {
-      const categories = getEnabledCategories();
+      const categories = await discoverTeamCategories();
       const results: any = {};
+      const competitionUrls = new Set<string>();
 
       for (const cfg of categories) {
         console.log(
           `\n🏃 A fazer scrape do escalão: ${cfg.label} (${cfg.category})`,
         );
 
-        const matches = await scrapeTeamMatches(cfg);
-        const standings = await scrapeStandings(cfg);
-        await restartBrowser();
-
-        const players = await scrapeTeamPlayers(cfg);
-        await restartBrowser();
-
-        const stats = await scrapeTeamStats(cfg);
+        const { matches, standingsCount, players, stats, competitionUrls: urls } = await scrapeCategory(cfg);
+        urls.forEach((url) => competitionUrls.add(url));
 
         results[cfg.category] = {
           matches: matches.length,
-          standings: standings.length,
+          standings: standingsCount,
           players: players.length,
           stats: stats.length,
         };
       }
 
       // Scrape de todas as equipas (só over19 para classificação)
-      const teams = await scrapeAllTeams();
+      const teams = await scrapeAllTeams([...competitionUrls]);
 
       socketService.emitDataUpdated();
 
@@ -78,7 +97,7 @@ router.post(
   authorizeRoles("admin"),
   async (req, res) => {
     const { category } = req.params;
-    const categories = getEnabledCategories();
+    const categories = await discoverTeamCategories();
     const cfg = categories.find((c) => c.category === category);
 
     if (!cfg) {
@@ -94,14 +113,7 @@ router.post(
     try {
       console.log(`\n🏃 A fazer scrape do escalão: ${cfg.label}`);
 
-      const matches = await scrapeTeamMatches(cfg);
-      const standings = await scrapeStandings(cfg);
-      await restartBrowser();
-
-      const players = await scrapeTeamPlayers(cfg);
-      await restartBrowser();
-
-      const stats = await scrapeTeamStats(cfg);
+      const { matches, standingsCount, players, stats } = await scrapeCategory(cfg);
 
       socketService.emitDataUpdated();
 
@@ -110,7 +122,7 @@ router.post(
         category: cfg.category,
         label: cfg.label,
         matches: matches.length,
-        standings: standings.length,
+        standings: standingsCount,
         players: players.length,
         stats: stats.length,
       });

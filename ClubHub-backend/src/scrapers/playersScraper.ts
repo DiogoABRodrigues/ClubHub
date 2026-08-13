@@ -55,8 +55,8 @@ function parsePhoto(
 }
 
 export async function scrapeTeamPlayers(cfg?: CategoryConfig) {
-  const config =
-    cfg ?? teamConfig.categories.find((c) => c.category === "over19")!;
+  if (!cfg) throw new Error("scrapeTeamPlayers requer uma equipa descoberta.");
+  const config = cfg;
 
   const browser = await getSharedBrowser();
   const page = await browser.newPage();

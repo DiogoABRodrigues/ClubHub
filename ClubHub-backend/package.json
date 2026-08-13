@@ -11,6 +11,7 @@
     "test:integration": "vitest run tests/integration",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "scrape:dry-run": "ts-node scripts/dry-run-discovery.ts",
     "db:optimize": "node scripts/apply-performance-indexes.js",
     "postinstall": "npx puppeteer browsers install chrome"
   },

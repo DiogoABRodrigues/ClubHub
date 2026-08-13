@@ -1,6 +1,5 @@
 import * as cheerio from "cheerio";
 import Team from "../models/Team";
-import { teamConfig } from "../config/teamConfig";
 import { getSharedBrowser } from "../utils/browser";
 import cache from "../services/cache.service";
 import { CacheKeys } from "../cache/keys";
@@ -12,12 +11,6 @@ export interface ScrapedTeam {
   logoUrl?: string;
   profileUrl?: string;
 }
-
-const competitions = teamConfig.categories
-  .filter((category) => category.enabled)
-  .flatMap((category) => category.teams_urls)
-  .filter((url, index, urls) => urls.indexOf(url) === index)
-  .map((url) => ({ url }));
 
 function extractTeamExternalId(href: string | undefined): number | null {
   if (!href) return null;
@@ -81,9 +74,11 @@ async function fetchTeamLogo(profileUrl: string): Promise<string | undefined> {
   }
 }
 
-export async function scrapeAllTeams(): Promise<ScrapedTeam[]> {
+export async function scrapeAllTeams(competitionUrls: string[] = []): Promise<ScrapedTeam[]> {
   const browser = await getSharedBrowser();
   const allTeams: ScrapedTeam[] = [];
+  const competitions = [...new Set(competitionUrls)]
+    .map((url) => ({ url: `${url.replace(/\/$/, "")}/equipas` }));
 
   for (const comp of competitions) {
     const page = await browser.newPage();

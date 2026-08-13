@@ -1,10 +1,13 @@
+/**
+ * Configura\u00e7\u00e3o que n\u00e3o muda entre \u00e9pocas. Os IDs das equipas e as
+ * competi\u00e7\u00f5es s\u00e3o descobertos no ZeroZero em cada recolha.
+ */
 export type Category = "over19" | "sub19" | "sub17" | "sub15" | "sub13";
 
 export interface CategoryConfig {
   category: Category;
   label: string;
   enabled: boolean;
-  /** Opcional para scrapes históricos; prevalece sobre currentSeason. */
   seasonYear?: string;
   teamName: string;
   teamExternalId: number;
@@ -15,73 +18,31 @@ export interface CategoryConfig {
   teams_urls: string[];
 }
 
+export interface CategoryDefinition {
+  category: Category;
+  label: string;
+  enabled: boolean;
+  teamName: string;
+}
+
 export const teamConfig = {
   name: "Adecas",
   updateSchedule: "0 2 * * 0",
   teamLocation: "Campo Costa do Monte, Arcos de Valdevez",
+  /** A \u00fanica fonte ZeroZero que precisa de ser configurada. */
+  primaryTeamUrl: "https://www.zerozero.pt/equipa/adecas/18231",
   currentSeason: getCurrentSeason(),
-
   categories: [
-    {
-      category: "over19",
-      label: "Seniores",
-      enabled: true,  
-      teamName: "Adecas",
-      teamExternalId: 18231,
-      players_url: "https://www.zerozero.pt/equipa/adecas/18231?epoca_id=156",
-      matches_url: "https://www.zerozero.pt/equipa/adecas/18231/jogos",
-      standings_url: "https://www.zerozero.pt/edicao/af-viana-do-castelo-2-divisao-2026-2027-2-divisao-mka/221710",
-      stats_url: " https://www.zerozero.pt/equipa/adecas/18231/jogadores?pos=0&pais=0&epoca_stats_id=156&comp_id=0&menu=",
-      teams_urls: [
-        "https://www.zerozero.pt/edicao/af-viana-do-castelo-taca-2026-27/221737/equipas",
-        "https://www.zerozero.pt/edicao/af-viana-do-castelo-2-divisao-mka-2026-2027/221710/equipas",
-      ],
-    },
-    {
-      category: "sub15" as Category,
-      label: "Sub-15",
-      enabled: true,
-      teamName: "Adecas",
-      teamExternalId: 32764,
-      players_url: "https://www.zerozero.pt/equipa/adecas/32764?epoca_id=156",
-      matches_url: "https://www.zerozero.pt/equipa/adecas/32764/jogos?grp=1&ond=&epoca_id=157&compet_id_jogos=0&ved=&epoca_id=156&comfim=0&equipa_1=32764&menu=allmatches&type=season&op=ver_confronto",
-      standings_url:
-        "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764",
-      stats_url:
-        "https://www.zerozero.pt/equipa/adecas/32764/jogadores?compet_id_jogos=0&pais=0&epoca_stats_id=155&pos=0&o=min",
-  teams_urls: [
-    "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764/equipas",
-    "https://www.zerozero.pt/edicao/af-v-castelo-juniores-c-taca-2025-26/204871/equipas",
-    "https://www.zerozero.pt/edicao/af-v-castelo-jun-c-tor-extraordinario-2-div-liga-2-25-26/213106/equipas"
-  ],
-    },
-    {
-      category: "sub13" as Category,
-      label: "Sub-13",
-      enabled: false,
-      teamName: "Adecas",
-      teamExternalId: 333884,
-      players_url: "https://www.zerozero.pt/equipa/adecas/333884?epoca_id=155",
-      matches_url: "https://www.zerozero.pt/equipa/adecas/333884/jogos",
-      standings_url:
-        "https://www.zerozero.pt/edicao/af-viana-castelo-jun-d-fut9-2-f-serie-b-2025-26/212701",
-      stats_url:
-        "https://www.zerozero.pt/equipa/adecas/32764/jogadores?compet_id_jogos=0&pais=0&epoca_stats_id=155&pos=0&o=min",
-      teams_urls: [
-        "https://www.zerozero.pt/edicao/af-viana-do-castelo-jun-c-2-div-1-f-sb-25-26/204764/equipas",
-      ],
-    },
-  ] as CategoryConfig[],
+    { category: "over19", label: "Seniores", enabled: true, teamName: "Adecas" },
+    { category: "sub19", label: "Sub-19", enabled: true, teamName: "Adecas" },
+    { category: "sub17", label: "Sub-17", enabled: true, teamName: "Adecas" },
+    { category: "sub15", label: "Sub-15", enabled: true, teamName: "Adecas" },
+    { category: "sub13", label: "Sub-13", enabled: true, teamName: "Adecas" },
+  ] as CategoryDefinition[],
 };
 
-export function getEnabledCategories(): CategoryConfig[] {
+export function getEnabledCategoryDefinitions(): CategoryDefinition[] {
   return teamConfig.categories.filter((c) => c.enabled);
-}
-
-export function getCategoryConfig(
-  category: Category,
-): CategoryConfig | undefined {
-  return teamConfig.categories.find((c) => c.category === category);
 }
 
 export function getCurrentSeason() {

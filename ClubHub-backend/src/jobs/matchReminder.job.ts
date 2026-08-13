@@ -3,7 +3,7 @@ import { Op } from "sequelize";
 import Match from "../models/Match";
 import { pushService } from "../services/push.service";
 import deviceService from "../services/device.service";
-import { getEnabledCategories } from "../config/teamConfig";
+import { getEnabledCategoryDefinitions } from "../config/teamConfig";
 import { getNotificationsEnabled } from "../utils/getNotificationsEnabled";
 import { redis } from "../config/redis";
 
@@ -44,7 +44,7 @@ export const runMatchReminderJob = async () => {
     if (!isReminderDue(now)) return;
     if (!(await getNotificationsEnabled())) return;
 
-    const enabledCategories = getEnabledCategories();
+    const enabledCategories = getEnabledCategoryDefinitions();
     const matches = await Match.findAll({
       attributes: ["category"],
       where: {
