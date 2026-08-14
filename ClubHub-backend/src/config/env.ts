@@ -37,10 +37,6 @@ function parseOrigins(value: string | undefined): string[] {
     }
   }
 
-  if (isProduction && origins.length === 0) {
-    throw new Error("ALLOWED_ORIGINS e obrigatorio em producao");
-  }
-
   return origins;
 }
 
