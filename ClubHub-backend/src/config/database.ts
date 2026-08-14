@@ -1,6 +1,13 @@
 import { Sequelize } from "sequelize-typescript";
 import "dotenv/config";
 
+// CA opcional da base de dados (em Base64). Necessária para fornecedores que
+// usam uma CA privada, como o pooler do Supabase, sem perder verify-full.
+const sslCaBase64 = process.env.DATABASE_SSL_CA_BASE64?.trim();
+const sslCa = sslCaBase64
+  ? Buffer.from(sslCaBase64, "base64").toString("utf8")
+  : undefined;
+
 export const sequelize = new Sequelize(process.env.DATABASE_URL!, {
   dialect: "postgres",
   logging: false,
@@ -15,8 +22,9 @@ export const sequelize = new Sequelize(process.env.DATABASE_URL!, {
       process.env.NODE_ENV === "production"
         ? {
             require: true,
-            // Valida o certificado SSL do servidor (protege contra MITM)
+            // Mantemos a confirmação da identidade do servidor (verify-full).
             rejectUnauthorized: true,
+            ...(sslCa ? { ca: sslCa } : {}),
           }
         : false,
   },
