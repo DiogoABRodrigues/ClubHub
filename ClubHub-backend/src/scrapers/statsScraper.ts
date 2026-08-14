@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 import Stats from "../models/Stats";
 import Season from "../models/Season";
-import { teamConfig, CategoryConfig } from "../config/teamConfig";
+import { CategoryConfig } from "../config/teamConfig";
 import { getSharedBrowser } from "../utils/browser";
 import cache from "../services/cache.service";
 import { CacheKeys } from "../cache/keys";
@@ -13,7 +13,10 @@ async function getOrCreateSeason(seasonYear: string) {
   return season;
 }
 
-export async function scrapeTeamStats(cfg?: CategoryConfig) {
+export async function scrapeTeamStats(
+  cfg?: CategoryConfig,
+  options: { persist?: boolean } = {},
+) {
   if (!cfg) throw new Error("scrapeTeamStats requer uma equipa descoberta.");
   const config = cfg;
 
@@ -81,8 +84,10 @@ export async function scrapeTeamStats(cfg?: CategoryConfig) {
       `✅ Estatísticas encontradas: ${stats.length} [${config.category}]`,
     );
 
+    if (options.persist === false) return stats;
+
     const season = await getOrCreateSeason(
-      config.seasonYear ?? teamConfig.currentSeason,
+      config.seasonYear,
     );
 
     for (const s of stats) {

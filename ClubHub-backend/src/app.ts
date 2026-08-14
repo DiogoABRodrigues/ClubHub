@@ -134,6 +134,10 @@ const authLimiter = rateLimit({
 const scraperLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 5,
+  // Criar um scrape é caro; consultar o respetivo estado não é. Excluir o
+  // polling evita que a app/Postman receba 429 enquanto o job ainda decorre.
+  // Continua protegido pelo limiter geral de /api (100 req/min).
+  skip: (req) => req.method === "GET" && /^\/jobs\/[^/]+$/.test(req.path),
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many requests" },

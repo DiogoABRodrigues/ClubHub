@@ -1,17 +1,19 @@
 import { randomUUID } from "node:crypto";
 import { redis } from "../config/redis";
 import { closeSharedBrowser } from "../utils/browser";
-import { discoverTeamCategories, getCompetitionUrlsFromMatches } from "../scrapers/teamDiscoveryScraper";
+import { discoverTeamCategories, getCompetitionsFromMatches } from "../scrapers/teamDiscoveryScraper";
 import { scrapeTeamMatches } from "../scrapers/matchScraper";
 import { scrapeStandings } from "../scrapers/standingsScraper";
 import { scrapeTeamPlayers } from "../scrapers/playersScraper";
 import { scrapeTeamStats } from "../scrapers/statsScraper";
 import { scrapeAllTeams } from "../scrapers/allTeamsScraper";
 import socketService from "./socket.service";
+import SeasonService from "./season.service";
 
 export type ScrapeJobStatus = "queued" | "running" | "completed" | "failed";
 export interface ScrapeJob {
   id: string; status: ScrapeJobStatus; scope: "all" | string;
+  mode: "write" | "dry-run";
   startedAt: string | null; completedAt: string | null; currentStep: string;
   results: Record<string, unknown> | null; error: string | null;
 }
@@ -21,13 +23,16 @@ const currentKey = "scrape:job:current";
 const key = (id: string) => `scrape:job:${id}`;
 
 class ScrapeJobService {
-  async start(scope: "all" | string = "all"): Promise<ScrapeJob> {
+  async start(
+    scope: "all" | string = "all",
+    mode: "write" | "dry-run" = "write",
+  ): Promise<ScrapeJob> {
     const currentId = await redis.get(currentKey);
     const current = currentId ? await this.get(currentId) : null;
     if (current && ["queued", "running"].includes(current.status)) return current;
 
     const job: ScrapeJob = {
-      id: randomUUID(), status: "queued", scope, startedAt: null, completedAt: null,
+      id: randomUUID(), status: "queued", scope, mode, startedAt: null, completedAt: null,
       currentStep: "Na fila", results: null, error: null,
     };
     await this.save(job);
@@ -57,6 +62,13 @@ class ScrapeJobService {
     try {
       await this.update(job, { status: "running", startedAt: new Date().toISOString(), currentStep: "A descobrir escalões" });
       const categories = await discoverTeamCategories();
+      const seasonYears = new Set(categories.map((category) => category.seasonYear));
+      if (seasonYears.size !== 1) {
+        throw new Error("O ZeroZero devolveu escalões com épocas diferentes; scrape cancelado por segurança.");
+      }
+      if (job.mode === "write") {
+        await new SeasonService().setCurrentSeasonFromZeroZero(categories[0].seasonYear);
+      }
       const selected = job.scope === "all" ? categories : categories.filter((c) => c.category === job.scope);
       if (!selected.length) throw new Error("Escalão não encontrado no ZeroZero.");
 
@@ -64,26 +76,52 @@ class ScrapeJobService {
       const competitionUrls = new Set<string>();
       for (const cfg of selected) {
         await this.update(job, { currentStep: `A atualizar ${cfg.label}: jogos` });
-        const matches = await scrapeTeamMatches(cfg);
-        const urls = getCompetitionUrlsFromMatches(matches);
-        urls.forEach((url) => competitionUrls.add(url));
+        const matches = await scrapeTeamMatches(cfg, {
+          persist: job.mode === "write",
+          includeDetails: job.mode === "write",
+        });
+        const competitions = getCompetitionsFromMatches(matches);
+        competitions.forEach(({ url }) => competitionUrls.add(url));
         let standings = 0;
-        for (const standingsUrl of urls) {
+        for (const competition of competitions.filter((item) => item.hasStandings)) {
+          const standingsUrl = competition.url;
           await this.update(job, { currentStep: `A atualizar ${cfg.label}: classificações` });
-          try { standings += (await scrapeStandings({ ...cfg, standings_url: standingsUrl })).length; }
+          try {
+            const rows = await scrapeStandings(
+              { ...cfg, standings_url: standingsUrl },
+              { persist: job.mode === "write" },
+            );
+            standings += rows.length;
+            if (job.mode === "dry-run") {
+              const report = results[cfg.category] as Record<string, unknown> | undefined;
+              const classifications = (report?.classifications as unknown[] | undefined) ?? [];
+              classifications.push({ url: standingsUrl, rows });
+              results[cfg.category] = { ...report, classifications };
+            }
+          }
           catch (error) { console.warn(`Classificação indisponível em ${standingsUrl}:`, error); }
         }
         await this.update(job, { currentStep: `A atualizar ${cfg.label}: plantel` });
-        const players = await scrapeTeamPlayers(cfg);
+        const players = await scrapeTeamPlayers(cfg, { persist: job.mode === "write" });
         await this.update(job, { currentStep: `A atualizar ${cfg.label}: estatísticas` });
-        const stats = await scrapeTeamStats(cfg);
-        results[cfg.category] = { matches: matches.length, standings, players: players.length, stats: stats.length };
+        const stats = await scrapeTeamStats(cfg, { persist: job.mode === "write" });
+        results[cfg.category] = job.mode === "dry-run"
+          ? {
+              config: cfg,
+              matches,
+              standingsCount: standings,
+              classifications: (results[cfg.category] as Record<string, unknown> | undefined)?.classifications ?? [],
+              players,
+              stats,
+            }
+          : { matches: matches.length, standings, players: players.length, stats: stats.length };
       }
       if (job.scope === "all") {
         await this.update(job, { currentStep: "A atualizar equipas das competições" });
-        results.totalTeams = (await scrapeAllTeams([...competitionUrls])).length;
+        const teams = await scrapeAllTeams([...competitionUrls], { persist: job.mode === "write" });
+        results.teams = job.mode === "dry-run" ? teams : teams.length;
       }
-      socketService.emitDataUpdated();
+      if (job.mode === "write") socketService.emitDataUpdated();
       await this.update(job, { status: "completed", completedAt: new Date().toISOString(), currentStep: "Concluído", results });
     } catch (error) {
       console.error("Job de scrape falhou:", error);

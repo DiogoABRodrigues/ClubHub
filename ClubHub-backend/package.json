@@ -12,6 +12,13 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "scrape:dry-run": "ts-node scripts/dry-run-discovery.ts",
+    "scrape:dry-run:full": "ts-node scripts/dry-run-full.ts",
+    "scrape:dry-run:over19": "set DRY_RUN_CATEGORY=over19&& set DRY_RUN_INCLUDE_DETAILS=true&& ts-node scripts/dry-run-full.ts",
+    "scrape:dry-run:job-test": "ts-node scripts/dry-run-job-test.ts",
+    "scrape:dry-run:job-test:over19": "set DRY_RUN_JOB_SCOPE=over19&& ts-node scripts/dry-run-job-test.ts",
+    "benchmark:scraper": "ts-node scripts/benchmark-scraper.ts",
+    "benchmark:stats:over19": "set BENCHMARK_SCRAPER=stats&& ts-node scripts/benchmark-scraper.ts",
+    "benchmark:matches-details:over19": "set BENCHMARK_SCRAPER=matches-details&& ts-node scripts/benchmark-scraper.ts",
     "db:optimize": "node scripts/apply-performance-indexes.js",
     "postinstall": "npx puppeteer browsers install chrome"
   },

@@ -8,7 +8,8 @@ export interface CategoryConfig {
   category: Category;
   label: string;
   enabled: boolean;
-  seasonYear?: string;
+  /** Época lida diretamente do seletor ZeroZero; nunca calculada localmente. */
+  seasonYear: string;
   teamName: string;
   teamExternalId: number;
   players_url: string;
@@ -31,23 +32,15 @@ export const teamConfig = {
   teamLocation: "Campo Costa do Monte, Arcos de Valdevez",
   /** A \u00fanica fonte ZeroZero que precisa de ser configurada. */
   primaryTeamUrl: "https://www.zerozero.pt/equipa/adecas/18231",
-  currentSeason: getCurrentSeason(),
   categories: [
     { category: "over19", label: "Seniores", enabled: true, teamName: "Adecas" },
-    { category: "sub19", label: "Sub-19", enabled: true, teamName: "Adecas" },
-    { category: "sub17", label: "Sub-17", enabled: true, teamName: "Adecas" },
+    { category: "sub19", label: "Sub-19", enabled: false, teamName: "Adecas" },
+    { category: "sub17", label: "Sub-17", enabled: false, teamName: "Adecas" },
     { category: "sub15", label: "Sub-15", enabled: true, teamName: "Adecas" },
-    { category: "sub13", label: "Sub-13", enabled: true, teamName: "Adecas" },
+    { category: "sub13", label: "Sub-13", enabled: false, teamName: "Adecas" },
   ] as CategoryDefinition[],
 };
 
 export function getEnabledCategoryDefinitions(): CategoryDefinition[] {
   return teamConfig.categories.filter((c) => c.enabled);
-}
-
-export function getCurrentSeason() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1;
-  return month >= 8 ? `${year}/${year + 1}` : `${year - 1}/${year}`;
 }

@@ -24,6 +24,22 @@ router.post(
   },
 );
 
+// Executa os mesmos parsers mas não altera PostgreSQL, cache de dados ou notificações.
+router.post(
+  "/dry-run",
+  authMiddleware,
+  authorizeRoles("admin"),
+  async (_req, res) => {
+    try {
+      const job = await scrapeJobService.start("all", "dry-run");
+      res.status(202).json(job);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: "Erro ao iniciar dry run" });
+    }
+  },
+);
+
 router.post(
   "/category/:category",
   authMiddleware,

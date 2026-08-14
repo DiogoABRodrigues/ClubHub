@@ -1,5 +1,5 @@
 import * as cheerio from "cheerio";
-import { teamConfig, CategoryConfig } from "../config/teamConfig";
+import { CategoryConfig } from "../config/teamConfig";
 import Team from "../models/Team";
 import Standing from "../models/Standing";
 import Season from "../models/Season";
@@ -80,6 +80,7 @@ function extractTeamExternalId(url: string | undefined): number | null {
 
 export async function scrapeStandings(
   cfg?: CategoryConfig,
+  options: { persist?: boolean } = {},
 ): Promise<StandingRow[]> {
   if (!cfg) throw new Error("scrapeStandings requer uma equipa e competi\u00e7\u00e3o descobertas.");
   const config = cfg;
@@ -249,8 +250,10 @@ export async function scrapeStandings(
 
     console.log(`✅ ${standings.length} equipas extraídas`);
 
+    if (options.persist === false) return standings;
+
     const season = await getOrCreateSeason(
-      config.seasonYear ?? teamConfig.currentSeason,
+      config.seasonYear,
     );
 
     // ── Encontra ou cria a Competition pelo externalId (estável entre seasons) ──

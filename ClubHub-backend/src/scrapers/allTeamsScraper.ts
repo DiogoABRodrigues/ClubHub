@@ -74,7 +74,10 @@ async function fetchTeamLogo(profileUrl: string): Promise<string | undefined> {
   }
 }
 
-export async function scrapeAllTeams(competitionUrls: string[] = []): Promise<ScrapedTeam[]> {
+export async function scrapeAllTeams(
+  competitionUrls: string[] = [],
+  options: { persist?: boolean } = {},
+): Promise<ScrapedTeam[]> {
   const browser = await getSharedBrowser();
   const allTeams: ScrapedTeam[] = [];
   const competitions = [...new Set(competitionUrls)]
@@ -201,7 +204,7 @@ export async function scrapeAllTeams(competitionUrls: string[] = []): Promise<Sc
 
   console.log(`\n📊 Total de equipas únicas: ${uniqueTeams.length}`);
 
-  if (uniqueTeams.length > 0) {
+  if (uniqueTeams.length > 0 && options.persist !== false) {
     await saveAllTeams(uniqueTeams);
   }
 

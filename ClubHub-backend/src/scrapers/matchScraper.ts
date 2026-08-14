@@ -816,6 +816,7 @@ export async function saveMatches(
 
 export async function scrapeTeamMatches(
   cfg?: CategoryConfig,
+  options: { persist?: boolean; includeDetails?: boolean } = {},
 ): Promise<ScrapedMatch[]> {
   if (!cfg) throw new Error("scrapeTeamMatches requer uma equipa descoberta.");
   const config = cfg;
@@ -846,7 +847,17 @@ export async function scrapeTeamMatches(
     await page.waitForSelector("#team_games table", { timeout: 20000 });
   } catch {
     await page.reload({ waitUntil: "domcontentloaded" });
-    await page.waitForSelector("#team_games table", { timeout: 20000 });
+    const tableFound = await page
+      .waitForSelector("#team_games table", { timeout: 20000 })
+      .then(() => true)
+      .catch(() => false);
+    if (!tableFound) {
+      // No início de época o ZeroZero pode ainda não mostrar tabela para um
+      // escalão. Isso representa zero jogos, não uma falha do job inteiro.
+      console.warn(`⚠️ Tabela de jogos indisponível [${config.category}]; assumidos 0 jogos.`);
+      await page.close();
+      return [];
+    }
   }
 
   const html = await page.content();
@@ -931,14 +942,16 @@ export async function scrapeTeamMatches(
   // do jogo já indica o estádio quando se joga fora. Não limitar esta lista
   // aos terminados, senão esses locais nunca chegam a ser persistidos.
   const awayMatches = scrapedMatches.filter((m) => m.homeOrAway === "F");
-  const knownLocations = await getKnownLocations(
-    config.teamName,
-    config.category,
-    awayMatches,
-  );
-  for (const m of awayMatches) {
-    const known = knownLocations.get(locationKey(m.date, m.opponent));
-    if (known) m.location = known;
+  if (options.persist !== false) {
+    const knownLocations = await getKnownLocations(
+      config.teamName,
+      config.category,
+      awayMatches,
+    );
+    for (const m of awayMatches) {
+      const known = knownLocations.get(locationKey(m.date, m.opponent));
+      if (known) m.location = known;
+    }
   }
 
   // Mantemos a visita aos terminados para recolher eventos e formações, e
@@ -950,7 +963,7 @@ export async function scrapeTeamMatches(
       (!!m.result || (m.homeOrAway === "F" && !m.location)),
   );
 
-  if (matchesToVisit.length > 0) {
+  if (options.includeDetails !== false && matchesToVisit.length > 0) {
     console.log(
       `📍 A visitar ${matchesToVisit.length} ficha(s) de jogo (localização/formações) [${config.category}]`,
     );
@@ -973,7 +986,7 @@ export async function scrapeTeamMatches(
     await detailPage.close();
   }
 
-  if (scrapedMatches.length > 0) {
+  if (scrapedMatches.length > 0 && options.persist !== false) {
     await saveMatches(
       config.teamName,
       config.teamExternalId,

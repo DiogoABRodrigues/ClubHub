@@ -3,7 +3,7 @@ import Player from "../models/Player";
 import Squad from "../models/Squad";
 import Season from "../models/Season";
 import Stats from "../models/Stats";
-import { teamConfig, CategoryConfig } from "../config/teamConfig";
+import { CategoryConfig } from "../config/teamConfig";
 import { getSharedBrowser } from "../utils/browser";
 import cache from "../services/cache.service";
 import { CacheKeys } from "../cache/keys";
@@ -54,7 +54,10 @@ function parsePhoto(
   return normalizePhotoUrl(m ? m[1] : null);
 }
 
-export async function scrapeTeamPlayers(cfg?: CategoryConfig) {
+export async function scrapeTeamPlayers(
+  cfg?: CategoryConfig,
+  options: { persist?: boolean } = {},
+) {
   if (!cfg) throw new Error("scrapeTeamPlayers requer uma equipa descoberta.");
   const config = cfg;
 
@@ -196,11 +199,11 @@ export async function scrapeTeamPlayers(cfg?: CategoryConfig) {
 
     console.log(`✅ Total encontrado: ${players.length} [${config.category}]`);
 
-    if (players.length > 0) {
+    if (players.length > 0 && options.persist !== false) {
       await savePlayersAndSquad(
         players,
         config.category,
-        config.seasonYear ?? teamConfig.currentSeason,
+        config.seasonYear,
       );
     }
 
@@ -213,7 +216,7 @@ export async function scrapeTeamPlayers(cfg?: CategoryConfig) {
 export async function savePlayersAndSquad(
   players: any[],
   category: string = "over19",
-  seasonYear: string = teamConfig.currentSeason,
+  seasonYear: string,
 ) {
   const season = await getOrCreateSeason(seasonYear);
 

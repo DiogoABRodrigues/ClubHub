@@ -37,6 +37,14 @@ function appendQuery(url: string, parameters: Record<string, string>): string {
   return parsed.toString();
 }
 
+function parseZeroZeroSeason(label: string): string | null {
+  const match = label.trim().match(/^(\d{4})\s*\/\s*(\d{2}|\d{4})$/);
+  if (!match) return null;
+  const start = Number(match[1]);
+  const end = match[2].length === 2 ? 2000 + Number(match[2]) : Number(match[2]);
+  return `${start}/${end}`;
+}
+
 /**
  * Descobre os escal\u00f5es no seletor da p\u00e1gina principal do clube. N\u00e3o usa
  * IDs, links de jogos ou links de competi\u00e7\u00e3o definidos manualmente.
@@ -56,9 +64,12 @@ export async function discoverTeamCategories(): Promise<CategoryConfig[]> {
 
     const $ = cheerio.load(await page.content());
     const slug = extractSlug(teamConfig.primaryTeamUrl);
-    const seasonId = $("select[name='epoca_id'] option[selected]").first().attr("value")
-      ?? $("select[name='epoca_id'] option").first().attr("value");
-    if (!seasonId || !/^\d+$/.test(seasonId)) {
+    const selectedSeason = $("select[name='epoca_id'] option[selected]").first().length
+      ? $("select[name='epoca_id'] option[selected]").first()
+      : $("select[name='epoca_id'] option").first();
+    const seasonId = selectedSeason.attr("value");
+    const seasonYear = parseZeroZeroSeason(selectedSeason.text());
+    if (!seasonId || !/^\d+$/.test(seasonId) || !seasonYear) {
       throw new Error("N\u00e3o foi poss\u00edvel identificar a \u00e9poca atual no ZeroZero.");
     }
     const definitions = new Map(
@@ -78,6 +89,7 @@ export async function discoverTeamCategories(): Promise<CategoryConfig[]> {
         category,
         label: definition.label,
         enabled: true,
+        seasonYear,
         teamName: teamConfig.name,
         teamExternalId: id,
         // O ZeroZero mostra dados hist\u00f3ricos sem estes par\u00e2metros.
@@ -114,6 +126,33 @@ export function getCompetitionUrlsFromMatches(
 ): string[] {
   return [...new Set(matches.map((match) => match.competitionUrl).filter((url): url is string => !!url))]
     .map(toAbsoluteUrl);
+}
+
+export interface DiscoveredCompetition {
+  name: string;
+  url: string;
+  hasStandings: boolean;
+}
+
+/** Taças são apresentadas pelos respetivos jogos, não por uma classificação. */
+export function getCompetitionsFromMatches(
+  matches: Array<{ competition: string; competitionUrl?: string | null }>,
+): DiscoveredCompetition[] {
+  const competitions = new Map<string, DiscoveredCompetition>();
+  for (const match of matches) {
+    if (!match.competitionUrl) continue;
+    const url = toAbsoluteUrl(match.competitionUrl);
+    if (competitions.has(url)) continue;
+    const normalizedName = match.competition.normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+    competitions.set(url, {
+      name: match.competition,
+      url,
+      hasStandings: !/\btaca\b|\bcup\b/.test(normalizedName),
+    });
+  }
+  return [...competitions.values()];
 }
 
 /** Lê somente os links de competições na página de jogos; não grava dados. */
