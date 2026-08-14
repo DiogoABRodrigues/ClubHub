@@ -56,11 +56,27 @@ export async function discoverTeamCategories(): Promise<CategoryConfig[]> {
     await page.setUserAgent(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
     );
-    await page.goto(teamConfig.primaryTeamUrl, {
+    const response = await page.goto(teamConfig.primaryTeamUrl, {
       waitUntil: "domcontentloaded",
       timeout: 60000,
     });
-    await page.waitForSelector("select[name='id'] option", { timeout: 20000 });
+    try {
+      // A instância gratuita do Render tem pouca CPU; damos margem sem deixar
+      // um selector ausente bloquear o job indefinidamente.
+      await page.waitForSelector("select[name='id'] option", { timeout: 45000 });
+    } catch (cause) {
+      const diagnostic = await page.evaluate(() => ({
+        title: document.title,
+        preview: (document.body?.innerText ?? "").replace(/\s+/g, " ").trim().slice(0, 240),
+      }));
+      const error = new Error(
+        `A página inicial do ZeroZero não mostrou os escalões ` +
+          `(HTTP ${response?.status() ?? "sem resposta"}; título: ${diagnostic.title || "sem título"}; ` +
+          `conteúdo: ${diagnostic.preview || "vazio"}).`,
+      );
+      (error as Error & { cause?: unknown }).cause = cause;
+      throw error;
+    }
 
     const $ = cheerio.load(await page.content());
     const slug = extractSlug(teamConfig.primaryTeamUrl);
