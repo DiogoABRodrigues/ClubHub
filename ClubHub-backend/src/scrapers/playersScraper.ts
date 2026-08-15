@@ -138,6 +138,8 @@ export async function scrapeTeamPlayers(
               position: currentPosition,
               age,
               photoUrl,
+              // Entradas em #team_squad são sempre jogadores, incluindo GR.
+              isFieldPlayer: true,
             });
         });
       });
@@ -163,6 +165,7 @@ export async function scrapeTeamPlayers(
             position: "Unknown",
             age: null,
             photoUrl,
+            isFieldPlayer: true,
           });
         }
       });
@@ -192,6 +195,9 @@ export async function scrapeTeamPlayers(
                 position: sectionRole,
                 age,
                 photoUrl,
+                // Entradas em #team_staff não podem aparecer nas estatísticas
+                // nem nas opções de convocatória.
+                isFieldPlayer: false,
               });
           });
       });
@@ -237,6 +243,7 @@ export async function savePlayersAndSquad(
       position: p.position,
       photoUrl: p.photoUrl,
       category,
+      isFieldPlayer: p.isFieldPlayer,
     });
 
     await Stats.upsert({

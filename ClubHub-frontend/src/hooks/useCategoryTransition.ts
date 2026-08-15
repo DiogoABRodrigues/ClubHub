@@ -17,12 +17,13 @@ export function useCategoryTransition() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (!isCategoryChanging || !selectedSeasonId) return;
+    if (!isCategoryChanging) return;
 
     const matchesKey = ["matches", selectedSeasonId, selectedCategory];
     const standingsKey = ["standings", selectedSeasonId, selectedCategory];
     const seasonMatchesKey = ["matches", selectedSeasonId];
     const seasonStandingsKey = ["standings", selectedSeasonId];
+    const seasonsKey = ["seasons", "byCategory", selectedCategory];
 
     let settled = false;
     let unsubscribe = () => {};
@@ -46,6 +47,18 @@ export function useCategoryTransition() {
       const standingsState = queryClient.getQueryState(standingsKey);
       const seasonMatchState = queryClient.getQueryState(seasonMatchesKey);
       const seasonStandingsState = queryClient.getQueryState(seasonStandingsKey);
+      const seasonsState = queryClient.getQueryState(seasonsKey);
+
+      // Um escalão pode não ter qualquer época disponível. Nesse caso a
+      // SelectedSeasonProvider mantém a época a null e não há queries de jogos
+      // ou classificações a concluir. A resposta da lista de épocas (mesmo
+      // vazia) é suficiente para terminar a transição e mostrar o estado vazio.
+      if (!selectedSeasonId) {
+        const seasonsReady =
+          seasonsState?.status === "success" || seasonsState?.status === "error";
+        if (seasonsReady) finish();
+        return;
+      }
 
       const matchesReady =
         matchState?.status === "success" || matchState?.status === "error";
