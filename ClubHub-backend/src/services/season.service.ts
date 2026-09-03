@@ -3,6 +3,7 @@ import cache from "../services/cache.service";
 import { CacheKeys } from "../cache/keys";
 import Season from "../models/Season";
 import Squad from "../models/Squad";
+import Match from "../models/Match";
 import appSettingsService from "./appSettings.service";
 
 const ZEROZERO_CURRENT_SEASON_KEY = "zerozero_current_season";
@@ -53,19 +54,38 @@ export default class SeasonService {
     return season;
   }
 
-  /** Seasons que têm pelo menos um jogador no plantel da categoria dada. */
+  /**
+   * Seasons que têm pelo menos um jogador no plantel OU pelo menos um jogo
+   * registado para a categoria dada. Antes só se olhava para o Squad, o que
+   * escondia épocas de escalões (ex.: sub17/sub15) que já têm jogos
+   * scrapeados mas ainda não têm plantel carregado.
+   */
   async getByCategory(category: string): Promise<Season[]> {
     const key = CacheKeys.season.byCategory(category);
     const cached = await cache.get(key);
     if (cached) return cached as Season[];
 
-    const rows = (await Squad.findAll({
-      attributes: ["seasonId"],
-      where: { category, seasonId: { [Op.ne]: null } },
-      group: ["seasonId"],
-      raw: true,
-    })) as any[];
-    const seasonIds = rows.map((row: any) => row.seasonId).filter(Boolean);
+    const [squadRows, matchRows] = await Promise.all([
+      Squad.findAll({
+        attributes: ["seasonId"],
+        where: { category, seasonId: { [Op.ne]: null } },
+        group: ["seasonId"],
+        raw: true,
+      }) as Promise<any[]>,
+      Match.findAll({
+        attributes: ["seasonId"],
+        where: { category, seasonId: { [Op.ne]: null } },
+        group: ["seasonId"],
+        raw: true,
+      }) as Promise<any[]>,
+    ]);
+    const seasonIds = Array.from(
+      new Set(
+        [...squadRows, ...matchRows]
+          .map((row: any) => row.seasonId)
+          .filter(Boolean),
+      ),
+    );
     if (!seasonIds.length) return [];
 
     const seasons = await Season.findAll({

@@ -30,12 +30,12 @@ export const teamConfig = {
   name: "Adecas",
   updateSchedule: "0 2 * * 0",
   teamLocation: "Campo Costa do Monte, Arcos de Valdevez",
-  /** A \u00fanica fonte ZeroZero que precisa de ser configurada. */
+  /** A \unica fonte ZeroZero que precisa de ser configurada. */
   primaryTeamUrl: "https://www.zerozero.pt/equipa/adecas/18231",
   categories: [
     { category: "over19", label: "Seniores", enabled: true, teamName: "Adecas" },
     { category: "sub19", label: "Sub-19", enabled: false, teamName: "Adecas" },
-    { category: "sub17", label: "Sub-17", enabled: false, teamName: "Adecas" },
+    { category: "sub17", label: "Sub-17", enabled: true, teamName: "Adecas" },
     { category: "sub15", label: "Sub-15", enabled: true, teamName: "Adecas" },
     { category: "sub13", label: "Sub-13", enabled: false, teamName: "Adecas" },
   ] as CategoryDefinition[],
