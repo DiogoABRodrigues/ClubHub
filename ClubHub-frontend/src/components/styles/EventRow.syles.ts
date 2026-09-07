@@ -92,6 +92,12 @@ export const styles = createThemedStyles(() => ({
     flexDirection: "row",
     gap: 3,
   },
+  cardIconPairLeft: {
+    justifyContent: "flex-end",
+  },
+  cardIconPairRight: {
+    justifyContent: "flex-start",
+  },
 
   // ── Estado vazio ─────────────────────────────────────────────────────────
   emptyState: {

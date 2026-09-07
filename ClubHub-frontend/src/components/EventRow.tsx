@@ -21,8 +21,23 @@ const ICON: Record<string, string> = {
   penalty_shootout: "",
 };
 
-const CardIcon = ({ type, isSecondYellow }: { type: string; isSecondYellow?: boolean }) => (
-  <View style={[styles.cardIconSlot, isSecondYellow && styles.cardIconPair]}>
+const CardIcon = ({
+  type,
+  isSecondYellow,
+  isOurs,
+}: {
+  type: string;
+  isSecondYellow?: boolean;
+  isOurs: boolean;
+}) => (
+  <View
+    style={[
+      styles.cardIconSlot,
+      isSecondYellow && styles.cardIconPair,
+      isSecondYellow &&
+        (isOurs ? styles.cardIconPairLeft : styles.cardIconPairRight),
+    ]}
+  >
     {isSecondYellow && (
       <View
         style={[styles.cardIcon, { backgroundColor: COLORS.status.yellowCard }]}
@@ -35,6 +50,18 @@ const CardIcon = ({ type, isSecondYellow }: { type: string; isSecondYellow?: boo
       ]}
     />
   </View>
+);
+
+const SubstitutionLabel = ({
+  playerIn,
+  playerOut,
+}: {
+  playerIn: string;
+  playerOut: string;
+}) => (
+  <Text style={styles.eventPlayer} numberOfLines={1}>
+    {playerIn} <Text style={styles.eventAssist}>({playerOut})</Text>
+  </Text>
 );
 
 export const EventRow = ({
@@ -121,17 +148,23 @@ export const EventRow = ({
           {minuteLabel}
         </Text>
         {icon && <Text style={styles.eventIconText}>{icon}</Text>}
-        {isCard && <CardIcon type={event.type} isSecondYellow={event.isSecondYellow} />}
+        {isCard && (
+          <CardIcon
+            type={event.type}
+            isSecondYellow={event.isSecondYellow}
+            isOurs={isOurs}
+          />
+        )}
         {!isSub && (
           <Text style={styles.eventPlayer}>
             {eventWithNames.player}{isPenaltyGoal ? " (g.p.)" : ""}
           </Text>
         )}
         {isSub && eventWithNames.playerOut && eventWithNames.playerIn && (
-          <View>
-            <Text style={styles.eventPlayer}>{eventWithNames.playerIn}</Text>
-            <Text style={styles.eventAssist}>{eventWithNames.playerOut}</Text>
-          </View>
+          <SubstitutionLabel
+            playerIn={eventWithNames.playerIn}
+            playerOut={eventWithNames.playerOut}
+          />
         )}
       </View>
     );
@@ -141,10 +174,10 @@ export const EventRow = ({
     <View style={styles.eventRow}>
       <View style={{ flex: 1 }} />
       {isSub && eventWithNames.playerOut && eventWithNames.playerIn && (
-        <View>
-          <Text style={styles.eventPlayer}>{eventWithNames.playerIn}</Text>
-          <Text style={styles.eventAssist}>{eventWithNames.playerOut}</Text>
-        </View>
+        <SubstitutionLabel
+          playerIn={eventWithNames.playerIn}
+          playerOut={eventWithNames.playerOut}
+        />
       )}
       {!isSub && (
         <Text style={styles.eventPlayer}>
@@ -152,7 +185,13 @@ export const EventRow = ({
         </Text>
       )}
       {icon && <Text style={styles.eventIconText}>{icon}</Text>}
-      {isCard && <CardIcon type={event.type} isSecondYellow={event.isSecondYellow} />}
+      {isCard && (
+        <CardIcon
+          type={event.type}
+          isSecondYellow={event.isSecondYellow}
+          isOurs={isOurs}
+        />
+      )}
       <Text
         style={[
           styles.eventIconText,

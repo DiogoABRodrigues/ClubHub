@@ -164,6 +164,10 @@ export const MatchDetail = () => {
   const groupedEvents = useMemo(() => {
     return (match.events ?? []).reduce(
       (acc, e) => {
+        if (e.type === "substitution" && e.isOpponent) {
+          return acc;
+        }
+
         if (e.type === "penalty_shootout") {
           acc.penalties.push(e);
           return acc;
@@ -205,6 +209,11 @@ export const MatchDetail = () => {
   }, [match.events]);
 
   const { firstHalf, secondHalf, extraTime, penalties, interval } = groupedEvents;
+  const hasVisibleTimelineEvents =
+    firstHalf.length > 0 ||
+    secondHalf.length > 0 ||
+    extraTime.length > 0 ||
+    penalties.length > 0;
 
   if (!loading && !loadedMatch) {
     return (
@@ -359,7 +368,7 @@ export const MatchDetail = () => {
               <View style={styles.emptyState}>
                 <ActivityIndicator size="small" color={COLORS.primary} />
               </View>
-            ) : match.events?.length ? (
+            ) : hasVisibleTimelineEvents ? (
               <>
                 {(firstHalf.length > 0 && (
                   <>
