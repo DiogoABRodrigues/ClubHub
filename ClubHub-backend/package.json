@@ -20,6 +20,7 @@
     "benchmark:stats:over19": "set BENCHMARK_SCRAPER=stats&& ts-node scripts/benchmark-scraper.ts",
     "benchmark:matches-details:over19": "set BENCHMARK_SCRAPER=matches-details&& ts-node scripts/benchmark-scraper.ts",
     "db:optimize": "node scripts/apply-performance-indexes.js",
+    "db:migrate:match-events": "node scripts/apply-match-event-migrations.js",
     "postinstall": "npx puppeteer browsers install chrome"
   },
   "keywords": [],

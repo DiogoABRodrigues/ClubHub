@@ -60,11 +60,13 @@ const EMPTY_FORM: MatchEvent = {
   minute: 0,
   phase: "1st",
   isOpponent: false,
-  penaltyScored: true,
+  isSecondYellow: false,
+  penaltyScored: null,
 };
 
 const EVENT_TYPES: { key: MatchEventType; label: string; icon: string }[] = [
   { key: "goal", label: "Golo", icon: "⚽" },
+  { key: "yellow_card", label: "Amarelo", icon: "🟨" },
   { key: "red_card", label: "Vermelho", icon: "🟥" },
   { key: "substitution", label: "Substituição", icon: "🔄" },
   { key: "penalty_shootout", label: "Penaltis", icon: "⚽" },
@@ -199,7 +201,10 @@ export const AddEventModal = ({
   const isSubstitution = form.type === "substitution";
   const isPenaltyShootout = form.type === "penalty_shootout";
   const supportsOpponent =
-    form.type === "goal" || form.type === "red_card" || isPenaltyShootout;
+    form.type === "goal" ||
+    form.type === "yellow_card" ||
+    form.type === "red_card" ||
+    isPenaltyShootout;
 
   const allPlayers = useMemo(() => {
     const map = new Map<number, Player>();
@@ -341,7 +346,8 @@ export const AddEventModal = ({
                       minute: prev.minute,
                       phase: prev.phase,
                       type: et.key,
-                      penaltyScored: true,
+                      penaltyScored:
+                        et.key === "penalty_shootout" ? true : null,
                     }))
                   }
                 >
@@ -475,11 +481,42 @@ export const AddEventModal = ({
 
                 {/* Auto-golo */}
                 {form.type === "goal" && (
+                  <>
+                    <View style={adminStyles.switchRow}>
+                      <Text style={adminStyles.fieldLabel}>Golo de penálti</Text>
+                      <Switch
+                        value={form.penaltyScored === true}
+                        onValueChange={(val) =>
+                          setForm((prev) => ({
+                            ...prev,
+                            penaltyScored: val ? true : null,
+                            isOwnGoal: val ? false : prev.isOwnGoal,
+                          }))
+                        }
+                      />
+                    </View>
+                    <View style={adminStyles.switchRow}>
+                      <Text style={adminStyles.fieldLabel}>Auto-golo</Text>
+                      <Switch
+                        value={!!form.isOwnGoal}
+                        onValueChange={(val) =>
+                          setForm((prev) => ({
+                            ...prev,
+                            isOwnGoal: val,
+                            penaltyScored: val ? null : prev.penaltyScored,
+                          }))
+                        }
+                      />
+                    </View>
+                  </>
+                )}
+
+                {form.type === "red_card" && (
                   <View style={adminStyles.switchRow}>
-                    <Text style={adminStyles.fieldLabel}>Auto-golo</Text>
+                    <Text style={adminStyles.fieldLabel}>Segundo amarelo</Text>
                     <Switch
-                      value={!!form.isOwnGoal}
-                      onValueChange={(val) => setField("isOwnGoal", val)}
+                      value={!!form.isSecondYellow}
+                      onValueChange={(val) => setField("isSecondYellow", val)}
                     />
                   </View>
                 )}

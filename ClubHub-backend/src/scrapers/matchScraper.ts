@@ -13,14 +13,28 @@ import { CacheKeys } from "../cache/keys";
 
 const ZEROZERO_BASE_URL = "https://www.zerozero.pt";
 
-export interface ScrapedGoalEvent {
-  type: "goal" | "red_card";
+export interface ScrapedPlayerEvent {
+  type: "goal" | "yellow_card" | "red_card";
   minute: number;
   phase: "1st" | "2nd";
   isOpponent: boolean;
   isOwnGoal: boolean;
+  isSecondYellow: boolean;
+  penaltyScored: boolean | null;
   externalId: number | null; // só preenchido para jogadores do nosso lado
 }
+
+export interface ScrapedSubstitutionEvent {
+  type: "substitution";
+  minute: number;
+  phase: "1st" | "2nd";
+  isOpponent: boolean;
+  isOwnGoal: false;
+  playerInExternalId: number | null;
+  playerOutExternalId: number | null;
+}
+
+export type ScrapedMatchEvent = ScrapedPlayerEvent | ScrapedSubstitutionEvent;
 
 export interface ScrapedLineupEntry {
   externalId: number;
@@ -29,7 +43,7 @@ export interface ScrapedLineupEntry {
 }
 
 export interface ScrapedFormations {
-  events: ScrapedGoalEvent[];
+  events: ScrapedMatchEvent[];
   lineup: ScrapedLineupEntry[];
 }
 
@@ -173,10 +187,10 @@ function parsePlayerExternalId(href: string | undefined): number | null {
  * lado de quem BENEFICIA (mesmo autogolos), ao contrário da secção
  * "Formações" que por vezes nem sequer marca o autogolo.
  */
-function parseHeaderGoals(
+export function parseHeaderGoals(
   $: cheerio.CheerioAPI,
   ourTeamName: string,
-): ScrapedGoalEvent[] | null {
+): ScrapedPlayerEvent[] | null {
   const ourNameNorm = normalizeName(ourTeamName);
   const rightName = normalizeName(
     $(".match-header-team.right .match-header-team-name a").first().text(),
@@ -199,22 +213,26 @@ function parseHeaderGoals(
     return null;
   }
 
-  const events: ScrapedGoalEvent[] = [];
+  const events: ScrapedPlayerEvent[] = [];
 
   (["right", "left"] as const).forEach((side) => {
     const groupIsOurs = side === ourSide;
     $(`.match-header-scorers.${side} a[href*='/jogador/']`).each((_, a) => {
       const externalId = parsePlayerExternalId($(a).attr("href"));
       const timeText = $(a).next("span.time").text().trim();
-      const minuteMatches =
-      timeText.match(/\d+(?:\+\d+)?/g) ?? [];
+      const minuteMatches = timeText.matchAll(
+        /(\d+(?:\+\d+)?)\s*'?\s*(\((?:g\.p\.|p\.b\.)\))?/gi,
+      );
 
-    for (const minuteText of minuteMatches) {
+    for (const minuteMatch of minuteMatches) {
+      const minuteText = minuteMatch[1];
+      const annotation = minuteMatch[2] ?? "";
       const minute = parseMinute(minuteText);
 
       if (minute === null) continue;
 
-      const isOwnGoal = /\(p\.b\.\)/i.test(timeText);
+      const isOwnGoal = /\(p\.b\.\)/i.test(annotation);
+      const isPenaltyGoal = /\(g\.p\.\)/i.test(annotation);
 
       // autogolo: quem marcou pertence à equipa contrária ao grupo onde aparece
       const scorerIsOurs = isOwnGoal ? !groupIsOurs : groupIsOurs;
@@ -225,6 +243,8 @@ function parseHeaderGoals(
         phase: minute <= 45 ? "1st" : "2nd",
         isOpponent: !groupIsOurs,
         isOwnGoal,
+        isSecondYellow: false,
+        penaltyScored: isPenaltyGoal ? true : null,
         externalId: scorerIsOurs ? externalId : null,
       });
     }
@@ -238,11 +258,12 @@ function parseHeaderGoals(
  * Lê o bloco "Formações" da ficha do jogo.
  * Estrutura: 2 linhas (titulares, suplentes) x 2 colunas (uma por equipa),
  * sempre com a mesma equipa na mesma coluna nas duas linhas.
- * Só extrai cartões vermelhos ("Vermelhos") — os golos vêm do cabeçalho,
- * ver `parseHeaderGoals` — e só monta o lineup do lado que corresponde a
- * `ourTeamName`.
+ * Extrai cartões e substituições — os golos vêm do cabeçalho, ver
+ * `parseHeaderGoals` — e só monta o lineup do lado que corresponde a
+ * `ourTeamName`. Como a fonte não liga explicitamente quem entra a quem sai,
+ * substituições simultâneas são emparelhadas pela ordem apresentada.
  */
-function parseFormations(
+export function parseFormations(
   $: cheerio.CheerioAPI,
   ourTeamName: string,
 ): ScrapedFormations | null {
@@ -269,8 +290,15 @@ function parseFormations(
     return null;
   }
 
-  const events: ScrapedGoalEvent[] = [];
+  const events: ScrapedMatchEvent[] = [];
   const lineup: ScrapedLineupEntry[] = [];
+  const substitutionsByCol = new Map<
+    number,
+    {
+      playersIn: Array<{ minute: number; externalId: number | null }>;
+      playersOut: Array<{ minute: number; externalId: number | null }>;
+    }
+  >();
 
   rows.slice(0, 2).each((rowIdx, rowEl) => {
     const isSubsRow = rowIdx === 1;
@@ -278,6 +306,11 @@ function parseFormations(
       .find(".zz-tpl-col")
       .each((colIdx, colEl) => {
         const isOurSide = colIdx === ourColIndex;
+        const substitutions = substitutionsByCol.get(colIdx) ?? {
+          playersIn: [],
+          playersOut: [],
+        };
+        substitutionsByCol.set(colIdx, substitutions);
 
         $(colEl)
           .find(".player")
@@ -286,7 +319,7 @@ function parseFormations(
             const name = link.text().trim();
             const externalId = parsePlayerExternalId(link.attr("href"));
 
-            const { enteredMinute, exitMinute, redCardMinutes } =
+            const { enteredMinute, exitMinute, yellowCardMinutes, redCardEvents } =
               extractPlayerEvents($, playerEl);
 
             // suplente que nunca entrou (fica no banco) -> nenhum cartão é válido,
@@ -297,7 +330,22 @@ function parseFormations(
               const fieldStart = isSubsRow ? enteredMinute ?? 0 : 0;
               const fieldEnd = exitMinute ?? Infinity;
 
-              for (const minute of redCardMinutes) {
+              for (const minute of yellowCardMinutes) {
+                if (minute >= fieldStart && minute <= fieldEnd) {
+                  events.push({
+                    type: "yellow_card",
+                    minute,
+                    phase: minute <= 45 ? "1st" : "2nd",
+                    isOpponent: !isOurSide,
+                    isOwnGoal: false,
+                    isSecondYellow: false,
+                    penaltyScored: null,
+                    externalId: isOurSide ? externalId : null,
+                  });
+                }
+              }
+
+              for (const { minute, isSecondYellow } of redCardEvents) {
                 if (minute >= fieldStart && minute <= fieldEnd) {
                   events.push({
                     type: "red_card",
@@ -305,9 +353,24 @@ function parseFormations(
                     phase: minute <= 45 ? "1st" : "2nd",
                     isOpponent: !isOurSide,
                     isOwnGoal: false,
+                    isSecondYellow,
+                    penaltyScored: null,
                     externalId: isOurSide ? externalId : null,
                   });
                 }
+              }
+
+              if (enteredMinute !== null) {
+                substitutions.playersIn.push({
+                  minute: enteredMinute,
+                  externalId: isOurSide ? externalId : null,
+                });
+              }
+              if (exitMinute !== null) {
+                substitutions.playersOut.push({
+                  minute: exitMinute,
+                  externalId: isOurSide ? externalId : null,
+                });
               }
             }
 
@@ -322,6 +385,38 @@ function parseFormations(
           });
       });
   });
+
+  for (const [colIdx, { playersIn, playersOut }] of substitutionsByCol) {
+    const isOurSide = colIdx === ourColIndex;
+    const substitutionMinutes = new Set([
+      ...playersIn.map((player) => player.minute),
+      ...playersOut.map((player) => player.minute),
+    ]);
+
+    for (const minute of substitutionMinutes) {
+      const entering = playersIn.filter((player) => player.minute === minute);
+      const leaving = playersOut.filter((player) => player.minute === minute);
+      const pairCount = Math.min(entering.length, leaving.length);
+
+      for (let pairIndex = 0; pairIndex < pairCount; pairIndex++) {
+        events.push({
+          type: "substitution",
+          minute,
+          phase: minute <= 45 ? "1st" : "2nd",
+          isOpponent: !isOurSide,
+          isOwnGoal: false,
+          playerInExternalId: entering[pairIndex].externalId,
+          playerOutExternalId: leaving[pairIndex].externalId,
+        });
+      }
+
+      if (entering.length !== leaving.length) {
+        console.log(
+          `   ⚠️ Substituição incompleta aos ${minute}' (${entering.length} entrada(s), ${leaving.length} saída(s)); evento incompleto ignorado.`,
+        );
+      }
+    }
+  }
 
   return { events, lineup };
 }
@@ -464,15 +559,21 @@ function parseExpectedGoals(
   return null;
 }
 
-function extractPlayerEvents(
+export function extractPlayerEvents(
   $: cheerio.CheerioAPI,
   playerEl: any,
-): { enteredMinute: number | null; exitMinute: number | null; redCardMinutes: number[] } {
+): {
+  enteredMinute: number | null;
+  exitMinute: number | null;
+  yellowCardMinutes: number[];
+  redCardEvents: Array<{ minute: number; isSecondYellow: boolean }>;
+} {
   const children = $(playerEl).find(".events").first().children().toArray();
 
   let enteredMinute: number | null = null;
   let exitMinute: number | null = null;
-  const redCardMinutes: number[] = [];
+  const yellowCardMinutes: number[] = [];
+  const redCardEvents: Array<{ minute: number; isSecondYellow: boolean }> = [];
 
   let i = 0;
   while (i < children.length) {
@@ -495,9 +596,17 @@ function extractPlayerEvents(
         enteredMinute = minute;
       } else if (!title && iconText === "8") {
         exitMinute = minute;
+      } else if (title === "Amarelos") {
+        if (minute !== null) {
+          yellowCardMinutes.push(minute);
+        }
       } else if (title === "Vermelhos") {
         if (minute !== null) {
-          redCardMinutes.push(minute);
+          redCardEvents.push({
+            minute,
+            isSecondYellow:
+              $el.hasClass("yellow") || iconText.toUpperCase() === "S",
+          });
         }
       }
 
@@ -507,7 +616,7 @@ function extractPlayerEvents(
     }
   }
 
-  return { enteredMinute, exitMinute, redCardMinutes };
+  return { enteredMinute, exitMinute, yellowCardMinutes, redCardEvents };
 }
 
 async function saveFormations(
@@ -605,25 +714,45 @@ for (const entry of formations.lineup) {
   }
   const eventsToCreate = [];
 
+const resolvePlayerId = async (externalId: number | null): Promise<number | null> => {
+  if (!externalId) return null;
+
+  const knownPlayerId = playerIdByExternalId.get(externalId);
+  if (knownPlayerId) return knownPlayerId;
+
+  const [player] = await Player.findOrCreate({
+    where: { externalId },
+    defaults: {
+      name: `Jogador ${externalId}`,
+      photoUrl: null,
+      age: null,
+    },
+  });
+
+  playerIdByExternalId.set(externalId, player.id);
+  return player.id;
+};
+
 for (const ev of formations.events) {
-  let playerId: number | null = null;
-
-  if (ev.externalId) {
-    playerId = playerIdByExternalId.get(ev.externalId) ?? null;
-
-    if (playerId === null) {
-      const [player] = await Player.findOrCreate({
-        where: { externalId: ev.externalId },
-        defaults: {
-          name: `Jogador ${ev.externalId}`,
-          photoUrl: null,
-          age: null,
-        },
-      });
-
-      playerId = player.id;
-      playerIdByExternalId.set(ev.externalId, player.id);
-    }
+  if (ev.type === "substitution") {
+    eventsToCreate.push({
+      matchId,
+      matchExternalId,
+      type: ev.type,
+      minute: ev.minute,
+      phase: ev.phase,
+      playerId: null,
+      playerExternalId: null,
+      playerInId: await resolvePlayerId(ev.playerInExternalId),
+      playerOutId: await resolvePlayerId(ev.playerOutExternalId),
+      playerInExternalId: ev.playerInExternalId,
+      playerOutExternalId: ev.playerOutExternalId,
+      isOpponent: ev.isOpponent,
+      isOwnGoal: false,
+      isSecondYellow: false,
+      penaltyScored: null,
+    });
+    continue;
   }
 
   eventsToCreate.push({
@@ -632,10 +761,16 @@ for (const ev of formations.events) {
     type: ev.type,
     minute: ev.minute,
     phase: ev.phase,
-    playerId,
+    playerId: await resolvePlayerId(ev.externalId),
     playerExternalId: ev.externalId,
+    playerInId: null,
+    playerOutId: null,
+    playerInExternalId: null,
+    playerOutExternalId: null,
     isOpponent: ev.isOpponent,
     isOwnGoal: ev.isOwnGoal,
+    isSecondYellow: ev.isSecondYellow,
+    penaltyScored: ev.penaltyScored,
   });
 }
 
@@ -643,7 +778,7 @@ const existingEvents = await MatchEvent.findAll({
   where: {
     matchId,
     type: {
-      [Op.in]: ["goal", "red_card"],
+      [Op.in]: ["goal", "yellow_card", "red_card", "substitution"],
     },
   },
   order: [
@@ -668,16 +803,66 @@ if (!scraperIsConsistent && existingHasEvents) {
   return;
 }
 
+const compareNormalizedEvents = (
+  a: {
+    type: string;
+    minute: number;
+    playerId: number | null;
+    playerInId: number | null;
+    playerOutId: number | null;
+    isOpponent: boolean;
+    isSecondYellow: boolean;
+    penaltyScored: boolean | null;
+  },
+  b: {
+    type: string;
+    minute: number;
+    playerId: number | null;
+    playerInId: number | null;
+    playerOutId: number | null;
+    isOpponent: boolean;
+    isSecondYellow: boolean;
+    penaltyScored: boolean | null;
+  },
+) =>
+  [
+    a.minute,
+    a.type,
+    a.isOpponent,
+    a.isSecondYellow,
+    a.playerId,
+    a.playerInId,
+    a.playerOutId,
+    a.penaltyScored,
+  ]
+    .join("|")
+    .localeCompare(
+      [
+        b.minute,
+        b.type,
+        b.isOpponent,
+        b.isSecondYellow,
+        b.playerId,
+        b.playerInId,
+        b.playerOutId,
+        b.penaltyScored,
+      ].join("|"),
+    );
+
 const currentEvents = existingEvents
   .map((e) => ({
     type: e.type,
     minute: e.minute,
     phase: e.phase ?? null,
     playerId: e.playerId ?? null,
+    playerInId: e.playerInId ?? null,
+    playerOutId: e.playerOutId ?? null,
     isOpponent: e.isOpponent ?? false,
     isOwnGoal: e.isOwnGoal ?? false,
+    isSecondYellow: e.isSecondYellow ?? false,
+    penaltyScored: e.penaltyScored ?? null,
   }))
-  .sort((a, b) => a.minute - b.minute);
+  .sort(compareNormalizedEvents);
 
 const scrapedEvents = eventsToCreate
   .map((e) => ({
@@ -685,10 +870,14 @@ const scrapedEvents = eventsToCreate
     minute: e.minute,
     phase: e.phase ?? null,
     playerId: e.playerId ?? null,
+    playerInId: e.playerInId ?? null,
+    playerOutId: e.playerOutId ?? null,
     isOpponent: e.isOpponent,
     isOwnGoal: e.isOwnGoal,
+    isSecondYellow: e.isSecondYellow ?? false,
+    penaltyScored: e.penaltyScored ?? null,
   }))
-  .sort((a, b) => a.minute - b.minute);
+  .sort(compareNormalizedEvents);
 
 const eventsChanged =
   JSON.stringify(currentEvents) !== JSON.stringify(scrapedEvents);
@@ -698,7 +887,7 @@ if (eventsChanged) {
     where: {
       matchId,
       type: {
-        [Op.in]: ["goal", "red_card"],
+        [Op.in]: ["goal", "yellow_card", "red_card", "substitution"],
       },
     },
   });

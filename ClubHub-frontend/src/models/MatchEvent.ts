@@ -26,9 +26,10 @@ export type MatchEvent = {
 
   isOpponent: boolean;
   isOwnGoal?: boolean;
+  isSecondYellow?: boolean;
 
-  /** Apenas para penalty_shootout: true = marcado, false = falhado */
-  penaltyScored?: boolean;
+  /** Num golo normal indica g.p.; na série indica marcado/falhado. */
+  penaltyScored?: boolean | null;
 
   createdAt?: Date;
 };

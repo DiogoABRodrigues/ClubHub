@@ -12,3 +12,14 @@ O comando é idempotente e pode ser executado novamente. Também substitui o
 Os modelos Sequelize descrevem os mesmos índices para instalações novas, mas
 como o servidor não executa `sequelize.sync()`, este comando é necessário nas
 bases de dados já existentes.
+
+## Detalhes dos eventos de jogo
+
+Para adicionar de forma idempotente os campos introduzidos nos eventos de jogo:
+
+```bash
+npm run db:migrate:match-events
+```
+
+Atualmente esta migração adiciona `isSecondYellow`, que distingue uma expulsão
+por segundo amarelo de um cartão vermelho direto.

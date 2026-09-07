@@ -88,6 +88,10 @@ export const styles = createThemedStyles(() => ({
     alignItems: "center",
     justifyContent: "center",
   },
+  cardIconPair: {
+    flexDirection: "row",
+    gap: 3,
+  },
 
   // ── Estado vazio ─────────────────────────────────────────────────────────
   emptyState: {

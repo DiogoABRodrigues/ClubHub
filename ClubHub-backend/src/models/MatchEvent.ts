@@ -24,6 +24,7 @@ class MatchEvent extends Model {
 
   public isOpponent!: boolean;
   public isOwnGoal?: boolean;
+  public isSecondYellow?: boolean;
   public penaltyScored?: boolean | null;
 
   public readonly createdAt!: Date;
@@ -94,6 +95,10 @@ MatchEvent.init(
       defaultValue: false,
     },
     isOwnGoal: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    isSecondYellow: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },

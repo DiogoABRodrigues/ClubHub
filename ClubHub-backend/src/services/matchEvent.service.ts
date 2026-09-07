@@ -160,10 +160,10 @@ class MatchEventService {
         title = category === "over19" ? "Golo!" : `Golo, ${categoryLabel}!`;
         body = `${playerName} - ${event.minute}'\n[${match.result}]`;
       } else if (event.type === "red_card") {
-        title =
-          category === "over19"
-            ? "Vermelho 🟥"
-            : `Vermelho 🟥, ${categoryLabel}!`;
+        const cardLabel = event.isSecondYellow
+          ? "Segundo amarelo 🟨🟥"
+          : "Vermelho 🟥";
+        title = category === "over19" ? cardLabel : `${cardLabel}, ${categoryLabel}!`;
         body = `${playerName} - ${event.minute}'`;
       } else {
         return;

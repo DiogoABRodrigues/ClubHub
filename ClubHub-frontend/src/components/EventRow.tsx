@@ -21,8 +21,13 @@ const ICON: Record<string, string> = {
   penalty_shootout: "",
 };
 
-const CardIcon = ({ type }: { type: string }) => (
-  <View style={styles.cardIconSlot}>
+const CardIcon = ({ type, isSecondYellow }: { type: string; isSecondYellow?: boolean }) => (
+  <View style={[styles.cardIconSlot, isSecondYellow && styles.cardIconPair]}>
+    {isSecondYellow && (
+      <View
+        style={[styles.cardIcon, { backgroundColor: COLORS.status.yellowCard }]}
+      />
+    )}
     <View
       style={[
         styles.cardIcon,
@@ -43,6 +48,7 @@ export const EventRow = ({
   const isCard = event.type === "yellow_card" || event.type === "red_card";
   const isSub = event.type === "substitution";
   const isPenaltyShootout = event.type === "penalty_shootout";
+  const isPenaltyGoal = event.type === "goal" && event.penaltyScored === true;
   const { players } = usePlayers();
   const playerOut = players.find((p) => p.id === event.playerOutId);
   const playerIn = players.find((p) => p.id === event.playerInId);
@@ -61,8 +67,16 @@ export const EventRow = ({
   const eventWithNames = {
     ...event,
     player: playerName(event),
-    playerOut: playerOut ? playerOut.name : "Jogador Desconhecido",
-    playerIn: playerIn ? playerIn.name : "Jogador Desconhecido",
+    playerOut: playerOut
+      ? playerOut.name
+      : event.isOpponent
+        ? "Adversário"
+        : "Jogador Desconhecido",
+    playerIn: playerIn
+      ? playerIn.name
+      : event.isOpponent
+        ? "Adversário"
+        : "Jogador Desconhecido",
   };
 
   // Penaltis da série: mostrar ✓ ou ✗ em vez do minuto
@@ -107,9 +121,11 @@ export const EventRow = ({
           {minuteLabel}
         </Text>
         {icon && <Text style={styles.eventIconText}>{icon}</Text>}
-        {isCard && <CardIcon type={event.type} />}
+        {isCard && <CardIcon type={event.type} isSecondYellow={event.isSecondYellow} />}
         {!isSub && (
-          <Text style={styles.eventPlayer}>{eventWithNames.player}</Text>
+          <Text style={styles.eventPlayer}>
+            {eventWithNames.player}{isPenaltyGoal ? " (g.p.)" : ""}
+          </Text>
         )}
         {isSub && eventWithNames.playerOut && eventWithNames.playerIn && (
           <View>
@@ -131,10 +147,12 @@ export const EventRow = ({
         </View>
       )}
       {!isSub && (
-        <Text style={styles.eventPlayer}>{eventWithNames.player}</Text>
+        <Text style={styles.eventPlayer}>
+          {eventWithNames.player}{isPenaltyGoal ? " (g.p.)" : ""}
+        </Text>
       )}
       {icon && <Text style={styles.eventIconText}>{icon}</Text>}
-      {isCard && <CardIcon type={event.type} />}
+      {isCard && <CardIcon type={event.type} isSecondYellow={event.isSecondYellow} />}
       <Text
         style={[
           styles.eventIconText,
