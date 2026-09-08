@@ -85,43 +85,24 @@ export const MatchDetail = () => {
     "timeline",
   );
 
-  // ── Header colapsável (estilo FlashScore) ──────────────────────────────
+  // ── Header flutuante (estilo FlashScore) ───────────────────────────────
+  // O header grande faz scroll normal (sai do ecrã); uma barra compacta
+  // (logos + placar + estado) fica fixa por cima assim que o header grande
+  // deixa de estar visível.
   const scrollY = useRef(new Animated.Value(0)).current;
-  const [expandableHeight, setExpandableHeight] = useState(0);
-  const collapseRange = expandableHeight || 1;
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const fadeRange = headerHeight || 1;
 
-  const expandableStyle = {
-    opacity: scrollY.interpolate({
-      inputRange: [0, collapseRange * 0.6, collapseRange],
-      outputRange: [1, 0.3, 0],
-      extrapolate: "clamp" as const,
-    }),
-    transform: [
-      {
-        translateY: scrollY.interpolate({
-          inputRange: [0, collapseRange],
-          outputRange: [0, -collapseRange * 0.3],
-          extrapolate: "clamp" as const,
-        }),
-      },
-    ],
-    // Só aplica altura animada depois de medirmos o conteúdo real,
-    // para evitar saltos visuais no primeiro render.
-    ...(expandableHeight
-      ? {
-          height: scrollY.interpolate({
-            inputRange: [0, collapseRange],
-            outputRange: [expandableHeight, 0],
-            extrapolate: "clamp" as const,
-          }),
-        }
-      : {}),
-  };
-
-  const compactTitleOpacity = scrollY.interpolate({
-    inputRange: [collapseRange * 0.5, collapseRange],
+  const miniHeaderOpacity = scrollY.interpolate({
+    inputRange: [fadeRange * 0.75, fadeRange],
     outputRange: [0, 1],
-    extrapolate: "clamp" as const,
+    extrapolate: "clamp",
+  });
+
+  const miniHeaderTranslateY = scrollY.interpolate({
+    inputRange: [fadeRange * 0.75, fadeRange],
+    outputRange: [-12, 0],
+    extrapolate: "clamp",
   });
 
   const tabs = useMemo(
@@ -254,6 +235,23 @@ export const MatchDetail = () => {
     extraTime.length > 0 ||
     penalties.length > 0;
 
+  const statusLabel =
+    match.status === "upcoming"
+      ? "Agendado"
+      : match.status === "finished"
+        ? "Terminado"
+        : match.statusTime === "1st"
+          ? "1ª Parte"
+          : match.statusTime === "interval"
+            ? "Intervalo"
+            : match.statusTime === "2nd"
+              ? "2ª Parte"
+              : match.statusTime === "extra"
+                ? "Prolongamento"
+                : match.statusTime === "penalties"
+                  ? "Penáltis"
+                  : "";
+
   if (!loading && !loadedMatch) {
     return (
       <View style={styles.container}>
@@ -263,50 +261,38 @@ export const MatchDetail = () => {
   }
 
   return (
-    <Animated.ScrollView
-      style={styles.container}
-      scrollEventThrottle={16}
-      onScroll={Animated.event(
-        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-        { useNativeDriver: false },
-      )}
-      stickyHeaderIndices={[1]}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          colors={[COLORS.primary]}
-          tintColor={COLORS.primary}
-        />
-      }
-    >
-      {/* HEADER */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Ionicons name="arrow-back" size={24} color={COLORS.text.blackWhite} />
-        </TouchableOpacity>
-
-        {/* Título compacto - aparece só depois de colapsar */}
-        <Animated.View
-          style={[styles.compactTitleWrap, { opacity: compactTitleOpacity }]}
-          pointerEvents="none"
-        >
-          <Text style={styles.compactTitle} numberOfLines={1}>
-            {homeTeamName} {homeScoreDisplay} - {awayScoreDisplay} {awayTeamName}
-          </Text>
-        </Animated.View>
-
-        {/* Conteúdo que colapsa/desvanece ao dar scroll */}
-        <Animated.View
-          style={[styles.expandableHeader, expandableStyle]}
+    <View style={styles.screenWrapper}>
+      <Animated.ScrollView
+        style={styles.container}
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false },
+        )}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+          />
+        }
+      >
+        {/* HEADER GRANDE - faz scroll normal, sai do ecrã como o resto */}
+        <View
+          style={styles.header}
           onLayout={(e) => {
             const h = e.nativeEvent.layout.height;
-            if (!expandableHeight && h > 0) setExpandableHeight(h);
+            if (!headerHeight && h > 0) setHeaderHeight(h);
           }}
         >
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Ionicons name="arrow-back" size={24} color={COLORS.text.blackWhite} />
+          </TouchableOpacity>
+
           <Text style={styles.title}></Text>
 
           <View style={styles.statusContainer}>
@@ -396,36 +382,35 @@ export const MatchDetail = () => {
               </View>
             )}
           </View>
-        </Animated.View>
-      </View>
+        </View>
 
-      {/* TABS - fica fixo no topo ao colapsar (stickyHeaderIndices=[1]) */}
-      <View style={styles.tabsList}>
-        {tabs.map((tab) => (
-          <TouchableOpacity
-            key={tab.key}
-            onPress={() => setActiveTab(tab.key as any)}
-            style={[
-              styles.tabTrigger,
-              activeTab === tab.key && styles.activeTab,
-            ]}
-          >
-            <Text
+        {/* TABS - scroll normal, NÃO ficam fixas */}
+        <View style={styles.tabsList}>
+          {tabs.map((tab) => (
+            <TouchableOpacity
+              key={tab.key}
+              onPress={() => setActiveTab(tab.key as any)}
               style={[
-                styles.tabText,
-                activeTab === tab.key && {
-                  color: COLORS.text.blackWhite,
-                },
+                styles.tabTrigger,
+                activeTab === tab.key && styles.activeTab,
               ]}
             >
-              {tab.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+              <Text
+                style={[
+                  styles.tabText,
+                  activeTab === tab.key && {
+                    color: COLORS.text.blackWhite,
+                  },
+                ]}
+              >
+                {tab.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-      {/* CONTENT */}
-      <View style={styles.tabContent}>
+        {/* CONTENT */}
+        <View style={styles.tabContent}>
           {activeTab === "timeline" &&
             (loading ? (
               <View style={styles.emptyState}>
@@ -603,7 +588,49 @@ export const MatchDetail = () => {
               )}
             </>
           )}
-      </View>
-    </Animated.ScrollView>
+        </View>
+      </Animated.ScrollView>
+
+      {/* MINI HEADER FLUTUANTE - aparece só depois do header grande sair
+          do ecrã, fica sempre fixo por cima do conteúdo (como no FlashScore) */}
+      <Animated.View
+        style={[
+          styles.miniHeader,
+          {
+            opacity: miniHeaderOpacity,
+            transform: [{ translateY: miniHeaderTranslateY }],
+          },
+        ]}
+        pointerEvents="box-none"
+      >
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.miniBackButton}
+        >
+          <Ionicons name="arrow-back" size={22} color={COLORS.text.blackWhite} />
+        </TouchableOpacity>
+
+        <View style={styles.miniHeaderRow}>
+          <Image
+            source={{ uri: hometeamLogo }}
+            style={styles.miniLogo}
+            resizeMode="contain"
+          />
+          <View style={styles.miniScoreBlock}>
+            <Text style={styles.miniScoreText}>
+              {homeScoreDisplay} - {awayScoreDisplay}
+            </Text>
+            {!!statusLabel && (
+              <Text style={styles.miniStatusText}>{statusLabel}</Text>
+            )}
+          </View>
+          <Image
+            source={{ uri: awayteamLogo }}
+            style={styles.miniLogo}
+            resizeMode="contain"
+          />
+        </View>
+      </Animated.View>
+    </View>
   );
 };
