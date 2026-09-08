@@ -1,8 +1,8 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback, useRef } from "react";
 import {
   View,
   Text,
-  ScrollView,
+  Animated,
   TouchableOpacity,
   Image,
   RefreshControl,
@@ -84,6 +84,45 @@ export const MatchDetail = () => {
   const [activeTab, setActiveTab] = useState<"timeline" | "lineup">(
     "timeline",
   );
+
+  // ── Header colapsável (estilo FlashScore) ──────────────────────────────
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const [expandableHeight, setExpandableHeight] = useState(0);
+  const collapseRange = expandableHeight || 1;
+
+  const expandableStyle = {
+    opacity: scrollY.interpolate({
+      inputRange: [0, collapseRange * 0.6, collapseRange],
+      outputRange: [1, 0.3, 0],
+      extrapolate: "clamp" as const,
+    }),
+    transform: [
+      {
+        translateY: scrollY.interpolate({
+          inputRange: [0, collapseRange],
+          outputRange: [0, -collapseRange * 0.3],
+          extrapolate: "clamp" as const,
+        }),
+      },
+    ],
+    // Só aplica altura animada depois de medirmos o conteúdo real,
+    // para evitar saltos visuais no primeiro render.
+    ...(expandableHeight
+      ? {
+          height: scrollY.interpolate({
+            inputRange: [0, collapseRange],
+            outputRange: [expandableHeight, 0],
+            extrapolate: "clamp" as const,
+          }),
+        }
+      : {}),
+  };
+
+  const compactTitleOpacity = scrollY.interpolate({
+    inputRange: [collapseRange * 0.5, collapseRange],
+    outputRange: [0, 1],
+    extrapolate: "clamp" as const,
+  });
 
   const tabs = useMemo(
     () => [
@@ -224,8 +263,14 @@ export const MatchDetail = () => {
   }
 
   return (
-    <ScrollView
+    <Animated.ScrollView
       style={styles.container}
+      scrollEventThrottle={16}
+      onScroll={Animated.event(
+        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+        { useNativeDriver: false },
+      )}
+      stickyHeaderIndices={[1]}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -244,125 +289,143 @@ export const MatchDetail = () => {
           <Ionicons name="arrow-back" size={24} color={COLORS.text.blackWhite} />
         </TouchableOpacity>
 
-        <Text style={styles.title}></Text>
+        {/* Título compacto - aparece só depois de colapsar */}
+        <Animated.View
+          style={[styles.compactTitleWrap, { opacity: compactTitleOpacity }]}
+          pointerEvents="none"
+        >
+          <Text style={styles.compactTitle} numberOfLines={1}>
+            {homeTeamName} {homeScoreDisplay} - {awayScoreDisplay} {awayTeamName}
+          </Text>
+        </Animated.View>
 
-        <View style={styles.statusContainer}>
-          {match.status === "live" && <LiveBadge interval={false} />}
-          {match.status === "upcoming" && (
-            <View style={styles.upcomingBadge}>
-              <Text style={styles.badgeText}>Agendado</Text>
-            </View>
-          )}
-          {match.status === "finished" && (
-            <View style={styles.fulltimeBadge}>
-              <Text style={styles.fulltimeBadgeText}>Terminado</Text>
-            </View>
-          )}
-        </View>
+        {/* Conteúdo que colapsa/desvanece ao dar scroll */}
+        <Animated.View
+          style={[styles.expandableHeader, expandableStyle]}
+          onLayout={(e) => {
+            const h = e.nativeEvent.layout.height;
+            if (!expandableHeight && h > 0) setExpandableHeight(h);
+          }}
+        >
+          <Text style={styles.title}></Text>
 
-        <Text style={styles.competition}>
-          {competition?.name || ""} {match.round ? `- ${match.round}` : ""}
-        </Text>
-        {/* SCORE */}
-        <View style={styles.scoreCard}>
-          <View style={styles.scoreRow}>
-            <View style={styles.teamSide}>
-              <Image source={{ uri: hometeamLogo }} style={styles.teamLogo} resizeMode="contain" />
-            </View>
-
-            <View style={styles.scoreColumn}>
-              <View style={styles.scoreContainer}>
-                <Text style={styles.scoreText}>{homeScoreDisplay}</Text>
-                <Text style={styles.colon}>-</Text>
-                <Text style={styles.scoreText}>{awayScoreDisplay}</Text>
+          <View style={styles.statusContainer}>
+            {match.status === "live" && <LiveBadge interval={false} />}
+            {match.status === "upcoming" && (
+              <View style={styles.upcomingBadge}>
+                <Text style={styles.badgeText}>Agendado</Text>
               </View>
-              {match.decidedByPenalties && (
-                <Text style={styles.penaltiesLabel}>Após g.p.</Text>
-              )}
-            </View>
-
-            <View style={styles.teamSide}>
-              <Image source={{ uri: awayteamLogo }} style={styles.teamLogo} resizeMode="contain" />
-            </View>
+            )}
+            {match.status === "finished" && (
+              <View style={styles.fulltimeBadge}>
+                <Text style={styles.fulltimeBadgeText}>Terminado</Text>
+              </View>
+            )}
           </View>
 
-          <View style={styles.teamNamesRow}>
-            <View style={styles.teamSide}>
-              <Text style={styles.teamName}>{homeTeamName}</Text>
+          <Text style={styles.competition}>
+            {competition?.name || ""} {match.round ? `- ${match.round}` : ""}
+          </Text>
+          {/* SCORE */}
+          <View style={styles.scoreCard}>
+            <View style={styles.scoreRow}>
+              <View style={styles.teamSide}>
+                <Image source={{ uri: hometeamLogo }} style={styles.teamLogo} resizeMode="contain" />
+              </View>
+
+              <View style={styles.scoreColumn}>
+                <View style={styles.scoreContainer}>
+                  <Text style={styles.scoreText}>{homeScoreDisplay}</Text>
+                  <Text style={styles.colon}>-</Text>
+                  <Text style={styles.scoreText}>{awayScoreDisplay}</Text>
+                </View>
+                {match.decidedByPenalties && (
+                  <Text style={styles.penaltiesLabel}>Após g.p.</Text>
+                )}
+              </View>
+
+              <View style={styles.teamSide}>
+                <Image source={{ uri: awayteamLogo }} style={styles.teamLogo} resizeMode="contain" />
+              </View>
             </View>
 
-            {match.status === "live" ? 
-            <View style={styles.phaseBadge}>
-              <Text style={styles.phaseBadgeText}>
-                {match.statusTime === "1st" && "1ª Parte"}
-                {match.statusTime === "interval" && "Intervalo"}
-                {match.statusTime === "2nd" && "2ª Parte"}
-                {match.statusTime === "extra" && "Prolongamento"}
-                {match.statusTime === "penalties" && "Penáltis"}
-              </Text>
-            </View>
-             : 
-            <View style={styles.scoreSpacer} />
-            }
+            <View style={styles.teamNamesRow}>
+              <View style={styles.teamSide}>
+                <Text style={styles.teamName}>{homeTeamName}</Text>
+              </View>
 
-            <View style={styles.teamSide}>
-              <Text style={styles.teamName}>{awayTeamName}</Text>
+              {match.status === "live" ? 
+              <View style={styles.phaseBadge}>
+                <Text style={styles.phaseBadgeText}>
+                  {match.statusTime === "1st" && "1ª Parte"}
+                  {match.statusTime === "interval" && "Intervalo"}
+                  {match.statusTime === "2nd" && "2ª Parte"}
+                  {match.statusTime === "extra" && "Prolongamento"}
+                  {match.statusTime === "penalties" && "Penáltis"}
+                </Text>
+              </View>
+               : 
+              <View style={styles.scoreSpacer} />
+              }
+
+              <View style={styles.teamSide}>
+                <Text style={styles.teamName}>{awayTeamName}</Text>
+              </View>
             </View>
           </View>
-        </View>
-        {/* Match Info */}
-        <View style={styles.matchInfo}>
-          <View style={styles.infoItem}>
-            <Ionicons
-              name="calendar-outline"
-              size={16}
-              color={COLORS.text.subtle}
-            />
-            <Text style={styles.infoText}>
-              {formatDateWithWeekdayPT(match.date)} • {match.time}
-            </Text>
-          </View>
-          {match.location && (
+          {/* Match Info */}
+          <View style={styles.matchInfo}>
             <View style={styles.infoItem}>
               <Ionicons
-                name="location-outline"
+                name="calendar-outline"
                 size={16}
                 color={COLORS.text.subtle}
               />
-              <Text style={styles.infoText}>{match.location}</Text>
+              <Text style={styles.infoText}>
+                {formatDateWithWeekdayPT(match.date)} • {match.time}
+              </Text>
             </View>
-          )}
-        </View>
+            {match.location && (
+              <View style={styles.infoItem}>
+                <Ionicons
+                  name="location-outline"
+                  size={16}
+                  color={COLORS.text.subtle}
+                />
+                <Text style={styles.infoText}>{match.location}</Text>
+              </View>
+            )}
+          </View>
+        </Animated.View>
       </View>
 
-      {/* TABS */}
-      <View style={styles.tabsContainer}>
-        <View style={styles.tabsList}>
-          {tabs.map((tab) => (
-            <TouchableOpacity
-              key={tab.key}
-              onPress={() => setActiveTab(tab.key as any)}
+      {/* TABS - fica fixo no topo ao colapsar (stickyHeaderIndices=[1]) */}
+      <View style={styles.tabsList}>
+        {tabs.map((tab) => (
+          <TouchableOpacity
+            key={tab.key}
+            onPress={() => setActiveTab(tab.key as any)}
+            style={[
+              styles.tabTrigger,
+              activeTab === tab.key && styles.activeTab,
+            ]}
+          >
+            <Text
               style={[
-                styles.tabTrigger,
-                activeTab === tab.key && styles.activeTab,
+                styles.tabText,
+                activeTab === tab.key && {
+                  color: COLORS.text.blackWhite,
+                },
               ]}
             >
-              <Text
-                style={[
-                  styles.tabText,
-                  activeTab === tab.key && {
-                    color: COLORS.text.blackWhite,
-                  },
-                ]}
-              >
-                {tab.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+              {tab.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
-        {/* CONTENT */}
-        <View style={styles.tabContent}>
+      {/* CONTENT */}
+      <View style={styles.tabContent}>
           {activeTab === "timeline" &&
             (loading ? (
               <View style={styles.emptyState}>
@@ -540,8 +603,7 @@ export const MatchDetail = () => {
               )}
             </>
           )}
-        </View>
       </View>
-    </ScrollView>
+    </Animated.ScrollView>
   );
 };

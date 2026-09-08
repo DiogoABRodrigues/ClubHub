@@ -68,7 +68,7 @@ const EVENT_TYPES: { key: MatchEventType; label: string; icon: string }[] = [
   { key: "goal", label: "Golo", icon: "⚽" },
   { key: "yellow_card", label: "Amarelo", icon: "🟨" },
   { key: "red_card", label: "Vermelho", icon: "🟥" },
-  { key: "substitution", label: "Substituição", icon: "🔄" },
+  { key: "substitution", label: "Substituição", icon: "⇄" },
   { key: "penalty_shootout", label: "Penaltis", icon: "⚽" },
 ];
 

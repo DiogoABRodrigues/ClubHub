@@ -692,7 +692,7 @@ for (const entry of formations.lineup) {
       }
 
       console.log(
-          `   🔄 Lineup sincronizado (${lineupToCreate.length} jogador(es))`,
+          `   ⇄ Lineup sincronizado (${lineupToCreate.length} jogador(es))`,
       );
   }
 
@@ -897,7 +897,7 @@ if (eventsChanged) {
   }
 
   console.log(
-    `   🔄 MatchEvents sincronizados (${eventsToCreate.length} evento(s))`,
+    `   ⇄ MatchEvents sincronizados (${eventsToCreate.length} evento(s))`,
   );
 }
 }

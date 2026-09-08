@@ -42,6 +42,27 @@ export const styles = createThemedStyles(() => ({
     marginBottom: SPACING.xs,
   },
 
+  // ── Header colapsável ────────────────────────────────────────────────────
+  expandableHeader: {
+    overflow: "hidden",
+  },
+
+  compactTitleWrap: {
+    position: "absolute",
+    top: SPACING.xl + 2,
+    left: SPACING.xl * 2,
+    right: SPACING.xl * 2,
+    alignItems: "center",
+    zIndex: 1,
+  },
+
+  compactTitle: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: "700",
+    color: COLORS.text.blackWhite,
+    textAlign: "center",
+  },
+
   // ── Status badges ─────────────────────────────────────────────────────────
   statusContainer: {
     flexDirection: "row",
