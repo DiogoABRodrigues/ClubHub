@@ -55,14 +55,34 @@ const CardIcon = ({
 const SubstitutionLabel = ({
   playerIn,
   playerOut,
+  outFirst,
 }: {
   playerIn: string;
   playerOut: string;
-}) => (
-  <Text style={styles.eventPlayer} numberOfLines={1}>
-    {playerIn} <Text style={styles.eventAssist}>({playerOut})</Text>
-  </Text>
-);
+  outFirst?: boolean;
+}) => {
+  // Quem sai tem sempre uma cor mais clara, independentemente da posição.
+  const inName = <Text style={styles.eventPlayer}>{playerIn}</Text>;
+  const outName = (
+    <Text style={[styles.eventAssist, { color: COLORS.textSecondary }]}>
+      {playerOut}
+    </Text>
+  );
+
+  return (
+    <Text numberOfLines={1}>
+      {outFirst ? (
+        <>
+          {outName} <Text style={styles.eventAssist}>({inName})</Text>
+        </>
+      ) : (
+        <>
+          {inName} <Text style={styles.eventAssist}>({outName})</Text>
+        </>
+      )}
+    </Text>
+  );
+};
 
 export const EventRow = ({
   event,
@@ -177,6 +197,7 @@ export const EventRow = ({
         <SubstitutionLabel
           playerIn={eventWithNames.playerIn}
           playerOut={eventWithNames.playerOut}
+          outFirst
         />
       )}
       {!isSub && (
