@@ -91,17 +91,19 @@ export const MatchDetail = () => {
   // deixa de estar visível.
   const scrollY = useRef(new Animated.Value(0)).current;
   const [headerHeight, setHeaderHeight] = useState(0);
-  const fadeRange = headerHeight || 1;
+  const collapsePoint = headerHeight || 1;
 
   const miniHeaderOpacity = scrollY.interpolate({
-    inputRange: [fadeRange * 0.75, fadeRange],
+    // Só revela o placar compacto quando o header original já saiu por
+    // completo. Assim, os dois resultados nunca ficam visíveis ao mesmo tempo.
+    inputRange: [collapsePoint - 0.5, collapsePoint],
     outputRange: [0, 1],
     extrapolate: "clamp",
   });
 
   const miniHeaderTranslateY = scrollY.interpolate({
-    inputRange: [fadeRange * 0.75, fadeRange],
-    outputRange: [-12, 0],
+    inputRange: [collapsePoint - 0.5, collapsePoint],
+    outputRange: [-4, 0],
     extrapolate: "clamp",
   });
 

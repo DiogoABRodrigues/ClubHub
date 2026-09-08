@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import Svg, { Path, Defs, ClipPath, Polygon } from "react-native-svg";
 import { styles } from "./styles/EventRow.syles";
 import { COLORS } from "../theme/colors";
 import Ionicons from "@expo/vector-icons/build/Ionicons";
@@ -21,34 +22,81 @@ const ICON: Record<string, string> = {
   penalty_shootout: "",
 };
 
+// Cartão inclinado, mesmo desenho usado pelo Flashscore.
+const CARD_PATH = "M5.97 0 3.5 2.47v15.06L16.6 2.47 14.13 0H5.97Z";
+const CARD_SIZE = 12;
+
+const CardShape = ({
+  color,
+  size = CARD_SIZE,
+  style,
+}: {
+  color: string;
+  size?: number;
+  style?: any;
+}) => (
+  <Svg width={size} height={(size * 18) / 20} viewBox="0 0 20 18" style={style}>
+    <Path fillRule="evenodd" d={CARD_PATH} fill={color} />
+  </Svg>
+);
+
+// 2º amarelo = vermelho: o MESMO cartão, mas metade amarela e metade
+// vermelha (clip a meio, em vez de dois cartões sobrepostos).
+const SplitCardShape = ({
+  size = CARD_SIZE,
+  style,
+}: {
+  size?: number;
+  style?: any;
+}) => {
+  const uid = useMemo(() => Math.random().toString(36).slice(2), []);
+  const leftId = `cardHalfLeft-${uid}`;
+  const rightId = `cardHalfRight-${uid}`;
+
+  return (
+    <Svg width={size} height={(size * 18) / 20} viewBox="0 0 20 18" style={style}>
+      <Defs>
+        <ClipPath id={leftId}>
+          {/* Metade amarela: triângulo superior-esquerdo */}
+          <Polygon points="0,0 20,0 0,18" />
+        </ClipPath>
+        <ClipPath id={rightId}>
+          {/* Metade vermelha: triângulo inferior-direito */}
+          <Polygon points="20,0 20,18 0,18" />
+        </ClipPath>
+      </Defs>
+      <Path
+        fillRule="evenodd"
+        d={CARD_PATH}
+        fill={COLORS.status.yellowCard}
+        clipPath={`url(#${leftId})`}
+      />
+      <Path
+        fillRule="evenodd"
+        d={CARD_PATH}
+        fill={COLORS.error}
+        clipPath={`url(#${rightId})`}
+      />
+    </Svg>
+  );
+};
+
 const CardIcon = ({
   type,
   isSecondYellow,
-  isOurs,
 }: {
   type: string;
   isSecondYellow?: boolean;
   isOurs: boolean;
 }) => (
-  <View
-    style={[
-      styles.cardIconSlot,
-      isSecondYellow && styles.cardIconPair,
-      isSecondYellow &&
-        (isOurs ? styles.cardIconPairLeft : styles.cardIconPairRight),
-    ]}
-  >
-    {isSecondYellow && (
-      <View
-        style={[styles.cardIcon, { backgroundColor: COLORS.status.yellowCard }]}
+  <View style={styles.cardIconSlot}>
+    {isSecondYellow ? (
+      <SplitCardShape />
+    ) : (
+      <CardShape
+        color={type === "yellow_card" ? COLORS.status.yellowCard : COLORS.error}
       />
     )}
-    <View
-      style={[
-        styles.cardIcon,
-        { backgroundColor: type === "yellow_card" ? COLORS.status.yellowCard : COLORS.error },
-      ]}
-    />
   </View>
 );
 
@@ -73,11 +121,11 @@ const SubstitutionLabel = ({
     <Text numberOfLines={1}>
       {outFirst ? (
         <>
-          {outName} <Text style={styles.eventAssist}>{inName}</Text>
+          {outName} <Text style={styles.eventAssist}>({inName})</Text>
         </>
       ) : (
         <>
-          {inName} <Text style={styles.eventAssist}>{outName}</Text>
+          {inName} <Text style={styles.eventAssist}>({outName})</Text>
         </>
       )}
     </Text>
