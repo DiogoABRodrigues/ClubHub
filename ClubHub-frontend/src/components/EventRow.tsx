@@ -121,11 +121,11 @@ const SubstitutionLabel = ({
     <Text numberOfLines={1}>
       {outFirst ? (
         <>
-          {outName} <Text style={styles.eventAssist}>({inName})</Text>
+          {outName} <Text style={styles.eventAssist}>{inName}</Text>
         </>
       ) : (
         <>
-          {inName} <Text style={styles.eventAssist}>({outName})</Text>
+          {inName} <Text style={styles.eventAssist}>{outName}</Text>
         </>
       )}
     </Text>
