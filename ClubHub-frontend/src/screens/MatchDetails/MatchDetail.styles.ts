@@ -43,62 +43,24 @@ export const styles = createThemedStyles(() => ({
   },
 
   // ── Header colapsável ────────────────────────────────────────────────────
-  screenWrapper: {
-    flex: 1,
+  expandableHeader: {
+    overflow: "hidden",
   },
 
-  // Barra compacta fixa (logos + placar + estado) que aparece por cima do
-  // conteúdo assim que o header grande sai do ecrã.
-  miniHeader: {
+  compactTitleWrap: {
     position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    flexDirection: "row",
+    top: SPACING.xl + 2,
+    left: SPACING.xl * 2,
+    right: SPACING.xl * 2,
     alignItems: "center",
-    paddingTop: SPACING.xl,
-    paddingBottom: SPACING.sm,
-    paddingHorizontal: SPACING.md,
-    backgroundColor: COLORS.backgrounds.screen,
-    borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.borders.subtle,
-    zIndex: 10,
+    zIndex: 1,
   },
 
-  miniBackButton: {
-    padding: 4,
-  },
-
-  miniHeaderRow: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: SPACING.md,
-  },
-
-  miniLogo: {
-    width: 26,
-    height: 26,
-  },
-
-  miniScoreBlock: {
-    alignItems: "center",
-    minWidth: 60,
-  },
-
-  miniScoreText: {
-    fontSize: FONT_SIZE.md,
-    fontWeight: "800",
+  compactTitle: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: "700",
     color: COLORS.text.blackWhite,
-  },
-
-  miniStatusText: {
-    fontSize: 10,
-    fontWeight: "600",
-    color: COLORS.text.subtle,
-    textTransform: "uppercase",
-    marginTop: 1,
+    textAlign: "center",
   },
 
   // ── Status badges ─────────────────────────────────────────────────────────

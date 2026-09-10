@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import Svg, { Path, Defs, ClipPath, Polygon } from "react-native-svg";
+import Svg, { Path, Rect, Defs, ClipPath } from "react-native-svg";
 import { styles } from "./styles/EventRow.syles";
 import { COLORS } from "../theme/colors";
 import Ionicons from "@expo/vector-icons/build/Ionicons";
@@ -22,9 +22,25 @@ const ICON: Record<string, string> = {
   penalty_shootout: "",
 };
 
-// Cartão inclinado, mesmo desenho usado pelo Flashscore.
-const CARD_PATH = "M5.97 0 3.5 2.47v15.06L16.6 2.47 14.13 0H5.97Z";
-const CARD_SIZE = 12;
+// Cartão inclinado, estilo Flashscore.
+//
+// NOTA: a versão anterior desenhava isto com um <Path> de coordenadas escritas
+// à mão ("M5.97 0 3.5 2.47v15.06L16.6 2.47 14.13 0H5.97Z"), mas faltava-lhe o
+// vértice do canto inferior-direito — em vez de um retângulo inclinado, o SVG
+// fechava a forma diretamente do canto inferior-esquerdo para o canto
+// superior-direito, dando origem a um triângulo/bandeira em vez de um cartão.
+// Aqui usamos um <Rect> real rodado com "rotate()", que nunca pode ficar com
+// vértices em falta.
+const CARD_W = 10;
+const CARD_H = 14;
+const CARD_RADIUS = 1.5;
+const CARD_ROTATION_DEG = -18;
+const CARD_VIEWBOX = 24; // quadrado, com margem suficiente para a rotação não cortar o cartão
+const CARD_RECT_X = (CARD_VIEWBOX - CARD_W) / 2;
+const CARD_RECT_Y = (CARD_VIEWBOX - CARD_H) / 2;
+const CARD_CENTER = CARD_VIEWBOX / 2;
+const CARD_ROTATE_TRANSFORM = `rotate(${CARD_ROTATION_DEG} ${CARD_CENTER} ${CARD_CENTER})`;
+const CARD_SIZE = 14;
 
 const CardShape = ({
   color,
@@ -35,13 +51,23 @@ const CardShape = ({
   size?: number;
   style?: any;
 }) => (
-  <Svg width={size} height={(size * 18) / 20} viewBox="0 0 20 18" style={style}>
-    <Path fillRule="evenodd" d={CARD_PATH} fill={color} />
+  <Svg width={size} height={size} viewBox={`0 0 ${CARD_VIEWBOX} ${CARD_VIEWBOX}`} style={style}>
+    <Rect
+      x={CARD_RECT_X}
+      y={CARD_RECT_Y}
+      width={CARD_W}
+      height={CARD_H}
+      rx={CARD_RADIUS}
+      fill={color}
+      transform={CARD_ROTATE_TRANSFORM}
+    />
   </Svg>
 );
 
-// 2º amarelo = vermelho: o MESMO cartão, mas metade amarela e metade
-// vermelha (clip a meio, em vez de dois cartões sobrepostos).
+// 2º amarelo = vermelho: o MESMO retângulo do cartão normal, mas cortado pela
+// sua própria diagonal em duas metades (amarela e vermelha) — em vez de dois
+// cartões sobrepostos, ou de um clip alinhado com a caixa do SVG (que não
+// coincidia com o cartão em si).
 const SplitCardShape = ({
   size = CARD_SIZE,
   style,
@@ -50,32 +76,28 @@ const SplitCardShape = ({
   style?: any;
 }) => {
   const uid = useMemo(() => Math.random().toString(36).slice(2), []);
-  const leftId = `cardHalfLeft-${uid}`;
-  const rightId = `cardHalfRight-${uid}`;
+  const clipId = `cardRect-${uid}`;
+  const x = CARD_RECT_X;
+  const y = CARD_RECT_Y;
 
   return (
-    <Svg width={size} height={(size * 18) / 20} viewBox="0 0 20 18" style={style}>
+    <Svg width={size} height={size} viewBox={`0 0 ${CARD_VIEWBOX} ${CARD_VIEWBOX}`} style={style}>
       <Defs>
-        <ClipPath id={leftId}>
-          {/* Metade amarela: triângulo superior-esquerdo */}
-          <Polygon points="0,0 20,0 0,18" />
-        </ClipPath>
-        <ClipPath id={rightId}>
-          {/* Metade vermelha: triângulo inferior-direito */}
-          <Polygon points="20,0 20,18 0,18" />
+        <ClipPath id={clipId}>
+          <Rect x={x} y={y} width={CARD_W} height={CARD_H} rx={CARD_RADIUS} />
         </ClipPath>
       </Defs>
       <Path
-        fillRule="evenodd"
-        d={CARD_PATH}
+        d={`M${x} ${y} L${x + CARD_W} ${y} L${x} ${y + CARD_H} Z`}
         fill={COLORS.status.yellowCard}
-        clipPath={`url(#${leftId})`}
+        clipPath={`url(#${clipId})`}
+        transform={CARD_ROTATE_TRANSFORM}
       />
       <Path
-        fillRule="evenodd"
-        d={CARD_PATH}
+        d={`M${x + CARD_W} ${y} L${x + CARD_W} ${y + CARD_H} L${x} ${y + CARD_H} Z`}
         fill={COLORS.error}
-        clipPath={`url(#${rightId})`}
+        clipPath={`url(#${clipId})`}
+        transform={CARD_ROTATE_TRANSFORM}
       />
     </Svg>
   );
@@ -121,11 +143,11 @@ const SubstitutionLabel = ({
     <Text numberOfLines={1}>
       {outFirst ? (
         <>
-          {outName} <Text style={styles.eventAssist}>{inName}</Text>
+          {outName} <Text style={styles.eventAssist}>({inName})</Text>
         </>
       ) : (
         <>
-          {inName} <Text style={styles.eventAssist}>{outName}</Text>
+          {inName} <Text style={styles.eventAssist}>({outName})</Text>
         </>
       )}
     </Text>

@@ -1,8 +1,8 @@
-import React, { useMemo, useState, useCallback, useRef } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import {
   View,
   Text,
-  Animated,
+  ScrollView,
   TouchableOpacity,
   Image,
   RefreshControl,
@@ -84,28 +84,6 @@ export const MatchDetail = () => {
   const [activeTab, setActiveTab] = useState<"timeline" | "lineup">(
     "timeline",
   );
-
-  // ── Header flutuante (estilo FlashScore) ───────────────────────────────
-  // O header grande faz scroll normal (sai do ecrã); uma barra compacta
-  // (logos + placar + estado) fica fixa por cima assim que o header grande
-  // deixa de estar visível.
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const [headerHeight, setHeaderHeight] = useState(0);
-  const collapsePoint = headerHeight || 1;
-
-  const miniHeaderOpacity = scrollY.interpolate({
-    // Só revela o placar compacto quando o header original já saiu por
-    // completo. Assim, os dois resultados nunca ficam visíveis ao mesmo tempo.
-    inputRange: [collapsePoint - 0.5, collapsePoint],
-    outputRange: [0, 1],
-    extrapolate: "clamp",
-  });
-
-  const miniHeaderTranslateY = scrollY.interpolate({
-    inputRange: [collapsePoint - 0.5, collapsePoint],
-    outputRange: [-4, 0],
-    extrapolate: "clamp",
-  });
 
   const tabs = useMemo(
     () => [
@@ -237,23 +215,6 @@ export const MatchDetail = () => {
     extraTime.length > 0 ||
     penalties.length > 0;
 
-  const statusLabel =
-    match.status === "upcoming"
-      ? "Agendado"
-      : match.status === "finished"
-        ? "Terminado"
-        : match.statusTime === "1st"
-          ? "1ª Parte"
-          : match.statusTime === "interval"
-            ? "Intervalo"
-            : match.statusTime === "2nd"
-              ? "2ª Parte"
-              : match.statusTime === "extra"
-                ? "Prolongamento"
-                : match.statusTime === "penalties"
-                  ? "Penáltis"
-                  : "";
-
   if (!loading && !loadedMatch) {
     return (
       <View style={styles.container}>
@@ -263,130 +224,119 @@ export const MatchDetail = () => {
   }
 
   return (
-    <View style={styles.screenWrapper}>
-      <Animated.ScrollView
-        style={styles.container}
-        scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false },
-        )}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={[COLORS.primary]}
-            tintColor={COLORS.primary}
-          />
-        }
-      >
-        {/* HEADER GRANDE - faz scroll normal, sai do ecrã como o resto */}
-        <View
-          style={styles.header}
-          onLayout={(e) => {
-            const h = e.nativeEvent.layout.height;
-            if (!headerHeight && h > 0) setHeaderHeight(h);
-          }}
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={[COLORS.primary]}
+          tintColor={COLORS.primary}
+        />
+      }
+    >
+      {/* HEADER */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
         >
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <Ionicons name="arrow-back" size={24} color={COLORS.text.blackWhite} />
-          </TouchableOpacity>
+          <Ionicons name="arrow-back" size={24} color={COLORS.text.blackWhite} />
+        </TouchableOpacity>
 
-          <Text style={styles.title}></Text>
+        <Text style={styles.title}></Text>
 
-          <View style={styles.statusContainer}>
-            {match.status === "live" && <LiveBadge interval={false} />}
-            {match.status === "upcoming" && (
-              <View style={styles.upcomingBadge}>
-                <Text style={styles.badgeText}>Agendado</Text>
-              </View>
-            )}
-            {match.status === "finished" && (
-              <View style={styles.fulltimeBadge}>
-                <Text style={styles.fulltimeBadgeText}>Terminado</Text>
-              </View>
-            )}
-          </View>
+        <View style={styles.statusContainer}>
+          {match.status === "live" && <LiveBadge interval={false} />}
+          {match.status === "upcoming" && (
+            <View style={styles.upcomingBadge}>
+              <Text style={styles.badgeText}>Agendado</Text>
+            </View>
+          )}
+          {match.status === "finished" && (
+            <View style={styles.fulltimeBadge}>
+              <Text style={styles.fulltimeBadgeText}>Terminado</Text>
+            </View>
+          )}
+        </View>
 
-          <Text style={styles.competition}>
-            {competition?.name || ""} {match.round ? `- ${match.round}` : ""}
-          </Text>
-          {/* SCORE */}
-          <View style={styles.scoreCard}>
-            <View style={styles.scoreRow}>
-              <View style={styles.teamSide}>
-                <Image source={{ uri: hometeamLogo }} style={styles.teamLogo} resizeMode="contain" />
-              </View>
-
-              <View style={styles.scoreColumn}>
-                <View style={styles.scoreContainer}>
-                  <Text style={styles.scoreText}>{homeScoreDisplay}</Text>
-                  <Text style={styles.colon}>-</Text>
-                  <Text style={styles.scoreText}>{awayScoreDisplay}</Text>
-                </View>
-                {match.decidedByPenalties && (
-                  <Text style={styles.penaltiesLabel}>Após g.p.</Text>
-                )}
-              </View>
-
-              <View style={styles.teamSide}>
-                <Image source={{ uri: awayteamLogo }} style={styles.teamLogo} resizeMode="contain" />
-              </View>
+        <Text style={styles.competition}>
+          {competition?.name || ""} {match.round ? `- ${match.round}` : ""}
+        </Text>
+        {/* SCORE */}
+        <View style={styles.scoreCard}>
+          <View style={styles.scoreRow}>
+            <View style={styles.teamSide}>
+              <Image source={{ uri: hometeamLogo }} style={styles.teamLogo} resizeMode="contain" />
             </View>
 
-            <View style={styles.teamNamesRow}>
-              <View style={styles.teamSide}>
-                <Text style={styles.teamName}>{homeTeamName}</Text>
+            <View style={styles.scoreColumn}>
+              <View style={styles.scoreContainer}>
+                <Text style={styles.scoreText}>{homeScoreDisplay}</Text>
+                <Text style={styles.colon}>-</Text>
+                <Text style={styles.scoreText}>{awayScoreDisplay}</Text>
               </View>
+              {match.decidedByPenalties && (
+                <Text style={styles.penaltiesLabel}>Após g.p.</Text>
+              )}
+            </View>
 
-              {match.status === "live" ? 
-              <View style={styles.phaseBadge}>
-                <Text style={styles.phaseBadgeText}>
-                  {match.statusTime === "1st" && "1ª Parte"}
-                  {match.statusTime === "interval" && "Intervalo"}
-                  {match.statusTime === "2nd" && "2ª Parte"}
-                  {match.statusTime === "extra" && "Prolongamento"}
-                  {match.statusTime === "penalties" && "Penáltis"}
-                </Text>
-              </View>
-               : 
-              <View style={styles.scoreSpacer} />
-              }
-
-              <View style={styles.teamSide}>
-                <Text style={styles.teamName}>{awayTeamName}</Text>
-              </View>
+            <View style={styles.teamSide}>
+              <Image source={{ uri: awayteamLogo }} style={styles.teamLogo} resizeMode="contain" />
             </View>
           </View>
-          {/* Match Info */}
-          <View style={styles.matchInfo}>
+
+          <View style={styles.teamNamesRow}>
+            <View style={styles.teamSide}>
+              <Text style={styles.teamName}>{homeTeamName}</Text>
+            </View>
+
+            {match.status === "live" ? 
+            <View style={styles.phaseBadge}>
+              <Text style={styles.phaseBadgeText}>
+                {match.statusTime === "1st" && "1ª Parte"}
+                {match.statusTime === "interval" && "Intervalo"}
+                {match.statusTime === "2nd" && "2ª Parte"}
+                {match.statusTime === "extra" && "Prolongamento"}
+                {match.statusTime === "penalties" && "Penáltis"}
+              </Text>
+            </View>
+             : 
+            <View style={styles.scoreSpacer} />
+            }
+
+            <View style={styles.teamSide}>
+              <Text style={styles.teamName}>{awayTeamName}</Text>
+            </View>
+          </View>
+        </View>
+        {/* Match Info */}
+        <View style={styles.matchInfo}>
+          <View style={styles.infoItem}>
+            <Ionicons
+              name="calendar-outline"
+              size={16}
+              color={COLORS.text.subtle}
+            />
+            <Text style={styles.infoText}>
+              {formatDateWithWeekdayPT(match.date)} • {match.time}
+            </Text>
+          </View>
+          {match.location && (
             <View style={styles.infoItem}>
               <Ionicons
-                name="calendar-outline"
+                name="location-outline"
                 size={16}
                 color={COLORS.text.subtle}
               />
-              <Text style={styles.infoText}>
-                {formatDateWithWeekdayPT(match.date)} • {match.time}
-              </Text>
+              <Text style={styles.infoText}>{match.location}</Text>
             </View>
-            {match.location && (
-              <View style={styles.infoItem}>
-                <Ionicons
-                  name="location-outline"
-                  size={16}
-                  color={COLORS.text.subtle}
-                />
-                <Text style={styles.infoText}>{match.location}</Text>
-              </View>
-            )}
-          </View>
+          )}
         </View>
+      </View>
 
-        {/* TABS - scroll normal, NÃO ficam fixas */}
+      {/* TABS */}
+      <View style={styles.tabsContainer}>
         <View style={styles.tabsList}>
           {tabs.map((tab) => (
             <TouchableOpacity
@@ -591,48 +541,7 @@ export const MatchDetail = () => {
             </>
           )}
         </View>
-      </Animated.ScrollView>
-
-      {/* MINI HEADER FLUTUANTE - aparece só depois do header grande sair
-          do ecrã, fica sempre fixo por cima do conteúdo (como no FlashScore) */}
-      <Animated.View
-        style={[
-          styles.miniHeader,
-          {
-            opacity: miniHeaderOpacity,
-            transform: [{ translateY: miniHeaderTranslateY }],
-          },
-        ]}
-        pointerEvents="box-none"
-      >
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.miniBackButton}
-        >
-          <Ionicons name="arrow-back" size={22} color={COLORS.text.blackWhite} />
-        </TouchableOpacity>
-
-        <View style={styles.miniHeaderRow}>
-          <Image
-            source={{ uri: hometeamLogo }}
-            style={styles.miniLogo}
-            resizeMode="contain"
-          />
-          <View style={styles.miniScoreBlock}>
-            <Text style={styles.miniScoreText}>
-              {homeScoreDisplay} - {awayScoreDisplay}
-            </Text>
-            {!!statusLabel && (
-              <Text style={styles.miniStatusText}>{statusLabel}</Text>
-            )}
-          </View>
-          <Image
-            source={{ uri: awayteamLogo }}
-            style={styles.miniLogo}
-            resizeMode="contain"
-          />
-        </View>
-      </Animated.View>
-    </View>
+      </View>
+    </ScrollView>
   );
 };
