@@ -1,2 +1,6 @@
 TODO.txt
 RELATORIO_FORK_NOVO_CLUBE.md
+
+# Generated test coverage reports
+ClubHub-backend/coverage/
+ClubHub-frontend/coverage/

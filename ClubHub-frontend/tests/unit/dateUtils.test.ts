@@ -32,22 +32,23 @@ describe("dateUtils", () => {
   });
 
   it.each([
-    ["V", "C", ["2*", "1"]],
-    ["V", "F", ["1", "2*"]],
-    ["D", "C", ["1", "2*"]],
-    ["D", "F", ["2*", "1"]],
+    ["5-4", "V", ["5*", "4"]],
+    ["4-5", "V", ["4", "5*"]],
+    ["5-4", "D", ["5*", "4"]],
+    ["4-5", "D", ["4", "5*"]],
   ] as const)(
-    "assinala corretamente o vencedor nos penáltis (%s, %s)",
-    (outcome, homeOrAway, expected) => {
+    "assinala o maior resultado sem adicionar golos (%s, %s)",
+    (result, outcome, expected) => {
       expect(
-        getPenaltyDisplayScore("1-1", outcome, homeOrAway, true),
+        getPenaltyDisplayScore(result, outcome, true),
       ).toEqual(expected);
     },
   );
 
   it("não altera resultados que não foram decididos nos penáltis", () => {
-    expect(getPenaltyDisplayScore("2-1", "V", "C", false)).toBeNull();
-    expect(getPenaltyDisplayScore(null, "V", "C", true)).toBeNull();
-    expect(getPenaltyDisplayScore("1-1", "E", "C", true)).toBeNull();
+    expect(getPenaltyDisplayScore("2-1", "V", false)).toBeNull();
+    expect(getPenaltyDisplayScore("2-1", "V", undefined)).toBeNull();
+    expect(getPenaltyDisplayScore(null, "V", true)).toBeNull();
+    expect(getPenaltyDisplayScore("1-1", "E", true)).toBeNull();
   });
 });
