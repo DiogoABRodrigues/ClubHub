@@ -11,7 +11,7 @@ import {
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { FontAwesome5 } from "@expo/vector-icons";
 
-import { CollapsibleMatchHeader, MATCH_HEADER_HEIGHT, MATCH_HEADER_COLLAPSE } from "./CollapsibleMatchHeader";
+import { CollapsibleMatchHeader, MATCH_HEADER_HEIGHT } from "./CollapsibleMatchHeader";
 import { EventRow } from "../../components/EventRow";
 
 import { COLORS } from "../../theme/colors";
@@ -66,7 +66,6 @@ export const MatchDetail = () => {
   const match = loadedMatch ?? EMPTY_MATCH;
 
   const [refreshing, setRefreshing] = useState(false);
-  const [viewportHeight, setViewportHeight] = useState(0);
   const scrollY = useRef(new Animated.Value(0)).current;
   const handleScroll = useMemo(
     () => Animated.event(
@@ -234,13 +233,13 @@ export const MatchDetail = () => {
   }
 
   return (
-    <View style={styles.container} onLayout={(event) => setViewportHeight(event.nativeEvent.layout.height)}>
+    <View style={styles.container}>
       <Animated.ScrollView
         style={styles.container}
         contentContainerStyle={{
           paddingTop: MATCH_HEADER_HEIGHT,
           paddingBottom: 24,
-          minHeight: viewportHeight + MATCH_HEADER_COLLAPSE,
+          flexGrow: 1,
         }}
         onScroll={handleScroll}
         scrollEventThrottle={16}

@@ -79,7 +79,7 @@ export function CollapsibleMatchHeader({
             source={homeLogo ? { uri: homeLogo } : undefined}
             accessibilityLabel={homeName}
             resizeMode="contain"
-            style={{ width: between(50, 30), height: between(50, 30) }}
+            style={{ width: between(50, 38), height: between(50, 38) }}
           />
         </View>
         <View style={headerStyles.scoreColumn}>
@@ -101,7 +101,7 @@ export function CollapsibleMatchHeader({
             source={awayLogo ? { uri: awayLogo } : undefined}
             accessibilityLabel={awayName}
             resizeMode="contain"
-            style={{ width: between(50, 30), height: between(50, 30) }}
+            style={{ width: between(50, 38), height: between(50, 38) }}
           />
         </View>
       </Animated.View>
@@ -119,10 +119,18 @@ export function CollapsibleMatchHeader({
         headerStyles.details,
         { opacity: detailOpacity, top: between(210, 95) },
       ]}>
-        <Text numberOfLines={1} style={headerStyles.info}>
-          {match.date ? formatDateWithWeekdayPT(match.date) : ""}{match.time ? ` · ${match.time}` : ""}
-        </Text>
-        {!!match.location && <Text numberOfLines={2} style={headerStyles.info}>{match.location}</Text>}
+        <View style={headerStyles.infoRow}>
+          <Ionicons name="calendar-outline" size={16} color={COLORS.text.subtle} />
+          <Text numberOfLines={1} style={headerStyles.info}>
+            {match.date ? formatDateWithWeekdayPT(match.date) : ""}{match.time ? ` · ${match.time}` : ""}
+          </Text>
+        </View>
+        {!!match.location && (
+          <View style={headerStyles.infoRow}>
+            <Ionicons name="location-outline" size={16} color={COLORS.text.subtle} />
+            <Text numberOfLines={2} style={headerStyles.info}>{match.location}</Text>
+          </View>
+        )}
       </Animated.View>
 
       <TouchableOpacity onPress={onBack} accessibilityRole="button" accessibilityLabel="Voltar"
@@ -143,7 +151,7 @@ const headerStyles = createThemedStyles(() => ({
     position: "absolute", top: 16, left: 8, width: 44, height: 44,
     alignItems: "center", justifyContent: "center",
   },
-  competition: { position: "absolute", top: 24, left: 56, right: 56 },
+  competition: { position: "absolute", top: 48, left: 56, right: 56 },
   competitionText: {
     color: COLORS.text.info, fontSize: 11, fontWeight: "600",
     textAlign: "center", textTransform: "uppercase",
@@ -157,5 +165,6 @@ const headerStyles = createThemedStyles(() => ({
   teamName: { flex: 1, color: COLORS.text.blackWhite, fontWeight: "600", fontSize: 13, textAlign: "center" },
   phase: { width: 120, color: COLORS.text.subtle, fontSize: 11, textAlign: "center" },
   details: { position: "absolute", left: 16, right: 16, gap: 4 },
-  info: { color: COLORS.text.subtle, fontSize: 11, lineHeight: 16, textAlign: "center" },
+  infoRow: { flexDirection: "row", alignItems: "center", gap: 4 },
+  info: { flex: 1, color: COLORS.text.subtle, fontSize: 11, lineHeight: 16, textAlign: "left" },
 }));
