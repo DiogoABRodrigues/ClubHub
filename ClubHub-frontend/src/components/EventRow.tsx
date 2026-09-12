@@ -22,25 +22,15 @@ const ICON: Record<string, string> = {
   penalty_shootout: "",
 };
 
-// Cartão inclinado, estilo Flashscore.
-//
-// NOTA: a versão anterior desenhava isto com um <Path> de coordenadas escritas
-// à mão ("M5.97 0 3.5 2.47v15.06L16.6 2.47 14.13 0H5.97Z"), mas faltava-lhe o
-// vértice do canto inferior-direito — em vez de um retângulo inclinado, o SVG
-// fechava a forma diretamente do canto inferior-esquerdo para o canto
-// superior-direito, dando origem a um triângulo/bandeira em vez de um cartão.
-// Aqui usamos um <Rect> real rodado com "rotate()", que nunca pode ficar com
-// vértices em falta.
-const CARD_W = 10;
-const CARD_H = 14;
-const CARD_RADIUS = 1.5;
-const CARD_ROTATION_DEG = -18;
-const CARD_VIEWBOX = 24; // quadrado, com margem suficiente para a rotação não cortar o cartão
+// Cartão vertical e com presença visual semelhante aos restantes ícones.
+const CARD_W = 12;
+const CARD_H = 17;
+const CARD_RADIUS = 1.75;
+const CARD_VIEWBOX = 20;
 const CARD_RECT_X = (CARD_VIEWBOX - CARD_W) / 2;
 const CARD_RECT_Y = (CARD_VIEWBOX - CARD_H) / 2;
-const CARD_CENTER = CARD_VIEWBOX / 2;
-const CARD_ROTATE_TRANSFORM = `rotate(${CARD_ROTATION_DEG} ${CARD_CENTER} ${CARD_CENTER})`;
-const CARD_SIZE = 14;
+const CARD_SIZE = 20;
+const SECOND_YELLOW_FRACTION = 0.3;
 
 const CardShape = ({
   color,
@@ -59,7 +49,6 @@ const CardShape = ({
       height={CARD_H}
       rx={CARD_RADIUS}
       fill={color}
-      transform={CARD_ROTATE_TRANSFORM}
     />
   </Svg>
 );
@@ -79,6 +68,7 @@ const SplitCardShape = ({
   const clipId = `cardRect-${uid}`;
   const x = CARD_RECT_X;
   const y = CARD_RECT_Y;
+  const yellowEdgeX = x + CARD_W * SECOND_YELLOW_FRACTION * 2;
 
   return (
     <Svg width={size} height={size} viewBox={`0 0 ${CARD_VIEWBOX} ${CARD_VIEWBOX}`} style={style}>
@@ -88,16 +78,14 @@ const SplitCardShape = ({
         </ClipPath>
       </Defs>
       <Path
-        d={`M${x} ${y} L${x + CARD_W} ${y} L${x} ${y + CARD_H} Z`}
+        d={`M${x} ${y} L${yellowEdgeX} ${y} L${x} ${y + CARD_H} Z`}
         fill={COLORS.status.yellowCard}
         clipPath={`url(#${clipId})`}
-        transform={CARD_ROTATE_TRANSFORM}
       />
       <Path
-        d={`M${x + CARD_W} ${y} L${x + CARD_W} ${y + CARD_H} L${x} ${y + CARD_H} Z`}
+        d={`M${yellowEdgeX} ${y} L${x + CARD_W} ${y} L${x + CARD_W} ${y + CARD_H} L${x} ${y + CARD_H} Z`}
         fill={COLORS.error}
         clipPath={`url(#${clipId})`}
-        transform={CARD_ROTATE_TRANSFORM}
       />
     </Svg>
   );
