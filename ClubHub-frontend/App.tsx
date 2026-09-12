@@ -11,6 +11,7 @@ import { SelectedSeasonProvider } from "./src/contexts/Selectedseasoncontext";
 import { CategoryProvider } from "./src/contexts/CategoryContext";
 import { ThemeProvider } from "./src/contexts/ThemeContext";
 import * as SplashScreen from "expo-splash-screen";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 if (Platform.OS !== "web") {
   void SplashScreen.preventAutoHideAsync();
@@ -38,6 +39,7 @@ export default function App() {
   }, [splashDone]);
 
   return (
+    <SafeAreaProvider>
     <GestureHandlerRootView style={styles.container}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
@@ -57,6 +59,7 @@ export default function App() {
         </ThemeProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }
 
