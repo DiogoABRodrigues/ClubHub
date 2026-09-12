@@ -66,6 +66,7 @@ export const MatchDetail = () => {
   const match = loadedMatch ?? EMPTY_MATCH;
 
   const [refreshing, setRefreshing] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(MATCH_HEADER_HEIGHT);
   const scrollY = useRef(new Animated.Value(0)).current;
   const handleScroll = useMemo(
     () => Animated.event(
@@ -237,7 +238,7 @@ export const MatchDetail = () => {
       <Animated.ScrollView
         style={styles.container}
         contentContainerStyle={{
-          paddingTop: MATCH_HEADER_HEIGHT,
+          paddingTop: headerHeight,
           paddingBottom: 24,
           flexGrow: 1,
         }}
@@ -462,6 +463,7 @@ export const MatchDetail = () => {
       </Animated.ScrollView>
 
       <CollapsibleMatchHeader
+        onHeightChange={setHeaderHeight}
         scrollY={scrollY}
         match={match}
         homeName={homeTeamName}
