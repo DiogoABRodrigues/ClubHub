@@ -1,11 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import React, { createContext, useContext, useState, useMemo, useCallback } from "react";
 import { useSeasonsByCategory } from "../hooks/useSeasons";
 import { useCategory } from "./CategoryContext";
 import { Season } from "../models/Season";
@@ -14,7 +7,6 @@ interface SelectedSeasonContextType {
   selectedSeason: Season | null;
   setSelectedSeason: (season: Season) => void;
   selectedSeasonId: number | null;
-  /** Seasons disponíveis para a categoria activa */
   availableSeasons: Season[];
 }
 
@@ -25,63 +17,36 @@ const SelectedSeasonContext = createContext<SelectedSeasonContextType>({
   availableSeasons: [],
 });
 
-export const SelectedSeasonProvider: React.FC<{
-  children: React.ReactNode;
-}> = ({ children }) => {
+export const SelectedSeasonProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { selectedCategory, triggerTransition, isReady } = useCategory();
   const { seasons } = useSeasonsByCategory(selectedCategory, isReady);
-  const [selectedSeason, setSelectedSeason] = useState<Season | null>(null);
-  const prevCategory = useRef(selectedCategory);
+  const [preferredSeason, setPreferredSeason] = useState<Season | null>(null);
 
-  // Quando a categoria muda, reseta imediatamente (evita mostrar season errada)
-  useEffect(() => {
-    if (prevCategory.current !== selectedCategory) {
-      prevCategory.current = selectedCategory;
-      setSelectedSeason(null);
-    }
-  }, [selectedCategory]);
+  // Derive from THIS category's data in the same render. Effects previously
+  // exposed the old category/season pair before resetting and selecting again.
+  const selectedSeason = useMemo(() => {
+    if (!isReady || !seasons.length) return null;
+    const preferred = seasons.find((season) => season.id === preferredSeason?.id);
+    if (preferred) return preferred;
+    return seasons.reduce((latest, season) =>
+      parseInt(season.year, 10) > parseInt(latest.year, 10) ? season : latest,
+    );
+  }, [seasons, preferredSeason, isReady]);
 
-  // Quando as seasons disponíveis carregam/mudam, seleciona a mais recente
-  useEffect(() => {
-    if (!seasons.length) return;
-    if (
-      selectedSeason &&
-      seasons.some((season) => season.id === selectedSeason.id)
-    ) {
-      return;
-    }
-    const latest = seasons.reduce((best, s) => {
-      const bestYear = parseInt(best.year.split("/")?.[0] ?? "0");
-      const sYear = parseInt(s.year.split("/")?.[0] ?? "0");
-      return sYear > bestYear ? s : best;
-    });
-    setSelectedSeason(latest);
-    // Avisa o CategoryContext que já temos season - os dados vão começar a carregar
-    // O overlay será escondido quando os dados ficarem prontos (ver useCategoryDataReady)
-  }, [seasons, selectedSeason]);
+  const handleSetSelectedSeason = useCallback((season: Season) => {
+    if (!seasons.some((available) => available.id === season.id)) return;
+    if (season.id !== selectedSeason?.id) triggerTransition();
+    setPreferredSeason(season);
+  }, [seasons, selectedSeason?.id, triggerTransition]);
 
-  const handleSetSelectedSeason = (season: Season) => {
-    if (season.id !== selectedSeason?.id) {
-      triggerTransition();
-    }
-    setSelectedSeason(season);
-  };
+  const value = useMemo(() => ({
+    selectedSeason,
+    setSelectedSeason: handleSetSelectedSeason,
+    selectedSeasonId: selectedSeason?.id ?? null,
+    availableSeasons: seasons,
+  }), [selectedSeason, handleSetSelectedSeason, seasons]);
 
-  const value = useMemo(
-    () => ({
-      selectedSeason,
-      setSelectedSeason: handleSetSelectedSeason,
-      selectedSeasonId: selectedSeason?.id ?? null,
-      availableSeasons: seasons,
-    }),
-    [selectedSeason, seasons],
-  );
-
-  return (
-    <SelectedSeasonContext.Provider value={value}>
-      {children}
-    </SelectedSeasonContext.Provider>
-  );
+  return <SelectedSeasonContext.Provider value={value}>{children}</SelectedSeasonContext.Provider>;
 };
 
 export const useSelectedSeason = () => useContext(SelectedSeasonContext);

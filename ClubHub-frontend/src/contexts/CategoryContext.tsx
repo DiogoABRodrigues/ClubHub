@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
   useRef,
+  useCallback,
   ReactNode,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -70,6 +71,10 @@ export function CategoryProvider({ children }: { children: ReactNode }) {
       });
   }, []);
 
+  useEffect(() => () => {
+    if (minTimeRef.current) clearTimeout(minTimeRef.current);
+  }, []);
+
   const setSelectedCategory = async (category: Category) => {
     if (category === selectedCategory) return;
 
@@ -77,6 +82,7 @@ export function CategoryProvider({ children }: { children: ReactNode }) {
     pendingHide.current = false;
     setIsCategoryChanging(true);
 
+    if (minTimeRef.current) clearTimeout(minTimeRef.current);
     minTimeRef.current = setTimeout(() => {
       minTimeRef.current = null;
       if (pendingHide.current) {
@@ -89,9 +95,10 @@ export function CategoryProvider({ children }: { children: ReactNode }) {
     await AsyncStorage.setItem(STORAGE_KEY, category);
   };
 
-  const triggerTransition = () => {
+  const triggerTransition = useCallback(() => {
     pendingHide.current = false;
     setIsCategoryChanging(true);
+    if (minTimeRef.current) clearTimeout(minTimeRef.current);
     minTimeRef.current = setTimeout(() => {
       minTimeRef.current = null;
       if (pendingHide.current) {
@@ -99,17 +106,16 @@ export function CategoryProvider({ children }: { children: ReactNode }) {
         pendingHide.current = false;
       }
     }, 350);
-  };
+  }, []);
 
-  const acknowledgeCategoryChange = () => {
-    if (!isCategoryChanging) return;
+  const acknowledgeCategoryChange = useCallback(() => {
     if (minTimeRef.current) {
       // Ainda no tempo mínimo - agenda o hide para quando ele acabar
       pendingHide.current = true;
     } else {
       setIsCategoryChanging(false);
     }
-  };
+  }, []);
 
   return (
     <CategoryContext.Provider

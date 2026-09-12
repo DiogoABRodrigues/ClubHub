@@ -2,6 +2,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { SeasonService } from "../services/SeasonService";
 import { Season } from "../models/Season";
 
+const EMPTY_SEASONS: Season[] = [];
+
 /** Todas as seasons (sem filtro) */
 export const useSeasons = () => {
   const queryClient = useQueryClient();
@@ -13,7 +15,7 @@ export const useSeasons = () => {
   });
 
   return {
-    seasons: seasonsQuery.data ?? [],
+    seasons: seasonsQuery.data ?? EMPTY_SEASONS,
     loading: seasonsQuery.isLoading,
     refreshSeasons: () =>
       queryClient.invalidateQueries({ queryKey: ["seasons"] }),
@@ -30,7 +32,7 @@ export const useSeasonsByCategory = (category: string, enabled = true) => {
   });
 
   return {
-    seasons: query.data ?? [],
+    seasons: query.data ?? EMPTY_SEASONS,
     loading: query.isLoading,
   };
 };
