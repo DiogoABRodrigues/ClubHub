@@ -1,17 +1,17 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback, useRef } from "react";
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
   Image,
   RefreshControl,
   ActivityIndicator,
+  Animated,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 
-import { LiveBadge } from "../../components/LiveBadge";
+import { CollapsibleMatchHeader, MATCH_HEADER_HEIGHT, MATCH_HEADER_COLLAPSE } from "./CollapsibleMatchHeader";
 import { EventRow } from "../../components/EventRow";
 
 import { COLORS } from "../../theme/colors";
@@ -22,7 +22,7 @@ import { useTeams } from "../../hooks/useTeams";
 import { usePlayers } from "../../hooks/usePlayers";
 import { useCompetitions } from "../../hooks/useCompetitions";
 
-import { formatDateWithWeekdayPT, getPenaltyDisplayScore } from "../../utils/dateUtils";
+import { getPenaltyDisplayScore } from "../../utils/dateUtils";
 import { getPositionOrder } from "../../utils/playerPositionUtils";
 import { Competition } from "../../models/Competition";
 import { Match } from "../../models/Match";
@@ -66,6 +66,16 @@ export const MatchDetail = () => {
   const match = loadedMatch ?? EMPTY_MATCH;
 
   const [refreshing, setRefreshing] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState(0);
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const handleScroll = useMemo(
+    () => Animated.event(
+      [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+      // The same scroll value drives header height and the inner layout.
+      { useNativeDriver: false },
+    ),
+    [scrollY],
+  );
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -224,117 +234,25 @@ export const MatchDetail = () => {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          colors={[COLORS.primary]}
-          tintColor={COLORS.primary}
-        />
-      }
-    >
-      {/* HEADER */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Ionicons name="arrow-back" size={24} color={COLORS.text.blackWhite} />
-        </TouchableOpacity>
-
-        <Text style={styles.title}></Text>
-
-        <View style={styles.statusContainer}>
-          {match.status === "live" && <LiveBadge interval={false} />}
-          {match.status === "upcoming" && (
-            <View style={styles.upcomingBadge}>
-              <Text style={styles.badgeText}>Agendado</Text>
-            </View>
-          )}
-          {match.status === "finished" && (
-            <View style={styles.fulltimeBadge}>
-              <Text style={styles.fulltimeBadgeText}>Terminado</Text>
-            </View>
-          )}
-        </View>
-
-        <Text style={styles.competition}>
-          {competition?.name || ""} {match.round ? `- ${match.round}` : ""}
-        </Text>
-        {/* SCORE */}
-        <View style={styles.scoreCard}>
-          <View style={styles.scoreRow}>
-            <View style={styles.teamSide}>
-              <Image source={{ uri: hometeamLogo }} style={styles.teamLogo} resizeMode="contain" />
-            </View>
-
-            <View style={styles.scoreColumn}>
-              <View style={styles.scoreContainer}>
-                <Text style={styles.scoreText}>{homeScoreDisplay}</Text>
-                <Text style={styles.colon}>-</Text>
-                <Text style={styles.scoreText}>{awayScoreDisplay}</Text>
-              </View>
-              {match.decidedByPenalties && (
-                <Text style={styles.penaltiesLabel}>Após g.p.</Text>
-              )}
-            </View>
-
-            <View style={styles.teamSide}>
-              <Image source={{ uri: awayteamLogo }} style={styles.teamLogo} resizeMode="contain" />
-            </View>
-          </View>
-
-          <View style={styles.teamNamesRow}>
-            <View style={styles.teamSide}>
-              <Text style={styles.teamName}>{homeTeamName}</Text>
-            </View>
-
-            {match.status === "live" ? 
-            <View style={styles.phaseBadge}>
-              <Text style={styles.phaseBadgeText}>
-                {match.statusTime === "1st" && "1ª Parte"}
-                {match.statusTime === "interval" && "Intervalo"}
-                {match.statusTime === "2nd" && "2ª Parte"}
-                {match.statusTime === "extra" && "Prolongamento"}
-                {match.statusTime === "penalties" && "Penáltis"}
-              </Text>
-            </View>
-             : 
-            <View style={styles.scoreSpacer} />
-            }
-
-            <View style={styles.teamSide}>
-              <Text style={styles.teamName}>{awayTeamName}</Text>
-            </View>
-          </View>
-        </View>
-        {/* Match Info */}
-        <View style={styles.matchInfo}>
-          <View style={styles.infoItem}>
-            <Ionicons
-              name="calendar-outline"
-              size={16}
-              color={COLORS.text.subtle}
-            />
-            <Text style={styles.infoText}>
-              {formatDateWithWeekdayPT(match.date)} • {match.time}
-            </Text>
-          </View>
-          {match.location && (
-            <View style={styles.infoItem}>
-              <Ionicons
-                name="location-outline"
-                size={16}
-                color={COLORS.text.subtle}
-              />
-              <Text style={styles.infoText}>{match.location}</Text>
-            </View>
-          )}
-        </View>
-      </View>
-
+    <View style={styles.container} onLayout={(event) => setViewportHeight(event.nativeEvent.layout.height)}>
+      <Animated.ScrollView
+        style={styles.container}
+        contentContainerStyle={{
+          paddingTop: MATCH_HEADER_HEIGHT,
+          paddingBottom: 24,
+          minHeight: viewportHeight + MATCH_HEADER_COLLAPSE,
+        }}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+          />
+        }
+      >
       {/* TABS */}
       <View style={styles.tabsContainer}>
         <View style={styles.tabsList}>
@@ -542,6 +460,20 @@ export const MatchDetail = () => {
           )}
         </View>
       </View>
-    </ScrollView>
+      </Animated.ScrollView>
+
+      <CollapsibleMatchHeader
+        scrollY={scrollY}
+        match={match}
+        homeName={homeTeamName}
+        awayName={awayTeamName}
+        homeLogo={hometeamLogo}
+        awayLogo={awayteamLogo}
+        homeScore={homeScoreDisplay}
+        awayScore={awayScoreDisplay}
+        competitionName={competition?.name}
+        onBack={() => navigation.goBack()}
+      />
+    </View>
   );
 };
