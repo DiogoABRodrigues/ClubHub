@@ -16,6 +16,7 @@ export const styles = createThemedStyles(() => ({
   content: {
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.md,
+    paddingBottom: SPACING.xl,
   },
 
   headerLeft: {
@@ -202,7 +203,7 @@ export const styles = createThemedStyles(() => ({
   },
 
   textAreaLarge: {
-    minHeight: 200,
+    height: 160,
     paddingTop: SPACING.sm,
     textAlignVertical: "top",
   },

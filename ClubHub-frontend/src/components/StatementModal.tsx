@@ -1,15 +1,12 @@
+import { FormModal } from "./FormModal";
+import { FormScrollView } from "./FormScrollView";
 import React, { useState, useEffect } from "react";
 import {
-  Modal,
   View,
   Text,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
   TextInput,
   Alert,
-  Pressable,
-  ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { adminStyles } from "../screens/Admin/AdminMatches/AdminMatchDetail.styles";
@@ -94,15 +91,7 @@ export const StatementModal = ({ visible, onClose }: Props) => {
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide">
-      {/* Overlay fecha o modal ao tocar fora */}
-      <Pressable style={{ flex: 1 }} onPress={onClose} />
-
-      {/* KeyboardAvoidingView fora do Pressable, colado ao fundo */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={adminStyles.sheetWrapper}
-      >
+    <FormModal visible={visible} onClose={onClose}>
         <View style={adminStyles.sheet}>
           <View style={adminStyles.handle} />
 
@@ -116,7 +105,7 @@ export const StatementModal = ({ visible, onClose }: Props) => {
           </View>
 
           {/* ScrollView para o conteúdo subir com o teclado */}
-          <ScrollView
+          <FormScrollView
             contentContainerStyle={adminStyles.sheetContent}
             keyboardShouldPersistTaps="handled"
           >
@@ -172,9 +161,8 @@ export const StatementModal = ({ visible, onClose }: Props) => {
                 <Text style={adminStyles.saveBtnText}>Eliminar Comunicado</Text>
               </TouchableOpacity>
             )}
-          </ScrollView>
+          </FormScrollView>
         </View>
-      </KeyboardAvoidingView>
 
       <DateTimePickerModal
         visible={pickerVisible}
@@ -193,6 +181,6 @@ export const StatementModal = ({ visible, onClose }: Props) => {
           setDateToExpire(new Date(year, month - 1, day, hour, minute));
         }}
       />
-    </Modal>
+    </FormModal>
   );
 };

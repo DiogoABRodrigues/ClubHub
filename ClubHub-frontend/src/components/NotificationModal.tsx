@@ -1,14 +1,12 @@
+import { FormModal } from "./FormModal";
+import { FormScrollView } from "./FormScrollView";
 import React, { useState } from "react";
 import {
-  Modal,
   View,
   Text,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
   TextInput,
   Alert,
-  Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { adminStyles } from "../screens/Admin/AdminMatches/AdminMatchDetail.styles";
@@ -65,13 +63,7 @@ export const NotificationModal = ({ visible, onClose }: Props) => {
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide">
-      <Pressable style={adminStyles.overlay} onPress={handleClose} />
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={adminStyles.sheetWrapper}
-      >
+    <FormModal visible={visible} onClose={handleClose}>
         <View style={adminStyles.sheet}>
           <View style={adminStyles.handle} />
 
@@ -83,7 +75,7 @@ export const NotificationModal = ({ visible, onClose }: Props) => {
             </TouchableOpacity>
           </View>
 
-          <View style={adminStyles.sheetContent}>
+          <FormScrollView contentContainerStyle={adminStyles.sheetContent}>
             {/* Título */}
             <Text style={adminStyles.fieldLabel}>Título</Text>
             <TextInput
@@ -118,9 +110,8 @@ export const NotificationModal = ({ visible, onClose }: Props) => {
                 {loading ? "A enviar..." : "Enviar Notificação"}
               </Text>
             </TouchableOpacity>
-          </View>
+          </FormScrollView>
         </View>
-      </KeyboardAvoidingView>
-    </Modal>
+    </FormModal>
   );
 };

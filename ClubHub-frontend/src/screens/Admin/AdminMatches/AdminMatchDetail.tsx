@@ -1,3 +1,5 @@
+import { FormModal } from "../../../components/FormModal";
+import { FormScrollView } from "../../../components/FormScrollView";
 import React, { useMemo, useState, useCallback } from "react";
 import {
   View,
@@ -7,7 +9,6 @@ import {
   Image,
   Alert,
   RefreshControl,
-  Modal,
   TextInput,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
@@ -1185,20 +1186,8 @@ export const AdminMatchDetail = () => {
         onClose={() => setShowLocationModal(false)}
         onSave={handleSaveLocation}
       />
-      <Modal
-        visible={showScoreModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowScoreModal(false)}
-      >
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            padding: 24,
-            backgroundColor: "rgba(0, 0, 0, 0.45)",
-          }}
-        >
+      <FormModal visible={showScoreModal} onClose={() => setShowScoreModal(false)}>
+        <FormScrollView style={{ flexGrow: 0, borderRadius: 12, backgroundColor: COLORS.backgrounds.screen }}>
           <View
             style={{
               borderRadius: 12,
@@ -1233,8 +1222,8 @@ export const AdminMatchDetail = () => {
               </TouchableOpacity>
             </View>
           </View>
-        </View>
-      </Modal>
+        </FormScrollView>
+      </FormModal>
     </>
   );
 };

@@ -1,14 +1,12 @@
+import { FormModal } from "../../../../components/FormModal";
+import { FormScrollView } from "../../../../components/FormScrollView";
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import {
-  Modal,
   View,
   Text,
   TextInput,
   TouchableOpacity,
   ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
   ActivityIndicator,
   Alert,
   Switch,
@@ -298,18 +296,7 @@ export const AddEventModal = ({
   const phaseLabel = PHASE_LABELS[currentPhase ?? "1st"] ?? currentPhase;
 
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent
-      onRequestClose={onClose}
-    >
-      <Pressable style={{ flex: 1 }} onPress={onClose} />
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={adminStyles.sheetWrapper}
-      >
+    <FormModal visible={visible} onClose={onClose}>
         <View style={[adminStyles.sheet, adminStyles.sheetTall]}>
           <View style={adminStyles.handle} />
 
@@ -322,7 +309,7 @@ export const AddEventModal = ({
             </TouchableOpacity>
           </View>
 
-          <ScrollView
+          <FormScrollView
             contentContainerStyle={adminStyles.sheetContent}
             keyboardShouldPersistTaps="handled"
           >
@@ -567,9 +554,8 @@ export const AddEventModal = ({
                 </Text>
               )}
             </TouchableOpacity>
-          </ScrollView>
+          </FormScrollView>
         </View>
-      </KeyboardAvoidingView>
-    </Modal>
+    </FormModal>
   );
 };

@@ -49,10 +49,11 @@ export const adminStyles = createThemedStyles(() => ({
 
   sheet: {
     backgroundColor: COLORS.backgroundWhite,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingBottom: Platform.OS === "ios" ? 34 : 20,
-    maxHeight: "88%",
+    borderRadius: 20,
+    paddingBottom: 12,
+    maxHeight: "100%",
+    flexShrink: 1,
+    overflow: "hidden",
     borderWidth: 1,
     borderColor: COLORS.border,
   },
@@ -170,7 +171,7 @@ export const adminStyles = createThemedStyles(() => ({
   },
 
   textAreaLarge: {
-    minHeight: 140,
+    height: 140,
     paddingTop: SPACING.sm,
     textAlignVertical: "top",
   },

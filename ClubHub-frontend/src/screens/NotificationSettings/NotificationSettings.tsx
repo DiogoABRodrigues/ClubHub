@@ -1,12 +1,11 @@
+import { FormModal } from "../../components/FormModal";
+import { FormScrollView } from "../../components/FormScrollView";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
-  Modal,
-  Pressable,
-  Keyboard,
   TextInput,
   LayoutAnimation,
   Platform,
@@ -807,9 +806,8 @@ export const NotificationSettings = ({ navigation }: any) => {
       </ScrollView>
 
       {/* Modal Admin */}
-      <Modal visible={showLoginModal} transparent animationType="slide">
-        <Pressable style={styles.modalOverlay} onPress={Keyboard.dismiss}>
-          <Pressable style={styles.modalCard}>
+      <FormModal visible={showLoginModal} onClose={() => setShowLoginModal(false)}>
+        <FormScrollView style={{ flexGrow: 0, borderRadius: 20, backgroundColor: COLORS.surfaceLight }} contentContainerStyle={styles.modalCard}>
             <Text style={styles.modalTitle}>Acesso Admin</Text>
             <TextInput
               placeholder="Username"
@@ -845,9 +843,8 @@ export const NotificationSettings = ({ navigation }: any) => {
             <TouchableOpacity onPress={() => setShowLoginModal(false)}>
               <Text style={styles.cancelText}>Cancelar</Text>
             </TouchableOpacity>
-          </Pressable>
-        </Pressable>
-      </Modal>
+        </FormScrollView>
+      </FormModal>
     </View>
   );
 };

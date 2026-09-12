@@ -1,19 +1,17 @@
+import { FormModal } from "../../../../components/FormModal";
+import { FormScrollView } from "../../../../components/FormScrollView";
 import React, { useCallback } from "react";
 import {
-  Modal,
   View,
   Text,
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  Pressable,
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../../../../theme/colors";
 import { modalStyles } from "./styles";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { Keyboard, Platform } from "react-native";
 import { useEffect, useState } from "react";
 interface Props {
   visible: boolean;
@@ -34,28 +32,6 @@ export const LocationModal = React.memo(
         setSaving(false);
       }
     }, [visible, initialValue]);
-
-    const [keyboardHeight, setKeyboardHeight] = useState(0);
-
-    useEffect(() => {
-      const showEvent =
-        Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
-      const hideEvent =
-        Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
-
-      const showSub = Keyboard.addListener(showEvent, (e) => {
-        setKeyboardHeight(e.endCoordinates.height);
-      });
-
-      const hideSub = Keyboard.addListener(hideEvent, () => {
-        setKeyboardHeight(0);
-      });
-
-      return () => {
-        showSub.remove();
-        hideSub.remove();
-      };
-    }, []);
 
     // 🔥 evita double save / race condition
     const handleSave = useCallback(async () => {
@@ -92,15 +68,8 @@ export const LocationModal = React.memo(
     }, [saving, onClose]);
 
     return (
-      <Modal visible={visible} transparent animationType="slide">
-        <Pressable style={modalStyles.overlay} onPress={handleClose} />
-
-        <KeyboardAwareScrollView
-          contentContainerStyle={{ flex: 1, justifyContent: "flex-end" }}
-          enableOnAndroid
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={[modalStyles.sheet, { marginBottom: keyboardHeight }]}>
+      <FormModal visible={visible} onClose={handleClose}>
+        <View style={[modalStyles.sheet, { maxHeight: "100%", flexShrink: 1, borderRadius: 20, paddingBottom: 12 }]}>
             <View style={modalStyles.handle} />
 
             <View style={modalStyles.sheetHeader}>
@@ -111,7 +80,7 @@ export const LocationModal = React.memo(
               </TouchableOpacity>
             </View>
 
-            <View style={modalStyles.sheetContent}>
+            <FormScrollView contentContainerStyle={modalStyles.sheetContent}>
               <Text style={modalStyles.fieldLabel}>Local do jogo</Text>
 
               <TextInput
@@ -137,10 +106,9 @@ export const LocationModal = React.memo(
                   <Text style={modalStyles.saveBtnText}>Guardar</Text>
                 )}
               </TouchableOpacity>
-            </View>
+            </FormScrollView>
           </View>
-        </KeyboardAwareScrollView>
-      </Modal>
+      </FormModal>
     );
   },
 );

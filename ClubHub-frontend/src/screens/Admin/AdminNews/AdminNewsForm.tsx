@@ -1,9 +1,9 @@
+import { FormScrollView } from "../../../components/FormScrollView";
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
-  ScrollView,
   TouchableOpacity,
   Image,
   Alert,
@@ -171,7 +171,7 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
   return (
     <KeyboardAvoidingView
       style={styles.root}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       {/* HEADER */}
       <View style={styles.container}>
@@ -195,7 +195,7 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
           </View>
         </View>
 
-        <ScrollView
+        <FormScrollView
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
@@ -276,7 +276,7 @@ export const AdminNewsForm: React.FC = ({ route, navigation }: any) => {
               </>
             )}
           </TouchableOpacity>
-        </ScrollView>
+        </FormScrollView>
       </View>
     </KeyboardAvoidingView>
   );

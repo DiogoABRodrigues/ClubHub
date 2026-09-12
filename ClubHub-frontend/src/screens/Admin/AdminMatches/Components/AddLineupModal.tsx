@@ -1,13 +1,10 @@
+import { FormModal } from "../../../../components/FormModal";
+import { FormScrollView } from "../../../../components/FormScrollView";
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import {
-  Modal,
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
   ActivityIndicator,
   Alert,
   Image,
@@ -222,13 +219,7 @@ export const AddLineupModal = ({
   }, [starterIds, subIds, matchId, saveLineup, onClose]);
 
   return (
-    <Modal visible={visible} animationType="slide" transparent>
-      <Pressable style={adminStyles.overlay} onPress={onClose} />
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={adminStyles.sheetWrapper}
-      >
+    <FormModal visible={visible} onClose={onClose}>
         <View style={[adminStyles.sheet, adminStyles.sheetTall]}>
           <View style={adminStyles.handle} />
 
@@ -250,6 +241,7 @@ export const AddLineupModal = ({
             </TouchableOpacity>
           </View>
 
+          <FormScrollView keyboardShouldPersistTaps="handled">
           {/* SEARCH */}
           <View style={adminStyles.searchRow}>
             <TextInput
@@ -264,10 +256,7 @@ export const AddLineupModal = ({
           {loading ? (
             <ActivityIndicator style={{ marginTop: 40 }} />
           ) : (
-            <ScrollView
-              contentContainerStyle={adminStyles.playerGrid}
-              keyboardShouldPersistTaps="handled"
-            >
+            <View style={adminStyles.playerGrid}>
               {displayPlayers.map((p) => (
                 <PlayerCard
                   key={String(p.id)}
@@ -276,10 +265,10 @@ export const AddLineupModal = ({
                   onPress={() => toggle(String(p.id))}
                 />
               ))}
-            </ScrollView>
+            </View>
           )}
 
-          {/* FOOTER (RESTAURADO EXACTAMENTE COMO ORIGINAL) */}
+          {/* Actions remain reachable by scrolling when the keyboard is open. */}
           <View style={adminStyles.sheetFooter}>
             {phase === "starters" ? (
               <TouchableOpacity
@@ -323,8 +312,8 @@ export const AddLineupModal = ({
               </View>
             )}
           </View>
+          </FormScrollView>
         </View>
-      </KeyboardAvoidingView>
-    </Modal>
+    </FormModal>
   );
 };
