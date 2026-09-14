@@ -89,13 +89,41 @@ describe("match external identity reconciliation", () => {
   });
 
   it.each([
-    { date: "2027-02-01" }, { round: "J19" }, { category: "over19" },
+    { round: "J19" }, { category: "over19" },
     { seasonId: 9 }, { competitionId: 38 }, { homeOrAway: "C" },
   ])("does not replace a different fixture: %j", async (changes) => {
     Object.assign(stored, changes);
     await save();
     expect(mocks.update).not.toHaveBeenCalled();
     expect(mocks.lineupUpdate).not.toHaveBeenCalled();
+  });
+
+  it("reconciles a new provider ID when the same round is rescheduled", async () => {
+    stored.date = "2026-09-19";
+    stored.round = "J1";
+    stored.externalId = 12634889;
+    stored.opponent = "Atlético dos Arcos";
+    stored.opponentExternalId = 394012;
+    await save({
+      externalId: 12676802, date: "2026-09-20", round: "J1",
+      opponent: "Atlético dos Arcos", opponentExternalId: 394012,
+    });
+    expect(mocks.create).not.toHaveBeenCalled();
+    expect(mocks.update).toHaveBeenCalledWith(
+      expect.objectContaining({ externalId: 12676802, date: "2026-09-20" }),
+      { transaction },
+    );
+    for (const update of [mocks.lineupUpdate, mocks.eventUpdate]) {
+      expect(update).toHaveBeenCalledWith(
+        { matchExternalId: 12676802 }, { where: { matchId: 2269 }, transaction },
+      );
+    }
+  });
+
+  it("does not replace an ID without a known round", async () => {
+    stored.round = "";
+    await expect(save({ round: "" })).rejects.toThrow("Não foi possível confirmar");
+    expect(mocks.update).not.toHaveBeenCalled();
   });
 
   it.each([

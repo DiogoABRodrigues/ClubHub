@@ -970,10 +970,12 @@ export async function saveMatches(
             competitionId,
             seasonId,
             category,
-            date: match.date,
             round: match.round,
             // Without an edition we cannot prove that a different ID is the same game.
-            ...(competitionId === null ? { externalId: null } : {}),
+            // Within an edition, the round identifies a rescheduled fixture.
+            ...(competitionId === null
+              ? { date: match.date, externalId: null }
+              : {}),
           },
           transaction,
           lock: transaction.LOCK.UPDATE,
@@ -985,6 +987,7 @@ export async function saveMatches(
       const externalIdChanged = externalId !== existing.externalId;
       if (externalIdChanged && existing.externalId !== null) {
         const sameTeamsAndEdition =
+          Boolean(match.round?.trim()) &&
           existing.teamExternalId === teamExternalId &&
           match.opponentExternalId !== null &&
           existing.opponentExternalId === match.opponentExternalId &&
