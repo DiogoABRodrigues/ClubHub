@@ -954,22 +954,58 @@ export async function saveMatches(
       category,
     };
 
-    const existingByExternalId = match.externalId
-      ? await Match.findOne({ where: { externalId: match.externalId } })
-      : null;
-    const existing = existingByExternalId ?? await Match.findOne({
+    const matchRow = await Match.sequelize!.transaction(async (transaction) => {
+      const existingByExternalId = match.externalId
+        ? await Match.findOne({
+            where: { externalId: match.externalId },
+            transaction,
+            lock: transaction.LOCK.UPDATE,
+          })
+        : null;
+      const existing = existingByExternalId ?? await Match.findOne({
           where: {
             teamName,
             opponent: match.opponent,
             homeOrAway: match.homeOrAway,
-            date: match.date,
+            competitionId,
+            seasonId,
             category,
-            externalId: null,
+            date: match.date,
+            round: match.round,
+            // Without an edition we cannot prove that a different ID is the same game.
+            ...(competitionId === null ? { externalId: null } : {}),
           },
+          transaction,
+          lock: transaction.LOCK.UPDATE,
         });
-    const matchRow = existing
-      ? await existing.update(values)
-      : await Match.create(values);
+      if (!existing) return Match.create(values, { transaction });
+
+      // An absent provider ID must never erase an ID we already track.
+      const externalId = match.externalId ?? existing.externalId;
+      const externalIdChanged = externalId !== existing.externalId;
+      if (externalIdChanged && existing.externalId !== null) {
+        const sameTeamsAndEdition =
+          existing.teamExternalId === teamExternalId &&
+          match.opponentExternalId !== null &&
+          existing.opponentExternalId === match.opponentExternalId &&
+          match.competitionExternalId !== null &&
+          existing.competitionExternalId === match.competitionExternalId;
+        if (!sameTeamsAndEdition) {
+          throw new Error(
+            `Não foi possível confirmar a mudança de ID externo do jogo ${existing.id}: ${existing.externalId} -> ${externalId}`,
+          );
+        }
+      }
+
+      const updated = await existing.update({ ...values, externalId }, { transaction });
+      if (externalIdChanged) {
+        // Relations keep the internal matchId; synchronize their denormalized provider ID.
+        const options = { where: { matchId: existing.id }, transaction };
+        await Lineup.update({ matchExternalId: externalId }, options);
+        await MatchEvent.update({ matchExternalId: externalId }, options);
+      }
+      return updated;
+    });
     matchIds.add(matchRow.id);
 
     if (match.formations) {
