@@ -135,12 +135,31 @@ export const styles = createThemedStyles(() => ({
     marginBottom: 2,
   },
 
+  // Agrupa a linha da época + (opcionalmente) as sub-linhas por escalão
+  seasonGroup: {},
+
   statRow: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: SPACING.xs + 1,
     borderBottomWidth: 0.5,
     borderColor: COLORS.muted,
+  },
+
+  // Caixa fixa para a seta ">" - garante alinhamento igual em todas as linhas,
+  // tenham ou não seta (ver PlayerCardModal.tsx)
+  chevronBox: {
+    width: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  // Seta fina ">" - propositadamente leve, não um ícone preenchido
+  chevronText: {
+    fontSize: 13,
+    fontWeight: "400",
+    color: COLORS.primary,
+    lineHeight: 14,
   },
 
   // Época - ocupa o espaço restante e permite wrap
@@ -150,6 +169,58 @@ export const styles = createThemedStyles(() => ({
     fontWeight: "600",
     color: COLORS.text.blackWhite,
     flexWrap: "nowrap",
+    paddingLeft: 4,
+  },
+
+  // Época com vários escalões (linha agregada/clicável)
+  seasonLabelMulti: {
+    fontWeight: "700",
+  },
+
+  // Contentor das sub-linhas por escalão, quando a época está expandida
+  subRows: {
+    backgroundColor: COLORS.surfaceLight,
+    borderRadius: RADIUS.sm,
+    marginBottom: 2,
+    overflow: "hidden",
+  },
+
+  subRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: SPACING.xs,
+    paddingLeft: 20, // alinhado com o texto da época acima (chevronBox + label padding)
+    paddingRight: 0,
+  },
+
+  subRowDivider: {
+    borderTopWidth: 0.5,
+    borderColor: COLORS.muted,
+  },
+
+  subTagWrap: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+
+  subDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: COLORS.brand.gold,
+  },
+
+  subTagText: {
+    fontSize: 10.5,
+    fontWeight: "500",
+    color: COLORS.text.secondary,
+  },
+
+  subStatValue: {
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.text.secondary,
   },
 
   // Células numéricas - largura fixa mais pequena
